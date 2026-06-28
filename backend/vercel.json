@@ -8,6 +8,7 @@
     { "src": "/api/testapp", "dest": "/api/testapp.js" },
     { "src": "/api/testdb", "dest": "/api/testdb.js" },
     { "src": "/api/testlibsql", "dest": "/api/testlibsql.js" },
+    { "src": "/api/testroutes", "dest": "/api/testroutes.js" },
     { "src": "/api/(.*)", "dest": "/api/index.js" }
   ]
 }
