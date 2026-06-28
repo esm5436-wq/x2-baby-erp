@@ -21,9 +21,19 @@ import easyOrdersRouter from './routes/easyOrders.js';
 import customersRouter from './routes/customers.js';
 import authRouter from './routes/auth.js';
 
-await initializeSchema();
-
 const app = express();
+
+// Lazy schema initialization — runs on first request, not at module load
+let schemaInitPromise = null;
+app.use(async (req, res, next) => {
+  if (!schemaInitPromise) {
+    schemaInitPromise = initializeSchema().catch(err => {
+      console.error('Schema init error:', err);
+    });
+  }
+  await schemaInitPromise;
+  next();
+});
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
