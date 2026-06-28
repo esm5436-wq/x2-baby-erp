@@ -1,0 +1,11 @@
+{
+  "name": "x2-baby-erp-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "install:all": "cd frontend && npm install && cd ../backend && npm install"
+  }
+}

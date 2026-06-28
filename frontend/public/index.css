@@ -1,0 +1,134 @@
+:root {
+  --color-primary: #6366f1;
+  --color-primary-light: #818cf8;
+  --color-primary-dark: #4f46e5;
+  --transition-theme: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+
+  --text-900: #0f172a;
+  --text-800: #1e293b;
+  --text-700: #334155;
+  --text-600: #475569;
+  --text-500: #64748b;
+  --text-400: #94a3b8;
+  --text-300: #cbd5e1;
+  --text-200: #e2e8f0;
+  --text-100: #f1f5f9;
+  --text-50: #f8fafc;
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-input: #ffffff;
+  --bg-elevated: #f1f5f9;
+  --border-default: #e2e8f0;
+}
+
+.dark {
+  --text-900: #f8fafc;
+  --text-800: #f1f5f9;
+  --text-700: #e2e8f0;
+  --text-600: #cbd5e1;
+  --text-500: #94a3b8;
+  --text-400: #64748b;
+  --text-300: #475569;
+  --text-200: #334155;
+  --text-100: #1e293b;
+  --text-50: #0f172a;
+  --bg-page: #020617;
+  --bg-card: #0f172a;
+  --bg-input: #0f172a;
+  --bg-elevated: #1e293b;
+  --border-default: #1e293b;
+}
+
+body {
+  font-family: 'Cairo', sans-serif;
+  color: var(--text-700);
+  background-color: var(--bg-page);
+  transition: var(--transition-theme);
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-elevated); }
+::-webkit-scrollbar-thumb { background: var(--text-300); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-primary-light); }
+::-webkit-scrollbar-corner { background: var(--bg-elevated); }
+
+.dark :where(input, textarea, select) {
+  color: var(--text-700);
+  background: var(--bg-input);
+}
+.dark :where(input, textarea, select)::placeholder {
+  color: var(--text-500);
+}
+
+.dark :where(.text-gray-950) { color: var(--text-50); }
+.dark :where(.text-gray-900) { color: var(--text-900); }
+.dark :where(.text-gray-800) { color: var(--text-800); }
+.dark :where(.text-gray-700) { color: var(--text-700); }
+.dark :where(.text-gray-600) { color: var(--text-600); }
+.dark :where(.text-gray-500) { color: var(--text-500); }
+.dark :where(.text-gray-400) { color: var(--text-400); }
+.dark :where(.text-gray-300) { color: var(--text-300); }
+.dark :where(.text-slate-600) { color: var(--text-500); }
+.dark :where(.text-slate-500) { color: var(--text-400); }
+
+.dark :where(.bg-white) { background-color: var(--bg-card); }
+.dark :where(.bg-gray-50) { background-color: var(--bg-elevated); }
+.dark :where(.border-gray-100) { border-color: var(--border-default); }
+.dark :where(.border-gray-200) { border-color: var(--border-default); }
+
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 2px;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 2px;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 2px;
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(99, 102, 241, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow-soft {
+  0%, 100% { box-shadow: 0 0 6px rgba(245, 158, 11, 0.3), 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+  50% { box-shadow: 0 0 24px rgba(245, 158, 11, 0.55), 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: var(--text-300); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-primary-light); }
+.custom-scrollbar { scrollbar-width: thin; scrollbar-color: var(--text-300) transparent; }
+.animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-glow { animation: glow 2s ease-in-out infinite; }
+.animate-fade-in-up { animation: fadeInUp 0.4s ease-out; }
+.animate-glow-soft { animation: glow-soft 4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
