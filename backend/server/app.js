@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { initializeSchema } from './db.js';
 import { errorHandler } from './middleware/errorHandler.js';
-import { authMiddleware } from './middleware/auth.js';
+import { authMiddleware } from './middleware/Auth.js';
 
 import settingsRouter from './routes/settings.js';
 import productsRouter from './routes/products.js';
@@ -19,7 +19,7 @@ import importRouter from './routes/import.js';
 import checkpointRouter from './routes/checkpoints.js';
 import easyOrdersRouter from './routes/easyOrders.js';
 import customersRouter from './routes/customers.js';
-import authRouter from './routes/auth.js';
+import authRouter from './routes/Auth.js';
 
 const app = express();
 
