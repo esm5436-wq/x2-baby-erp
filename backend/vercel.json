@@ -5,6 +5,7 @@
   "routes": [
     { "src": "/api/testexpress", "dest": "/api/testexpress.js" },
     { "src": "/api/test", "dest": "/api/test.js" },
+    { "src": "/api/testapp", "dest": "/api/testapp.js" },
     { "src": "/api/(.*)", "dest": "/api/index.js" }
   ]
 }
