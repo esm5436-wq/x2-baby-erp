@@ -686,22 +686,7 @@ const App: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const [pushUndo, setPushUndo] = useState<(id: number) => void>(() => () => {});
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-sm font-bold text-gray-400">جاري التحقق من الحساب...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
-
-  // State Initialization
+  // All hooks MUST be declared unconditionally (Rules of Hooks)
   const [state, setState] = useState<AppState>({
     products: [],
     orders: [],
@@ -749,8 +734,6 @@ const App: React.FC = () => {
     setThemeReady(true);
   }, []);
 
-
-
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
@@ -762,6 +745,7 @@ const App: React.FC = () => {
   }, [darkMode]);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     fetch(`${API_BASE}/state`)
       .then(res => res.json())
       .then(data => {
@@ -810,7 +794,22 @@ const App: React.FC = () => {
       })
       .catch(err => console.error("Failed to fetch state:", err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [isAuthenticated]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-sm font-bold text-gray-400">جاري التحقق من الحساب...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
 
   const showNotification = (message: string, type: 'success' | 'error') => {
     setNotification({ message, type });
