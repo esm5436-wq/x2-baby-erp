@@ -449,6 +449,19 @@
   transform: scale(0.98);
 }
 
+/* bg-primary (import button) — MD3 filled */
+[data-theme="md3"] .bg-primary {
+  background-color: var(--md3-primary) !important;
+  color: var(--md3-on-primary) !important;
+  border-radius: 20px !important;
+  font-weight: 600 !important;
+  box-shadow: var(--md3-elevation-0) !important;
+}
+[data-theme="md3"] .bg-primary:hover {
+  box-shadow: var(--md3-elevation-1) !important;
+  opacity: 0.92 !important;
+}
+
 /* ─── Sidebar ─── */
 [data-theme="md3"] nav.fixed.right-0 {
   background-color: var(--md3-surface-container-low) !important;
@@ -853,6 +866,7 @@
 }
 
 /* ─── TOGGLE SWITCHES ─── */
+[data-theme="md3"] [class*="relative"][class*="w-10"][class*="h-6"],
 [data-theme="md3"] [class*="relative"][class*="w-11"][class*="h-6"],
 [data-theme="md3"] [class*="relative"][class*="w-12"][class*="h-6"] {
   border-radius: 20px !important;
@@ -954,6 +968,129 @@
 [data-theme="md3"] td button[class*="text-red"] {
   border-radius: 8px !important;
   padding: 4px 8px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MD3 Enhanced — Inventory Page Refinements
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Dark primary buttons (bg-gray-900, bg-slate-700) — MD3 filled tonal */
+[data-theme="md3"] .bg-gray-900,
+[data-theme="md3"] .bg-slate-700 {
+  background-color: var(--md3-primary-container) !important;
+  color: var(--md3-on-primary-container) !important;
+  border-radius: 20px !important;
+  font-weight: 600 !important;
+  box-shadow: var(--md3-elevation-0) !important;
+  transition: box-shadow 200ms ease, opacity 200ms ease !important;
+}
+[data-theme="md3"] .bg-gray-900:hover,
+[data-theme="md3"] .bg-slate-700:hover {
+  box-shadow: var(--md3-elevation-1) !important;
+  opacity: 0.92 !important;
+}
+
+/* Outline/ghost action buttons (export, import) */
+[data-theme="md3"] [class*="bg-accent/10"] {
+  background-color: color-mix(in oklch, var(--md3-primary) 12%, transparent) !important;
+  color: var(--md3-primary) !important;
+  border-color: color-mix(in oklch, var(--md3-primary) 25%, transparent) !important;
+}
+[data-theme="md3"] [class*="bg-accent/10"]:hover {
+  background-color: var(--md3-primary) !important;
+  color: var(--md3-on-primary) !important;
+}
+
+/* Status badges on cards — MD3 filled style */
+[data-theme="md3"] [class*="rounded-full"][class*="bg-red-500"],
+[data-theme="md3"] [class*="rounded-full"][class*="bg-amber-500"] {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Product card action buttons row */
+[data-theme="md3"] [class*="border-t"][class*="border-gray-50"] > button,
+[data-theme="md3"] [class*="border-t"][class*="border-slate-800"] > button,
+[data-theme="md3"] [class*="border-t"][class*="border-gray-50"] > a {
+  border-radius: 20px !important;
+  font-weight: 600 !important;
+}
+[data-theme="md3"] [class*="border-t"][class*="border-gray-50"] > button[class*="text-accent"]:hover {
+  background-color: color-mix(in oklch, var(--md3-primary) 12%, transparent) !important;
+}
+[data-theme="md3"] [class*="border-t"][class*="border-gray-50"] > button[class*="text-red"]:hover {
+  background-color: color-mix(in oklch, var(--md3-error) 12%, transparent) !important;
+}
+[data-theme="md3"] [class*="border-t"][class*="border-gray-50"] > a[class*="text-blue"]:hover {
+  background-color: color-mix(in oklch, var(--md3-primary) 12%, transparent) !important;
+}
+
+/* Product card select checkbox — MD3 checkbox style */
+[data-theme="md3"] [class*="rounded-full"][class*="bg-white/80"] {
+  background-color: var(--md3-surface-container-highest) !important;
+  color: var(--md3-outline) !important;
+}
+[data-theme="md3"] [class*="rounded-full"][class*="bg-accent"][class*="text-white"] {
+  background-color: var(--md3-primary) !important;
+  color: var(--md3-on-primary) !important;
+}
+
+/* Category badge on card */
+[data-theme="md3"] [class*="bg-white/95"][class*="border"][class*="rounded-2xl"] {
+  background-color: var(--md3-surface-container-low) !important;
+  border-color: var(--md3-outline-variant) !important;
+  color: var(--md3-on-surface) !important;
+}
+
+/* Stats bar — MD3 surface-container card */
+[data-theme="md3"] [class*="rounded-[32px]"][class*="bg-white"][class*="border"][class*="shadow-sm"] {
+  background-color: var(--md3-surface-container-low) !important;
+  border-color: var(--md3-outline-variant) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--md3-elevation-0) !important;
+}
+
+/* Stats dividers */
+[data-theme="md3"] [class*="bg-gray-100"][class*="hidden"][class*="md:block"],
+[data-theme="md3"] [class*="bg-slate-800"][class*="hidden"][class*="md:block"] {
+  background-color: var(--md3-outline-variant) !important;
+}
+
+/* Floating batch action bar */
+[data-theme="md3"] [class*="rounded-[40px]"][class*="shadow-2xl"] {
+  border-radius: 16px !important;
+  box-shadow: var(--md3-elevation-3) !important;
+  border-color: var(--md3-outline-variant) !important;
+}
+
+/* Tag chips on product cards */
+[data-theme="md3"] [class*="bg-gray-50"][class*="rounded-lg"][class*="border"][class*="text-gray-500"],
+[data-theme="md3"] [class*="bg-slate-800"][class*="rounded-lg"][class*="border"] {
+  background-color: var(--md3-surface-container-highest) !important;
+  color: var(--md3-on-surface-variant) !important;
+  border-color: var(--md3-outline-variant) !important;
+}
+
+/* Profit badge */
+[data-theme="md3"] [class*="bg-emerald-50"][class*="rounded-xl"] {
+  background-color: var(--md3-success-container) !important;
+  color: var(--md3-on-success-container) !important;
+}
+[data-theme="md3"] [class*="bg-red-50"][class*="rounded-xl"] {
+  background-color: var(--md3-error-container) !important;
+  color: var(--md3-on-error-container) !important;
+}
+
+/* Supplier tag on card */
+[data-theme="md3"] [class*="bg-indigo-50"][class*="rounded-lg"] {
+  background-color: var(--md3-primary-container) !important;
+  color: var(--md3-on-primary-container) !important;
+}
+
+/* ─── IMAGE GALLERY CONTAINER ─── */
+[data-theme="md3"] [class*="bg-gray-50"][class*="dark:bg-slate-800"][class*="rounded"][class*="overflow-hidden"] {
+  background-color: var(--md3-surface-container) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
