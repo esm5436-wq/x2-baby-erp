@@ -21,11 +21,11 @@ import EasyOrdersPanel from './components/EasyOrdersPanel';
 import InstallGuideModal from './components/InstallGuideModal';
 import { UndoRedoProvider, useUndoRedo } from './contexts/UndoRedoContext';
 import { useAuth } from './contexts/AuthContext';
+import { useTheme } from './contexts/ThemeContext';
 import { LogOut } from 'lucide-react';
 import LoginPage from './components/LoginPage';
 import * as XLSX from 'xlsx';
-
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+import { API_BASE } from './lib/api';
 
 const MainLayout: React.FC<{
   state: AppState;
@@ -73,6 +73,8 @@ const MainLayout: React.FC<{
 }) => {
   const location = useLocation();
   const { logout } = useAuth();
+  const { uiTheme } = useTheme();
+  const isMD3 = uiTheme === 'md3';
   const toggleDarkMode = () => setDarkMode(!darkMode);
 
   const [sidebarWidth, setSidebarWidth] = useState(() => {
@@ -141,7 +143,12 @@ const MainLayout: React.FC<{
   const [toastProgress, setToastProgress] = useState(100);
   const [showInstallModal, setShowInstallModal] = useState(false);
 
-  const isMobile = typeof window !== 'undefined' && (window.innerWidth < 900 || 'ontouchstart' in window);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && (window.innerWidth < 900 || 'ontouchstart' in window));
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 900 || 'ontouchstart' in window);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     // Show toast on mobile always; on desktop only when beforeinstallprompt fires
@@ -204,7 +211,9 @@ const MainLayout: React.FC<{
   }, [setOnRefreshState, refreshAppState]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-500 overflow-x-hidden pb-16 md:pb-0 transition-[padding-right] duration-150 ease-out"
+    <div className={`min-h-screen flex transition-colors duration-500 overflow-x-hidden pb-20 md:pb-0 transition-[padding-right] duration-150 ease-out ${
+      isMD3 ? 'bg-[var(--md3-background)]' : 'bg-slate-50 dark:bg-slate-950'
+    }`}
       style={{ paddingRight: isLg ? 'var(--sidebar-width, 256px)' : undefined }}>
       <AIAssistant 
         state={state} 
@@ -320,7 +329,11 @@ const MainLayout: React.FC<{
         initial={{ x: 300 }}
         animate={{ x: 0 }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className="fixed right-0 top-0 bottom-0 bg-white dark:bg-slate-900 border-l border-gray-100 dark:border-slate-800 hidden lg:flex flex-col p-6 z-50"
+        className={`fixed right-0 top-0 bottom-0 hidden lg:flex flex-col z-50 ${
+          isMD3 
+            ? 'bg-[var(--md3-surface-container)] shadow-[var(--md3-elevation-1)] p-4'
+            : 'bg-white dark:bg-slate-900 border-l border-gray-100 dark:border-slate-800 p-6'
+        }`}
         style={{ width: sidebarWidth }}
       >
         <div className="flex-shrink-0 mb-4">
@@ -376,7 +389,10 @@ const MainLayout: React.FC<{
             >
               <NavLink 
                 to={link.to} 
-                className={({ isActive }) => `flex items-center p-3 rounded-xl transition-all font-bold ${isCollapsed ? 'justify-center gap-0 [&>svg]:scale-125' : 'gap-3'} ${isActive ? `${link.color} shadow-sm scale-105` : 'text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:scale-[1.02]'}`}
+                className={({ isActive }) => isMD3
+                  ? `flex items-center py-3 px-4 transition-all font-semibold ${isCollapsed ? 'justify-center gap-0 [&>svg]:scale-125' : 'gap-3'} ${isActive ? 'bg-[var(--md3-secondary-container)] text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)] hover:bg-[var(--md3-surface-container-highest)]'}`
+                  : `flex items-center p-3 rounded-xl transition-all font-bold ${isCollapsed ? 'justify-center gap-0 [&>svg]:scale-125' : 'gap-3'} ${isActive ? `${link.color} shadow-sm scale-105` : 'text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:scale-[1.02]'}`
+                }
               >
                 {link.icon}
                 <motion.span
@@ -414,7 +430,11 @@ const MainLayout: React.FC<{
 
           <button 
             onClick={toggleDarkMode}
-            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-3 rounded-xl bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-200 hover:opacity-90 transition-all font-bold text-sm`}
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-3 transition-all font-bold text-sm ${
+              isMD3 
+                ? 'rounded-[28px] bg-[var(--md3-surface-container-highest)] text-[var(--md3-on-surface)] hover:bg-[var(--md3-outline-variant)]'
+                : 'rounded-xl bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-200 hover:opacity-90'
+            }`}
           >
             <span className={`flex items-center ${isCollapsed ? 'gap-0 [&>svg]:scale-125' : 'gap-3'}`}>
               {darkMode ? <Sun size={20} className="text-yellow-500" /> : <Moon size={20} className="text-indigo-400" />}
@@ -430,7 +450,11 @@ const MainLayout: React.FC<{
 
           <button
             onClick={() => logout()}
-            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-3 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-all font-bold text-sm`}
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-3 transition-all font-bold text-sm ${
+              isMD3 
+                ? 'rounded-[28px] bg-[var(--md3-error-container)] text-[var(--md3-on-error-container)] hover:opacity-90'
+                : 'rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40'
+            }`}
           >
             <span className={`flex items-center ${isCollapsed ? 'gap-0 [&>svg]:scale-125' : 'gap-3'}`}>
               <LogOut size={20} />
@@ -461,38 +485,106 @@ const MainLayout: React.FC<{
         </div>
       </motion.nav>
 
-      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 flex md:hidden justify-around items-center px-4 z-50 shadow-lg">
-        <NavLink to="/" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`}>
-          <Package size={22} />
-          <span className="text-[10px]">المخزون</span>
+      <nav className={`fixed bottom-0 left-0 right-0 flex md:hidden justify-around items-center px-2 z-50 ${
+        isMD3 
+          ? 'h-20 bg-[var(--md3-surface-container)] shadow-[var(--md3-elevation-2)] pb-[env(safe-area-inset-bottom,0px)]'
+          : 'h-16 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 shadow-lg'
+      }`}>
+        <NavLink to="/" className={({ isActive }) => isMD3
+          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
+          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
+        }>
+          {({ isActive }) => (
+            <>
+              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
+              <Package size={22} />
+              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>المخزون</span>
+            </>
+          )}
         </NavLink>
-        <NavLink to="/orders" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`}>
-          <ShoppingBag size={22} />
-          <span className="text-[10px]">الطلبات</span>
+        <NavLink to="/orders" className={({ isActive }) => isMD3
+          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
+          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
+        }>
+          {({ isActive }) => (
+            <>
+              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
+              <ShoppingBag size={22} />
+              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>الطلبات</span>
+            </>
+          )}
         </NavLink>
-        <NavLink to="/purchases" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`}>
-          <ShoppingBag size={22} />
-          <span className="text-[10px]">مشتريات</span>
+        <NavLink to="/purchases" className={({ isActive }) => isMD3
+          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
+          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
+        }>
+          {({ isActive }) => (
+            <>
+              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
+              <ShoppingBag size={22} />
+              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>مشتريات</span>
+            </>
+          )}
         </NavLink>
-        <NavLink to="/accounts" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`}>
-          <BarChart3 size={22} />
-          <span className="text-[10px]">الحسابات</span>
+        <NavLink to="/accounts" className={({ isActive }) => isMD3
+          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
+          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
+        }>
+          {({ isActive }) => (
+            <>
+              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
+              <BarChart3 size={22} />
+              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>الحسابات</span>
+            </>
+          )}
         </NavLink>
-        <NavLink to="/contacts" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`}>
-          <Users size={22} />
-          <span className="text-[10px]">جهات</span>
+        <NavLink to="/contacts" className={({ isActive }) => isMD3
+          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
+          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
+        }>
+          {({ isActive }) => (
+            <>
+              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
+              <Users size={22} />
+              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>جهات</span>
+            </>
+          )}
         </NavLink>
-        <NavLink to="/customers" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`}>
-          <UserCheck size={22} />
-          <span className="text-[10px]">عملاء</span>
+        <NavLink to="/customers" className={({ isActive }) => isMD3
+          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
+          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
+        }>
+          {({ isActive }) => (
+            <>
+              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
+              <UserCheck size={22} />
+              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>عملاء</span>
+            </>
+          )}
         </NavLink>
-        <NavLink to="/activity-logs" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`}>
-          <Activity size={22} />
-          <span className="text-[10px]">نشاطات</span>
+        <NavLink to="/activity-logs" className={({ isActive }) => isMD3
+          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
+          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
+        }>
+          {({ isActive }) => (
+            <>
+              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
+              <Activity size={22} />
+              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>نشاطات</span>
+            </>
+          )}
         </NavLink>
-        <NavLink to="/settings" className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`}>
-          <SettingsIcon size={22} />
-          <span className="text-[10px]">البيانات</span>
+        <NavLink to="/settings" className={({ isActive }) => isMD3
+          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
+          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
+        }>
+          {({ isActive }) => (
+            <>
+              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
+              <SettingsIcon size={22} />
+              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>البيانات</span>
+            </>
+          )}
         </NavLink>
       </nav>
 
@@ -684,6 +776,7 @@ const MainLayout: React.FC<{
 
 const App: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
+  const { darkMode, toggleDarkMode } = useTheme();
   const [pushUndo, setPushUndo] = useState<(id: number) => void>(() => () => {});
 
   // All hooks MUST be declared unconditionally (Rules of Hooks)
@@ -717,32 +810,11 @@ const App: React.FC = () => {
 
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
   const [showWelcome, setShowWelcome] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('erp_theme') === 'dark');
   const [loading, setLoading] = useState(true);
   const [importProductsPreview, setImportProductsPreview] = useState<Product[] | null>(null);
   const [importOrdersPreview, setImportOrdersPreview] = useState<Order[] | null>(null);
-  const [themeReady, setThemeReady] = useState(false);
 
   const welcomeFileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    setThemeReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('erp_theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('erp_theme', 'light');
-    }
-  }, [darkMode]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -1044,11 +1116,10 @@ const App: React.FC = () => {
 
   return (
     <>
-    {themeReady ? (
     <HashRouter>
       <UndoRedoProvider>
       <MainLayout 
-        state={state} setState={setState} darkMode={darkMode} setDarkMode={setDarkMode} 
+        state={state} setState={setState} darkMode={darkMode} setDarkMode={toggleDarkMode} 
         loading={loading} notification={notification} showWelcome={showWelcome} 
         setShowWelcome={setShowWelcome} welcomeFileInputRef={welcomeFileInputRef} 
         handleWelcomeFileChange={handleWelcomeFileChange} handleUpdateOrderStatus={handleUpdateOrderStatus}
@@ -1066,14 +1137,6 @@ const App: React.FC = () => {
       />
       </UndoRedoProvider>
     </HashRouter>
-    ) : (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-sm font-bold text-gray-400">جاري تحميل النظام...</p>
-        </div>
-      </div>
-    )}
     </>
   );
 };
