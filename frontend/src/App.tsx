@@ -74,7 +74,7 @@ const MainLayout: React.FC<{
   const location = useLocation();
   const { logout } = useAuth();
   const { uiTheme } = useTheme();
-  const isMD3 = uiTheme === 'md3';
+  const isMD3 = uiTheme === 'material3';
   const toggleDarkMode = () => setDarkMode(!darkMode);
 
   const [sidebarWidth, setSidebarWidth] = useState(() => {
@@ -776,7 +776,7 @@ const MainLayout: React.FC<{
 
 const App: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
-  const { darkMode, toggleDarkMode } = useTheme();
+  const { darkMode, setDarkMode } = useTheme();
   const [pushUndo, setPushUndo] = useState<(id: number) => void>(() => () => {});
 
   // All hooks MUST be declared unconditionally (Rules of Hooks)
@@ -1119,7 +1119,7 @@ const App: React.FC = () => {
     <HashRouter>
       <UndoRedoProvider>
       <MainLayout 
-        state={state} setState={setState} darkMode={darkMode} setDarkMode={toggleDarkMode} 
+        state={state} setState={setState} darkMode={darkMode} setDarkMode={setDarkMode} 
         loading={loading} notification={notification} showWelcome={showWelcome} 
         setShowWelcome={setShowWelcome} welcomeFileInputRef={welcomeFileInputRef} 
         handleWelcomeFileChange={handleWelcomeFileChange} handleUpdateOrderStatus={handleUpdateOrderStatus}

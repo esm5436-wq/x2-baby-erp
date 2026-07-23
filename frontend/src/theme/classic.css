@@ -1,0 +1,88 @@
+/* ═══════════════════════════════════════════════════════════════
+   Classic Theme Tokens
+   Current ERP design system - unchanged
+   ═══════════════════════════════════════════════════════════════ */
+
+:root,
+[data-theme="classic"] {
+  --color-primary: #C1DBFD;
+  --color-primary-dark: #8B9DC3;
+  --color-primary-light: #E8F0FE;
+  --color-secondary: #F3D0D0;
+  --color-secondary-dark: #E8B4B4;
+  --color-secondary-light: #FDE8E8;
+  --color-accent: #6366f1;
+  --color-accent-light: #818cf8;
+  --color-accent-dark: #4f46e5;
+
+  --text-900: #0f172a;
+  --text-800: #1e293b;
+  --text-700: #334155;
+  --text-600: #475569;
+  --text-500: #64748b;
+  --text-400: #94a3b8;
+  --text-300: #cbd5e1;
+  --text-200: #e2e8f0;
+  --text-100: #f1f5f9;
+  --text-50: #f8fafc;
+
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-input: #ffffff;
+  --bg-elevated: #f1f5f9;
+
+  --border-default: #e2e8f0;
+
+  --blob-1: rgba(193, 219, 253, 0.45);
+  --blob-2: rgba(243, 208, 208, 0.35);
+  --blob-3: rgba(99, 102, 241, 0.25);
+  --pattern-opacity: 0.12;
+  --mesh-1: rgba(193, 219, 253, 0.20);
+  --mesh-2: rgba(243, 208, 208, 0.15);
+  --mesh-3: rgba(99, 102, 241, 0.08);
+
+  --transition-theme: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Classic Dark Theme
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="classic"].dark,
+.dark {
+  --color-primary: #8B9DC3;
+  --color-primary-dark: #6B8FC2;
+  --color-primary-light: #1A2332;
+  --color-secondary: #E8B4B4;
+  --color-secondary-dark: #D49999;
+  --color-secondary-light: #2A1A1A;
+  --color-accent: #818cf8;
+  --color-accent-light: #a5b4fc;
+  --color-accent-dark: #6366f1;
+
+  --text-900: #f8fafc;
+  --text-800: #f1f5f9;
+  --text-700: #e2e8f0;
+  --text-600: #cbd5e1;
+  --text-500: #94a3b8;
+  --text-400: #64748b;
+  --text-300: #475569;
+  --text-200: #334155;
+  --text-100: #1e293b;
+  --text-50: #0f172a;
+
+  --bg-page: #020617;
+  --bg-card: #0f172a;
+  --bg-input: #0f172a;
+  --bg-elevated: #1e293b;
+
+  --border-default: #1e293b;
+
+  --blob-1: rgba(139, 157, 195, 0.35);
+  --blob-2: rgba(232, 180, 180, 0.25);
+  --blob-3: rgba(129, 140, 248, 0.20);
+  --pattern-opacity: 0.10;
+  --mesh-1: rgba(139, 157, 195, 0.15);
+  --mesh-2: rgba(232, 180, 180, 0.10);
+  --mesh-3: rgba(129, 140, 248, 0.06);
+}
