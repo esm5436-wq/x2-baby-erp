@@ -1,0 +1,91 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e53]:
+    - button "المساعد الذكي" [ref=f1e54] [cursor=pointer]
+    - navigation [ref=f1e58]:
+      - generic [ref=f1e60]:
+        - img "Logo" [ref=f1e301]
+        - generic [ref=f1e65]:
+          - heading "X2 BABY" [level=1] [ref=f1e66]
+          - paragraph [ref=f1e67]: الجودة، الثقة، والأمان
+          - img "Slogan Design" [ref=f1e303]
+      - generic [ref=f1e68]:
+        - link "المخزون" [ref=f1e70] [cursor=pointer]:
+          - /url: "#/"
+        - link "الطلبات" [ref=f1e77] [cursor=pointer]:
+          - /url: "#/orders"
+        - link "المشتريات" [ref=f1e83] [cursor=pointer]:
+          - /url: "#/purchases"
+        - link "الحسابات والمالية" [ref=f1e89] [cursor=pointer]:
+          - /url: "#/accounts"
+        - link "جهات الاتصال" [ref=f1e94] [cursor=pointer]:
+          - /url: "#/contacts"
+        - link "العملاء" [ref=f1e102] [cursor=pointer]:
+          - /url: "#/customers"
+        - link "سجل النشاطات" [ref=f1e109] [cursor=pointer]:
+          - /url: "#/activity-logs"
+        - link "Easy Orders" [active] [ref=f1e114] [cursor=pointer]:
+          - /url: "#/easy-orders"
+        - link "إدارة البيانات" [ref=f1e120] [cursor=pointer]:
+          - /url: "#/settings"
+      - generic [ref=f1e125]:
+        - button "الوضع النهاري" [ref=f1e130] [cursor=pointer]
+        - button "تسجيل الخروج" [ref=f1e139] [cursor=pointer]
+    - main [ref=f1e152]:
+      - generic [ref=f1e3375]:
+        - heading "Easy Orders - التكامل" [level=1] [ref=f1e3380]
+        - generic [ref=f1e3381]:
+          - generic [ref=f1e3382]: 🟢 مفعل
+          - generic [ref=f1e3383]: 📦 0 منتج مصدر
+          - generic [ref=f1e3384]: ⏳ 0 طلب قيد المراجعة
+        - generic [ref=f1e3385]:
+          - button "الإعدادات" [ref=f1e3386] [cursor=pointer]
+          - button "تصدير المنتجات" [ref=f1e3390] [cursor=pointer]
+          - button "الطلبات الواردة" [ref=f1e3394] [cursor=pointer]
+          - button "سجل المزامنة" [ref=f1e3398] [cursor=pointer]
+        - generic [ref=f1e3402]:
+          - generic [ref=f1e3403]:
+            - heading "إعدادات API" [level=2] [ref=f1e3404]
+            - generic [ref=f1e3408]:
+              - text: مفتاح API (Easy Orders)
+              - generic [ref=f1e3409]:
+                - textbox "51e08305-dfce-4b2d-a62a-9aa04037e543" [ref=f1e3410]
+                - button [ref=f1e3411] [cursor=pointer]
+            - generic [ref=f1e3415]:
+              - generic [ref=f1e3416]:
+                - heading "تفعيل التكامل" [level=4] [ref=f1e3417]
+                - paragraph [ref=f1e3418]: تشغيل أو إيقاف الاتصال بـ Easy Orders
+              - button [ref=f1e3419] [cursor=pointer]
+            - generic [ref=f1e3421]:
+              - text: رابط Webhook (للمزامنة الفورية)
+              - generic [ref=f1e3422]:
+                - textbox [ref=f1e3423]: https://x2-baby-erp-backend.vercel.app/api/easy-orders/webhook
+                - button "نسخ" [ref=f1e3424] [cursor=pointer]
+              - paragraph [ref=f1e3425]: انسخ هذا الرابط وأضفه في إعدادات Easy Orders (Public API ← Webhooks ← Create Webhook). الطلبات الجديدة تصل فوراً.
+            - generic [ref=f1e3426]:
+              - text: Secret Key (من Easy Orders — حقل secret في إعدادات Webhook)
+              - textbox "أدخل Secret key من إعدادات Webhook في Easy Orders" [ref=f1e3427]: Q21JU3l5amxTRw==
+              - paragraph [ref=f1e3428]: سري للغاية — يستخدم للتحقق من أن الطلبات واردة من Easy Orders فعلاً.
+            - generic [ref=f1e3429]:
+              - text: مفتاح ImgBB API (لرفع الصور - مجاني)
+              - textbox "أدخل مفتاح ImgBB من https://api.imgbb.com" [ref=f1e3430]: 3072a0fe3887f2df6f16b6f19a30a7a2
+              - paragraph [ref=f1e3431]: مطلوب فقط لرفع الصور للمتجر. يمكنك الحصول على مفتاح مجاني من موقع ImgBB.
+            - generic [ref=f1e3432]:
+              - generic [ref=f1e3433]:
+                - heading "تأكيد تلقائي" [level=4] [ref=f1e3434]
+                - paragraph [ref=f1e3435]: تجاوز مراجعة الطلبات وإدراجها مباشرة (إلغاء تفعيل الـ Staging)
+              - button [ref=f1e3436] [cursor=pointer]
+          - generic [ref=f1e3438]:
+            - heading "إعدادات تصدير المنتجات" [level=2] [ref=f1e3439]
+            - generic [ref=f1e3444]:
+              - generic [ref=f1e3445]:
+                - heading "تتبع المخزون" [level=4] [ref=f1e3446]
+                - paragraph [ref=f1e3447]: track_stock في Easy Orders
+              - button [ref=f1e3448] [cursor=pointer]
+            - generic [ref=f1e3450]:
+              - text: نسبة سعر العرض (%)
+              - spinbutton [ref=f1e3451]: "85"
+              - paragraph [ref=f1e3452]: "سعر العرض = سعر المنتج × (النسبة / 100). مثال: 85 يعني خصم 15%"
+          - generic [ref=f1e3453]:
+            - button "💾 حفظ الإعدادات" [ref=f1e3454] [cursor=pointer]
+            - button "اختبار الاتصال" [ref=f1e3455] [cursor=pointer]
+  - generic [ref=f1e1450]: "250"

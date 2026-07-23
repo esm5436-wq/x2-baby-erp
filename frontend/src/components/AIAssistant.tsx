@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { API_BASE } from '../lib/api';
 import * as XLSX from 'xlsx';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -258,7 +259,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
     setIsLoading(true);
 
     try {
-      const endpoint = `/api/ai/chat`;
+      const endpoint = `${API_BASE}/ai/chat`;
 
       const response = await fetch(endpoint, {
         method: 'POST',

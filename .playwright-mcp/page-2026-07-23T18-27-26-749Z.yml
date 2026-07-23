@@ -1,0 +1,16 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - heading "X2 BABY ERP" [level=1] [ref=e11]
+    - paragraph [ref=e12]: نظام إدارة المخزون والمبيعات
+  - generic [ref=e13]:
+    - heading "تسجيل الدخول" [level=2] [ref=e14]
+    - generic [ref=e27]: اسم المستخدم أو كلمة المرور غير صحيحة
+    - generic [ref=e15]:
+      - generic [ref=e16]: اسم المستخدم
+      - textbox "أدخل اسم المستخدم" [ref=e17]: eslam
+    - generic [ref=e18]:
+      - generic [ref=e19]: كلمة المرور
+      - generic [ref=e20]:
+        - textbox "أدخل كلمة المرور" [ref=e21]: esm5436@
+        - button [ref=e22] [cursor=pointer]
+    - button "تسجيل الدخول" [ref=e26] [cursor=pointer]

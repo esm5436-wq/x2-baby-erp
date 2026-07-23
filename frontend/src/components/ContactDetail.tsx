@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { API_BASE } from '../lib/api';
 import { useUnsavedCheck } from '../hooks/useUnsavedCheck';
 import { X, Building2, Phone, Mail, MapPin, Tag, Briefcase, Hash, FileText, Navigation, User, Edit2, Star, DollarSign, Package, Clock, Copy, Truck, Activity, ReceiptText } from 'lucide-react';
 import { FaWhatsapp, FaTelegram, FaFacebook, FaInstagram, FaTiktok, FaYoutube, FaTwitter, FaLinkedin, FaSnapchat, FaGlobe, FaLink } from 'react-icons/fa';
@@ -182,7 +183,7 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ contact, onClose, onEdit 
   useEffect(() => {
     setStats(null);
     setStatsLoading(true);
-    fetch(`/api/contacts/${contact.id}/stats`)
+    fetch(`${API_BASE}/contacts/${contact.id}/stats`)
       .then(r => r.json())
       .then(data => { setStats(data); setStatsLoading(false); })
       .catch(() => setStatsLoading(false));

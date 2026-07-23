@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Package, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
+import { API_BASE } from '../lib/api';
 
 const LoginPage: React.FC = () => {
   const { login } = useAuth();
@@ -10,6 +11,11 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [brand, setBrand] = useState<{ brandLogo?: string; brandName?: string; brandSlogan?: string }>({});
+
+  useEffect(() => {
+    fetch(`${API_BASE}/public/brand`).then(r => r.json()).then(setBrand).catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,11 +36,15 @@ const LoginPage: React.FC = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 transition-colors duration-500">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
-          <div className="w-24 h-24 bg-white dark:bg-slate-900 rounded-[32px] flex items-center justify-center mx-auto mb-6 shadow-xl ring-1 ring-gray-100 dark:ring-slate-800">
-            <Package size={40} className="text-accent" />
+          <div className="w-24 h-24 bg-white dark:bg-slate-900 rounded-[32px] flex items-center justify-center mx-auto mb-6 shadow-xl ring-1 ring-gray-100 dark:ring-slate-800 overflow-hidden">
+            {brand.brandLogo ? (
+              <img src={brand.brandLogo} alt="Logo" className="w-full h-full object-cover" />
+            ) : (
+              <Package size={40} className="text-accent" />
+            )}
           </div>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white">X2 BABY ERP</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold mt-2">نظام إدارة المخزون والمبيعات</p>
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white">{brand.brandName || 'X2 BABY'}</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold mt-2">{brand.brandSlogan || 'الجودة، الثقة، والأمان'}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-xl ring-1 ring-gray-100 dark:ring-slate-800 space-y-6">

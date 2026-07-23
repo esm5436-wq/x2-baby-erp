@@ -1,0 +1,54 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e3692]:
+    - button "المساعد الذكي" [ref=f1e3693] [cursor=pointer]
+    - navigation [ref=f1e3856]:
+      - generic [ref=f1e3857]:
+        - link "المخزون" [ref=f1e3858] [cursor=pointer]:
+          - /url: "#/"
+        - link "الطلبات" [ref=f1e3864] [cursor=pointer]:
+          - /url: "#/orders"
+        - link "المشتريات" [ref=f1e3869] [cursor=pointer]:
+          - /url: "#/purchases"
+        - link "الحسابات" [ref=f1e3874] [cursor=pointer]:
+          - /url: "#/accounts"
+        - generic [ref=f1e3878]:
+          - button "المزيد" [active] [ref=f1e3879] [cursor=pointer]
+          - generic [ref=f1e3893]:
+            - link "جهات الاتصال" [ref=f1e3894] [cursor=pointer]:
+              - /url: "#/contacts"
+            - link "العملاء" [ref=f1e3900] [cursor=pointer]:
+              - /url: "#/customers"
+            - link "النشاطات" [ref=f1e3905] [cursor=pointer]:
+              - /url: "#/activity-logs"
+            - link "الإعدادات" [ref=f1e3908] [cursor=pointer]:
+              - /url: "#/settings"
+            - button "الوضع النهاري" [ref=f1e3913] [cursor=pointer]
+            - button "تسجيل الخروج" [ref=f1e3920] [cursor=pointer]
+    - main [ref=f1e3787]:
+      - generic [ref=f1e3788]:
+        - generic [ref=f1e3789]:
+          - generic [ref=f1e3790]:
+            - heading [level=2] [ref=f1e3791]
+            - paragraph [ref=f1e3796]: إدارة الموردين وتوريدات المنتجات
+          - generic [ref=f1e3797]:
+            - button "تصدير Excel" [ref=f1e3798] [cursor=pointer]
+            - button "تصدير PDF" [ref=f1e3802] [cursor=pointer]
+            - button "تصدير ويب تفاعلي" [ref=f1e3807] [cursor=pointer]
+            - button "تصدير CSV" [ref=f1e3811] [cursor=pointer]
+            - button "تصدير JSON" [ref=f1e3815] [cursor=pointer]
+            - button "تسجيل" [ref=f1e3819] [cursor=pointer]
+        - generic [ref=f1e3821]:
+          - button [ref=f1e3885] [cursor=pointer]:
+            - heading "فلاتر وبحث" [level=2] [ref=f1e3887]
+          - generic [ref=f1e3839]:
+            - table [ref=f1e3840]:
+              - rowgroup [ref=f1e3841]:
+                - row [ref=f1e3891]:
+                  - columnheader "النوع / المورد" [ref=f1e3843]
+                  - columnheader "البيان / الفاتورة" [ref=f1e3844]
+                  - columnheader "التاريخ" [ref=f1e3845]
+                  - columnheader "المبلغ" [ref=f1e3849]
+                  - columnheader [ref=f1e3850]
+              - rowgroup
+            - paragraph [ref=f1e3855]: لا توجد عمليات تطابق البحث
+  - generic [ref=f1e1450]: "250"

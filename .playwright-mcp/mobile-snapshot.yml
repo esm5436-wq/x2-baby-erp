@@ -1,0 +1,556 @@
+- generic [ref=e57] [box=0,0,369,12517]:
+  - button "المساعد الذكي" [ref=e58] [cursor=pointer] [box=24,676,56,56]:
+    - img [ref=e59] [box=40,692,24,24]
+  - navigation [ref=e771] [box=0,748,369,64]:
+    - link "المخزون" [ref=e772] [cursor=pointer] [box=276,760,36,41]:
+      - /url: "#/"
+      - img [ref=e773] [box=283,760,22,22]
+      - generic [ref=e777] [box=276,786,36,15]: المخزون
+    - link "الطلبات" [ref=e778] [cursor=pointer] [box=164,760,30,41]:
+      - /url: "#/orders"
+      - img [ref=e779] [box=168,760,22,22]
+      - generic [ref=e782] [box=164,786,30,15]: الطلبات
+    - link "عملاء" [ref=e783] [cursor=pointer] [box=57,760,25,41]:
+      - /url: "#/customers"
+      - img [ref=e784] [box=59,760,22,22]
+      - generic [ref=e788] [box=57,786,25,15]: عملاء
+  - main [ref=e62] [box=0,0,369,12453]:
+    - generic [ref=e63] [box=16,16,337,12421]:
+      - generic [ref=e64] [box=16,16,337,110]:
+        - heading "المخزون المتوفر" [level=2] [ref=e65] [box=77,16,216,32]:
+          - img [ref=e67] [box=261,16,32,32]
+          - text: المخزون المتوفر
+        - generic [ref=e72] [box=16,72,337,54]:
+          - img [ref=e73] [box=317,89,20,20]
+          - textbox "ابحث عن منتج..." [ref=e76] [box=16,72,337,54]
+      - button "فلاتر وإحصائيات" [ref=e789] [cursor=pointer] [box=16,158,337,32]:
+        - img [ref=e790] [box=337,166,16,16]
+        - heading "فلاتر وإحصائيات" [level=2] [ref=e793] [box=44,158,285,32]
+        - img [ref=e795] [box=16,164,20,20]
+      - generic [ref=e160] [box=16,222,337,12119]:
+        - generic [ref=e161] [cursor=pointer] [box=16,222,337,528]:
+          - generic [ref=e162] [box=17,223,335,288]:
+            - img [ref=e163] [box=17,223,335,288]
+            - img [ref=e166] [box=310,245,20,20]
+            - generic [box=33,239,107,27]:
+              - generic [box=33,239,107,27]:
+                - img [box=116,247,12,12]
+                - text: مخزون منخفض
+          - generic [ref=e168] [box=17,511,335,238]:
+            - heading "سالوبت مواليد ديناصور قطن" [level=3] [ref=e169] [box=37,531,295,28]
+            - generic [ref=e170] [box=37,563,295,17]:
+              - generic [ref=e171] [box=278,563,54,17]: SKU-00016
+              - generic [ref=e172] [box=267,563,3,15]: "|"
+              - generic [ref=e173] [box=39,563,220,15]: "ID: b385be0a-05d9-4d4c-8d13-d0414d7ba261"
+            - generic [ref=e174] [box=37,591,295,56]:
+              - generic [ref=e175] [box=232,591,100,56]:
+                - generic [ref=e176] [box=232,591,100,32]: 350 ج.م
+                - generic [ref=e177] [box=232,627,100,20]: تكلفة 149.4 ج.م
+              - generic [ref=e178] [box=37,591,126,54]:
+                - generic [ref=e179] [box=37,591,56,24]: 2 قطعة
+                - generic [ref=e180] [box=37,617,126,28]: +200.6 ج.م (57%)
+            - generic [ref=e181] [box=37,659,295,70]:
+              - generic [ref=e182] [box=206,672,126,16]:
+                - img [ref=e183] [box=316,672,16,16]
+                - text: 9 متغير
+                - generic [ref=e187] [box=206,672,59,16]: (9 منخفض)
+              - generic [ref=e188] [box=37,704,295,25]: ٩ يونيو ٢٠٢٦
+        - generic [ref=e189] [cursor=pointer] [box=16,774,337,528]:
+          - generic [ref=e190] [box=17,775,335,288]:
+            - img [ref=e191] [box=17,775,335,288]
+            - img [ref=e194] [box=310,797,20,20]
+            - generic [box=33,791,107,27]:
+              - generic [box=33,791,107,27]:
+                - img [box=116,799,12,12]
+                - text: مخزون منخفض
+          - generic [ref=e196] [box=17,1063,335,238]:
+            - heading "سالوبيت قطيفه للبيبي - kitten" [level=3] [ref=e197] [box=37,1083,295,28]
+            - generic [ref=e198] [box=37,1115,295,17]:
+              - generic [ref=e199] [box=278,1115,54,17]: SKU-00012
+              - generic [ref=e200] [box=267,1115,3,15]: "|"
+              - generic [ref=e201] [box=39,1115,220,15]: "ID: a1719c34-e190-4074-a94a-88e28a572a2f"
+            - generic [ref=e202] [box=37,1143,295,56]:
+              - generic [ref=e203] [box=232,1143,100,56]:
+                - generic [ref=e204] [box=232,1143,100,32]: 349 ج.م
+                - generic [ref=e205] [box=232,1179,100,20]: تكلفة 209.4 ج.م
+              - generic [ref=e206] [box=37,1143,126,54]:
+                - generic [ref=e207] [box=37,1143,65,24]: 10 قطعة
+                - generic [ref=e208] [box=37,1169,126,28]: +139.6 ج.م (40%)
+            - generic [ref=e209] [box=37,1211,295,70]:
+              - generic [ref=e210] [box=206,1224,126,16]:
+                - img [ref=e211] [box=316,1224,16,16]
+                - text: 9 متغير
+                - generic [ref=e215] [box=206,1224,59,16]: (9 منخفض)
+              - generic [ref=e216] [box=37,1256,295,25]: ٢ يونيو ٢٠٢٦
+        - generic [ref=e217] [cursor=pointer] [box=16,1326,337,556]:
+          - generic [ref=e218] [box=17,1327,335,288]:
+            - img [ref=e219] [box=17,1327,335,288]
+            - img [ref=e222] [box=310,1349,20,20]
+            - generic [box=33,1343,107,27]:
+              - generic [box=33,1343,107,27]:
+                - img [box=116,1351,12,12]
+                - text: مخزون منخفض
+          - generic [ref=e224] [box=17,1615,335,266]:
+            - heading "بدي بيبي كم الوان مطبوع بكباسين - Variety" [level=3] [ref=e225] [box=37,1635,295,55]
+            - generic [ref=e226] [box=37,1694,295,17]:
+              - generic [ref=e227] [box=278,1694,54,17]: SKU-00004
+              - generic [ref=e228] [box=267,1695,3,15]: "|"
+              - generic [ref=e229] [box=39,1695,220,15]: "ID: 34bd0cca-0558-4ac0-88ba-288b67a90ddf"
+            - generic [ref=e230] [box=37,1723,295,56]:
+              - generic [ref=e231] [box=251,1723,81,56]:
+                - generic [ref=e232] [box=251,1723,81,32]: 120 ج.م
+                - generic [ref=e233] [box=251,1759,81,20]: تكلفة 72 ج.م
+              - generic [ref=e234] [box=37,1723,107,54]:
+                - generic [ref=e235] [box=37,1723,65,24]: 24 قطعة
+                - generic [ref=e236] [box=37,1749,107,28]: +48 ج.م (40%)
+            - generic [ref=e237] [box=37,1791,295,70]:
+              - generic [ref=e238] [box=193,1804,139,16]:
+                - img [ref=e239] [box=316,1804,16,16]
+                - text: 36 متغير
+                - generic [ref=e243] [box=193,1804,65,16]: (32 منخفض)
+              - generic [ref=e244] [box=37,1836,295,25]: ٢ يونيو ٢٠٢٦
+        - generic [ref=e245] [cursor=pointer] [box=16,1906,337,512]:
+          - generic [ref=e246] [box=17,1907,335,288]:
+            - img [ref=e247] [box=17,1907,335,288]
+            - img [ref=e250] [box=310,1929,20,20]
+          - generic [ref=e252] [box=17,2195,335,222]:
+            - heading "سالوبت داخليه بكابسين" [level=3] [ref=e253] [box=37,2215,295,28]
+            - generic [ref=e254] [box=37,2246,295,17]:
+              - generic [ref=e255] [box=278,2246,54,17]: SKU-00010
+              - generic [ref=e256] [box=267,2247,3,15]: "|"
+              - generic [ref=e257] [box=39,2247,220,15]: "ID: 9217cca5-7991-4ae2-98f1-d4ee27f54e0e"
+            - generic [ref=e258] [box=37,2275,295,56]:
+              - generic [ref=e259] [box=240,2275,92,56]:
+                - generic [ref=e260] [box=240,2275,92,32]: 99 ج.م
+                - generic [ref=e261] [box=240,2311,92,20]: تكلفة 59.4 ج.م
+              - generic [ref=e262] [box=37,2275,118,54]:
+                - generic [ref=e263] [box=37,2275,65,24]: 10 قطعة
+                - generic [ref=e264] [box=37,2301,118,28]: +39.6 ج.م (40%)
+            - generic [ref=e266] [box=271,2356,61,16]:
+              - img [ref=e267] [box=316,2356,16,16]
+              - text: 3 متغير
+        - generic [ref=e272] [cursor=pointer] [box=16,2442,337,512]:
+          - generic [ref=e273] [box=17,2443,335,288]:
+            - img [ref=e274] [box=17,2443,335,288]
+            - img [ref=e277] [box=310,2465,20,20]
+            - generic [box=33,2459,93,27]:
+              - generic [box=33,2459,93,27]:
+                - img [box=102,2466,12,12]
+                - text: نفذ المخزون
+          - generic [ref=e279] [box=17,2731,335,222]:
+            - heading "سالوبيت وتر بروف - Pink doll" [level=3] [ref=e280] [box=37,2751,295,28]
+            - generic [ref=e281] [box=37,2782,295,17]:
+              - generic [ref=e282] [box=278,2782,54,17]: SKU-00003
+              - generic [ref=e283] [box=267,2783,3,15]: "|"
+              - generic [ref=e284] [box=39,2783,220,15]: "ID: 346bd91e-aa63-463e-92b3-dc94c54f8b3a"
+            - generic [ref=e285] [box=37,2811,295,56]:
+              - generic [ref=e286] [box=232,2811,100,56]:
+                - generic [ref=e287] [box=232,2811,100,32]: 449 ج.م
+                - generic [ref=e288] [box=232,2847,100,20]: تكلفة 269.4 ج.م
+              - generic [ref=e289] [box=37,2811,126,54]:
+                - generic [ref=e290] [box=37,2811,56,24]: 0 قطعة
+                - generic [ref=e291] [box=37,2837,126,28]: +179.6 ج.م (40%)
+            - generic [ref=e293] [box=206,2892,126,16]:
+              - img [ref=e294] [box=316,2892,16,16]
+              - text: 3 متغير
+              - generic [ref=e298] [box=206,2892,59,16]: (3 منخفض)
+        - generic [ref=e300] [cursor=pointer] [box=16,2978,337,512]:
+          - generic [ref=e301] [box=17,2979,335,288]:
+            - img [ref=e302] [box=17,2979,335,288]
+            - img [ref=e305] [box=310,3001,20,20]
+            - generic [box=33,2995,107,27]:
+              - generic [box=33,2995,107,27]:
+                - img [box=116,3002,12,12]
+                - text: مخزون منخفض
+          - generic [ref=e307] [box=17,3267,335,222]:
+            - heading "فستان قطة أرنب قطن" [level=3] [ref=e308] [box=37,3287,295,28]
+            - generic [ref=e309] [box=37,3318,295,17]:
+              - generic [ref=e310] [box=278,3318,54,17]: SKU-00011
+              - generic [ref=e311] [box=267,3319,3,15]: "|"
+              - generic [ref=e312] [box=39,3319,220,15]: "ID: 9b50711e-ce8d-40ee-96fd-e087404f6897"
+            - generic [ref=e313] [box=37,3347,295,56]:
+              - generic [ref=e314] [box=232,3347,100,56]:
+                - generic [ref=e315] [box=232,3347,100,32]: 249 ج.م
+                - generic [ref=e316] [box=232,3383,100,20]: تكلفة 149.4 ج.م
+              - generic [ref=e317] [box=37,3347,118,54]:
+                - generic [ref=e318] [box=37,3347,56,24]: 3 قطعة
+                - generic [ref=e319] [box=37,3373,118,28]: +99.6 ج.م (40%)
+            - generic [ref=e321] [box=206,3428,126,16]:
+              - img [ref=e322] [box=316,3428,16,16]
+              - text: 4 متغير
+              - generic [ref=e326] [box=206,3428,59,16]: (1 منخفض)
+        - generic [ref=e328] [cursor=pointer] [box=16,3514,337,512]:
+          - generic [ref=e329] [box=17,3515,335,288]:
+            - img [ref=e330] [box=17,3515,335,288]
+            - img [ref=e333] [box=310,3537,20,20]
+            - generic [box=33,3531,107,27]:
+              - generic [box=33,3531,107,27]:
+                - img [box=116,3538,12,12]
+                - text: مخزون منخفض
+          - generic [ref=e335] [box=17,3803,335,222]:
+            - heading "سالوبت قرش و حوت قطن" [level=3] [ref=e336] [box=37,3823,295,28]
+            - generic [ref=e337] [box=37,3854,295,17]:
+              - generic [ref=e338] [box=278,3854,54,17]: SKU-00008
+              - generic [ref=e339] [box=267,3855,3,15]: "|"
+              - generic [ref=e340] [box=39,3855,220,15]: "ID: 6770ca07-f720-4a85-b7e2-a608387a35b0"
+            - generic [ref=e341] [box=37,3883,295,56]:
+              - generic [ref=e342] [box=232,3883,100,56]:
+                - generic [ref=e343] [box=232,3883,100,32]: 249 ج.م
+                - generic [ref=e344] [box=232,3919,100,20]: تكلفة 149.4 ج.م
+              - generic [ref=e345] [box=37,3883,118,54]:
+                - generic [ref=e346] [box=37,3883,56,24]: 2 قطعة
+                - generic [ref=e347] [box=37,3909,118,28]: +99.6 ج.م (40%)
+            - generic [ref=e349] [box=206,3964,126,16]:
+              - img [ref=e350] [box=316,3964,16,16]
+              - text: 4 متغير
+              - generic [ref=e354] [box=206,3964,59,16]: (2 منخفض)
+        - generic [ref=e356] [cursor=pointer] [box=16,4050,337,512]:
+          - generic [ref=e357] [box=17,4051,335,288]:
+            - img [ref=e358] [box=17,4051,335,288]
+            - img [ref=e361] [box=310,4073,20,20]
+          - generic [ref=e363] [box=17,4339,335,222]:
+            - heading "سالوبت مواليد نمر قطن" [level=3] [ref=e364] [box=37,4359,295,28]
+            - generic [ref=e365] [box=37,4390,295,17]:
+              - generic [ref=e366] [box=278,4390,54,17]: SKU-00013
+              - generic [ref=e367] [box=267,4391,3,15]: "|"
+              - generic [ref=e368] [box=39,4391,220,15]: "ID: a79fb953-3f37-4dd7-8cfa-426d90055ea4"
+            - generic [ref=e369] [box=37,4419,295,56]:
+              - generic [ref=e370] [box=232,4419,100,56]:
+                - generic [ref=e371] [box=232,4419,100,32]: 249 ج.م
+                - generic [ref=e372] [box=232,4455,100,20]: تكلفة 149.4 ج.م
+              - generic [ref=e373] [box=37,4419,118,54]:
+                - generic [ref=e374] [box=37,4419,56,24]: 4 قطعة
+                - generic [ref=e375] [box=37,4445,118,28]: +99.6 ج.م (40%)
+            - generic [ref=e377] [box=271,4500,61,16]:
+              - img [ref=e378] [box=316,4500,16,16]
+              - text: 4 متغير
+        - generic [ref=e383] [cursor=pointer] [box=16,4586,337,512]:
+          - generic [ref=e384] [box=17,4587,335,288]:
+            - img [ref=e385] [box=17,4587,335,288]
+            - img [ref=e388] [box=310,4609,20,20]
+            - generic [box=33,4603,107,27]:
+              - generic [box=33,4603,107,27]:
+                - img [box=116,4610,12,12]
+                - text: مخزون منخفض
+          - generic [ref=e390] [box=17,4875,335,222]:
+            - heading "طقم مواليد قطن 3 قطع" [level=3] [ref=e391] [box=37,4895,295,28]
+            - generic [ref=e392] [box=37,4926,295,17]:
+              - generic [ref=e393] [box=278,4926,54,17]: SKU-00022
+              - generic [ref=e394] [box=267,4927,3,15]: "|"
+              - generic [ref=e395] [box=39,4927,220,15]: "ID: fcb796b6-91d8-45e0-b723-16cf167088c9"
+            - generic [ref=e396] [box=37,4955,295,56]:
+              - generic [ref=e397] [box=244,4955,89,56]:
+                - generic [ref=e398] [box=244,4955,89,32]: 295 ج.م
+                - generic [ref=e399] [box=244,4991,89,20]: تكلفة 177 ج.م
+              - generic [ref=e400] [box=37,4955,115,54]:
+                - generic [ref=e401] [box=37,4955,56,24]: 3 قطعة
+                - generic [ref=e402] [box=37,4981,115,28]: +118 ج.م (40%)
+            - generic [ref=e404] [box=206,5036,126,16]:
+              - img [ref=e405] [box=316,5036,16,16]
+              - text: 4 متغير
+              - generic [ref=e409] [box=206,5036,59,16]: (1 منخفض)
+        - generic [ref=e411] [cursor=pointer] [box=16,5122,337,512]:
+          - generic [ref=e412] [box=17,5123,335,288]:
+            - img [ref=e413] [box=17,5123,335,288]
+            - img [ref=e416] [box=310,5145,20,20]
+            - generic [box=33,5139,107,27]:
+              - generic [box=33,5139,107,27]:
+                - img [box=116,5146,12,12]
+                - text: مخزون منخفض
+          - generic [ref=e418] [box=17,5411,335,222]:
+            - heading "طقم مواليد قطعتين" [level=3] [ref=e419] [box=37,5431,295,28]
+            - generic [ref=e420] [box=37,5462,295,17]:
+              - generic [ref=e421] [box=278,5462,54,17]: SKU-00020
+              - generic [ref=e422] [box=267,5463,3,15]: "|"
+              - generic [ref=e423] [box=39,5463,220,15]: "ID: e0d0271d-60d4-4872-a0f2-23e8ae5b8e99"
+            - generic [ref=e424] [box=37,5491,295,56]:
+              - generic [ref=e425] [box=244,5491,89,56]:
+                - generic [ref=e426] [box=244,5491,89,32]: 225 ج.م
+                - generic [ref=e427] [box=244,5527,89,20]: تكلفة 135 ج.م
+              - generic [ref=e428] [box=37,5491,107,54]:
+                - generic [ref=e429] [box=37,5491,56,24]: 1 قطعة
+                - generic [ref=e430] [box=37,5517,107,28]: +90 ج.م (40%)
+            - generic [ref=e432] [box=206,5572,126,16]:
+              - img [ref=e433] [box=316,5572,16,16]
+              - text: 2 متغير
+              - generic [ref=e437] [box=206,5572,59,16]: (1 منخفض)
+        - generic [ref=e439] [cursor=pointer] [box=16,5658,337,540]:
+          - generic [ref=e440] [box=17,5659,335,288]:
+            - img [ref=e441] [box=17,5659,335,288]
+            - img [ref=e444] [box=310,5681,20,20]
+          - generic [ref=e446] [box=17,5947,335,250]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Ghazall" [level=3] [ref=e447] [box=37,5967,295,55]
+            - generic [ref=e448] [box=37,6026,295,17]:
+              - generic [ref=e449] [box=278,6026,54,17]: SKU-00018
+              - generic [ref=e450] [box=267,6026,3,15]: "|"
+              - generic [ref=e451] [box=39,6026,220,15]: "ID: dd5a3512-eb5c-49ec-9f92-9b4d8fe43989"
+            - generic [ref=e452] [box=37,6054,295,56]:
+              - generic [ref=e453] [box=232,6054,100,56]:
+                - generic [ref=e454] [box=232,6054,100,32]: 449 ج.م
+                - generic [ref=e455] [box=232,6090,100,20]: تكلفة 269.4 ج.م
+              - generic [ref=e456] [box=37,6054,126,54]:
+                - generic [ref=e457] [box=37,6054,56,24]: 3 قطعة
+                - generic [ref=e458] [box=37,6080,126,28]: +179.6 ج.م (40%)
+            - generic [ref=e460] [box=271,6135,61,16]:
+              - img [ref=e461] [box=316,6135,16,16]
+              - text: 3 متغير
+        - generic [ref=e466] [cursor=pointer] [box=16,6221,337,540]:
+          - generic [ref=e467] [box=17,6222,335,288]:
+            - img [ref=e468] [box=17,6222,335,288]
+            - img [ref=e471] [box=310,6244,20,20]
+          - generic [ref=e473] [box=17,6510,335,250]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Dance" [level=3] [ref=e474] [box=37,6530,295,55]
+            - generic [ref=e475] [box=37,6589,295,17]:
+              - generic [ref=e476] [box=278,6589,54,17]: SKU-00001
+              - generic [ref=e477] [box=267,6590,3,15]: "|"
+              - generic [ref=e478] [box=39,6590,220,15]: "ID: 08b4cf6b-904c-47db-ae62-9c54a5d21f19"
+            - generic [ref=e479] [box=37,6618,295,56]:
+              - generic [ref=e480] [box=232,6618,100,56]:
+                - generic [ref=e481] [box=232,6618,100,32]: 449 ج.م
+                - generic [ref=e482] [box=232,6654,100,20]: تكلفة 269.4 ج.م
+              - generic [ref=e483] [box=37,6618,126,54]:
+                - generic [ref=e484] [box=37,6618,56,24]: 3 قطعة
+                - generic [ref=e485] [box=37,6644,126,28]: +179.6 ج.م (40%)
+            - generic [ref=e487] [box=271,6699,61,16]:
+              - img [ref=e488] [box=316,6699,16,16]
+              - text: 3 متغير
+        - generic [ref=e493] [cursor=pointer] [box=16,6785,337,540]:
+          - generic [ref=e494] [box=17,6786,335,288]:
+            - img [ref=e495] [box=17,6786,335,288]
+            - img [ref=e498] [box=310,6808,20,20]
+          - generic [ref=e500] [box=17,7074,335,250]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Rhino" [level=3] [ref=e501] [box=37,7094,295,55]
+            - generic [ref=e502] [box=37,7153,295,17]:
+              - generic [ref=e503] [box=278,7153,54,17]: SKU-00015
+              - generic [ref=e504] [box=267,7153,3,15]: "|"
+              - generic [ref=e505] [box=39,7153,220,15]: "ID: b2628350-9b70-4bd5-bc06-b38daab18c50"
+            - generic [ref=e506] [box=37,7181,295,56]:
+              - generic [ref=e507] [box=232,7181,100,56]:
+                - generic [ref=e508] [box=232,7181,100,32]: 459 ج.م
+                - generic [ref=e509] [box=232,7217,100,20]: تكلفة 275.4 ج.م
+              - generic [ref=e510] [box=37,7181,126,54]:
+                - generic [ref=e511] [box=37,7181,56,24]: 3 قطعة
+                - generic [ref=e512] [box=37,7207,126,28]: +183.6 ج.م (40%)
+            - generic [ref=e514] [box=271,7262,61,16]:
+              - img [ref=e515] [box=316,7262,16,16]
+              - text: 3 متغير
+        - generic [ref=e520] [cursor=pointer] [box=16,7348,337,540]:
+          - generic [ref=e521] [box=17,7349,335,288]:
+            - img [ref=e522] [box=17,7349,335,288]
+            - img [ref=e525] [box=310,7371,20,20]
+          - generic [ref=e527] [box=17,7637,335,250]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Dinosaur" [level=3] [ref=e528] [box=37,7657,295,55]
+            - generic [ref=e529] [box=37,7716,295,17]:
+              - generic [ref=e530] [box=278,7716,54,17]: SKU-00017
+              - generic [ref=e531] [box=267,7717,3,15]: "|"
+              - generic [ref=e532] [box=39,7717,220,15]: "ID: ba202278-b9c3-4bec-b5cd-55bbb0c6c43d"
+            - generic [ref=e533] [box=37,7745,295,56]:
+              - generic [ref=e534] [box=232,7745,100,56]:
+                - generic [ref=e535] [box=232,7745,100,32]: 459 ج.م
+                - generic [ref=e536] [box=232,7781,100,20]: تكلفة 275.4 ج.م
+              - generic [ref=e537] [box=37,7745,126,54]:
+                - generic [ref=e538] [box=37,7745,56,24]: 3 قطعة
+                - generic [ref=e539] [box=37,7771,126,28]: +183.6 ج.م (40%)
+            - generic [ref=e541] [box=271,7826,61,16]:
+              - img [ref=e542] [box=316,7826,16,16]
+              - text: 3 متغير
+        - generic [ref=e547] [cursor=pointer] [box=16,7912,337,540]:
+          - generic [ref=e548] [box=17,7913,335,288]:
+            - img [ref=e549] [box=17,7913,335,288]
+            - img [ref=e552] [box=310,7935,20,20]
+            - generic [box=33,7929,107,27]:
+              - generic [box=33,7929,107,27]:
+                - img [box=116,7936,12,12]
+                - text: مخزون منخفض
+          - generic [ref=e554] [box=17,8201,335,250]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Cats" [level=3] [ref=e555] [box=37,8221,295,55]
+            - generic [ref=e556] [box=37,8280,295,17]:
+              - generic [ref=e557] [box=278,8280,54,17]: SKU-00007
+              - generic [ref=e558] [box=267,8280,3,15]: "|"
+              - generic [ref=e559] [box=39,8280,220,15]: "ID: 6453e901-aae5-4ecc-b802-7b123ef6b59a"
+            - generic [ref=e560] [box=37,8308,295,56]:
+              - generic [ref=e561] [box=232,8308,100,56]:
+                - generic [ref=e562] [box=232,8308,100,32]: 459 ج.م
+                - generic [ref=e563] [box=232,8344,100,20]: تكلفة 275.4 ج.م
+              - generic [ref=e564] [box=37,8308,126,54]:
+                - generic [ref=e565] [box=37,8308,56,24]: 2 قطعة
+                - generic [ref=e566] [box=37,8334,126,28]: +183.6 ج.م (40%)
+            - generic [ref=e568] [box=206,8389,126,16]:
+              - img [ref=e569] [box=316,8389,16,16]
+              - text: 3 متغير
+              - generic [ref=e573] [box=206,8389,59,16]: (1 منخفض)
+        - generic [ref=e575] [cursor=pointer] [box=16,8475,337,540]:
+          - generic [ref=e576] [box=17,8476,335,288]:
+            - img [ref=e577] [box=17,8476,335,288]
+            - img [ref=e580] [box=310,8498,20,20]
+            - generic [box=33,8492,93,27]:
+              - generic [box=33,8492,93,27]:
+                - img [box=102,8500,12,12]
+                - text: نفذ المخزون
+          - generic [ref=e582] [box=17,8764,335,250]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Animals" [level=3] [ref=e583] [box=37,8784,295,55]
+            - generic [ref=e584] [box=37,8843,295,17]:
+              - generic [ref=e585] [box=278,8843,54,17]: SKU-00014
+              - generic [ref=e586] [box=267,8844,3,15]: "|"
+              - generic [ref=e587] [box=39,8844,220,15]: "ID: a9ba314f-85f4-4ebd-99e5-4b03da630950"
+            - generic [ref=e588] [box=37,8872,295,56]:
+              - generic [ref=e589] [box=232,8872,100,56]:
+                - generic [ref=e590] [box=232,8872,100,32]: 459 ج.م
+                - generic [ref=e591] [box=232,8908,100,20]: تكلفة 275.4 ج.م
+              - generic [ref=e592] [box=37,8872,126,54]:
+                - generic [ref=e593] [box=37,8872,56,24]: 0 قطعة
+                - generic [ref=e594] [box=37,8898,126,28]: +183.6 ج.م (40%)
+            - generic [ref=e596] [box=206,8953,126,16]:
+              - img [ref=e597] [box=316,8953,16,16]
+              - text: 3 متغير
+              - generic [ref=e601] [box=206,8953,59,16]: (3 منخفض)
+        - generic [ref=e603] [cursor=pointer] [box=16,9039,337,540]:
+          - generic [ref=e604] [box=17,9040,335,288]:
+            - img [ref=e605] [box=17,9040,335,288]
+            - img [ref=e608] [box=310,9062,20,20]
+            - generic [box=33,9056,93,27]:
+              - generic [box=33,9056,93,27]:
+                - img [box=102,9063,12,12]
+                - text: نفذ المخزون
+          - generic [ref=e610] [box=17,9328,335,250]:
+            - heading "بجامة قطيفة شتوي للبيبي – Bear" [level=3] [ref=e611] [box=37,9348,295,55]
+            - generic [ref=e612] [box=37,9407,295,17]:
+              - generic [ref=e613] [box=278,9407,54,17]: SKU-00005
+              - generic [ref=e614] [box=267,9407,3,15]: "|"
+              - generic [ref=e615] [box=39,9407,220,15]: "ID: 3cdaad31-00e6-4167-ad17-8e7c39d6f6d0"
+            - generic [ref=e616] [box=37,9435,295,56]:
+              - generic [ref=e617] [box=244,9435,89,56]:
+                - generic [ref=e618] [box=244,9435,89,32]: 275 ج.م
+                - generic [ref=e619] [box=244,9471,89,20]: تكلفة 165 ج.م
+              - generic [ref=e620] [box=37,9435,115,54]:
+                - generic [ref=e621] [box=37,9435,56,24]: 0 قطعة
+                - generic [ref=e622] [box=37,9461,115,28]: +110 ج.م (40%)
+            - generic [ref=e624] [box=206,9516,126,16]:
+              - img [ref=e625] [box=316,9516,16,16]
+              - text: 9 متغير
+              - generic [ref=e629] [box=206,9516,59,16]: (9 منخفض)
+        - generic [ref=e631] [cursor=pointer] [box=16,9602,337,512]:
+          - generic [ref=e632] [box=17,9603,335,288]:
+            - img [ref=e633] [box=17,9603,335,288]
+            - img [ref=e636] [box=310,9625,20,20]
+            - generic [box=33,9619,93,27]:
+              - generic [box=33,9619,93,27]:
+                - img [box=102,9627,12,12]
+                - text: نفذ المخزون
+          - generic [ref=e638] [box=17,9891,335,222]:
+            - heading "بجامة قطيفة شتوي للبيبي – Feal" [level=3] [ref=e639] [box=37,9911,295,28]
+            - generic [ref=e640] [box=37,9943,295,17]:
+              - generic [ref=e641] [box=278,9943,54,17]: SKU-00021
+              - generic [ref=e642] [box=267,9943,3,15]: "|"
+              - generic [ref=e643] [box=39,9943,220,15]: "ID: fc42cd7c-b220-4b3c-a818-32802a837c0e"
+            - generic [ref=e644] [box=37,9971,295,56]:
+              - generic [ref=e645] [box=244,9971,89,56]:
+                - generic [ref=e646] [box=244,9971,89,32]: 270 ج.م
+                - generic [ref=e647] [box=244,10007,89,20]: تكلفة 162 ج.م
+              - generic [ref=e648] [box=37,9971,115,54]:
+                - generic [ref=e649] [box=37,9971,56,24]: 0 قطعة
+                - generic [ref=e650] [box=37,9997,115,28]: +108 ج.م (40%)
+            - generic [ref=e652] [box=206,10052,126,16]:
+              - img [ref=e653] [box=316,10052,16,16]
+              - text: 9 متغير
+              - generic [ref=e657] [box=206,10052,59,16]: (9 منخفض)
+        - generic [ref=e659] [cursor=pointer] [box=16,10138,337,540]:
+          - generic [ref=e660] [box=17,10139,335,288]:
+            - img [ref=e661] [box=17,10139,335,288]
+            - img [ref=e664] [box=310,10161,20,20]
+            - generic [box=33,10155,93,27]:
+              - generic [box=33,10155,93,27]:
+                - img [box=102,10163,12,12]
+                - text: نفذ المخزون
+          - generic [ref=e666] [box=17,10427,335,250]:
+            - heading "بجامة قطيفة شتوي للبيبي – Rabbit" [level=3] [ref=e667] [box=37,10447,295,55]
+            - generic [ref=e668] [box=37,10506,295,17]:
+              - generic [ref=e669] [box=278,10506,54,17]: SKU-00019
+              - generic [ref=e670] [box=267,10507,3,15]: "|"
+              - generic [ref=e671] [box=39,10507,220,15]: "ID: de1d35d6-0865-42a5-b897-639c5034fc6c"
+            - generic [ref=e672] [box=37,10535,295,56]:
+              - generic [ref=e673] [box=244,10535,89,56]:
+                - generic [ref=e674] [box=244,10535,89,32]: 275 ج.م
+                - generic [ref=e675] [box=244,10571,89,20]: تكلفة 165 ج.م
+              - generic [ref=e676] [box=37,10535,115,54]:
+                - generic [ref=e677] [box=37,10535,56,24]: 0 قطعة
+                - generic [ref=e678] [box=37,10561,115,28]: +110 ج.م (40%)
+            - generic [ref=e680] [box=206,10616,126,16]:
+              - img [ref=e681] [box=316,10616,16,16]
+              - text: 9 متغير
+              - generic [ref=e685] [box=206,10616,59,16]: (9 منخفض)
+        - generic [ref=e687] [cursor=pointer] [box=16,10702,337,512]:
+          - generic [ref=e688] [box=17,10703,335,288]:
+            - img [ref=e689] [box=17,10703,335,288]
+            - img [ref=e692] [box=310,10725,20,20]
+            - generic [box=33,10719,93,27]:
+              - generic [box=33,10719,93,27]:
+                - img [box=102,10726,12,12]
+                - text: نفذ المخزون
+          - generic [ref=e694] [box=17,10991,335,222]:
+            - heading "سالوبيت قطيفه للبيبي - Garden" [level=3] [ref=e695] [box=37,11011,295,28]
+            - generic [ref=e696] [box=37,11042,295,17]:
+              - generic [ref=e697] [box=278,11042,54,17]: SKU-00002
+              - generic [ref=e698] [box=267,11043,3,15]: "|"
+              - generic [ref=e699] [box=39,11043,220,15]: "ID: 10f75ae6-c2ae-40cb-b2fc-2ca508050e1a"
+            - generic [ref=e700] [box=37,11071,295,56]:
+              - generic [ref=e701] [box=232,11071,100,56]:
+                - generic [ref=e702] [box=232,11071,100,32]: 349 ج.م
+                - generic [ref=e703] [box=232,11107,100,20]: تكلفة 209.4 ج.م
+              - generic [ref=e704] [box=37,11071,126,54]:
+                - generic [ref=e705] [box=37,11071,56,24]: 0 قطعة
+                - generic [ref=e706] [box=37,11097,126,28]: +139.6 ج.م (40%)
+            - generic [ref=e708] [box=206,11152,126,16]:
+              - img [ref=e709] [box=316,11152,16,16]
+              - text: 9 متغير
+              - generic [ref=e713] [box=206,11152,59,16]: (9 منخفض)
+        - generic [ref=e715] [cursor=pointer] [box=16,11238,337,540]:
+          - generic [ref=e716] [box=17,11239,335,288]:
+            - img [ref=e717] [box=17,11239,335,288]
+            - img [ref=e720] [box=310,11261,20,20]
+            - generic [box=33,11255,107,27]:
+              - generic [box=33,11255,107,27]:
+                - img [box=116,11262,12,12]
+                - text: مخزون منخفض
+          - generic [ref=e722] [box=17,11527,335,250]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Doll" [level=3] [ref=e723] [box=37,11547,295,55]
+            - generic [ref=e724] [box=37,11606,295,17]:
+              - generic [ref=e725] [box=278,11606,54,17]: SKU-00009
+              - generic [ref=e726] [box=267,11606,3,15]: "|"
+              - generic [ref=e727] [box=39,11606,220,15]: "ID: 85436d04-bdba-49e3-9596-88c6b3837c83"
+            - generic [ref=e728] [box=37,11634,295,56]:
+              - generic [ref=e729] [box=232,11634,100,56]:
+                - generic [ref=e730] [box=232,11634,100,32]: 459 ج.م
+                - generic [ref=e731] [box=232,11670,100,20]: تكلفة 275.4 ج.م
+              - generic [ref=e732] [box=37,11634,126,54]:
+                - generic [ref=e733] [box=37,11634,56,24]: 2 قطعة
+                - generic [ref=e734] [box=37,11660,126,28]: +183.6 ج.م (40%)
+            - generic [ref=e736] [box=206,11715,126,16]:
+              - img [ref=e737] [box=316,11715,16,16]
+              - text: 3 متغير
+              - generic [ref=e741] [box=206,11715,59,16]: (1 منخفض)
+        - generic [ref=e743] [cursor=pointer] [box=16,11801,337,540]:
+          - generic [ref=e744] [box=17,11802,335,288]:
+            - img [ref=e745] [box=17,11802,335,288]
+            - img [ref=e748] [box=310,11824,20,20]
+            - generic [box=33,11818,107,27]:
+              - generic [box=33,11818,107,27]:
+                - img [box=116,11826,12,12]
+                - text: مخزون منخفض
+          - generic [ref=e750] [box=17,12090,335,250]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Smile" [level=3] [ref=e751] [box=37,12110,295,55]
+            - generic [ref=e752] [box=37,12169,295,17]:
+              - generic [ref=e753] [box=278,12169,54,17]: SKU-00006
+              - generic [ref=e754] [box=267,12170,3,15]: "|"
+              - generic [ref=e755] [box=39,12170,220,15]: "ID: 42596ee2-1212-4a20-9800-f5fe12dc04a6"
+            - generic [ref=e756] [box=37,12198,295,56]:
+              - generic [ref=e757] [box=232,12198,100,56]:
+                - generic [ref=e758] [box=232,12198,100,32]: 459 ج.م
+                - generic [ref=e759] [box=232,12234,100,20]: تكلفة 275.4 ج.م
+              - generic [ref=e760] [box=37,12198,126,54]:
+                - generic [ref=e761] [box=37,12198,56,24]: 2 قطعة
+                - generic [ref=e762] [box=37,12224,126,28]: +183.6 ج.م (40%)
+            - generic [ref=e764] [box=206,12279,126,16]:
+              - img [ref=e765] [box=316,12279,16,16]
+              - text: 3 متغير
+              - generic [ref=e769] [box=206,12279,59,16]: (1 منخفض)

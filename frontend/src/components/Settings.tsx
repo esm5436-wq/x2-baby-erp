@@ -10,7 +10,7 @@ interface SettingsProps {
   onUpdateState: (update: Partial<AppState>) => void;
 }
 
-const API_BASE = '/api';
+import { API_BASE } from '../lib/api';
 
 const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);

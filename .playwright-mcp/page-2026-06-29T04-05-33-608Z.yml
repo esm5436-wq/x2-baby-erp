@@ -1,0 +1,74 @@
+- generic [ref=e61]:
+  - button "المساعد الذكي" [ref=e62] [cursor=pointer]:
+    - img [ref=e63]
+  - main [ref=e66]:
+    - generic [ref=e67]:
+      - generic [ref=e68]:
+        - img [ref=e69]
+        - heading "Easy Orders - التكامل" [level=1] [ref=e72]
+      - generic [ref=e73]:
+        - generic [ref=e74]: 🟢 مفعل
+        - generic [ref=e75]: 📦 0 منتج مصدر
+        - generic [ref=e76]: ⏳ 0 طلب قيد المراجعة
+      - generic [ref=e77]:
+        - button "الإعدادات" [ref=e78] [cursor=pointer]:
+          - img [ref=e79]
+          - text: الإعدادات
+        - button "تصدير المنتجات" [ref=e82] [cursor=pointer]:
+          - img [ref=e83]
+          - text: تصدير المنتجات
+        - button "الطلبات الواردة" [ref=e86] [cursor=pointer]:
+          - img [ref=e87]
+          - text: الطلبات الواردة
+        - button "سجل المزامنة" [ref=e90] [cursor=pointer]:
+          - img [ref=e91]
+          - text: سجل المزامنة
+      - generic [ref=e94]:
+        - generic [ref=e95]:
+          - heading "إعدادات API" [level=2] [ref=e96]:
+            - img [ref=e97]
+            - text: إعدادات API
+          - generic [ref=e100]:
+            - text: مفتاح API (Easy Orders)
+            - generic [ref=e101]:
+              - textbox "51e08305-dfce-4b2d-a62a-9aa04037e543" [ref=e102]
+              - button [ref=e103] [cursor=pointer]:
+                - img [ref=e104]
+          - generic [ref=e107]:
+            - generic [ref=e108]:
+              - heading "تفعيل التكامل" [level=4] [ref=e109]
+              - paragraph [ref=e110]: تشغيل أو إيقاف الاتصال بـ Easy Orders
+            - button [ref=e111] [cursor=pointer]
+          - generic [ref=e113]:
+            - text: رابط Webhook (للمزامنة الفورية)
+            - generic [ref=e114]:
+              - textbox [active] [ref=e115]
+              - button "نسخ" [ref=e116] [cursor=pointer]
+            - paragraph [ref=e117]: "انسخ هذا الرابط وأضفه في إعدادات Easy Orders (نوع: Orders + Order Status Update). الطلبات الجديدة تصل فوراً بدون حاجة لـ Polling."
+          - generic [ref=e118]:
+            - text: مفتاح ImgBB API (لرفع الصور - مجاني)
+            - textbox "أدخل مفتاح ImgBB من https://api.imgbb.com" [ref=e119]: 3072a0fe3887f2df6f16b6f19a30a7a2
+            - paragraph [ref=e120]: مطلوب فقط لرفع الصور للمتجر. يمكنك الحصول على مفتاح مجاني من موقع ImgBB.
+          - generic [ref=e121]:
+            - generic [ref=e122]:
+              - heading "تأكيد تلقائي" [level=4] [ref=e123]
+              - paragraph [ref=e124]: تجاوز مراجعة الطلبات وإدراجها مباشرة (إلغاء تفعيل الـ Staging)
+            - button [ref=e125] [cursor=pointer]
+        - generic [ref=e127]:
+          - heading "إعدادات تصدير المنتجات" [level=2] [ref=e128]:
+            - img [ref=e129]
+            - text: إعدادات تصدير المنتجات
+          - generic [ref=e133]:
+            - generic [ref=e134]:
+              - heading "تتبع المخزون" [level=4] [ref=e135]
+              - paragraph [ref=e136]: track_stock في Easy Orders
+            - button [ref=e137] [cursor=pointer]
+          - generic [ref=e139]:
+            - text: نسبة سعر العرض (%)
+            - spinbutton [ref=e140]: "85"
+            - paragraph [ref=e141]: "سعر العرض = سعر المنتج × (النسبة / 100). مثال: 85 يعني خصم 15%"
+        - generic [ref=e142]:
+          - button "💾 حفظ الإعدادات" [ref=e143] [cursor=pointer]
+          - button "اختبار الاتصال" [ref=e144] [cursor=pointer]:
+            - img [ref=e145]
+            - text: اختبار الاتصال

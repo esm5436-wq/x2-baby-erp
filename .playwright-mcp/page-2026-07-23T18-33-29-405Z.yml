@@ -1,0 +1,137 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e3]:
+    - button "المساعد الذكي" [ref=f1e4] [cursor=pointer]
+    - navigation [ref=f1e8]:
+      - generic [ref=f1e10]:
+        - img "Logo" [ref=f1e206]
+        - generic:
+          - heading "X2 BABY" [level=1]
+          - paragraph: الجودة، الثقة، والأمان
+          - generic [ref=f1e207]:
+            - img "Slogan Design"
+      - generic [ref=f1e18]:
+        - link "المخزون" [ref=f1e20] [cursor=pointer]:
+          - /url: "#/"
+        - link "الطلبات" [ref=f1e27] [cursor=pointer]:
+          - /url: "#/orders"
+        - link "المشتريات" [ref=f1e33] [cursor=pointer]:
+          - /url: "#/purchases"
+        - link "الحسابات والمالية" [active] [ref=f1e39] [cursor=pointer]:
+          - /url: "#/accounts"
+        - link "جهات الاتصال" [ref=f1e44] [cursor=pointer]:
+          - /url: "#/contacts"
+        - link "العملاء" [ref=f1e52] [cursor=pointer]:
+          - /url: "#/customers"
+        - link "سجل النشاطات" [ref=f1e59] [cursor=pointer]:
+          - /url: "#/activity-logs"
+        - link "Easy Orders" [ref=f1e64] [cursor=pointer]:
+          - /url: "#/easy-orders"
+        - link "إدارة البيانات" [ref=f1e70] [cursor=pointer]:
+          - /url: "#/settings"
+      - generic [ref=f1e75]:
+        - button [ref=f1e4150] [cursor=pointer]
+        - button [ref=f1e89] [cursor=pointer]
+    - main [ref=f1e102]:
+      - generic [ref=f1e4158]:
+        - generic [ref=f1e4159]:
+          - generic [ref=f1e4160]:
+            - heading [level=2] [ref=f1e4161]
+            - paragraph [ref=f1e4165]: تقرير الأداء المالي والمصروفات بكل حب
+          - generic [ref=f1e4166]:
+            - generic [ref=f1e4167]:
+              - button "اليوم" [ref=f1e4168] [cursor=pointer]
+              - button "هذا الشهر" [ref=f1e4169] [cursor=pointer]
+              - button "الكل" [ref=f1e4170] [cursor=pointer]
+              - button "مخصص" [ref=f1e4171] [cursor=pointer]
+            - button "تصدير" [ref=f1e4173] [cursor=pointer]
+        - generic [ref=f1e4179]:
+          - generic [ref=f1e4180] [cursor=pointer]:
+            - generic [ref=f1e4185]:
+              - generic [ref=f1e4186]: إجمالي المبيعات 💰
+              - paragraph [ref=f1e4193]: 0 طلب
+            - heading "‏٠ ج.م.‏" [level=3] [ref=f1e4194]
+          - generic [ref=f1e4195] [cursor=pointer]:
+            - generic [ref=f1e4201]:
+              - generic [ref=f1e4202]: تكلفة المنتجات 📦
+              - paragraph [ref=f1e4207]: 0% من الدخل
+            - heading "‏٠ ج.م.‏" [level=3] [ref=f1e4208]
+          - generic [ref=f1e4209] [cursor=pointer]:
+            - generic [ref=f1e4216]:
+              - generic [ref=f1e4217]: الاستثمار الكلي 📉
+              - paragraph [ref=f1e4222]: كافة مبالغ الشراء والصرف
+            - heading "‏٠ ج.م.‏" [level=3] [ref=f1e4223]
+          - generic [ref=f1e4230] [cursor=pointer]:
+            - generic [ref=f1e4231]: استرداد رأس المال 🔄
+            - paragraph [ref=f1e4236]: 0.0% تم استرداده
+        - generic [ref=f1e4240]:
+          - generic [ref=f1e4241]:
+            - generic [ref=f1e4243] [cursor=pointer]:
+              - generic [ref=f1e4244]: صافي الربح النهائي 🏆
+              - heading "‏٠ ج.م.‏" [level=3] [ref=f1e4254]
+              - generic [ref=f1e4255]:
+                - generic [ref=f1e4256]: 0.0% هامش
+                - paragraph [ref=f1e4257]: بعد خصم كافة التكاليف
+            - generic [ref=f1e4258]:
+              - generic [ref=f1e4259]:
+                - heading [level=3] [ref=f1e4260] [cursor=pointer]
+                - button [ref=f1e4266] [cursor=pointer]
+              - paragraph [ref=f1e4270]: لا توجد أهداف حالية. 🎯
+          - generic [ref=f1e4272]:
+            - generic [ref=f1e4273]:
+              - generic [ref=f1e4274] [cursor=pointer]:
+                - generic [ref=f1e4275]: نسبة التغطية 📊
+                - generic [ref=f1e4280]: 0%
+              - generic [ref=f1e4283] [cursor=pointer]:
+                - generic [ref=f1e4284]: هدف التعادل 🎯
+                - paragraph [ref=f1e4289]: ‏٠ ج.م.‏
+                - generic [ref=f1e4290]:
+                  - generic [ref=f1e4291]: "باقي:"
+                  - generic [ref=f1e4292]: ‏٠ ج.م.‏
+              - generic [ref=f1e4293] [cursor=pointer]:
+                - generic [ref=f1e4294]: حالة التغطية 📉
+                - paragraph [ref=f1e4299]: ✅ تغطية كاملة
+                - generic [ref=f1e4300]:
+                  - generic [ref=f1e4301]: "الحالة:"
+                  - generic [ref=f1e4302]: 🟢 أمان مالي
+            - generic [ref=f1e4303]:
+              - generic [ref=f1e4304] [cursor=pointer]:
+                - generic [ref=f1e4305]:
+                  - heading [level=5] [ref=f1e4306]
+                  - paragraph [ref=f1e4309]: تحليل بصري دقيق للمسافات بين المبيعات والمصروفات
+                - generic [ref=f1e4310]:
+                  - generic [ref=f1e4311]: منطقة المبيعات
+                  - generic [ref=f1e4315]: منطقة التكاليف
+              - application [ref=f1e4321]:
+                - generic [ref=f1e4340]:
+                  - generic [ref=f1e4341]:
+                    - generic [ref=f1e4342]: "0"
+                    - generic [ref=f1e4344]: "2"
+                    - generic [ref=f1e4346]: "4"
+                    - generic [ref=f1e4348]: "6"
+                    - generic [ref=f1e4350]: "8"
+                    - generic [ref=f1e4352]: "10"
+                  - generic [ref=f1e4354]:
+                    - generic [ref=f1e4355]: "0"
+                    - generic [ref=f1e4357]: "250"
+                    - generic [ref=f1e4359]: "500"
+                    - generic [ref=f1e4361]: "750"
+                    - generic [ref=f1e4363]: "1000"
+              - generic [ref=f1e4365]: "نصيحة: كلما ابتعد الخط الأزرق (المبيعات) عن الخط البرتقالي (التكاليف) للأعلى، زاد صافي ربحك الحقيقي وتضاعف نمو مشروعك."
+            - generic [ref=f1e4371]:
+              - heading [level=3] [ref=f1e4373] [cursor=pointer]
+              - table [ref=f1e4382]:
+                - rowgroup [ref=f1e4383]:
+                  - row [ref=f1e4384]:
+                    - columnheader "المنتج" [ref=f1e4385]
+                    - columnheader "الكمية" [ref=f1e4386]
+                    - columnheader "الإيرادات" [ref=f1e4387]
+                    - columnheader "الربح" [ref=f1e4388]
+                - rowgroup
+            - generic [ref=f1e4389]:
+              - generic [ref=f1e4390]:
+                - heading "سجل المصروفات" [level=3] [ref=f1e4396]
+                - generic [ref=f1e4397] [cursor=pointer]:
+                  - generic [ref=f1e4398]: إجمالي الصرف
+                  - heading "‏٠ ج.م.‏" [level=4] [ref=f1e4399]
+              - paragraph [ref=f1e4405]: لا يوجد سجل مصروفات حالياً. 👀
+  - generic [ref=f1e4406]: "250"

@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { API_BASE } from '../lib/api';
 import { 
   BarChart3, 
   TrendingUp, 
@@ -143,8 +144,6 @@ const Accounts: React.FC<AccountsProps> = ({
     color: string;
     icon: React.ReactNode;
   } | null>(null);
-
-  const API_BASE = '/api';
 
   const fetchFinancialData = async () => {
     try {

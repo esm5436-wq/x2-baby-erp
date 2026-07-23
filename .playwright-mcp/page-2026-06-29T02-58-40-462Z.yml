@@ -1,0 +1,114 @@
+- generic [ref=e51]:
+  - button "المساعد الذكي" [ref=e52] [cursor=pointer]:
+    - img [ref=e53]
+  - navigation [ref=e56]:
+    - generic [ref=e58]:
+      - img "Logo" [ref=e295]
+      - generic [ref=e63]:
+        - heading "X2 BABY" [level=1] [ref=e64]
+        - paragraph [ref=e65]: الجودة، الثقة، والأمان
+        - img "Slogan Design" [ref=e297]
+    - generic [ref=e66]:
+      - link "المخزون" [ref=e68] [cursor=pointer]:
+        - /url: "#/"
+        - img [ref=e69]
+        - generic [ref=e73]: المخزون
+      - link "الطلبات" [ref=e75] [cursor=pointer]:
+        - /url: "#/orders"
+        - img [ref=e76]
+        - generic [ref=e79]: الطلبات
+      - link "المشتريات" [active] [ref=e81] [cursor=pointer]:
+        - /url: "#/purchases"
+        - img [ref=e82]
+        - generic [ref=e85]: المشتريات
+      - link "الحسابات والمالية" [ref=e87] [cursor=pointer]:
+        - /url: "#/accounts"
+        - img [ref=e88]
+        - generic [ref=e90]: الحسابات والمالية
+      - link "جهات الاتصال" [ref=e92] [cursor=pointer]:
+        - /url: "#/contacts"
+        - img [ref=e93]
+        - generic [ref=e98]: جهات الاتصال
+      - link "العملاء" [ref=e100] [cursor=pointer]:
+        - /url: "#/customers"
+        - img [ref=e101]
+        - generic [ref=e105]: العملاء
+      - link "سجل النشاطات" [ref=e107] [cursor=pointer]:
+        - /url: "#/activity-logs"
+        - img [ref=e108]
+        - generic [ref=e110]: سجل النشاطات
+      - link "Easy Orders" [ref=e112] [cursor=pointer]:
+        - /url: "#/easy-orders"
+        - img [ref=e113]
+        - generic [ref=e116]: Easy Orders
+      - link "إدارة البيانات" [ref=e118] [cursor=pointer]:
+        - /url: "#/settings"
+        - img [ref=e119]
+        - generic [ref=e122]: إدارة البيانات
+    - generic [ref=e123]:
+      - button "الوضع الليلي" [ref=e128] [cursor=pointer]:
+        - generic [ref=e129]:
+          - img [ref=e130]
+          - generic [ref=e132]: الوضع الليلي
+      - button "تسجيل الخروج" [ref=e133] [cursor=pointer]:
+        - generic [ref=e134]:
+          - img [ref=e135]
+          - generic [ref=e138]: تسجيل الخروج
+  - main [ref=e146]:
+    - generic [ref=e1195]:
+      - generic [ref=e1196]:
+        - generic [ref=e1197]:
+          - heading "حركة المشتريات" [level=2] [ref=e1198]:
+            - img [ref=e1200]
+            - text: حركة المشتريات
+          - paragraph [ref=e1203]: إدارة الموردين وتوريدات المنتجات
+        - generic [ref=e1204]:
+          - button "تصدير Excel" [ref=e1205] [cursor=pointer]:
+            - img [ref=e1206]
+          - button "تصدير PDF" [ref=e1209] [cursor=pointer]:
+            - img [ref=e1210]
+          - button "تصدير ويب تفاعلي" [ref=e1214] [cursor=pointer]:
+            - img [ref=e1215]
+          - button "تصدير CSV" [ref=e1218] [cursor=pointer]:
+            - img [ref=e1219]
+          - button "تصدير JSON" [ref=e1222] [cursor=pointer]:
+            - img [ref=e1223]
+          - button "تسجيل مصروف / مشتريات" [ref=e1226] [cursor=pointer]:
+            - img [ref=e1227]
+            - text: تسجيل مصروف / مشتريات
+      - generic [ref=e1228]:
+        - generic [ref=e1231]:
+          - heading "سجل العمليات المالية (الصرف)" [level=3] [ref=e1232]
+          - generic [ref=e1233]:
+            - generic [ref=e1234]:
+              - img [ref=e1235]
+              - textbox "بحث في السجل..." [ref=e1238]
+            - combobox [ref=e1239] [cursor=pointer]:
+              - option "الكل" [selected]
+              - option "بضاعة"
+              - option "مصروفات"
+            - generic [ref=e1240]:
+              - combobox [ref=e1241] [cursor=pointer]:
+                - option "التاريخ" [selected]
+                - option "المبلغ"
+                - option "النوع"
+              - img
+            - button "▼" [ref=e1242] [cursor=pointer]:
+              - img [ref=e1243]
+              - text: ▼
+        - generic [ref=e1246]:
+          - table [ref=e1247]:
+            - rowgroup [ref=e1248]:
+              - row "النوع / المورد البيان / الفاتورة التاريخ الإضافة آخر تعديل التصنيف المبلغ" [ref=e1249]:
+                - columnheader "النوع / المورد" [ref=e1250]
+                - columnheader "البيان / الفاتورة" [ref=e1251]
+                - columnheader "التاريخ" [ref=e1252]
+                - columnheader "الإضافة" [ref=e1253]
+                - columnheader "آخر تعديل" [ref=e1254]
+                - columnheader "التصنيف" [ref=e1255]
+                - columnheader "المبلغ" [ref=e1256]
+                - columnheader [ref=e1257]
+            - rowgroup
+          - generic [ref=e1258]:
+            - img [ref=e1259]
+            - paragraph [ref=e1262]: لا توجد عمليات تطابق البحث

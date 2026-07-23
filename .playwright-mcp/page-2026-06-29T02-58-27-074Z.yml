@@ -1,0 +1,911 @@
+- generic [ref=e51]:
+  - button "المساعد الذكي" [ref=e52] [cursor=pointer]:
+    - img [ref=e53]
+  - navigation [ref=e56]:
+    - generic [ref=e58]:
+      - img "Logo" [ref=e295]
+      - generic [ref=e63]:
+        - heading "X2 BABY" [level=1] [ref=e64]
+        - paragraph [ref=e65]: الجودة، الثقة، والأمان
+        - img "Slogan Design" [ref=e297]
+    - generic [ref=e66]:
+      - link "المخزون" [ref=e68] [cursor=pointer]:
+        - /url: "#/"
+        - img [ref=e69]
+        - generic [ref=e73]: المخزون
+      - link "الطلبات" [ref=e75] [cursor=pointer]:
+        - /url: "#/orders"
+        - img [ref=e76]
+        - generic [ref=e79]: الطلبات
+      - link "المشتريات" [ref=e81] [cursor=pointer]:
+        - /url: "#/purchases"
+        - img [ref=e82]
+        - generic [ref=e85]: المشتريات
+      - link "الحسابات والمالية" [ref=e87] [cursor=pointer]:
+        - /url: "#/accounts"
+        - img [ref=e88]
+        - generic [ref=e90]: الحسابات والمالية
+      - link "جهات الاتصال" [ref=e92] [cursor=pointer]:
+        - /url: "#/contacts"
+        - img [ref=e93]
+        - generic [ref=e98]: جهات الاتصال
+      - link "العملاء" [ref=e100] [cursor=pointer]:
+        - /url: "#/customers"
+        - img [ref=e101]
+        - generic [ref=e105]: العملاء
+      - link "سجل النشاطات" [ref=e107] [cursor=pointer]:
+        - /url: "#/activity-logs"
+        - img [ref=e108]
+        - generic [ref=e110]: سجل النشاطات
+      - link "Easy Orders" [ref=e112] [cursor=pointer]:
+        - /url: "#/easy-orders"
+        - img [ref=e113]
+        - generic [ref=e116]: Easy Orders
+      - link "إدارة البيانات" [ref=e118] [cursor=pointer]:
+        - /url: "#/settings"
+        - img [ref=e119]
+        - generic [ref=e122]: إدارة البيانات
+    - generic [ref=e123]:
+      - button "الوضع الليلي" [ref=e128] [cursor=pointer]:
+        - generic [ref=e129]:
+          - img [ref=e130]
+          - generic [ref=e132]: الوضع الليلي
+      - button "تسجيل الخروج" [ref=e133] [cursor=pointer]:
+        - generic [ref=e134]:
+          - img [ref=e135]
+          - generic [ref=e138]: تسجيل الخروج
+  - main [ref=e146]:
+    - generic [ref=e147]:
+      - generic [ref=e148]:
+        - heading "المخزون المتوفر" [level=2] [ref=e149]:
+          - img [ref=e151]
+          - text: المخزون المتوفر
+        - generic [ref=e155]:
+          - generic [ref=e156]:
+            - img [ref=e157]
+            - textbox "ابحث عن منتج..." [ref=e160]
+          - button "استيراد منتجات" [ref=e161] [cursor=pointer]:
+            - img [ref=e162]
+            - text: استيراد منتجات
+          - button "إضافة منتج" [ref=e167] [cursor=pointer]:
+            - img [ref=e168]
+            - text: إضافة منتج
+      - generic [ref=e170]:
+        - generic [ref=e171]:
+          - generic [ref=e172]:
+            - img [ref=e173]
+            - text: "فلاتر وترتيب:"
+          - button "تحديد الكل" [ref=e176] [cursor=pointer]:
+            - img [ref=e177]
+            - text: تحديد الكل
+          - button "تصدير البيانات" [ref=e179] [cursor=pointer]:
+            - img [ref=e180]
+            - text: تصدير البيانات
+          - generic [ref=e183]:
+            - combobox [ref=e184] [cursor=pointer]:
+              - option "كل الموردين" [selected]
+              - option "Mini Steps"
+            - img
+          - generic [ref=e185]:
+            - button "قص الصور لملء الإطار" [ref=e186] [cursor=pointer]:
+              - img [ref=e187]
+            - generic [ref=e191]:
+              - button "شبكة" [ref=e192] [cursor=pointer]:
+                - img [ref=e193]
+                - generic [ref=e198]: شبكة
+              - button "جدول" [ref=e199] [cursor=pointer]:
+                - img [ref=e200]
+                - generic [ref=e201]: جدول
+              - button "مدمج" [ref=e202] [cursor=pointer]:
+                - img [ref=e203]
+                - generic [ref=e204]: مدمج
+              - button "مفصل" [ref=e205] [cursor=pointer]:
+                - img [ref=e206]
+                - generic [ref=e207]: مفصل
+          - generic [ref=e208]:
+            - combobox [ref=e209] [cursor=pointer]:
+              - option "التاريخ" [selected]
+              - option "الاسم"
+              - option "السعر"
+              - option "المخزون"
+            - img
+          - button "تنازلي" [ref=e210] [cursor=pointer]:
+            - img [ref=e211]
+            - img [ref=e214]
+          - combobox [ref=e216] [cursor=pointer]:
+            - option "جميع التصنيفات" [selected]
+          - combobox [ref=e217] [cursor=pointer]:
+            - option "جميع الوسوم (Tags)" [selected]
+          - button "بحث متقدم" [ref=e218] [cursor=pointer]:
+            - img [ref=e219]
+            - text: بحث متقدم
+        - generic [ref=e221]:
+          - generic [ref=e222]:
+            - img [ref=e224]
+            - generic [ref=e228]:
+              - generic [ref=e229]: إجمالي القطع
+              - text: "77"
+          - generic [ref=e231]:
+            - img [ref=e233]
+            - generic [ref=e238]:
+              - generic [ref=e239]: إجمالي التكلفة
+              - generic [ref=e240]: 11,646.6 ج.م
+          - generic [ref=e242]:
+            - img [ref=e244]
+            - generic [ref=e247]:
+              - generic [ref=e248]: قيمة البيع المتوقعة
+              - generic [ref=e249]: 19,467 ج.م
+          - generic [ref=e251]:
+            - img [ref=e253]
+            - generic [ref=e255]:
+              - generic [ref=e256]: الربح المتوقع
+              - generic [ref=e257]: 7,820.4 ج.م
+      - generic [ref=e298]:
+        - generic [ref=e299] [cursor=pointer]:
+          - generic [ref=e300]:
+            - img [ref=e301]
+            - img [ref=e304]
+            - generic:
+              - generic:
+                - img
+                - text: مخزون منخفض
+          - generic [ref=e306]:
+            - heading "سالوبت مواليد ديناصور قطن" [level=3] [ref=e307]
+            - generic [ref=e308]:
+              - generic [ref=e309]: SKU-00016
+              - generic [ref=e310]: "|"
+              - generic [ref=e311]: "ID: b385be0a-05d9-4d4c-8d13-d0414d7ba261"
+            - generic [ref=e312]:
+              - generic [ref=e313]:
+                - generic [ref=e314]: 350 ج.م
+                - generic [ref=e315]: تكلفة 149.4 ج.م
+              - generic [ref=e316]:
+                - generic [ref=e317]: 2 قطعة
+                - generic [ref=e318]: +200.6 ج.م (57%)
+            - generic [ref=e319]:
+              - generic [ref=e320]:
+                - img [ref=e321]
+                - text: 9 متغير
+                - generic [ref=e325]: (9 منخفض)
+              - generic [ref=e326]: ٩ يونيو ٢٠٢٦
+          - generic [ref=e327]:
+            - button "تعديل" [ref=e328]:
+              - img [ref=e329]
+              - text: تعديل
+            - link "رابط" [ref=e331]:
+              - /url: https://x2baby.myeasyorders.com/products/salobit-atfal-dinasor
+              - img [ref=e332]
+              - text: رابط
+            - button "حذف" [ref=e336]:
+              - img [ref=e337]
+              - text: حذف
+        - generic [ref=e340] [cursor=pointer]:
+          - generic [ref=e341]:
+            - img [ref=e342]
+            - img [ref=e345]
+            - generic:
+              - generic:
+                - img
+                - text: مخزون منخفض
+          - generic [ref=e347]:
+            - heading "سالوبيت قطيفه للبيبي - kitten" [level=3] [ref=e348]
+            - generic [ref=e349]:
+              - generic [ref=e350]: SKU-00012
+              - generic [ref=e351]: "|"
+              - generic [ref=e352]: "ID: a1719c34-e190-4074-a94a-88e28a572a2f"
+            - generic [ref=e353]:
+              - generic [ref=e354]:
+                - generic [ref=e355]: 349 ج.م
+                - generic [ref=e356]: تكلفة 209.4 ج.م
+              - generic [ref=e357]:
+                - generic [ref=e358]: 10 قطعة
+                - generic [ref=e359]: +139.6 ج.م (40%)
+            - generic [ref=e360]:
+              - generic [ref=e361]:
+                - img [ref=e362]
+                - text: 9 متغير
+                - generic [ref=e366]: (9 منخفض)
+              - generic [ref=e367]: ٢ يونيو ٢٠٢٦
+          - generic [ref=e368]:
+            - button "تعديل" [ref=e369]:
+              - img [ref=e370]
+              - text: تعديل
+            - link "رابط" [ref=e372]:
+              - /url: https://x2baby.myeasyorders.com/products/salopette-katifa-baby-kitten
+              - img [ref=e373]
+              - text: رابط
+            - button "حذف" [ref=e377]:
+              - img [ref=e378]
+              - text: حذف
+        - generic [ref=e381] [cursor=pointer]:
+          - generic [ref=e382]:
+            - img [ref=e383]
+            - img [ref=e386]
+            - generic:
+              - generic:
+                - img
+                - text: مخزون منخفض
+          - generic [ref=e388]:
+            - heading "بدي بيبي كم الوان مطبوع بكباسين - Variety" [level=3] [ref=e389]
+            - generic [ref=e390]:
+              - generic [ref=e391]: SKU-00004
+              - generic [ref=e392]: "|"
+              - generic [ref=e393]: "ID: 34bd0cca-0558-4ac0-88ba-288b67a90ddf"
+            - generic [ref=e394]:
+              - generic [ref=e395]:
+                - generic [ref=e396]: 120 ج.م
+                - generic [ref=e397]: تكلفة 72 ج.م
+              - generic [ref=e398]:
+                - generic [ref=e399]: 24 قطعة
+                - generic [ref=e400]: +48 ج.م (40%)
+            - generic [ref=e401]:
+              - generic [ref=e402]:
+                - img [ref=e403]
+                - text: 36 متغير
+                - generic [ref=e407]: (32 منخفض)
+              - generic [ref=e408]: ٢ يونيو ٢٠٢٦
+          - generic [ref=e409]:
+            - button "تعديل" [ref=e410]:
+              - img [ref=e411]
+              - text: تعديل
+            - link "رابط" [ref=e413]:
+              - /url: https://x2baby.myeasyorders.com/products/bwdy-baby-km-alwan-mtbwa
+              - img [ref=e414]
+              - text: رابط
+            - button "حذف" [ref=e418]:
+              - img [ref=e419]
+              - text: حذف
+        - generic [ref=e422] [cursor=pointer]:
+          - generic [ref=e423]:
+            - img [ref=e424]
+            - img [ref=e427]
+          - generic [ref=e429]:
+            - heading "سالوبت داخليه بكابسين" [level=3] [ref=e430]
+            - generic [ref=e431]:
+              - generic [ref=e432]: SKU-00010
+              - generic [ref=e433]: "|"
+              - generic [ref=e434]: "ID: 9217cca5-7991-4ae2-98f1-d4ee27f54e0e"
+            - generic [ref=e435]:
+              - generic [ref=e436]:
+                - generic [ref=e437]: 99 ج.م
+                - generic [ref=e438]: تكلفة 59.4 ج.م
+              - generic [ref=e439]:
+                - generic [ref=e440]: 10 قطعة
+                - generic [ref=e441]: +39.6 ج.م (40%)
+            - generic [ref=e443]:
+              - img [ref=e444]
+              - text: 3 متغير
+          - generic [ref=e449]:
+            - button "تعديل" [ref=e450]:
+              - img [ref=e451]
+              - text: تعديل
+            - link "رابط" [ref=e453]:
+              - /url: https://x2baby.myeasyorders.com/products/cash-mayo
+              - img [ref=e454]
+              - text: رابط
+            - button "حذف" [ref=e458]:
+              - img [ref=e459]
+              - text: حذف
+        - generic [ref=e462] [cursor=pointer]:
+          - generic [ref=e463]:
+            - img [ref=e464]
+            - img [ref=e467]
+            - generic:
+              - generic:
+                - img
+                - text: نفذ المخزون
+          - generic [ref=e469]:
+            - heading "سالوبيت وتر بروف - Pink doll" [level=3] [ref=e470]
+            - generic [ref=e471]:
+              - generic [ref=e472]: SKU-00003
+              - generic [ref=e473]: "|"
+              - generic [ref=e474]: "ID: 346bd91e-aa63-463e-92b3-dc94c54f8b3a"
+            - generic [ref=e475]:
+              - generic [ref=e476]:
+                - generic [ref=e477]: 449 ج.م
+                - generic [ref=e478]: تكلفة 269.4 ج.م
+              - generic [ref=e479]:
+                - generic [ref=e480]: 0 قطعة
+                - generic [ref=e481]: +179.6 ج.م (40%)
+            - generic [ref=e483]:
+              - img [ref=e484]
+              - text: 3 متغير
+              - generic [ref=e488]: (3 منخفض)
+          - generic [ref=e490]:
+            - button "تعديل" [ref=e491]:
+              - img [ref=e492]
+              - text: تعديل
+            - link "رابط" [ref=e494]:
+              - /url: https://x2baby.myeasyorders.com/products/baby-waterproof-sleepsuit-pink-doll
+              - img [ref=e495]
+              - text: رابط
+            - button "حذف" [ref=e499]:
+              - img [ref=e500]
+              - text: حذف
+        - generic [ref=e503] [cursor=pointer]:
+          - generic [ref=e504]:
+            - img [ref=e505]
+            - img [ref=e508]
+            - generic:
+              - generic:
+                - img
+                - text: مخزون منخفض
+          - generic [ref=e510]:
+            - heading "فستان قطة أرنب قطن" [level=3] [ref=e511]
+            - generic [ref=e512]:
+              - generic [ref=e513]: SKU-00011
+              - generic [ref=e514]: "|"
+              - generic [ref=e515]: "ID: 9b50711e-ce8d-40ee-96fd-e087404f6897"
+            - generic [ref=e516]:
+              - generic [ref=e517]:
+                - generic [ref=e518]: 249 ج.م
+                - generic [ref=e519]: تكلفة 149.4 ج.م
+              - generic [ref=e520]:
+                - generic [ref=e521]: 3 قطعة
+                - generic [ref=e522]: +99.6 ج.م (40%)
+            - generic [ref=e524]:
+              - img [ref=e525]
+              - text: 4 متغير
+              - generic [ref=e529]: (1 منخفض)
+          - generic [ref=e531]:
+            - button "تعديل" [ref=e532]:
+              - img [ref=e533]
+              - text: تعديل
+            - link "رابط" [ref=e535]:
+              - /url: https://x2baby.myeasyorders.com/products/fustan-atfal-rasmat-qota-arnab
+              - img [ref=e536]
+              - text: رابط
+            - button "حذف" [ref=e540]:
+              - img [ref=e541]
+              - text: حذف
+        - generic [ref=e544] [cursor=pointer]:
+          - generic [ref=e545]:
+            - img [ref=e546]
+            - img [ref=e549]
+            - generic:
+              - generic:
+                - img
+                - text: مخزون منخفض
+          - generic [ref=e551]:
+            - heading "سالوبت قرش و حوت قطن" [level=3] [ref=e552]
+            - generic [ref=e553]:
+              - generic [ref=e554]: SKU-00008
+              - generic [ref=e555]: "|"
+              - generic [ref=e556]: "ID: 6770ca07-f720-4a85-b7e2-a608387a35b0"
+            - generic [ref=e557]:
+              - generic [ref=e558]:
+                - generic [ref=e559]: 249 ج.م
+                - generic [ref=e560]: تكلفة 149.4 ج.م
+              - generic [ref=e561]:
+                - generic [ref=e562]: 2 قطعة
+                - generic [ref=e563]: +99.6 ج.م (40%)
+            - generic [ref=e565]:
+              - img [ref=e566]
+              - text: 4 متغير
+              - generic [ref=e570]: (2 منخفض)
+          - generic [ref=e572]:
+            - button "تعديل" [ref=e573]:
+              - img [ref=e574]
+              - text: تعديل
+            - link "رابط" [ref=e576]:
+              - /url: https://x2baby.myeasyorders.com/products/salopet-qarsh-w-hot-qotn
+              - img [ref=e577]
+              - text: رابط
+            - button "حذف" [ref=e581]:
+              - img [ref=e582]
+              - text: حذف
+        - generic [ref=e585] [cursor=pointer]:
+          - generic [ref=e586]:
+            - img [ref=e587]
+            - img [ref=e590]
+          - generic [ref=e592]:
+            - heading "سالوبت مواليد نمر قطن" [level=3] [ref=e593]
+            - generic [ref=e594]:
+              - generic [ref=e595]: SKU-00013
+              - generic [ref=e596]: "|"
+              - generic [ref=e597]: "ID: a79fb953-3f37-4dd7-8cfa-426d90055ea4"
+            - generic [ref=e598]:
+              - generic [ref=e599]:
+                - generic [ref=e600]: 249 ج.م
+                - generic [ref=e601]: تكلفة 149.4 ج.م
+              - generic [ref=e602]:
+                - generic [ref=e603]: 4 قطعة
+                - generic [ref=e604]: +99.6 ج.م (40%)
+            - generic [ref=e606]:
+              - img [ref=e607]
+              - text: 4 متغير
+          - generic [ref=e612]:
+            - button "تعديل" [ref=e613]:
+              - img [ref=e614]
+              - text: تعديل
+            - link "رابط" [ref=e616]:
+              - /url: https://x2baby.myeasyorders.com/products/salopet-nemr-qotn
+              - img [ref=e617]
+              - text: رابط
+            - button "حذف" [ref=e621]:
+              - img [ref=e622]
+              - text: حذف
+        - generic [ref=e625] [cursor=pointer]:
+          - generic [ref=e626]:
+            - img [ref=e627]
+            - img [ref=e630]
+            - generic:
+              - generic:
+                - img
+                - text: مخزون منخفض
+          - generic [ref=e632]:
+            - heading "طقم مواليد قطن 3 قطع" [level=3] [ref=e633]
+            - generic [ref=e634]:
+              - generic [ref=e635]: SKU-00022
+              - generic [ref=e636]: "|"
+              - generic [ref=e637]: "ID: fcb796b6-91d8-45e0-b723-16cf167088c9"
+            - generic [ref=e638]:
+              - generic [ref=e639]:
+                - generic [ref=e640]: 295 ج.م
+                - generic [ref=e641]: تكلفة 177 ج.م
+              - generic [ref=e642]:
+                - generic [ref=e643]: 3 قطعة
+                - generic [ref=e644]: +118 ج.م (40%)
+            - generic [ref=e646]:
+              - img [ref=e647]
+              - text: 4 متغير
+              - generic [ref=e651]: (1 منخفض)
+          - generic [ref=e653]:
+            - button "تعديل" [ref=e654]:
+              - img [ref=e655]
+              - text: تعديل
+            - link "رابط" [ref=e657]:
+              - /url: https://x2baby.myeasyorders.com/products/taqm-mawalid-qotn-3-qita
+              - img [ref=e658]
+              - text: رابط
+            - button "حذف" [ref=e662]:
+              - img [ref=e663]
+              - text: حذف
+        - generic [ref=e666] [cursor=pointer]:
+          - generic [ref=e667]:
+            - img [ref=e668]
+            - img [ref=e671]
+            - generic:
+              - generic:
+                - img
+                - text: مخزون منخفض
+          - generic [ref=e673]:
+            - heading "طقم مواليد قطعتين" [level=3] [ref=e674]
+            - generic [ref=e675]:
+              - generic [ref=e676]: SKU-00020
+              - generic [ref=e677]: "|"
+              - generic [ref=e678]: "ID: e0d0271d-60d4-4872-a0f2-23e8ae5b8e99"
+            - generic [ref=e679]:
+              - generic [ref=e680]:
+                - generic [ref=e681]: 225 ج.م
+                - generic [ref=e682]: تكلفة 135 ج.م
+              - generic [ref=e683]:
+                - generic [ref=e684]: 1 قطعة
+                - generic [ref=e685]: +90 ج.م (40%)
+            - generic [ref=e687]:
+              - img [ref=e688]
+              - text: 2 متغير
+              - generic [ref=e692]: (1 منخفض)
+          - generic [ref=e694]:
+            - button "تعديل" [ref=e695]:
+              - img [ref=e696]
+              - text: تعديل
+            - link "رابط" [ref=e698]:
+              - /url: https://x2baby.myeasyorders.com/products/bugs-bunny-two-piece-set
+              - img [ref=e699]
+              - text: رابط
+            - button "حذف" [ref=e703]:
+              - img [ref=e704]
+              - text: حذف
+        - generic [ref=e707] [cursor=pointer]:
+          - generic [ref=e708]:
+            - img [ref=e709]
+            - img [ref=e712]
+          - generic [ref=e714]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Ghazall" [level=3] [ref=e715]
+            - generic [ref=e716]:
+              - generic [ref=e717]: SKU-00018
+              - generic [ref=e718]: "|"
+              - generic [ref=e719]: "ID: dd5a3512-eb5c-49ec-9f92-9b4d8fe43989"
+            - generic [ref=e720]:
+              - generic [ref=e721]:
+                - generic [ref=e722]: 449 ج.م
+                - generic [ref=e723]: تكلفة 269.4 ج.م
+              - generic [ref=e724]:
+                - generic [ref=e725]: 3 قطعة
+                - generic [ref=e726]: +179.6 ج.م (40%)
+            - generic [ref=e728]:
+              - img [ref=e729]
+              - text: 3 متغير
+          - generic [ref=e734]:
+            - button "تعديل" [ref=e735]:
+              - img [ref=e736]
+              - text: تعديل
+            - link "رابط" [ref=e738]:
+              - /url: https://x2baby.myeasyorders.com/products/salopet-waterproof-winter-baby-ghazall
+              - img [ref=e739]
+              - text: رابط
+            - button "حذف" [ref=e743]:
+              - img [ref=e744]
+              - text: حذف
+        - generic [ref=e747] [cursor=pointer]:
+          - generic [ref=e748]:
+            - img [ref=e749]
+            - img [ref=e752]
+          - generic [ref=e754]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Dance" [level=3] [ref=e755]
+            - generic [ref=e756]:
+              - generic [ref=e757]: SKU-00001
+              - generic [ref=e758]: "|"
+              - generic [ref=e759]: "ID: 08b4cf6b-904c-47db-ae62-9c54a5d21f19"
+            - generic [ref=e760]:
+              - generic [ref=e761]:
+                - generic [ref=e762]: 449 ج.م
+                - generic [ref=e763]: تكلفة 269.4 ج.م
+              - generic [ref=e764]:
+                - generic [ref=e765]: 3 قطعة
+                - generic [ref=e766]: +179.6 ج.م (40%)
+            - generic [ref=e768]:
+              - img [ref=e769]
+              - text: 3 متغير
+          - generic [ref=e774]:
+            - button "تعديل" [ref=e775]:
+              - img [ref=e776]
+              - text: تعديل
+            - link "رابط" [ref=e778]:
+              - /url: https://x2baby.myeasyorders.com/products/salopet-waterproof-winter-baby-dance
+              - img [ref=e779]
+              - text: رابط
+            - button "حذف" [ref=e783]:
+              - img [ref=e784]
+              - text: حذف
+        - generic [ref=e787] [cursor=pointer]:
+          - generic [ref=e788]:
+            - img [ref=e789]
+            - img [ref=e792]
+          - generic [ref=e794]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Rhino" [level=3] [ref=e795]
+            - generic [ref=e796]:
+              - generic [ref=e797]: SKU-00015
+              - generic [ref=e798]: "|"
+              - generic [ref=e799]: "ID: b2628350-9b70-4bd5-bc06-b38daab18c50"
+            - generic [ref=e800]:
+              - generic [ref=e801]:
+                - generic [ref=e802]: 459 ج.م
+                - generic [ref=e803]: تكلفة 275.4 ج.م
+              - generic [ref=e804]:
+                - generic [ref=e805]: 3 قطعة
+                - generic [ref=e806]: +183.6 ج.م (40%)
+            - generic [ref=e808]:
+              - img [ref=e809]
+              - text: 3 متغير
+          - generic [ref=e814]:
+            - button "تعديل" [ref=e815]:
+              - img [ref=e816]
+              - text: تعديل
+            - link "رابط" [ref=e818]:
+              - /url: https://x2baby.myeasyorders.com/products/salopet-waterproof-winter-baby-rhino
+              - img [ref=e819]
+              - text: رابط
+            - button "حذف" [ref=e823]:
+              - img [ref=e824]
+              - text: حذف
+        - generic [ref=e827] [cursor=pointer]:
+          - generic [ref=e828]:
+            - img [ref=e829]
+            - img [ref=e832]
+          - generic [ref=e834]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Dinosaur" [level=3] [ref=e835]
+            - generic [ref=e836]:
+              - generic [ref=e837]: SKU-00017
+              - generic [ref=e838]: "|"
+              - generic [ref=e839]: "ID: ba202278-b9c3-4bec-b5cd-55bbb0c6c43d"
+            - generic [ref=e840]:
+              - generic [ref=e841]:
+                - generic [ref=e842]: 459 ج.م
+                - generic [ref=e843]: تكلفة 275.4 ج.م
+              - generic [ref=e844]:
+                - generic [ref=e845]: 3 قطعة
+                - generic [ref=e846]: +183.6 ج.م (40%)
+            - generic [ref=e848]:
+              - img [ref=e849]
+              - text: 3 متغير
+          - generic [ref=e854]:
+            - button "تعديل" [ref=e855]:
+              - img [ref=e856]
+              - text: تعديل
+            - link "رابط" [ref=e858]:
+              - /url: https://x2baby.myeasyorders.com/products/salopet-waterproof-winter-baby-dinosaur
+              - img [ref=e859]
+              - text: رابط
+            - button "حذف" [ref=e863]:
+              - img [ref=e864]
+              - text: حذف
+        - generic [ref=e867] [cursor=pointer]:
+          - generic [ref=e868]:
+            - img [ref=e869]
+            - img [ref=e872]
+            - generic:
+              - generic:
+                - img
+                - text: مخزون منخفض
+          - generic [ref=e874]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Cats" [level=3] [ref=e875]
+            - generic [ref=e876]:
+              - generic [ref=e877]: SKU-00007
+              - generic [ref=e878]: "|"
+              - generic [ref=e879]: "ID: 6453e901-aae5-4ecc-b802-7b123ef6b59a"
+            - generic [ref=e880]:
+              - generic [ref=e881]:
+                - generic [ref=e882]: 459 ج.م
+                - generic [ref=e883]: تكلفة 275.4 ج.م
+              - generic [ref=e884]:
+                - generic [ref=e885]: 2 قطعة
+                - generic [ref=e886]: +183.6 ج.م (40%)
+            - generic [ref=e888]:
+              - img [ref=e889]
+              - text: 3 متغير
+              - generic [ref=e893]: (1 منخفض)
+          - generic [ref=e895]:
+            - button "تعديل" [ref=e896]:
+              - img [ref=e897]
+              - text: تعديل
+            - link "رابط" [ref=e899]:
+              - /url: https://x2baby.myeasyorders.com/products/salopet-waterproof-winter-baby-cats
+              - img [ref=e900]
+              - text: رابط
+            - button "حذف" [ref=e904]:
+              - img [ref=e905]
+              - text: حذف
+        - generic [ref=e908] [cursor=pointer]:
+          - generic [ref=e909]:
+            - img [ref=e910]
+            - img [ref=e913]
+            - generic:
+              - generic:
+                - img
+                - text: نفذ المخزون
+          - generic [ref=e915]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Animals" [level=3] [ref=e916]
+            - generic [ref=e917]:
+              - generic [ref=e918]: SKU-00014
+              - generic [ref=e919]: "|"
+              - generic [ref=e920]: "ID: a9ba314f-85f4-4ebd-99e5-4b03da630950"
+            - generic [ref=e921]:
+              - generic [ref=e922]:
+                - generic [ref=e923]: 459 ج.م
+                - generic [ref=e924]: تكلفة 275.4 ج.م
+              - generic [ref=e925]:
+                - generic [ref=e926]: 0 قطعة
+                - generic [ref=e927]: +183.6 ج.م (40%)
+            - generic [ref=e929]:
+              - img [ref=e930]
+              - text: 3 متغير
+              - generic [ref=e934]: (3 منخفض)
+          - generic [ref=e936]:
+            - button "تعديل" [ref=e937]:
+              - img [ref=e938]
+              - text: تعديل
+            - link "رابط" [ref=e940]:
+              - /url: https://x2baby.myeasyorders.com/products/salopet-waterproof-winter-baby-animals
+              - img [ref=e941]
+              - text: رابط
+            - button "حذف" [ref=e945]:
+              - img [ref=e946]
+              - text: حذف
+        - generic [ref=e949] [cursor=pointer]:
+          - generic [ref=e950]:
+            - img [ref=e951]
+            - img [ref=e954]
+            - generic:
+              - generic:
+                - img
+                - text: نفذ المخزون
+          - generic [ref=e956]:
+            - heading "بجامة قطيفة شتوي للبيبي – Bear" [level=3] [ref=e957]
+            - generic [ref=e958]:
+              - generic [ref=e959]: SKU-00005
+              - generic [ref=e960]: "|"
+              - generic [ref=e961]: "ID: 3cdaad31-00e6-4167-ad17-8e7c39d6f6d0"
+            - generic [ref=e962]:
+              - generic [ref=e963]:
+                - generic [ref=e964]: 275 ج.م
+                - generic [ref=e965]: تكلفة 165 ج.م
+              - generic [ref=e966]:
+                - generic [ref=e967]: 0 قطعة
+                - generic [ref=e968]: +110 ج.م (40%)
+            - generic [ref=e970]:
+              - img [ref=e971]
+              - text: 9 متغير
+              - generic [ref=e975]: (9 منخفض)
+          - generic [ref=e977]:
+            - button "تعديل" [ref=e978]:
+              - img [ref=e979]
+              - text: تعديل
+            - link "رابط" [ref=e981]:
+              - /url: https://x2baby.myeasyorders.com/products/velvet-winter-pajama-baby-bear
+              - img [ref=e982]
+              - text: رابط
+            - button "حذف" [ref=e986]:
+              - img [ref=e987]
+              - text: حذف
+        - generic [ref=e990] [cursor=pointer]:
+          - generic [ref=e991]:
+            - img [ref=e992]
+            - img [ref=e995]
+            - generic:
+              - generic:
+                - img
+                - text: نفذ المخزون
+          - generic [ref=e997]:
+            - heading "بجامة قطيفة شتوي للبيبي – Feal" [level=3] [ref=e998]
+            - generic [ref=e999]:
+              - generic [ref=e1000]: SKU-00021
+              - generic [ref=e1001]: "|"
+              - generic [ref=e1002]: "ID: fc42cd7c-b220-4b3c-a818-32802a837c0e"
+            - generic [ref=e1003]:
+              - generic [ref=e1004]:
+                - generic [ref=e1005]: 270 ج.م
+                - generic [ref=e1006]: تكلفة 162 ج.م
+              - generic [ref=e1007]:
+                - generic [ref=e1008]: 0 قطعة
+                - generic [ref=e1009]: +108 ج.م (40%)
+            - generic [ref=e1011]:
+              - img [ref=e1012]
+              - text: 9 متغير
+              - generic [ref=e1016]: (9 منخفض)
+          - generic [ref=e1018]:
+            - button "تعديل" [ref=e1019]:
+              - img [ref=e1020]
+              - text: تعديل
+            - link "رابط" [ref=e1022]:
+              - /url: https://x2baby.myeasyorders.com/products/velvet-winter-pajama-baby-Feal
+              - img [ref=e1023]
+              - text: رابط
+            - button "حذف" [ref=e1027]:
+              - img [ref=e1028]
+              - text: حذف
+        - generic [ref=e1031] [cursor=pointer]:
+          - generic [ref=e1032]:
+            - img [ref=e1033]
+            - img [ref=e1036]
+            - generic:
+              - generic:
+                - img
+                - text: نفذ المخزون
+          - generic [ref=e1038]:
+            - heading "بجامة قطيفة شتوي للبيبي – Rabbit" [level=3] [ref=e1039]
+            - generic [ref=e1040]:
+              - generic [ref=e1041]: SKU-00019
+              - generic [ref=e1042]: "|"
+              - generic [ref=e1043]: "ID: de1d35d6-0865-42a5-b897-639c5034fc6c"
+            - generic [ref=e1044]:
+              - generic [ref=e1045]:
+                - generic [ref=e1046]: 275 ج.م
+                - generic [ref=e1047]: تكلفة 165 ج.م
+              - generic [ref=e1048]:
+                - generic [ref=e1049]: 0 قطعة
+                - generic [ref=e1050]: +110 ج.م (40%)
+            - generic [ref=e1052]:
+              - img [ref=e1053]
+              - text: 9 متغير
+              - generic [ref=e1057]: (9 منخفض)
+          - generic [ref=e1059]:
+            - button "تعديل" [ref=e1060]:
+              - img [ref=e1061]
+              - text: تعديل
+            - link "رابط" [ref=e1063]:
+              - /url: https://x2baby.myeasyorders.com/products/velvet-winter-pajama-baby-Rabbit
+              - img [ref=e1064]
+              - text: رابط
+            - button "حذف" [ref=e1068]:
+              - img [ref=e1069]
+              - text: حذف
+        - generic [ref=e1072] [cursor=pointer]:
+          - generic [ref=e1073]:
+            - img [ref=e1074]
+            - img [ref=e1077]
+            - generic:
+              - generic:
+                - img
+                - text: نفذ المخزون
+          - generic [ref=e1079]:
+            - heading "سالوبيت قطيفه للبيبي - Garden" [level=3] [ref=e1080]
+            - generic [ref=e1081]:
+              - generic [ref=e1082]: SKU-00002
+              - generic [ref=e1083]: "|"
+              - generic [ref=e1084]: "ID: 10f75ae6-c2ae-40cb-b2fc-2ca508050e1a"
+            - generic [ref=e1085]:
+              - generic [ref=e1086]:
+                - generic [ref=e1087]: 349 ج.م
+                - generic [ref=e1088]: تكلفة 209.4 ج.م
+              - generic [ref=e1089]:
+                - generic [ref=e1090]: 0 قطعة
+                - generic [ref=e1091]: +139.6 ج.م (40%)
+            - generic [ref=e1093]:
+              - img [ref=e1094]
+              - text: 9 متغير
+              - generic [ref=e1098]: (9 منخفض)
+          - generic [ref=e1100]:
+            - button "تعديل" [ref=e1101]:
+              - img [ref=e1102]
+              - text: تعديل
+            - link "رابط" [ref=e1104]:
+              - /url: https://x2baby.myeasyorders.com/products/salopette-katifa-baby-garden
+              - img [ref=e1105]
+              - text: رابط
+            - button "حذف" [ref=e1109]:
+              - img [ref=e1110]
+              - text: حذف
+        - generic [ref=e1113] [cursor=pointer]:
+          - generic [ref=e1114]:
+            - img [ref=e1115]
+            - img [ref=e1118]
+            - generic:
+              - generic:
+                - img
+                - text: مخزون منخفض
+          - generic [ref=e1120]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Doll" [level=3] [ref=e1121]
+            - generic [ref=e1122]:
+              - generic [ref=e1123]: SKU-00009
+              - generic [ref=e1124]: "|"
+              - generic [ref=e1125]: "ID: 85436d04-bdba-49e3-9596-88c6b3837c83"
+            - generic [ref=e1126]:
+              - generic [ref=e1127]:
+                - generic [ref=e1128]: 459 ج.م
+                - generic [ref=e1129]: تكلفة 275.4 ج.م
+              - generic [ref=e1130]:
+                - generic [ref=e1131]: 2 قطعة
+                - generic [ref=e1132]: +183.6 ج.م (40%)
+            - generic [ref=e1134]:
+              - img [ref=e1135]
+              - text: 3 متغير
+              - generic [ref=e1139]: (1 منخفض)
+          - generic [ref=e1141]:
+            - button "تعديل" [ref=e1142]:
+              - img [ref=e1143]
+              - text: تعديل
+            - link "رابط" [ref=e1145]:
+              - /url: https://x2baby.myeasyorders.com/products/salopet-waterproof-winter-baby-Doll
+              - img [ref=e1146]
+              - text: رابط
+            - button "حذف" [ref=e1150]:
+              - img [ref=e1151]
+              - text: حذف
+        - generic [ref=e1154] [cursor=pointer]:
+          - generic [ref=e1155]:
+            - img [ref=e1156]
+            - img [ref=e1159]
+            - generic:
+              - generic:
+                - img
+                - text: مخزون منخفض
+          - generic [ref=e1161]:
+            - heading "سالوبيت واتر بروف مبطن للبيبي – Smile" [level=3] [ref=e1162]
+            - generic [ref=e1163]:
+              - generic [ref=e1164]: SKU-00006
+              - generic [ref=e1165]: "|"
+              - generic [ref=e1166]: "ID: 42596ee2-1212-4a20-9800-f5fe12dc04a6"
+            - generic [ref=e1167]:
+              - generic [ref=e1168]:
+                - generic [ref=e1169]: 459 ج.م
+                - generic [ref=e1170]: تكلفة 275.4 ج.م
+              - generic [ref=e1171]:
+                - generic [ref=e1172]: 2 قطعة
+                - generic [ref=e1173]: +183.6 ج.م (40%)
+            - generic [ref=e1175]:
+              - img [ref=e1176]
+              - text: 3 متغير
+              - generic [ref=e1180]: (1 منخفض)
+          - generic [ref=e1182]:
+            - button "تعديل" [ref=e1183]:
+              - img [ref=e1184]
+              - text: تعديل
+            - link "رابط" [ref=e1186]:
+              - /url: https://x2baby.myeasyorders.com/products/salopet-waterproof-winter-baby-Smile
+              - img [ref=e1187]
+              - text: رابط
+            - button "حذف" [ref=e1191]:
+              - img [ref=e1192]
+              - text: حذف

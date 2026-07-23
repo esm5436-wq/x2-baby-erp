@@ -1,0 +1,33 @@
+- generic [ref=e27]:
+  - button "المساعد الذكي" [ref=e28] [cursor=pointer]
+  - navigation [ref=e32]:
+    - generic [ref=e34]:
+      - img "Logo" [ref=e230]
+      - generic [ref=e39]:
+        - heading "X2 BABY" [level=1] [ref=e40]
+        - paragraph [ref=e41]: الجودة، الثقة، والأمان
+        - img "Slogan Design" [ref=e232]
+    - generic [ref=e42]:
+      - link "المخزون" [ref=e44] [cursor=pointer]:
+        - /url: "#/"
+      - link "الطلبات" [ref=e51] [cursor=pointer]:
+        - /url: "#/orders"
+      - link "المشتريات" [ref=e57] [cursor=pointer]:
+        - /url: "#/purchases"
+      - link "الحسابات والمالية" [ref=e63] [cursor=pointer]:
+        - /url: "#/accounts"
+      - link "جهات الاتصال" [ref=e68] [cursor=pointer]:
+        - /url: "#/contacts"
+      - link "العملاء" [active] [ref=e76] [cursor=pointer]:
+        - /url: "#/customers"
+      - link "سجل النشاطات" [ref=e83] [cursor=pointer]:
+        - /url: "#/activity-logs"
+      - link "Easy Orders" [ref=e88] [cursor=pointer]:
+        - /url: "#/easy-orders"
+      - link "إدارة البيانات" [ref=e94] [cursor=pointer]:
+        - /url: "#/settings"
+    - generic [ref=e99]:
+      - button "الوضع النهاري" [ref=e104] [cursor=pointer]
+      - button "تسجيل الخروج" [ref=e113] [cursor=pointer]
+  - main [ref=e126]:
+    - paragraph [ref=e3238]: جاري تحميل البيانات المالية...

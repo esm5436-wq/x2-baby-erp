@@ -1,0 +1,72 @@
+- generic [ref=e27]:
+  - button "المساعد الذكي" [ref=e28] [cursor=pointer]
+  - navigation [ref=e32]:
+    - generic [ref=e34]:
+      - img "Logo" [ref=e230]
+      - generic [ref=e39]:
+        - heading "X2 BABY" [level=1] [ref=e40]
+        - paragraph [ref=e41]: الجودة، الثقة، والأمان
+        - img "Slogan Design" [ref=e232]
+    - generic [ref=e42]:
+      - link "المخزون" [ref=e44] [cursor=pointer]:
+        - /url: "#/"
+      - link "الطلبات" [ref=e51] [cursor=pointer]:
+        - /url: "#/orders"
+      - link "المشتريات" [ref=e57] [cursor=pointer]:
+        - /url: "#/purchases"
+      - link "الحسابات والمالية" [ref=e63] [cursor=pointer]:
+        - /url: "#/accounts"
+      - link "جهات الاتصال" [ref=e68] [cursor=pointer]:
+        - /url: "#/contacts"
+      - link "العملاء" [active] [ref=e76] [cursor=pointer]:
+        - /url: "#/customers"
+      - link "سجل النشاطات" [ref=e83] [cursor=pointer]:
+        - /url: "#/activity-logs"
+      - link "Easy Orders" [ref=e88] [cursor=pointer]:
+        - /url: "#/easy-orders"
+      - link "إدارة البيانات" [ref=e94] [cursor=pointer]:
+        - /url: "#/settings"
+    - generic [ref=e99]:
+      - button "الوضع النهاري" [ref=e104] [cursor=pointer]
+      - button "تسجيل الخروج" [ref=e113] [cursor=pointer]
+  - main [ref=e126]:
+    - generic [ref=e3168]:
+      - generic [ref=e3169]:
+        - generic [ref=e3170]:
+          - heading [level=2] [ref=e3171]
+          - paragraph [ref=e3176]: إدارة الموردين وتوريدات المنتجات
+        - generic [ref=e3177]:
+          - button "تصدير Excel" [ref=e3178] [cursor=pointer]
+          - button "تصدير PDF" [ref=e3182] [cursor=pointer]
+          - button "تصدير ويب تفاعلي" [ref=e3187] [cursor=pointer]
+          - button "تصدير CSV" [ref=e3191] [cursor=pointer]
+          - button "تصدير JSON" [ref=e3195] [cursor=pointer]
+          - button "تسجيل مصروف / مشتريات" [ref=e3199] [cursor=pointer]
+      - generic [ref=e3201]:
+        - generic [ref=e3202]:
+          - heading "سجل العمليات المالية (الصرف)" [level=3] [ref=e3203]
+          - generic [ref=e3204]:
+            - textbox "بحث في السجل..." [ref=e3209]
+            - combobox [ref=e3210] [cursor=pointer]:
+              - option "الكل" [selected]
+              - option "بضاعة"
+              - option "مصروفات"
+            - combobox [ref=e3212] [cursor=pointer]:
+              - option "التاريخ" [selected]
+              - option "المبلغ"
+              - option "النوع"
+            - button "▼" [ref=e3213] [cursor=pointer]
+        - generic [ref=e3217]:
+          - table [ref=e3218]:
+            - rowgroup [ref=e3219]:
+              - row [ref=e3220]:
+                - columnheader "النوع / المورد" [ref=e3221]
+                - columnheader "البيان / الفاتورة" [ref=e3222]
+                - columnheader "التاريخ" [ref=e3223]
+                - columnheader "الإضافة" [ref=e3224]
+                - columnheader "آخر تعديل" [ref=e3225]
+                - columnheader "التصنيف" [ref=e3226]
+                - columnheader "المبلغ" [ref=e3227]
+                - columnheader [ref=e3228]
+            - rowgroup
+          - paragraph [ref=e3233]: لا توجد عمليات تطابق البحث

@@ -1,0 +1,437 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e53]:
+    - button "المساعد الذكي" [ref=f1e54] [cursor=pointer]
+    - navigation [ref=f1e58]:
+      - generic [ref=f1e60]:
+        - img "Logo" [ref=f1e301]
+        - generic [ref=f1e65]:
+          - heading "X2 BABY" [level=1] [ref=f1e66]
+          - paragraph [ref=f1e67]: الجودة، الثقة، والأمان
+          - img "Slogan Design" [ref=f1e303]
+      - generic [ref=f1e68]:
+        - link "المخزون" [ref=f1e70] [cursor=pointer]:
+          - /url: "#/"
+        - link "الطلبات" [ref=f1e77] [cursor=pointer]:
+          - /url: "#/orders"
+        - link "المشتريات" [ref=f1e83] [cursor=pointer]:
+          - /url: "#/purchases"
+        - link "الحسابات والمالية" [ref=f1e89] [cursor=pointer]:
+          - /url: "#/accounts"
+        - link "جهات الاتصال" [ref=f1e94] [cursor=pointer]:
+          - /url: "#/contacts"
+        - link "العملاء" [ref=f1e102] [cursor=pointer]:
+          - /url: "#/customers"
+        - link "سجل النشاطات" [active] [ref=f1e109] [cursor=pointer]:
+          - /url: "#/activity-logs"
+        - link "Easy Orders" [ref=f1e114] [cursor=pointer]:
+          - /url: "#/easy-orders"
+        - link "إدارة البيانات" [ref=f1e120] [cursor=pointer]:
+          - /url: "#/settings"
+      - generic [ref=f1e125]:
+        - button "الوضع النهاري" [ref=f1e130] [cursor=pointer]
+        - button "تسجيل الخروج" [ref=f1e139] [cursor=pointer]
+    - main [ref=f1e152]:
+      - generic [ref=f1e2431]:
+        - generic [ref=f1e2432]:
+          - generic [ref=f1e2437]:
+            - heading "سجل النشاطات" [level=1] [ref=f1e2438]
+            - paragraph [ref=f1e2439]: إجمالي 705 نشاط
+          - generic [ref=f1e2440]:
+            - combobox [ref=f1e2442] [cursor=pointer]:
+              - option "التاريخ" [selected]
+              - option "نوع الكيان"
+              - option "الإجراء"
+            - button "▼" [ref=f1e2443] [cursor=pointer]
+            - button [ref=f1e2447] [cursor=pointer]
+            - button [ref=f1e2450] [cursor=pointer]
+        - generic [ref=f1e2457]:
+          - generic [ref=f1e2458]:
+            - generic [ref=f1e2459]: نوع الكيان
+            - combobox [ref=f1e2460]:
+              - option "الكل" [selected]
+              - option "منتج"
+              - option "طلب"
+              - option "مصروف"
+              - option "جهة اتصال"
+              - option "مورد"
+              - option "قسم"
+              - option "هدف مالي"
+              - option "إعدادات"
+              - option "فاتورة مشتريات"
+              - option "حالة النظام"
+          - generic [ref=f1e2461]:
+            - generic [ref=f1e2462]: نوع الإجراء
+            - combobox [ref=f1e2463]:
+              - option "الكل" [selected]
+              - option "إنشاء"
+              - option "تحديث"
+              - option "حذف"
+              - option "استيراد"
+          - generic [ref=f1e2464]:
+            - generic [ref=f1e2465]: بحث في الوصف
+            - textbox "ابحث..." [ref=f1e2470]
+          - generic [ref=f1e2471]:
+            - generic [ref=f1e2472]:
+              - generic [ref=f1e2473]: من تاريخ
+              - textbox [ref=f1e2477]
+            - generic [ref=f1e2478]:
+              - generic [ref=f1e2479]: إلى تاريخ
+              - textbox [ref=f1e2483]
+        - generic [ref=f1e2484]:
+          - generic [ref=f1e2485]:
+            - generic [ref=f1e2487] [cursor=pointer]:
+              - generic [ref=f1e2488]: حذف
+              - generic [ref=f1e2489]: جهة اتصال
+              - generic [ref=f1e2490]:
+                - paragraph [ref=f1e2498]: "تم حذف جهة اتصال: jd express"
+                - paragraph [ref=f1e2499]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٩ ص
+              - button [ref=f1e2500]
+            - generic [ref=f1e2507] [cursor=pointer]:
+              - generic [ref=f1e2508]: حذف
+              - generic [ref=f1e2509]: جهة اتصال
+              - generic [ref=f1e2510]:
+                - paragraph [ref=f1e2518]: "تم حذف جهة اتصال: jd express"
+                - paragraph [ref=f1e2519]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٩ ص
+              - button [ref=f1e2520]
+            - generic [ref=f1e2527] [cursor=pointer]:
+              - generic [ref=f1e2528]: حذف
+              - generic [ref=f1e2529]: جهة اتصال
+              - generic [ref=f1e2530]:
+                - paragraph [ref=f1e2538]: "تم حذف جهة اتصال: jd express"
+                - paragraph [ref=f1e2539]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٨ ص
+              - button [ref=f1e2540]
+            - generic [ref=f1e2547] [cursor=pointer]:
+              - generic [ref=f1e2548]: حذف
+              - generic [ref=f1e2549]: جهة اتصال
+              - generic [ref=f1e2550]:
+                - paragraph [ref=f1e2558]: "تم حذف جهة اتصال: jd express"
+                - paragraph [ref=f1e2559]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٨ ص
+              - button [ref=f1e2560]
+            - generic [ref=f1e2567] [cursor=pointer]:
+              - generic [ref=f1e2568]: حذف
+              - generic [ref=f1e2569]: جهة اتصال
+              - generic [ref=f1e2570]:
+                - paragraph [ref=f1e2578]: "تم حذف جهة اتصال: jd express"
+                - paragraph [ref=f1e2579]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٨ ص
+              - button [ref=f1e2580]
+            - generic [ref=f1e2587] [cursor=pointer]:
+              - generic [ref=f1e2588]: حذف
+              - generic [ref=f1e2589]: جهة اتصال
+              - generic [ref=f1e2590]:
+                - paragraph [ref=f1e2598]: "تم حذف جهة اتصال: c-1784627868945-1e1x"
+                - paragraph [ref=f1e2599]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٨ ص
+              - button [ref=f1e2600]
+            - generic [ref=f1e2607] [cursor=pointer]:
+              - generic [ref=f1e2608]: حذف
+              - generic [ref=f1e2609]: جهة اتصال
+              - generic [ref=f1e2610]:
+                - paragraph [ref=f1e2618]: "تم حذف جهة اتصال: jd express"
+                - paragraph [ref=f1e2619]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٨ ص
+              - button [ref=f1e2620]
+            - generic [ref=f1e2627] [cursor=pointer]:
+              - generic [ref=f1e2628]: حذف
+              - generic [ref=f1e2629]: جهة اتصال
+              - generic [ref=f1e2630]:
+                - paragraph [ref=f1e2638]: "تم حذف جهة اتصال: jd express"
+                - paragraph [ref=f1e2639]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٨ ص
+              - button [ref=f1e2640]
+            - generic [ref=f1e2647] [cursor=pointer]:
+              - generic [ref=f1e2648]: حذف
+              - generic [ref=f1e2649]: جهة اتصال
+              - generic [ref=f1e2650]:
+                - paragraph [ref=f1e2658]: "تم حذف جهة اتصال: jd express"
+                - paragraph [ref=f1e2659]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٨ ص
+              - button [ref=f1e2660]
+            - generic [ref=f1e2667] [cursor=pointer]:
+              - generic [ref=f1e2668]: حذف
+              - generic [ref=f1e2669]: جهة اتصال
+              - generic [ref=f1e2670]:
+                - paragraph [ref=f1e2678]: "تم حذف جهة اتصال: jd express"
+                - paragraph [ref=f1e2679]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٨ ص
+              - button [ref=f1e2680]
+            - generic [ref=f1e2687] [cursor=pointer]:
+              - generic [ref=f1e2688]: حذف
+              - generic [ref=f1e2689]: جهة اتصال
+              - generic [ref=f1e2690]:
+                - paragraph [ref=f1e2698]: "تم حذف جهة اتصال: jd express"
+                - paragraph [ref=f1e2699]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٨ ص
+              - button [ref=f1e2700]
+            - generic [ref=f1e2707] [cursor=pointer]:
+              - generic [ref=f1e2708]: حذف
+              - generic [ref=f1e2709]: جهة اتصال
+              - generic [ref=f1e2710]:
+                - paragraph [ref=f1e2718]: "تم حذف جهة اتصال: jd express"
+                - paragraph [ref=f1e2719]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٨ ص
+              - button [ref=f1e2720]
+            - generic [ref=f1e2727] [cursor=pointer]:
+              - generic [ref=f1e2728]: إنشاء
+              - generic [ref=f1e2729]: جهة اتصال
+              - generic [ref=f1e2730]:
+                - paragraph [ref=f1e2738]: "تم إضافة جهة اتصال: jd express"
+                - paragraph [ref=f1e2739]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٧ ص
+              - button [ref=f1e2740]
+            - generic [ref=f1e2747] [cursor=pointer]:
+              - generic [ref=f1e2748]: إنشاء
+              - generic [ref=f1e2749]: جهة اتصال
+              - generic [ref=f1e2750]:
+                - paragraph [ref=f1e2758]: "تم إضافة جهة اتصال: jd express"
+                - paragraph [ref=f1e2759]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٧ ص
+              - button [ref=f1e2760]
+            - generic [ref=f1e2767] [cursor=pointer]:
+              - generic [ref=f1e2768]: إنشاء
+              - generic [ref=f1e2769]: جهة اتصال
+              - generic [ref=f1e2770]:
+                - paragraph [ref=f1e2778]: "تم إضافة جهة اتصال: jd express"
+                - paragraph [ref=f1e2779]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٧ ص
+              - button [ref=f1e2780]
+            - generic [ref=f1e2787] [cursor=pointer]:
+              - generic [ref=f1e2788]: إنشاء
+              - generic [ref=f1e2789]: جهة اتصال
+              - generic [ref=f1e2790]:
+                - paragraph [ref=f1e2798]: "تم إضافة جهة اتصال: jd express"
+                - paragraph [ref=f1e2799]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٧ ص
+              - button [ref=f1e2800]
+            - generic [ref=f1e2807] [cursor=pointer]:
+              - generic [ref=f1e2808]: إنشاء
+              - generic [ref=f1e2809]: جهة اتصال
+              - generic [ref=f1e2810]:
+                - paragraph [ref=f1e2818]: "تم إضافة جهة اتصال: jd express"
+                - paragraph [ref=f1e2819]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٧ ص
+              - button [ref=f1e2820]
+            - generic [ref=f1e2827] [cursor=pointer]:
+              - generic [ref=f1e2828]: إنشاء
+              - generic [ref=f1e2829]: جهة اتصال
+              - generic [ref=f1e2830]:
+                - paragraph [ref=f1e2838]: "تم إضافة جهة اتصال: jd express"
+                - paragraph [ref=f1e2839]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٧ ص
+              - button [ref=f1e2840]
+            - generic [ref=f1e2847] [cursor=pointer]:
+              - generic [ref=f1e2848]: إنشاء
+              - generic [ref=f1e2849]: جهة اتصال
+              - generic [ref=f1e2850]:
+                - paragraph [ref=f1e2858]: "تم إضافة جهة اتصال: jd express"
+                - paragraph [ref=f1e2859]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٧ ص
+              - button [ref=f1e2860]
+            - generic [ref=f1e2867] [cursor=pointer]:
+              - generic [ref=f1e2868]: إنشاء
+              - generic [ref=f1e2869]: جهة اتصال
+              - generic [ref=f1e2870]:
+                - paragraph [ref=f1e2878]: "تم إضافة جهة اتصال: jd express"
+                - paragraph [ref=f1e2879]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٧ ص
+              - button [ref=f1e2880]
+            - generic [ref=f1e2887] [cursor=pointer]:
+              - generic [ref=f1e2888]: إنشاء
+              - generic [ref=f1e2889]: جهة اتصال
+              - generic [ref=f1e2890]:
+                - paragraph [ref=f1e2898]: "تم إضافة جهة اتصال: jd express"
+                - paragraph [ref=f1e2899]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٧ ص
+              - button [ref=f1e2900]
+            - generic [ref=f1e2907] [cursor=pointer]:
+              - generic [ref=f1e2908]: إنشاء
+              - generic [ref=f1e2909]: جهة اتصال
+              - generic [ref=f1e2910]:
+                - paragraph [ref=f1e2918]: "تم إضافة جهة اتصال: jd express"
+                - paragraph [ref=f1e2919]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٧ ص
+              - button [ref=f1e2920]
+            - generic [ref=f1e2927] [cursor=pointer]:
+              - generic [ref=f1e2928]: إنشاء
+              - generic [ref=f1e2929]: جهة اتصال
+              - generic [ref=f1e2930]:
+                - paragraph [ref=f1e2938]: "تم إضافة جهة اتصال: jd express"
+                - paragraph [ref=f1e2939]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٧ ص
+              - button [ref=f1e2940]
+            - generic [ref=f1e2947] [cursor=pointer]:
+              - generic [ref=f1e2948]: إنشاء
+              - generic [ref=f1e2949]: جهة اتصال
+              - generic [ref=f1e2950]:
+                - paragraph [ref=f1e2958]: "تم إضافة جهة اتصال: jd express"
+                - paragraph [ref=f1e2959]: ٢١ يوليو ٢٠٢٦، ٠٩:٥٧ ص
+              - button [ref=f1e2960]
+            - generic [ref=f1e2967] [cursor=pointer]:
+              - generic [ref=f1e2968]: حذف
+              - generic [ref=f1e2969]: user
+              - generic [ref=f1e2970]:
+                - paragraph [ref=f1e2972]: تم حذف المستخدم xx
+                - paragraph [ref=f1e2973]: ١٨ يوليو ٢٠٢٦، ٠٨:٣١ ص
+              - button [ref=f1e2974]
+            - generic [ref=f1e2981] [cursor=pointer]:
+              - generic [ref=f1e2982]: تحديث
+              - generic [ref=f1e2983]: user
+              - generic [ref=f1e2984]:
+                - paragraph [ref=f1e2986]: تم تعديل بيانات المستخدم xx
+                - paragraph [ref=f1e2987]: ١٨ يوليو ٢٠٢٦، ٠٨:٣١ ص
+              - button [ref=f1e2988]
+            - generic [ref=f1e2995] [cursor=pointer]:
+              - generic [ref=f1e2996]: تحديث
+              - generic [ref=f1e2997]: user
+              - generic [ref=f1e2998]:
+                - paragraph [ref=f1e3000]: تم تعديل بيانات المستخدم eslam
+                - paragraph [ref=f1e3001]: ١٨ يوليو ٢٠٢٦، ٠٨:٣٠ ص
+              - button [ref=f1e3002]
+            - generic [ref=f1e3009] [cursor=pointer]:
+              - generic [ref=f1e3010]: تحديث
+              - generic [ref=f1e3011]: user
+              - generic [ref=f1e3012]:
+                - paragraph [ref=f1e3014]: تم تعديل بيانات المستخدم eslam
+                - paragraph [ref=f1e3015]: ١٨ يوليو ٢٠٢٦، ٠٨:٢٩ ص
+              - button [ref=f1e3016]
+            - generic [ref=f1e3023] [cursor=pointer]:
+              - generic [ref=f1e3024]: تحديث
+              - generic [ref=f1e3025]: user
+              - generic [ref=f1e3026]:
+                - paragraph [ref=f1e3028]: تم تعديل بيانات المستخدم xx
+                - paragraph [ref=f1e3029]: ١٨ يوليو ٢٠٢٦، ٠٨:٢٩ ص
+              - button [ref=f1e3030]
+            - generic [ref=f1e3037] [cursor=pointer]:
+              - generic [ref=f1e3038]: تحديث
+              - generic [ref=f1e3039]: user
+              - generic [ref=f1e3040]:
+                - paragraph [ref=f1e3042]: تم تعديل بيانات المستخدم .
+                - paragraph [ref=f1e3043]: ١٨ يوليو ٢٠٢٦، ٠٨:٢٨ ص
+              - button [ref=f1e3044]
+            - generic [ref=f1e3051] [cursor=pointer]:
+              - generic [ref=f1e3052]: تحديث
+              - generic [ref=f1e3053]: user
+              - generic [ref=f1e3054]:
+                - paragraph [ref=f1e3056]: تم تعديل بيانات المستخدم admin
+                - paragraph [ref=f1e3057]: ١٨ يوليو ٢٠٢٦، ٠٨:٢٨ ص
+              - button [ref=f1e3058]
+            - generic [ref=f1e3065] [cursor=pointer]:
+              - generic [ref=f1e3066]: إنشاء
+              - generic [ref=f1e3067]: user
+              - generic [ref=f1e3068]:
+                - paragraph [ref=f1e3070]: تم إنشاء مستخدم eslam
+                - paragraph [ref=f1e3071]: ١٨ يوليو ٢٠٢٦، ٠٨:٢٧ ص
+              - button [ref=f1e3072]
+            - generic [ref=f1e3079] [cursor=pointer]:
+              - generic [ref=f1e3080]: تحديث
+              - generic [ref=f1e3081]: إعدادات
+              - generic [ref=f1e3082]:
+                - paragraph [ref=f1e3088]: تم تعديل المفتاح 1
+                - paragraph [ref=f1e3089]: ٢٩ يونيو ٢٠٢٦، ١٠:٣٠ م
+              - button [ref=f1e3090]
+            - generic [ref=f1e3097] [cursor=pointer]:
+              - generic [ref=f1e3098]: تحديث
+              - generic [ref=f1e3099]: إعدادات
+              - generic [ref=f1e3100]:
+                - paragraph [ref=f1e3106]: تم تعديل المفتاح 1
+                - paragraph [ref=f1e3107]: ٢٩ يونيو ٢٠٢٦، ١٠:٣٠ م
+              - button [ref=f1e3108]
+            - generic [ref=f1e3115] [cursor=pointer]:
+              - generic [ref=f1e3116]: تحديث
+              - generic [ref=f1e3117]: إعدادات
+              - generic [ref=f1e3118]:
+                - paragraph [ref=f1e3124]: تم تعديل المفتاح 1
+                - paragraph [ref=f1e3125]: ٢٩ يونيو ٢٠٢٦، ١٠:٣٠ م
+              - button [ref=f1e3126]
+            - generic [ref=f1e3133] [cursor=pointer]:
+              - generic [ref=f1e3134]: حذف
+              - generic [ref=f1e3135]: user
+              - generic [ref=f1e3136]:
+                - paragraph [ref=f1e3138]: تم حذف المستخدم test
+                - paragraph [ref=f1e3139]: ٢٩ يونيو ٢٠٢٦، ١٠:١٦ م
+              - button [ref=f1e3140]
+            - generic [ref=f1e3147] [cursor=pointer]:
+              - generic [ref=f1e3148]: تحديث
+              - generic [ref=f1e3149]: user
+              - generic [ref=f1e3150]:
+                - paragraph [ref=f1e3152]: تم تعديل بيانات المستخدم test
+                - paragraph [ref=f1e3153]: ٢٩ يونيو ٢٠٢٦، ١٠:١٦ م
+              - button [ref=f1e3154]
+            - generic [ref=f1e3161] [cursor=pointer]:
+              - generic [ref=f1e3162]: تحديث
+              - generic [ref=f1e3163]: user
+              - generic [ref=f1e3164]:
+                - paragraph [ref=f1e3166]: تم تعديل بيانات المستخدم test
+                - paragraph [ref=f1e3167]: ٢٩ يونيو ٢٠٢٦، ١٠:١٦ م
+              - button [ref=f1e3168]
+            - generic [ref=f1e3175] [cursor=pointer]:
+              - generic [ref=f1e3176]: تحديث
+              - generic [ref=f1e3177]: إعدادات
+              - generic [ref=f1e3178]:
+                - paragraph [ref=f1e3184]: "تم تحديث الإعداد invoiceSettings.socialLinks ([{\"platform\":\"facebook\",\"url\":\"https://www.facebook.com/x2baby1\"},{\"platform\":\"instagram\",\"url\":\"https://www.instagram.com/x2_baby1/\"},{\"platform\":\"store\",\"url\":\"https://x2baby.myeasyorders.com/\"},{\"platform\":\"tiktok\",\"url\":\"https://www.tiktok.com/@x2_baby\"},{\"platform\":\"facebook\",\"url\":\"\"}])"
+                - paragraph [ref=f1e3185]: ٢٩ يونيو ٢٠٢٦، ٠٩:٢٩ ص
+              - button [ref=f1e3186]
+            - generic [ref=f1e3193] [cursor=pointer]:
+              - generic [ref=f1e3194]: تحديث
+              - generic [ref=f1e3195]: user
+              - generic [ref=f1e3196]:
+                - paragraph [ref=f1e3198]: تم تعديل بيانات المستخدم test
+                - paragraph [ref=f1e3199]: ٢٩ يونيو ٢٠٢٦، ٠٧:٠٣ ص
+              - button [ref=f1e3200]
+            - generic [ref=f1e3207] [cursor=pointer]:
+              - generic [ref=f1e3208]: تحديث
+              - generic [ref=f1e3209]: user
+              - generic [ref=f1e3210]:
+                - paragraph [ref=f1e3212]: تم تعديل بيانات المستخدم test
+                - paragraph [ref=f1e3213]: ٢٩ يونيو ٢٠٢٦، ٠٥:٣٥ ص
+              - button [ref=f1e3214]
+            - generic [ref=f1e3221] [cursor=pointer]:
+              - generic [ref=f1e3222]: تحديث
+              - generic [ref=f1e3223]: user
+              - generic [ref=f1e3224]:
+                - paragraph [ref=f1e3226]: تم تعديل بيانات المستخدم test
+                - paragraph [ref=f1e3227]: ٢٩ يونيو ٢٠٢٦، ٠٥:٣٠ ص
+              - button [ref=f1e3228]
+            - generic [ref=f1e3235] [cursor=pointer]:
+              - generic [ref=f1e3236]: تحديث
+              - generic [ref=f1e3237]: user
+              - generic [ref=f1e3238]:
+                - paragraph [ref=f1e3240]: تم تعديل بيانات المستخدم test
+                - paragraph [ref=f1e3241]: ٢٩ يونيو ٢٠٢٦، ٠٥:٢٩ ص
+              - button [ref=f1e3242]
+            - generic [ref=f1e3249] [cursor=pointer]:
+              - generic [ref=f1e3250]: تحديث
+              - generic [ref=f1e3251]: user
+              - generic [ref=f1e3252]:
+                - paragraph [ref=f1e3254]: تم تعديل بيانات المستخدم test
+                - paragraph [ref=f1e3255]: ٢٩ يونيو ٢٠٢٦، ٠٥:٢٩ ص
+              - button [ref=f1e3256]
+            - generic [ref=f1e3263] [cursor=pointer]:
+              - generic [ref=f1e3264]: تحديث
+              - generic [ref=f1e3265]: user
+              - generic [ref=f1e3266]:
+                - paragraph [ref=f1e3268]: تم تعديل بيانات المستخدم test
+                - paragraph [ref=f1e3269]: ٢٩ يونيو ٢٠٢٦، ٠٥:٢٧ ص
+              - button [ref=f1e3270]
+            - generic [ref=f1e3277] [cursor=pointer]:
+              - generic [ref=f1e3278]: تحديث
+              - generic [ref=f1e3279]: إعدادات
+              - generic [ref=f1e3280]:
+                - paragraph [ref=f1e3286]: تم تحديث إعدادات Easy Orders
+                - paragraph [ref=f1e3287]: ٢٩ يونيو ٢٠٢٦، ٠٤:٣٨ ص
+              - button [ref=f1e3288]
+            - generic [ref=f1e3295] [cursor=pointer]:
+              - generic [ref=f1e3296]: تحديث
+              - generic [ref=f1e3297]: إعدادات
+              - generic [ref=f1e3298]:
+                - paragraph [ref=f1e3304]: تم تحديث إعدادات Easy Orders
+                - paragraph [ref=f1e3305]: ٢٩ يونيو ٢٠٢٦، ٠٤:٣٧ ص
+              - button [ref=f1e3306]
+            - generic [ref=f1e3313] [cursor=pointer]:
+              - generic [ref=f1e3314]: تحديث
+              - generic [ref=f1e3315]: إعدادات
+              - generic [ref=f1e3316]:
+                - paragraph [ref=f1e3322]: تم تحديث إعدادات Easy Orders
+                - paragraph [ref=f1e3323]: ٢٩ يونيو ٢٠٢٦، ٠٤:٣٥ ص
+              - button [ref=f1e3324]
+            - generic [ref=f1e3331] [cursor=pointer]:
+              - generic [ref=f1e3332]: تحديث
+              - generic [ref=f1e3333]: إعدادات
+              - generic [ref=f1e3334]:
+                - paragraph [ref=f1e3340]: تم تحديث إعدادات Easy Orders
+                - paragraph [ref=f1e3341]: ٢٩ يونيو ٢٠٢٦، ٠٤:٣٥ ص
+              - button [ref=f1e3342]
+            - generic [ref=f1e3349] [cursor=pointer]:
+              - generic [ref=f1e3350]: تحديث
+              - generic [ref=f1e3351]: إعدادات
+              - generic [ref=f1e3352]:
+                - paragraph [ref=f1e3358]: تم تحديث إعدادات Easy Orders
+                - paragraph [ref=f1e3359]: ٢٩ يونيو ٢٠٢٦، ٠٤:٣٥ ص
+              - button [ref=f1e3360]
+          - generic [ref=f1e3366]:
+            - paragraph [ref=f1e3367]: صفحة 1 من 15
+            - generic [ref=f1e3368]:
+              - button [disabled] [ref=f1e3369]
+              - button [ref=f1e3372] [cursor=pointer]
+  - generic [ref=f1e1450]: "250"

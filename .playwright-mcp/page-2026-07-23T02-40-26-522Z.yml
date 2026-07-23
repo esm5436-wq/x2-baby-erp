@@ -1,0 +1,29 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e3643]:
+    - generic [ref=f1e3645]:
+      - img "X2 BABY" [ref=f1e3650]
+      - heading "X 2 B A B Y" [level=1] [ref=f1e3652]:
+        - generic [ref=f1e3653]: X
+        - generic [ref=f1e3654]: "2"
+        - generic [ref=f1e3656]: B
+        - generic [ref=f1e3657]: A
+        - generic [ref=f1e3658]: B
+        - generic [ref=f1e3659]: "Y"
+      - paragraph [ref=f1e3660]: الجودة، الثقة، والأمان
+      - generic [ref=f1e3661]: ثقة أكثر من ١٠٠٠ عميل
+    - generic [ref=f1e3667]:
+      - generic [ref=f1e3668]:
+        - button "تبديل السمة" [ref=f1e3669] [cursor=pointer]
+        - generic [ref=f1e3676]:
+          - heading "تسجيل الدخول" [level=2] [ref=f1e3677]
+          - paragraph [ref=f1e3678]: أهلاً بك في نظام X2
+      - generic [ref=f1e3679]:
+        - generic [ref=f1e3680]:
+          - generic: اسم المستخدم
+          - textbox "اسم المستخدم" [active] [ref=f1e3681]: admin
+        - generic [ref=f1e3682]:
+          - generic: كلمة المرور
+          - textbox "كلمة المرور" [ref=f1e3683]: 51e08305-dfce-4b2d-a62a-9aa04037e543
+          - button "إظهار كلمة المرور" [ref=f1e3684] [cursor=pointer]
+        - button "تسجيل الدخول" [ref=f1e3688] [cursor=pointer]
+  - generic [ref=f1e1450]: "250"

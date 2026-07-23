@@ -1,0 +1,74 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e3692]:
+    - button "المساعد الذكي" [ref=f1e3693] [cursor=pointer]
+    - navigation [ref=f1e3697]:
+      - generic [ref=f1e3699]:
+        - img "Logo" [ref=f1e3701]
+        - generic [ref=f1e3702]:
+          - heading "X2 BABY" [level=1] [ref=f1e3703]
+          - paragraph [ref=f1e3704]: الجودة، الثقة، والأمان
+          - img "Slogan Design" [ref=f1e3706]
+      - generic [ref=f1e3707]:
+        - link "المخزون" [ref=f1e3709] [cursor=pointer]:
+          - /url: "#/"
+        - link "الطلبات" [ref=f1e3716] [cursor=pointer]:
+          - /url: "#/orders"
+        - link "المشتريات" [ref=f1e3722] [cursor=pointer]:
+          - /url: "#/purchases"
+        - link "الحسابات والمالية" [ref=f1e3728] [cursor=pointer]:
+          - /url: "#/accounts"
+        - link "جهات الاتصال" [ref=f1e3733] [cursor=pointer]:
+          - /url: "#/contacts"
+        - link "العملاء" [ref=f1e3741] [cursor=pointer]:
+          - /url: "#/customers"
+        - link "سجل النشاطات" [ref=f1e3748] [cursor=pointer]:
+          - /url: "#/activity-logs"
+        - link "Easy Orders" [ref=f1e3753] [cursor=pointer]:
+          - /url: "#/easy-orders"
+        - link "إدارة البيانات" [ref=f1e3759] [cursor=pointer]:
+          - /url: "#/settings"
+      - generic [ref=f1e3764]:
+        - button "الوضع النهاري" [ref=f1e3765] [cursor=pointer]
+        - button "تسجيل الخروج" [ref=f1e3774] [cursor=pointer]
+    - main [ref=f1e3787]:
+      - generic [ref=f1e3788]:
+        - generic [ref=f1e3789]:
+          - generic [ref=f1e3790]:
+            - heading [level=2] [ref=f1e3791]
+            - paragraph [ref=f1e3796]: إدارة الموردين وتوريدات المنتجات
+          - generic [ref=f1e3797]:
+            - button "تصدير Excel" [ref=f1e3798] [cursor=pointer]
+            - button "تصدير PDF" [ref=f1e3802] [cursor=pointer]
+            - button "تصدير ويب تفاعلي" [ref=f1e3807] [cursor=pointer]
+            - button "تصدير CSV" [ref=f1e3811] [cursor=pointer]
+            - button "تصدير JSON" [ref=f1e3815] [cursor=pointer]
+            - button "تسجيل" [ref=f1e3819] [cursor=pointer]
+        - generic [ref=f1e3821]:
+          - generic [ref=f1e3824]:
+            - heading "سجل العمليات المالية (الصرف)" [level=3] [ref=f1e3825]
+            - generic [ref=f1e3826]:
+              - textbox "بحث في السجل..." [ref=f1e3831]
+              - combobox [ref=f1e3832] [cursor=pointer]:
+                - option "الكل" [selected]
+                - option "بضاعة"
+                - option "مصروفات"
+              - combobox [ref=f1e3834] [cursor=pointer]:
+                - option "التاريخ" [selected]
+                - option "المبلغ"
+                - option "النوع"
+              - button "▼" [ref=f1e3835] [cursor=pointer]
+          - generic [ref=f1e3839]:
+            - table [ref=f1e3840]:
+              - rowgroup [ref=f1e3841]:
+                - row [ref=f1e3842]:
+                  - columnheader "النوع / المورد" [ref=f1e3843]
+                  - columnheader "البيان / الفاتورة" [ref=f1e3844]
+                  - columnheader "التاريخ" [ref=f1e3845]
+                  - columnheader "الإضافة" [ref=f1e3846]
+                  - columnheader "آخر تعديل" [ref=f1e3847]
+                  - columnheader "التصنيف" [ref=f1e3848]
+                  - columnheader "المبلغ" [ref=f1e3849]
+                  - columnheader [ref=f1e3850]
+              - rowgroup
+            - paragraph [ref=f1e3855]: لا توجد عمليات تطابق البحث
+  - generic [ref=f1e1450]: "250"

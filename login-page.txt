@@ -1,0 +1,49 @@
+- generic [ref=e57]:
+  - button "المساعد الذكي" [ref=e58] [cursor=pointer]:
+    - img [ref=e59]
+  - navigation [ref=e62]:
+    - generic [ref=e63]:
+      - link "المخزون" [ref=e64] [cursor=pointer]:
+        - /url: "#/"
+        - img [ref=e65]
+        - generic [ref=e69]: المخزون
+      - link "الطلبات" [ref=e70] [cursor=pointer]:
+        - /url: "#/orders"
+        - img [ref=e71]
+        - generic [ref=e74]: الطلبات
+      - link "المشتريات" [ref=e75] [cursor=pointer]:
+        - /url: "#/purchases"
+        - img [ref=e76]
+        - generic [ref=e79]: المشتريات
+      - link "الحسابات" [ref=e80] [cursor=pointer]:
+        - /url: "#/accounts"
+        - img [ref=e81]
+        - generic [ref=e83]: الحسابات
+      - button "المزيد" [ref=e85] [cursor=pointer]:
+        - img [ref=e86]
+        - generic [ref=e90]: المزيد
+  - main [ref=e91]:
+    - generic [ref=e92]:
+      - generic [ref=e93]:
+        - heading "المخزون المتوفر" [level=2] [ref=e94]:
+          - img [ref=e96]
+          - text: المخزون المتوفر
+        - generic [ref=e100]:
+          - generic [ref=e101]:
+            - img [ref=e102]
+            - textbox "ابحث عن منتج..." [ref=e105]
+          - button "استيراد منتجات" [disabled] [ref=e106]:
+            - img [ref=e107]
+            - text: استيراد منتجات
+          - button "إضافة منتج" [ref=e112] [cursor=pointer]:
+            - img [ref=e113]
+            - text: إضافة منتج
+      - button "فلاتر وإحصائيات" [ref=e115] [cursor=pointer]:
+        - img [ref=e116]
+        - heading "فلاتر وإحصائيات" [level=2] [ref=e119]
+        - img [ref=e121]
+  - generic [ref=e161] [cursor=pointer]:
+    - img [ref=e163]
+    - generic [ref=e166]:
+      - paragraph [ref=e167]: إضافة إلى الشاشة الرئيسية
+      - paragraph [ref=e168]: للوصول السريع والتشغيل كتطبيق مستقل

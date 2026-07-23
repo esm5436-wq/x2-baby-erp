@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { AppState, Order, Product, EasyOrdersConfig, SyncLogEntry } from '../types';
 
-const API_BASE = '/api';
+import { API_BASE } from '../lib/api';
 
 interface EasyOrdersPanelProps {
   state: AppState;

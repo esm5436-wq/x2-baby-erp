@@ -1,0 +1,69 @@
+- generic [ref=e48]:
+  - button "المساعد الذكي" [ref=e49] [cursor=pointer]:
+    - img [ref=e50]
+  - navigation [ref=e202]:
+    - generic [ref=e203]:
+      - link "المخزون" [ref=e204] [cursor=pointer]:
+        - /url: "#/"
+        - img [ref=e205]
+        - generic [ref=e209]: المخزون
+      - link "الطلبات" [ref=e210] [cursor=pointer]:
+        - /url: "#/orders"
+        - img [ref=e211]
+        - generic [ref=e214]: الطلبات
+      - link "المشتريات" [active] [ref=e215] [cursor=pointer]:
+        - /url: "#/purchases"
+        - img [ref=e216]
+        - generic [ref=e219]: المشتريات
+      - link "الحسابات" [ref=e220] [cursor=pointer]:
+        - /url: "#/accounts"
+        - img [ref=e221]
+        - generic [ref=e223]: الحسابات
+      - button "المزيد" [ref=e225] [cursor=pointer]:
+        - img [ref=e226]
+        - generic [ref=e230]: المزيد
+  - main [ref=e53]:
+    - generic [ref=e1136]:
+      - generic [ref=e1137]:
+        - generic [ref=e1138]:
+          - heading "حركة المشتريات" [level=2] [ref=e1139]:
+            - img [ref=e1141]
+            - text: حركة المشتريات
+          - paragraph [ref=e1144]: إدارة الموردين وتوريدات المنتجات
+        - generic [ref=e1145]:
+          - button "تصدير Excel" [ref=e1146] [cursor=pointer]:
+            - img [ref=e1147]
+          - button "تصدير PDF" [ref=e1150] [cursor=pointer]:
+            - img [ref=e1151]
+          - button "تصدير ويب تفاعلي" [ref=e1155] [cursor=pointer]:
+            - img [ref=e1156]
+          - button "تصدير CSV" [ref=e1159] [cursor=pointer]:
+            - img [ref=e1160]
+          - button "تصدير JSON" [ref=e1163] [cursor=pointer]:
+            - img [ref=e1164]
+          - button "تسجيل" [ref=e1167] [cursor=pointer]:
+            - img [ref=e1168]
+            - text: تسجيل
+      - generic [ref=e1169]:
+        - button "فلاتر وبحث" [ref=e1171] [cursor=pointer]:
+          - img [ref=e1172]
+          - heading "فلاتر وبحث" [level=2] [ref=e1174]
+          - img [ref=e1176]
+        - generic [ref=e1178]:
+          - table [ref=e1179]:
+            - rowgroup [ref=e1180]:
+              - row "النوع / المورد البيان / الفاتورة التاريخ المبلغ" [ref=e1181]:
+                - columnheader "النوع / المورد" [ref=e1182]
+                - columnheader "البيان / الفاتورة" [ref=e1183]
+                - columnheader "التاريخ" [ref=e1184]
+                - columnheader "المبلغ" [ref=e1185]
+                - columnheader [ref=e1186]
+            - rowgroup
+          - generic [ref=e1187]:
+            - img [ref=e1188]
+            - paragraph [ref=e1191]: لا توجد عمليات تطابق البحث
+  - generic [ref=e1193] [cursor=pointer]:
+    - img [ref=e1195]
+    - generic [ref=e1198]:
+      - paragraph [ref=e1199]: إضافة إلى الشاشة الرئيسية
+      - paragraph [ref=e1200]: للوصول السريع والتشغيل كتطبيق مستقل

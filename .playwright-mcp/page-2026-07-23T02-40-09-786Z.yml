@@ -1,0 +1,57 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e53]:
+    - button "المساعد الذكي" [ref=f1e54] [cursor=pointer]
+    - navigation [ref=f1e58]:
+      - generic [ref=f1e60]:
+        - img "Logo" [ref=f1e301]
+        - generic [ref=f1e65]:
+          - heading "X2 BABY" [level=1] [ref=f1e66]
+          - paragraph [ref=f1e67]: الجودة، الثقة، والأمان
+          - img "Slogan Design" [ref=f1e303]
+      - generic [ref=f1e68]:
+        - link "المخزون" [ref=f1e70] [cursor=pointer]:
+          - /url: "#/"
+        - link "الطلبات" [ref=f1e77] [cursor=pointer]:
+          - /url: "#/orders"
+        - link "المشتريات" [ref=f1e83] [cursor=pointer]:
+          - /url: "#/purchases"
+        - link "الحسابات والمالية" [ref=f1e89] [cursor=pointer]:
+          - /url: "#/accounts"
+        - link "جهات الاتصال" [ref=f1e94] [cursor=pointer]:
+          - /url: "#/contacts"
+        - link "العملاء" [ref=f1e102] [cursor=pointer]:
+          - /url: "#/customers"
+        - link "سجل النشاطات" [ref=f1e109] [cursor=pointer]:
+          - /url: "#/activity-logs"
+        - link "Easy Orders" [ref=f1e114] [cursor=pointer]:
+          - /url: "#/easy-orders"
+        - link "إدارة البيانات" [active] [ref=f1e120] [cursor=pointer]:
+          - /url: "#/settings"
+      - generic [ref=f1e125]:
+        - button "الوضع النهاري" [ref=f1e130] [cursor=pointer]
+        - button "تسجيل الخروج" [ref=f1e139] [cursor=pointer]
+    - main [ref=f1e152]:
+      - generic [ref=f1e3458]:
+        - button [ref=f1e3460] [cursor=pointer]:
+          - heading "الهوية البصرية" [level=2] [ref=f1e3467]
+        - button [ref=f1e3472] [cursor=pointer]:
+          - heading "إدارة التصنيفات" [level=2] [ref=f1e3476]
+        - button [ref=f1e3481] [cursor=pointer]:
+          - heading "الإعدادات المالية" [level=2] [ref=f1e3484]
+        - button [ref=f1e3489] [cursor=pointer]:
+          - heading "إعدادات العرض" [level=2] [ref=f1e3494]
+        - button [ref=f1e3499] [cursor=pointer]:
+          - heading "نقاط الاستعادة" [level=2] [ref=f1e3503]
+        - button [ref=f1e3508] [cursor=pointer]:
+          - heading "إعدادات الفاتورة" [level=2] [ref=f1e3513]
+        - button [ref=f1e3518] [cursor=pointer]:
+          - heading "إدارة مفاتيح AI API" [level=2] [ref=f1e3522]
+        - button [ref=f1e3527] [cursor=pointer]:
+          - heading "الكوبونات" [level=2] [ref=f1e3531]
+        - button [ref=f1e3536] [cursor=pointer]:
+          - heading "حسابي" [level=2] [ref=f1e3549]
+        - button [ref=f1e3554] [cursor=pointer]:
+          - heading "إدارة المستخدمين" [level=2] [ref=f1e3560]
+        - button [ref=f1e3565] [cursor=pointer]:
+          - heading "إدارة البيانات" [level=2] [ref=f1e3570]
+  - generic [ref=f1e1450]: "250"

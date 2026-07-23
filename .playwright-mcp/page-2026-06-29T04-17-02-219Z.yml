@@ -1,0 +1,31 @@
+- generic [ref=e61]:
+  - button "المساعد الذكي" [ref=e62] [cursor=pointer]:
+    - img [ref=e63]
+  - main [ref=e66]:
+    - generic [ref=e67]:
+      - generic [ref=e68]:
+        - img [ref=e69]
+        - heading "Easy Orders - التكامل" [level=1] [ref=e72]
+      - generic [ref=e73]:
+        - generic [ref=e74]: 🟢 مفعل
+        - generic [ref=e75]: 📦 0 منتج مصدر
+        - generic [ref=e76]: ⏳ 0 طلب قيد المراجعة
+      - generic [ref=e77]:
+        - button "الإعدادات" [ref=e78] [cursor=pointer]:
+          - img [ref=e79]
+          - text: الإعدادات
+        - button "تصدير المنتجات" [ref=e82] [cursor=pointer]:
+          - img [ref=e83]
+          - text: تصدير المنتجات
+        - button "الطلبات الواردة" [active] [ref=e86] [cursor=pointer]:
+          - img [ref=e87]
+          - text: الطلبات الواردة
+        - button "سجل المزامنة" [ref=e90] [cursor=pointer]:
+          - img [ref=e91]
+          - text: سجل المزامنة
+      - generic [ref=e150]:
+        - button [ref=e152] [cursor=pointer]:
+          - img [ref=e153]
+        - generic [ref=e158]:
+          - img [ref=e159]
+          - paragraph [ref=e162]: لا توجد طلبات قيد المراجعة. الطلبات الجديدة تصل تلقائياً عبر Webhook.

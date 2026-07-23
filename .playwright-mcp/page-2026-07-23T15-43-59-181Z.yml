@@ -1,0 +1,42 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e5]:
+        - img "Composio" [ref=e7]
+        - button "Sign in to Composio" [ref=e9] [cursor=pointer]
+      - paragraph [ref=e11]:
+        - text: By continuing, you agree to Composio's
+        - link "Terms of Service" [ref=e12] [cursor=pointer]:
+          - /url: https://composio.dev/terms
+        - text: and
+        - link "Privacy Policy" [ref=e13] [cursor=pointer]:
+          - /url: https://composio.dev/privacy
+        - text: .
+    - region [ref=e20]:
+      - generic [ref=e22]:
+        - group [ref=e23]:
+          - generic [ref=e24]:
+            - paragraph [ref=e25]: “A lot of students tell us that the moment their connected tools start talking to each other inside Opennote feels almost magical. The agent just knows them.”
+            - generic [ref=e26]:
+              - img "Abhi Arya" [ref=e27]
+              - generic [ref=e28]:
+                - paragraph [ref=e29]: Abhi Arya
+                - paragraph [ref=e30]: Co-founder, Opennote
+        - group:
+          - generic:
+            - paragraph: “Tool Router turned integrations into a truly plug-and-play experience; it just worked with our agent out of the box. We stopped burning time on one-off integrations.”
+            - generic:
+              - img "Sharon Yeh"
+              - generic:
+                - paragraph: Sharon Yeh
+                - paragraph: Staff Product Manager, Deepgram
+        - group:
+          - generic:
+            - paragraph: “As a solo builder, shipping fast is life or death. Getting bogged down in managing agent auth would have been a death sentence.”
+            - generic:
+              - img "Ryan Yu"
+              - generic:
+                - paragraph: Ryan Yu
+                - paragraph: Founder, Extra Thursday
+  - region "Notifications alt+T"
+  - alert [ref=e31]

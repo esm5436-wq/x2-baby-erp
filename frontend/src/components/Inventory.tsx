@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { formatDate } from '../lib/formatDate';
 import { useSearchParams } from 'react-router-dom';
+import CollapsibleSection from './CollapsibleSection';
 import { 
   Package, 
   Search, 
@@ -362,8 +363,8 @@ const SyncProductEditor: React.FC<{
             {(contacts || []).filter(c => c.entity_type === 'مصنع' || c.entity_type === 'تاجر جملة').map(c => <option key={c.id} value={c.id}>{c.company_name}</option>)}
           </select>
         </div>
-      </div>
-    </motion.div>
+          </div>
+        </motion.div>
   );
 };
 
@@ -1172,6 +1173,12 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
         </div>
 
         {/* Smart Filters Bar */}
+        <CollapsibleSection
+          title="فلاتر وترتيب"
+          icon={<Tag size={20} className="text-accent" />}
+          mobileOnly
+          headerClassName="bg-white dark:bg-slate-900 p-4 rounded-[32px] border border-gray-50 dark:border-slate-800 shadow-sm mb-2"
+        >
         <div className="flex flex-wrap gap-3 items-center justify-center lg:justify-start">
               <div className="flex items-center gap-2 text-gray-400 dark:text-gray-500 font-bold text-[10px] uppercase tracking-widest px-2">
             <Tag size={14} /> فلاتر وترتيب:
@@ -1293,6 +1300,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             </button>
           )}
         </div>
+        </CollapsibleSection>
 
         {/* Advanced Search Panel */}
         <AnimatePresence>
@@ -1385,6 +1393,12 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
         </AnimatePresence>
 
         {/* Inventory Stats Summary */}
+        <CollapsibleSection
+          title="ملخص المخزون"
+          icon={<Package size={20} className="text-amber-600" />}
+          mobileOnly
+          headerClassName="bg-white dark:bg-slate-900 p-4 rounded-[32px] border border-gray-50 dark:border-slate-800 shadow-sm mb-2"
+        >
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1436,6 +1450,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             </div>
           </div>
         </motion.div>
+        </CollapsibleSection>
 
       <input type="file" accept=".json" className="hidden" ref={importJsonInputRef} onChange={handleImportFileChange} />
 
@@ -1714,7 +1729,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 className={`bg-white dark:bg-slate-900 rounded-[32px] overflow-hidden shadow-sm border group relative flex flex-col cursor-pointer ${isSelected ? 'ring-4 ring-accent/30 border-accent shadow-xl' : isOutOfStock ? 'border-red-400 dark:border-red-500 ring-2 ring-red-100 dark:ring-red-900/30' : isLowStock ? 'border-amber-400 dark:border-amber-500 ring-2 ring-amber-100 dark:ring-amber-900/30' : 'border-gray-50 dark:border-slate-800 hover:shadow-xl dark:hover:shadow-slate-900/50'}`}
               >
                 <div className={`relative overflow-hidden bg-gray-50 dark:bg-slate-800 ${imageFitContain ? '' : 'max-h-72'}`}>
-                  <img src={p.image} className={`w-full ${imageFitContain ? 'h-auto block' : 'h-full object-cover transition-transform duration-500 group-hover:scale-110'}`} />
+                  <img src={p.image} className={`w-full ${imageFitContain ? 'h-auto block' : 'h-full object-cover transition-transform duration-500 group-hover:scale-110'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" fill="%23f1f5f9"/><rect x="70" y="60" width="60" height="80" rx="8" stroke="%2394a3b8" stroke-width="2" fill="none"/><circle cx="100" cy="110" r="12" fill="%23cbd5e1"/><rect x="80" y="70" width="40" height="6" rx="3" fill="%23cbd5e1"/></svg>'); (e.target as HTMLImageElement).className = `w-full h-full object-contain p-8 ${imageFitContain ? 'block' : ''}`; }} />
                   
                   {p.images && p.images.length > 1 && (
                     <div className="absolute top-4 left-4 z-10 bg-black/60 text-white text-[9px] font-black px-2 py-1 rounded-lg backdrop-blur-sm flex items-center gap-1 pointer-events-none">
@@ -1863,7 +1878,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <img src={p.image} className={`w-12 h-12 rounded-xl ${imageFitContain ? 'object-contain p-1' : 'object-cover'} bg-gray-50 dark:bg-slate-800`} />
+                        <img src={p.image} className={`w-12 h-12 rounded-xl ${imageFitContain ? 'object-contain p-1' : 'object-cover'} bg-gray-50 dark:bg-slate-800`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none"><rect width="48" height="48" rx="12" fill="%23f1f5f9"/><circle cx="24" cy="22" r="8" fill="%23cbd5e1"/><rect x="14" y="34" width="20" height="4" rx="2" fill="%23cbd5e1"/></svg>'); }} />
                         <div>
                           <div className="font-black text-sm text-gray-900 dark:text-white">{p.name}</div>
                           {p.tags && p.tags.length > 0 && (
@@ -1933,7 +1948,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 className={`bg-white dark:bg-slate-900 rounded-2xl p-3 border transition-all cursor-pointer ${isSelected ? 'ring-2 ring-accent border-accent shadow-md' : isOutOfStock ? 'border-red-400 dark:border-red-500' : isLowStock ? 'border-amber-400 dark:border-amber-500' : 'border-gray-50 dark:border-slate-800 hover:shadow-md'}`}
               >
                 <div className={`relative rounded-xl overflow-hidden bg-gray-50 dark:bg-slate-800 mb-2 ${imageFitContain ? '' : 'aspect-square'}`}>
-                  <img src={p.image} className={`w-full ${imageFitContain ? 'h-auto block' : 'h-full object-cover'}`} />
+                  <img src={p.image} className={`w-full ${imageFitContain ? 'h-auto block' : 'h-full object-cover'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" rx="20" fill="%23f1f5f9"/><circle cx="100" cy="80" r="24" fill="%23cbd5e1"/><rect x="60" y="120" width="80" height="10" rx="5" fill="%23cbd5e1"/></svg>'); }} />
                   <div className="absolute top-1 right-1 w-5 h-5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-full flex items-center justify-center shadow-sm cursor-pointer hover:border-accent transition-colors" onClick={(e) => { e.stopPropagation(); toggleSelect(p.id); }}>
                     {isSelected && <Check size={12} strokeWidth={4} className="text-accent" />}
                   </div>
@@ -1979,7 +1994,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 className={`bg-white dark:bg-slate-900 rounded-[28px] p-6 border transition-all cursor-pointer ${isSelected ? 'ring-2 ring-accent border-accent shadow-lg' : isOutOfStock ? 'border-red-400 dark:border-red-500' : isLowStock ? 'border-amber-400 dark:border-amber-500' : 'border-gray-100 dark:border-slate-800 hover:shadow-md'}`}
               >
                 <div className="flex gap-6">
-                  <img src={p.image} className={`w-28 ${imageFitContain ? 'h-auto rounded-2xl bg-gray-50 dark:bg-slate-800 shrink-0' : 'h-28 rounded-2xl object-cover bg-gray-50 dark:bg-slate-800 shrink-0'}`} />
+                  <img src={p.image} className={`w-28 ${imageFitContain ? 'h-auto rounded-2xl bg-gray-50 dark:bg-slate-800 shrink-0' : 'h-28 rounded-2xl object-cover bg-gray-50 dark:bg-slate-800 shrink-0'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" fill="none"><rect width="112" height="112" rx="16" fill="%23f1f5f9"/><circle cx="56" cy="44" r="16" fill="%23cbd5e1"/><rect x="32" y="72" width="48" height="8" rx="4" fill="%23cbd5e1"/></svg>'); }} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-4">
                       <div>
@@ -2076,7 +2091,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
               <div className="relative bg-gray-50 dark:bg-slate-800 rounded-t-[32px] overflow-hidden flex items-center justify-center min-h-[200px]">
                 {allImages.length > 0 ? (
                   <>
-                    <img src={allImages[galleryIndex]} className="w-full max-h-[55vh] object-contain p-6 transition-opacity duration-300" />
+                    <img src={allImages[galleryIndex]} className="w-full max-h-[55vh] object-contain p-6 transition-opacity duration-300" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" fill="%23f1f5f9"/><circle cx="100" cy="80" r="24" fill="%23cbd5e1"/><rect x="60" y="120" width="80" height="10" rx="5" fill="%23cbd5e1"/></svg>'); }} />
                     {allImages.length > 1 && (
                       <>
                         <button onClick={() => setGalleryIndex(prev => (prev - 1 + allImages.length) % allImages.length)} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-gray-700 dark:text-gray-200 rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-slate-900 transition-all shadow-lg"><ChevronRight size={20} /></button>

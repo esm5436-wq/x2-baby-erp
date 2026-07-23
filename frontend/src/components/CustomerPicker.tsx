@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { User, Phone, Check, Search, Loader2 } from 'lucide-react';
+import { API_BASE } from '../lib/api';
 
 interface CustomerResult {
   id: string;
@@ -58,7 +59,7 @@ export default function CustomerPicker({
     timerRef.current = setTimeout(async () => {
       setSearching(true);
       try {
-        const res = await fetch(`/api/customers/search?q=${encodeURIComponent(val)}`);
+        const res = await fetch(`${API_BASE}/customers/search?q=${encodeURIComponent(val)}`);
         const data = await res.json();
         setResults(data || []);
         setShowDropdown(data && data.length > 0);

@@ -10,6 +10,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 import CustomerModal from './CustomerModal';
 import CustomerDetail from './CustomerDetail';
 import { formatDate } from '../lib/formatDate';
+import { API_BASE } from '../lib/api';
 import type { Customer, Order } from '../types';
 
 interface CustomersProps {
@@ -96,7 +97,7 @@ export default function Customers({ customers, orders, branding }: CustomersProp
   const fetchCustomers = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/customers');
+      const res = await fetch(`${API_BASE}/customers`);
       const data = await res.json();
       setLocalCustomers(data || []);
     } catch {}
@@ -204,7 +205,7 @@ export default function Customers({ customers, orders, branding }: CustomersProp
     if (selectedIds.size === 0) return;
     if (!confirm(`هل أنت متأكد من حذف ${selectedIds.size} عميل؟`)) return;
     for (const id of selectedIds) {
-      try { await fetch(`/api/customers/${id}`, { method: 'DELETE' }); } catch {}
+      try { await fetch(`${API_BASE}/customers/${id}`, { method: 'DELETE' }); } catch {}
     }
     await fetchCustomers();
     setSelectedIds(new Set());
@@ -251,7 +252,7 @@ export default function Customers({ customers, orders, branding }: CustomersProp
   const handleSave = async (data: any) => {
     try {
       const isEdit = !!editCustomer;
-      const url = isEdit ? `/api/customers/${editCustomer.id}` : '/api/customers';
+      const url = isEdit ? `${API_BASE}/customers/${editCustomer.id}` : `${API_BASE}/customers`;
       const method = isEdit ? 'PUT' : 'POST';
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
       if (!res.ok) { const err = await res.json(); if (res.status === 409) { alert(err.error); return; } }
@@ -263,14 +264,14 @@ export default function Customers({ customers, orders, branding }: CustomersProp
   const handleDelete = async (customer: Customer) => {
     if (!confirm(`هل أنت متأكد من حذف العميل "${customer.name}"؟`)) return;
     try {
-      await fetch(`/api/customers/${customer.id}`, { method: 'DELETE' });
+      await fetch(`${API_BASE}/customers/${customer.id}`, { method: 'DELETE' });
       await fetchCustomers(); setViewCustomer(null);
     } catch (err) { console.error('Failed to delete customer:', err); }
   };
 
   const handleViewCustomer = async (customer: Customer) => {
     try {
-      const res = await fetch(`/api/customers/${customer.id}`);
+      const res = await fetch(`${API_BASE}/customers/${customer.id}`);
       const data = await res.json();
       setCustomerOrders(data.orders || []);
       setViewCustomer(data.customer || customer);

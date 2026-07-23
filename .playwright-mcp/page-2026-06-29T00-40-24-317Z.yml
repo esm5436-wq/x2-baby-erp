@@ -1,0 +1,19 @@
+- generic [ref=e5]:
+  - generic [ref=e6]:
+    - img [ref=e8]
+    - generic [ref=e12]:
+      - heading "X2 BABY ERP" [level=1] [ref=e13]
+      - paragraph [ref=e14]: نظام إدارة المخزون والمبيعات
+  - generic [ref=e15]:
+    - generic [ref=e16]:
+      - generic [ref=e17]: اسم المستخدم
+      - textbox "اسم المستخدم" [active] [ref=e18]:
+        - /placeholder: أدخل اسم المستخدم
+    - generic [ref=e19]:
+      - generic [ref=e20]: كلمة المرور
+      - generic [ref=e21]:
+        - textbox "كلمة المرور" [ref=e22]:
+          - /placeholder: أدخل كلمة المرور
+        - button "إظهار كلمة المرور" [ref=e23] [cursor=pointer]:
+          - img [ref=e24]
+    - button "تسجيل الدخول" [ref=e27] [cursor=pointer]

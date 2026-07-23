@@ -1,0 +1,88 @@
+- generic [ref=e48]:
+  - button "المساعد الذكي" [ref=e49] [cursor=pointer]:
+    - img [ref=e50]
+  - main [ref=e53]:
+    - generic [ref=e54]:
+      - generic [ref=e55]:
+        - heading "المخزون المتوفر" [level=2] [ref=e56]:
+          - img [ref=e58]
+          - text: المخزون المتوفر
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - img [ref=e64]
+            - textbox "ابحث عن منتج..." [ref=e67]
+          - button "استيراد منتجات" [disabled] [ref=e68]:
+            - img [ref=e69]
+            - text: استيراد منتجات
+          - button "إضافة منتج" [ref=e74] [cursor=pointer]:
+            - img [ref=e75]
+            - text: إضافة منتج
+      - generic [ref=e77]:
+        - generic [ref=e78]:
+          - generic [ref=e79]:
+            - img [ref=e80]
+            - text: "فلاتر وترتيب:"
+          - button "تحديد الكل" [ref=e83] [cursor=pointer]:
+            - img [ref=e84]
+            - text: تحديد الكل
+          - button "تصدير البيانات" [ref=e86] [cursor=pointer]:
+            - img [ref=e87]
+            - text: تصدير البيانات
+          - generic [ref=e90]:
+            - combobox [ref=e91] [cursor=pointer]:
+              - option "كل الموردين" [selected]
+            - img
+          - generic [ref=e92]:
+            - button "قص الصور لملء الإطار" [ref=e93] [cursor=pointer]:
+              - img [ref=e94]
+            - generic [ref=e98]:
+              - button "شبكة" [ref=e99] [cursor=pointer]:
+                - img [ref=e100]
+                - generic [ref=e105]: شبكة
+              - button "جدول" [ref=e106] [cursor=pointer]:
+                - img [ref=e107]
+                - generic [ref=e108]: جدول
+              - button "مدمج" [ref=e109] [cursor=pointer]:
+                - img [ref=e110]
+                - generic [ref=e111]: مدمج
+              - button "مفصل" [ref=e112] [cursor=pointer]:
+                - img [ref=e113]
+                - generic [ref=e114]: مفصل
+          - generic [ref=e115]:
+            - combobox [ref=e116] [cursor=pointer]:
+              - option "التاريخ" [selected]
+              - option "الاسم"
+              - option "السعر"
+              - option "المخزون"
+            - img
+          - button "تنازلي" [ref=e117] [cursor=pointer]:
+            - img [ref=e118]
+            - img [ref=e121]
+          - combobox [ref=e123] [cursor=pointer]:
+            - option "جميع التصنيفات" [selected]
+          - combobox [ref=e124] [cursor=pointer]:
+            - option "جميع الوسوم (Tags)" [selected]
+          - button "بحث متقدم" [ref=e125] [cursor=pointer]:
+            - img [ref=e126]
+            - text: بحث متقدم
+        - generic [ref=e128]:
+          - generic [ref=e129]:
+            - img [ref=e131]
+            - generic [ref=e135]:
+              - generic [ref=e136]: إجمالي القطع
+              - text: "0"
+          - generic [ref=e138]:
+            - img [ref=e140]
+            - generic [ref=e145]:
+              - generic [ref=e146]: إجمالي التكلفة
+              - generic [ref=e147]: 0 ج.م
+          - generic [ref=e149]:
+            - img [ref=e151]
+            - generic [ref=e154]:
+              - generic [ref=e155]: قيمة البيع المتوقعة
+              - generic [ref=e156]: 0 ج.م
+          - generic [ref=e158]:
+            - img [ref=e160]
+            - generic [ref=e162]:
+              - generic [ref=e163]: الربح المتوقع
+              - generic [ref=e164]: 0 ج.م

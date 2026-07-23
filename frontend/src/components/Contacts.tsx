@@ -8,7 +8,7 @@ import ContactModal from './ContactModal';
 import ContactDetail from './ContactDetail';
 import { formatDate } from '../lib/formatDate';
 
-const API_BASE = '/api';
+import { API_BASE } from '../lib/api';
 
 interface ContactsProps {
   contacts: Contact[];

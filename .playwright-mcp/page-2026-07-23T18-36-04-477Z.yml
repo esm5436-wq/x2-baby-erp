@@ -1,0 +1,615 @@
+- generic [ref=e27]:
+  - button "المساعد الذكي" [ref=e28] [cursor=pointer]
+  - navigation [ref=e32]:
+    - generic [ref=e34]:
+      - img "Logo" [ref=e230]
+      - generic [ref=e39]:
+        - heading "X2 BABY" [level=1] [ref=e40]
+        - paragraph [ref=e41]: الجودة، الثقة، والأمان
+        - img "Slogan Design" [ref=e232]
+    - generic [ref=e42]:
+      - link "المخزون" [ref=e44] [cursor=pointer]:
+        - /url: "#/"
+      - link "الطلبات" [ref=e51] [cursor=pointer]:
+        - /url: "#/orders"
+      - link "المشتريات" [ref=e57] [cursor=pointer]:
+        - /url: "#/purchases"
+      - link "الحسابات والمالية" [ref=e63] [cursor=pointer]:
+        - /url: "#/accounts"
+      - link "جهات الاتصال" [ref=e68] [cursor=pointer]:
+        - /url: "#/contacts"
+      - link "العملاء" [active] [ref=e76] [cursor=pointer]:
+        - /url: "#/customers"
+      - link "سجل النشاطات" [ref=e83] [cursor=pointer]:
+        - /url: "#/activity-logs"
+      - link "Easy Orders" [ref=e88] [cursor=pointer]:
+        - /url: "#/easy-orders"
+      - link "إدارة البيانات" [ref=e94] [cursor=pointer]:
+        - /url: "#/settings"
+    - generic [ref=e99]:
+      - button "الوضع النهاري" [ref=e104] [cursor=pointer]
+      - button "تسجيل الخروج" [ref=e113] [cursor=pointer]
+  - main [ref=e126]:
+    - generic [ref=e2104]:
+      - generic [ref=e2105]:
+        - generic [ref=e2112]:
+          - heading "الطلبات" [level=1] [ref=e2113]
+          - paragraph [ref=e2114]: 13 طلب
+        - generic [ref=e2115]:
+          - button "تحديد الكل" [ref=e2116] [cursor=pointer]
+          - button "استيراد طلبات" [ref=e2120] [cursor=pointer]
+          - button "طلب جديد" [ref=e2126] [cursor=pointer]
+      - generic [ref=e2129]:
+        - generic [ref=e2130]:
+          - button [ref=e2137] [cursor=pointer]
+          - generic [ref=e2141]: إجمالي الطلبات
+          - generic [ref=e2142]: 13 طلب
+          - generic [ref=e2143]: "شحن داخلي: 5 | شحن خارجي: 8"
+        - generic [ref=e2145]:
+          - button [ref=e2152] [cursor=pointer]
+          - generic [ref=e2156]: إجمالي المبيعات
+          - generic [ref=e2157]: ‏٦٬١٣٩٫٣ ج.م.‏
+          - generic [ref=e2158]: "شحن: محلي (‏١٨٠ ج.م.‏) | خارجي (‏٥٦٠ ج.م.‏) | الإجمالي: ‏٧٤٠ ج.م.‏"
+        - generic [ref=e2160]:
+          - button [ref=e2166] [cursor=pointer]
+          - generic [ref=e2170]: الأرباح التقديرية
+          - generic [ref=e2171]: ‏٤٬٢٩٢٫٣ ج.م.‏
+        - generic [ref=e2172]:
+          - button [ref=e2179] [cursor=pointer]
+          - generic [ref=e2183]: طلبات مكتملة
+          - generic [ref=e2184]: 10 طلب
+        - generic [ref=e2185]:
+          - button [ref=e2192] [cursor=pointer]
+          - generic [ref=e2196]: طلبات انتظار
+          - generic [ref=e2197]: 1 طلب
+      - generic [ref=e2198]:
+        - textbox "بحث ذكي (اسم، هاتف، رقم أوردر، منتج...)" [ref=e2203]
+        - generic [ref=e2204]:
+          - generic [ref=e2205]: "ترتيب:"
+          - combobox [ref=e2207] [cursor=pointer]:
+            - option "التاريخ" [selected]
+            - option "القيمة"
+            - option "الشحن"
+            - option "المدينة"
+          - button "▼" [ref=e2208] [cursor=pointer]
+        - combobox [ref=e2215] [cursor=pointer]:
+          - option "كل الأوقات" [selected]
+          - option "اليوم"
+          - option "الأمس"
+          - option "هذا الشهر"
+          - option "الشهر الماضي"
+          - option "شهر محدد"
+          - option "آخر 30 يوم"
+          - option "فترة مخصصة"
+        - button "جميع الحالات" [ref=e2217] [cursor=pointer]
+        - generic [ref=e2222]:
+          - button "▦ شبكة" [ref=e2223] [cursor=pointer]:
+            - generic [ref=e2224]: ▦
+            - generic [ref=e2225]: شبكة
+          - button "☰ جدول" [ref=e2226] [cursor=pointer]:
+            - generic [ref=e2227]: ☰
+            - generic [ref=e2228]: جدول
+          - button "⊞ مدمج" [ref=e2229] [cursor=pointer]:
+            - generic [ref=e2230]: ⊞
+            - generic [ref=e2231]: مدمج
+          - button "⊟ مفصل" [ref=e2232] [cursor=pointer]:
+            - generic [ref=e2233]: ⊟
+            - generic [ref=e2234]: مفصل
+      - generic [ref=e2235]:
+        - generic [ref=e2237] [cursor=pointer]:
+          - generic [ref=e2238]:
+            - button [ref=e2240]
+            - generic [ref=e2243]:
+              - generic [ref=e2244]: "#"
+              - generic [ref=e2245]: "001"
+            - generic [ref=e2246]:
+              - heading "نورهان وليد" [level=4] [ref=e2247]
+              - generic [ref=e2248]:
+                - text: ١٠ يونيو ٢٠٢٦
+                - generic [ref=e2251]: •
+                - generic [ref=e2252]: 1 أصناف
+            - generic [ref=e2253]:
+              - button "تعديل" [ref=e2254]
+              - button "حذف" [ref=e2257]
+          - generic [ref=e2261]:
+            - generic [ref=e2262]:
+              - generic [ref=e2265]: "01144428053"
+              - button "نسخ" [ref=e2266]
+              - link "اتصال" [ref=e2270]:
+                - /url: tel:01144428053
+              - link "واتساب" [ref=e2273]:
+                - /url: https://wa.me/201144428053
+            - generic [ref=e2276]:
+              - generic [ref=e2277]: "|"
+              - generic [ref=e2278]: "01102777406"
+          - generic [ref=e2279]: القاهرة - القطامية مساكن ايجكو - القاهرة
+          - link "عرض على جوجل ماب" [ref=e2288]:
+            - /url: https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D8%A9%20%D8%A7%D9%84%D9%82%D8%B7%D8%A7%D9%85%D9%8A%D8%A9%20%D9%85%D8%B3%D8%A7%D9%83%D9%86%20%D8%A7%D9%8A%D8%AC%D9%83%D9%88%20%20-%20%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D8%A9
+          - generic [ref=e2290]:
+            - text: فستان قطة أرنب قطن ×1
+            - generic [ref=e2291]: 249 ج.م
+          - generic [ref=e2293]:
+            - generic [ref=e2294]:
+              - generic [ref=e2295]: تم التوصيل
+              - generic [ref=e2300]: 249 ج.م
+              - generic [ref=e2301]: "|"
+              - generic [ref=e2302]: 1 منتج
+            - generic [ref=e2303]:
+              - link "واتساب" [ref=e2304]:
+                - /url: https://wa.me/201144428053
+              - link "اتصال مباشر" [ref=e2307]:
+                - /url: tel:01144428053
+        - generic [ref=e2311] [cursor=pointer]:
+          - generic [ref=e2312]:
+            - button [ref=e2314]
+            - generic [ref=e2317]:
+              - generic [ref=e2318]: "#"
+              - generic [ref=e2319]: "001"
+            - generic [ref=e2320]:
+              - heading "هاني سيد" [level=4] [ref=e2321]
+              - generic [ref=e2322]:
+                - text: ٢ يونيو ٢٠٢٦
+                - generic [ref=e2325]: •
+                - generic [ref=e2326]: 1 أصناف
+            - generic [ref=e2327]:
+              - button "تعديل" [ref=e2328]
+              - button "حذف" [ref=e2331]
+          - generic [ref=e2336]:
+            - generic [ref=e2339]: "01005506606"
+            - button "نسخ" [ref=e2340]
+            - link "اتصال" [ref=e2344]:
+              - /url: tel:01005506606
+            - link "واتساب" [ref=e2347]:
+              - /url: https://wa.me/201005506606
+          - generic [ref=e2350]: القاهرة - زهراء المعادي - القاهرة
+          - link "عرض على جوجل ماب" [ref=e2359]:
+            - /url: https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D8%A9%20%D8%B2%D9%87%D8%B1%D8%A7%D8%A1%20%D8%A7%D9%84%D9%85%D8%B9%D8%A7%D8%AF%D9%8A%20-%20%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D8%A9
+          - generic [ref=e2361]:
+            - text: سالوبت مواليد ديناصور قطن ×1
+            - generic [ref=e2362]: 350 ج.م
+          - generic [ref=e2364]:
+            - generic [ref=e2365]:
+              - generic [ref=e2366]: تم التوصيل
+              - generic [ref=e2371]: 350 ج.م
+              - generic [ref=e2372]: "|"
+              - generic [ref=e2373]: 1 منتج
+            - generic [ref=e2374]:
+              - link "واتساب" [ref=e2375]:
+                - /url: https://wa.me/201005506606
+              - link "اتصال مباشر" [ref=e2378]:
+                - /url: tel:01005506606
+        - generic [ref=e2382] [cursor=pointer]:
+          - generic [ref=e2383]:
+            - button [ref=e2385]
+            - generic [ref=e2388]:
+              - generic [ref=e2389]: "#"
+              - generic [ref=e2390]: "001"
+            - generic [ref=e2391]:
+              - heading "Maryam Mohsen" [level=4] [ref=e2392]
+              - generic [ref=e2393]:
+                - text: ٦ يناير ٢٠٢٦
+                - generic [ref=e2396]: •
+                - generic [ref=e2397]: 1 أصناف
+            - generic [ref=e2398]:
+              - button "تعديل" [ref=e2399]
+              - button "حذف" [ref=e2402]
+          - generic [ref=e2407]:
+            - generic [ref=e2410]: "01149541126"
+            - button "نسخ" [ref=e2411]
+            - link "اتصال" [ref=e2415]:
+              - /url: tel:01149541126
+            - link "واتساب" [ref=e2418]:
+              - /url: https://wa.me/201149541126
+          - generic [ref=e2421]: الجيزة - ١٠ شارع خليل نظير متفرع من شارع امتداد الوحده إمبابة - الجيزة
+          - link "عرض على جوجل ماب" [ref=e2430]:
+            - /url: https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D8%AC%D9%8A%D8%B2%D8%A9%20%D9%A1%D9%A0%20%D8%B4%D8%A7%D8%B1%D8%B9%20%D8%AE%D9%84%D9%8A%D9%84%20%D9%86%D8%B8%D9%8A%D8%B1%20%D9%85%D8%AA%D9%81%D8%B1%D8%B9%20%D9%85%D9%86%20%D8%B4%D8%A7%D8%B1%D8%B9%20%D8%A7%D9%85%D8%AA%D8%AF%D8%A7%D8%AF%20%D8%A7%D9%84%D9%88%D8%AD%D8%AF%D9%87%20%D8%A5%D9%85%D8%A8%D8%A7%D8%A8%D8%A9%20%20-%20%D8%A7%D9%84%D8%AC%D9%8A%D8%B2%D8%A9
+          - generic [ref=e2432]:
+            - text: سالوبيت واتر بروف مبطن للبيبي – Dinosaur ×1
+            - generic [ref=e2433]: 459 ج.م
+          - generic [ref=e2435]:
+            - generic [ref=e2436]:
+              - generic [ref=e2437]: تم الارجاع
+              - generic [ref=e2442]: 478.1 ج.م
+              - generic [ref=e2443]: "|"
+              - generic [ref=e2444]: 1 منتج
+            - generic [ref=e2445]:
+              - link "واتساب" [ref=e2446]:
+                - /url: https://wa.me/201149541126
+              - link "اتصال مباشر" [ref=e2449]:
+                - /url: tel:01149541126
+        - generic [ref=e2453] [cursor=pointer]:
+          - generic [ref=e2454]:
+            - button [ref=e2456]
+            - generic [ref=e2459]:
+              - generic [ref=e2460]: "#"
+              - generic [ref=e2461]: "002"
+            - generic [ref=e2462]:
+              - heading "زينب سعيد" [level=4] [ref=e2463]
+              - generic [ref=e2464]:
+                - text: ٥ ديسمبر ٢٠٢٥
+                - generic [ref=e2467]: •
+                - generic [ref=e2468]: 1 أصناف
+            - generic [ref=e2469]:
+              - button "تعديل" [ref=e2470]
+              - button "حذف" [ref=e2473]
+          - generic [ref=e2478]:
+            - generic [ref=e2481]: "01004733103"
+            - button "نسخ" [ref=e2482]
+            - link "اتصال" [ref=e2486]:
+              - /url: tel:01004733103
+            - link "واتساب" [ref=e2489]:
+              - /url: https://wa.me/201004733103
+          - generic [ref=e2492]: الاقصر - نجع الطويل شارع قهوة محمد رشيدى - الاقصر
+          - link "عرض على جوجل ماب" [ref=e2501]:
+            - /url: https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D8%A7%D9%82%D8%B5%D8%B1%20%D9%86%D8%AC%D8%B9%20%D8%A7%D9%84%D8%B7%D9%88%D9%8A%D9%84%20%D8%B4%D8%A7%D8%B1%D8%B9%20%D9%82%D9%87%D9%88%D8%A9%20%D9%85%D8%AD%D9%85%D8%AF%20%D8%B1%D8%B4%D9%8A%D8%AF%D9%89%20%20-%20%D8%A7%D9%84%D8%A7%D9%82%D8%B5%D8%B1
+          - generic [ref=e2503]:
+            - text: سالوبيت واتر بروف مبطن للبيبي – Rhino ×1
+            - generic [ref=e2504]: 450 ج.م
+          - generic [ref=e2506]:
+            - generic [ref=e2507]:
+              - generic [ref=e2508]: تم التوصيل
+              - generic [ref=e2513]: 550 ج.م
+              - generic [ref=e2514]: "|"
+              - generic [ref=e2515]: 1 منتج
+            - generic [ref=e2516]:
+              - link "واتساب" [ref=e2517]:
+                - /url: https://wa.me/201004733103
+              - link "اتصال مباشر" [ref=e2520]:
+                - /url: tel:01004733103
+        - generic [ref=e2524] [cursor=pointer]:
+          - generic [ref=e2525]:
+            - button [ref=e2527]
+            - generic [ref=e2530]:
+              - generic [ref=e2531]: "#"
+              - generic [ref=e2532]: "001"
+            - generic [ref=e2533]:
+              - heading "Donya.mohamed8@icloud.com Mohame" [level=4] [ref=e2534]
+              - generic [ref=e2535]:
+                - text: ٥ ديسمبر ٢٠٢٥
+                - generic [ref=e2538]: •
+                - generic [ref=e2539]: 1 أصناف
+            - generic [ref=e2540]:
+              - button "تعديل" [ref=e2541]
+              - button "حذف" [ref=e2544]
+          - generic [ref=e2549]:
+            - generic [ref=e2552]: "01101150495"
+            - button "نسخ" [ref=e2553]
+            - link "اتصال" [ref=e2557]:
+              - /url: tel:01101150495
+            - link "واتساب" [ref=e2560]:
+              - /url: https://wa.me/201101150495
+          - generic [ref=e2563]: القاهره - 15كورنيش النيل الدور العاشر شقه 10 شبرا - القاهره
+          - link "عرض على جوجل ماب" [ref=e2572]:
+            - /url: https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D9%87%2015%D9%83%D9%88%D8%B1%D9%86%D9%8A%D8%B4%20%D8%A7%D9%84%D9%86%D9%8A%D9%84%20%D8%A7%D9%84%D8%AF%D9%88%D8%B1%20%D8%A7%D9%84%D8%B9%D8%A7%D8%B4%D8%B1%20%D8%B4%D9%82%D9%87%2010%20%D8%B4%D8%A8%D8%B1%D8%A7%20-%20%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D9%87
+          - generic [ref=e2574]:
+            - text: سالوبيت واتر بروف مبطن للبيبي – Cats ×1
+            - generic [ref=e2575]: 449 ج.م
+          - generic [ref=e2577]:
+            - generic [ref=e2578]:
+              - generic [ref=e2579]: تم الغاء الطلب
+              - generic [ref=e2585]: 509 ج.م
+              - generic [ref=e2586]: "|"
+              - generic [ref=e2587]: 1 منتج
+            - generic [ref=e2588]:
+              - link "واتساب" [ref=e2589]:
+                - /url: https://wa.me/201101150495
+              - link "اتصال مباشر" [ref=e2592]:
+                - /url: tel:01101150495
+        - generic [ref=e2596] [cursor=pointer]:
+          - generic [ref=e2597]:
+            - button [ref=e2599]
+            - generic [ref=e2602]:
+              - generic [ref=e2603]: "#"
+              - generic [ref=e2604]: "004"
+            - generic [ref=e2605]:
+              - heading "Nuran Mahmoud" [level=4] [ref=e2606]
+              - generic [ref=e2607]:
+                - text: ٤ ديسمبر ٢٠٢٥
+                - generic [ref=e2610]: •
+                - generic [ref=e2611]: 1 أصناف
+            - generic [ref=e2612]:
+              - button "تعديل" [ref=e2613]
+              - button "حذف" [ref=e2616]
+          - generic [ref=e2621]:
+            - generic [ref=e2624]: "01008527620"
+            - button "نسخ" [ref=e2625]
+            - link "اتصال" [ref=e2629]:
+              - /url: tel:01008527620
+            - link "واتساب" [ref=e2632]:
+              - /url: https://wa.me/201008527620
+          - generic [ref=e2635]: القاهره - حمامات القبة العمارة ما بين محطة كوبري القبة وحمامات القبة ٢٧ ش محطة القبة الدور الخامس ش ١٠ برج الرحمن - القاهره
+          - link "عرض على جوجل ماب" [ref=e2644]:
+            - /url: https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D9%87%20%D8%AD%D9%85%D8%A7%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D9%82%D8%A8%D8%A9%20%0D%0A%D8%A7%D9%84%D8%B9%D9%85%D8%A7%D8%B1%D8%A9%20%D9%85%D8%A7%20%D8%A8%D9%8A%D9%86%20%D9%85%D8%AD%D8%B7%D8%A9%20%D9%83%D9%88%D8%A8%D8%B1%D9%8A%20%D8%A7%D9%84%D9%82%D8%A8%D8%A9%20%D9%88%D8%AD%D9%85%D8%A7%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D9%82%D8%A8%D8%A9%20%0D%0A%D9%A2%D9%A7%20%D8%B4%20%D9%85%D8%AD%D8%B7%D8%A9%20%D8%A7%D9%84%D9%82%D8%A8%D8%A9%20%D8%A7%D9%84%D8%AF%D9%88%D8%B1%20%D8%A7%D9%84%D8%AE%D8%A7%D9%85%D8%B3%20%D8%B4%20%D9%A1%D9%A0%20%D8%A8%D8%B1%D8%AC%20%D8%A7%D9%84%D8%B1%D8%AD%D9%85%D9%86%20%0D%0A%20-%20%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D9%87
+          - generic [ref=e2646]:
+            - text: سالوبيت واتر بروف مبطن للبيبي – Animals ×1
+            - generic [ref=e2647]: 449 ج.م
+          - generic [ref=e2649]:
+            - generic [ref=e2650]:
+              - generic [ref=e2651]: تم التوصيل
+              - generic [ref=e2656]: 509 ج.م
+              - generic [ref=e2657]: "|"
+              - generic [ref=e2658]: 1 منتج
+            - generic [ref=e2659]:
+              - link "واتساب" [ref=e2660]:
+                - /url: https://wa.me/201008527620
+              - link "اتصال مباشر" [ref=e2663]:
+                - /url: tel:01008527620
+        - generic [ref=e2667] [cursor=pointer]:
+          - generic [ref=e2668]:
+            - button [ref=e2670]
+            - generic [ref=e2673]:
+              - generic [ref=e2674]: "#"
+              - generic [ref=e2675]: "003"
+            - generic [ref=e2676]:
+              - heading "مجدى عامر عبد الحميد" [level=4] [ref=e2677]
+              - generic [ref=e2678]:
+                - text: ٤ ديسمبر ٢٠٢٥
+                - generic [ref=e2681]: •
+                - generic [ref=e2682]: 1 أصناف
+            - generic [ref=e2683]:
+              - button "تعديل" [ref=e2684]
+              - button "حذف" [ref=e2687]
+          - generic [ref=e2692]:
+            - generic [ref=e2695]: "01100706215"
+            - button "نسخ" [ref=e2696]
+            - link "اتصال" [ref=e2700]:
+              - /url: tel:01100706215
+            - link "واتساب" [ref=e2703]:
+              - /url: https://wa.me/201100706215
+          - generic [ref=e2706]: الجيزه - محافظة الجيزه مركز الصف خلف نادى المعلمين بجوار ديوان ابو عامر - الجيزه
+          - link "عرض على جوجل ماب" [ref=e2715]:
+            - /url: https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D8%AC%D9%8A%D8%B2%D9%87%20%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9%20%D8%A7%D9%84%D8%AC%D9%8A%D8%B2%D9%87%20%D9%85%D8%B1%D9%83%D8%B2%20%D8%A7%D9%84%D8%B5%D9%81%20%D8%AE%D9%84%D9%81%20%D9%86%D8%A7%D8%AF%D9%89%20%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%85%D9%8A%D9%86%20%D8%A8%D8%AC%D9%88%D8%A7%D8%B1%20%D8%AF%D9%8A%D9%88%D8%A7%D9%86%20%D8%A7%D8%A8%D9%88%20%D8%B9%D8%A7%D9%85%D8%B1%20%20-%20%D8%A7%D9%84%D8%AC%D9%8A%D8%B2%D9%87
+          - generic [ref=e2717]:
+            - text: سالوبيت واتر بروف مبطن للبيبي – Cats ×1
+            - generic [ref=e2718]: 449 ج.م
+          - generic [ref=e2720]:
+            - generic [ref=e2721]:
+              - generic [ref=e2722]: تم التوصيل
+              - generic [ref=e2727]: 509 ج.م
+              - generic [ref=e2728]: "|"
+              - generic [ref=e2729]: 1 منتج
+            - generic [ref=e2730]:
+              - link "واتساب" [ref=e2731]:
+                - /url: https://wa.me/201100706215
+              - link "اتصال مباشر" [ref=e2734]:
+                - /url: tel:01100706215
+        - generic [ref=e2738] [cursor=pointer]:
+          - generic [ref=e2739]:
+            - button [ref=e2741]
+            - generic [ref=e2744]:
+              - generic [ref=e2745]: "#"
+              - generic [ref=e2746]: "002"
+            - generic [ref=e2747]:
+              - heading "Hana Gamel" [level=4] [ref=e2748]
+              - generic [ref=e2749]:
+                - text: ٤ ديسمبر ٢٠٢٥
+                - generic [ref=e2752]: •
+                - generic [ref=e2753]: 2 أصناف
+            - generic [ref=e2754]:
+              - button "تعديل" [ref=e2755]
+              - button "حذف" [ref=e2758]
+          - generic [ref=e2763]:
+            - generic [ref=e2766]: "01030170120"
+            - button "نسخ" [ref=e2767]
+            - link "اتصال" [ref=e2771]:
+              - /url: tel:01030170120
+            - link "واتساب" [ref=e2774]:
+              - /url: https://wa.me/201030170120
+          - generic [ref=e2777]: المنوفية - شبين الكوم شارع الجندي أمام مول دوتس - المنوفية
+          - link "عرض على جوجل ماب" [ref=e2786]:
+            - /url: https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D9%85%D9%86%D9%88%D9%81%D9%8A%D8%A9%20%D8%B4%D8%A8%D9%8A%D9%86%20%D8%A7%D9%84%D9%83%D9%88%D9%85%20%D8%B4%D8%A7%D8%B1%D8%B9%20%D8%A7%D9%84%D8%AC%D9%86%D8%AF%D9%8A%20%D8%A3%D9%85%D8%A7%D9%85%20%D9%85%D9%88%D9%84%20%D8%AF%D9%88%D8%AA%D8%B3%20-%20%D8%A7%D9%84%D9%85%D9%86%D9%88%D9%81%D9%8A%D8%A9
+          - generic [ref=e2787]:
+            - generic [ref=e2788]:
+              - text: سالوبيت واتر بروف مبطن للبيبي – Dance ×1
+              - generic [ref=e2789]: 449 ج.م
+            - generic [ref=e2790]:
+              - text: سالوبيت واتر بروف مبطن للبيبي – Ghazall ×1
+              - generic [ref=e2791]: 449 ج.م
+          - generic [ref=e2793]:
+            - generic [ref=e2794]:
+              - generic [ref=e2795]: تم التوصيل
+              - generic [ref=e2800]: 983 ج.م
+              - generic [ref=e2801]: "|"
+              - generic [ref=e2802]: 2 منتج
+            - generic [ref=e2803]:
+              - link "واتساب" [ref=e2804]:
+                - /url: https://wa.me/201030170120
+              - link "اتصال مباشر" [ref=e2807]:
+                - /url: tel:01030170120
+        - generic [ref=e2811] [cursor=pointer]:
+          - generic [ref=e2812]:
+            - button [ref=e2814]
+            - generic [ref=e2817]:
+              - generic [ref=e2818]: "#"
+              - generic [ref=e2819]: "001"
+            - generic [ref=e2820]:
+              - heading "Nouran Ehab" [level=4] [ref=e2821]
+              - generic [ref=e2822]:
+                - text: ٤ ديسمبر ٢٠٢٥
+                - generic [ref=e2825]: •
+                - generic [ref=e2826]: 1 أصناف
+            - generic [ref=e2827]:
+              - button "تعديل" [ref=e2828]
+              - button "حذف" [ref=e2831]
+          - generic [ref=e2836]:
+            - generic [ref=e2839]: "01158387729"
+            - button "نسخ" [ref=e2840]
+            - link "اتصال" [ref=e2844]:
+              - /url: tel:01158387729
+            - link "واتساب" [ref=e2847]:
+              - /url: https://wa.me/201158387729
+          - generic [ref=e2850]: الجيزه - 29 عمارات المهندسين جنوب الاحياء بجوار المستثمر الصغير امام ابو الوفا - الجيزه
+          - link "عرض على جوجل ماب" [ref=e2859]:
+            - /url: https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D8%AC%D9%8A%D8%B2%D9%87%2029%20%D8%B9%D9%85%D8%A7%D8%B1%D8%A7%D8%AA%20%D8%A7%D9%84%D9%85%D9%87%D9%86%D8%AF%D8%B3%D9%8A%D9%86%20%D8%AC%D9%86%D9%88%D8%A8%20%D8%A7%D9%84%D8%A7%D8%AD%D9%8A%D8%A7%D8%A1%20%D8%A8%D8%AC%D9%88%D8%A7%D8%B1%20%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D8%AB%D9%85%D8%B1%20%D8%A7%D9%84%D8%B5%D8%BA%D9%8A%D8%B1%20%D8%A7%D9%85%D8%A7%D9%85%20%D8%A7%D8%A8%D9%88%20%D8%A7%D9%84%D9%88%D9%81%D8%A7%20%20-%20%D8%A7%D9%84%D8%AC%D9%8A%D8%B2%D9%87
+          - generic [ref=e2861]:
+            - text: سالوبيت واتر بروف مبطن للبيبي – Ghazall ×1
+            - generic [ref=e2862]: 399 ج.م
+          - generic [ref=e2864]:
+            - generic [ref=e2865]:
+              - generic [ref=e2866]: طلب غير مكتمل
+              - generic [ref=e2872]: 459 ج.م
+              - generic [ref=e2873]: "|"
+              - generic [ref=e2874]: 1 منتج
+            - generic [ref=e2875]:
+              - link "واتساب" [ref=e2876]:
+                - /url: https://wa.me/201158387729
+              - link "اتصال مباشر" [ref=e2879]:
+                - /url: tel:01158387729
+        - generic [ref=e2883] [cursor=pointer]:
+          - generic [ref=e2884]:
+            - button [ref=e2886]
+            - generic [ref=e2889]:
+              - generic [ref=e2890]: "#"
+              - generic [ref=e2891]: "003"
+            - generic [ref=e2892]:
+              - heading "منة سامي" [level=4] [ref=e2893]
+              - generic [ref=e2894]:
+                - text: ٣ ديسمبر ٢٠٢٥
+                - generic [ref=e2897]: •
+                - generic [ref=e2898]: 1 أصناف
+            - generic [ref=e2899]:
+              - button "تعديل" [ref=e2900]
+              - button "حذف" [ref=e2903]
+          - generic [ref=e2908]:
+            - generic [ref=e2911]: "01027550988"
+            - button "نسخ" [ref=e2912]
+            - link "اتصال" [ref=e2916]:
+              - /url: tel:01027550988
+            - link "واتساب" [ref=e2919]:
+              - /url: https://wa.me/201027550988
+          - generic [ref=e2922]: القاهره - ١ شارع امين شوفي متفرع من متحف المطرية الدور السابع حلمية الزيتون - القاهره
+          - link "عرض على جوجل ماب" [ref=e2931]:
+            - /url: https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D9%87%20%D9%A1%20%D8%B4%D8%A7%D8%B1%D8%B9%20%D8%A7%D9%85%D9%8A%D9%86%20%D8%B4%D9%88%D9%81%D9%8A%20%D9%85%D8%AA%D9%81%D8%B1%D8%B9%20%D9%85%D9%86%20%D9%85%D8%AA%D8%AD%D9%81%20%D8%A7%D9%84%D9%85%D8%B7%D8%B1%D9%8A%D8%A9%20%D8%A7%D9%84%D8%AF%D9%88%D8%B1%20%D8%A7%D9%84%D8%B3%D8%A7%D8%A8%D8%B9%20%D8%AD%D9%84%D9%85%D9%8A%D8%A9%20%D8%A7%D9%84%D8%B2%D9%8A%D8%AA%D9%88%D9%86%20-%20%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D9%87
+          - generic [ref=e2933]:
+            - text: سالوبيت واتر بروف مبطن للبيبي – Dance ×1
+            - generic [ref=e2934]: 399 ج.م
+          - generic [ref=e2936]:
+            - generic [ref=e2937]:
+              - generic [ref=e2938]: تم التوصيل
+              - generic [ref=e2943]: 379.2 ج.م
+              - generic [ref=e2944]: "|"
+              - generic [ref=e2945]: 1 منتج
+            - generic [ref=e2946]:
+              - link "واتساب" [ref=e2947]:
+                - /url: https://wa.me/201027550988
+              - link "اتصال مباشر" [ref=e2950]:
+                - /url: tel:01027550988
+        - generic [ref=e2954] [cursor=pointer]:
+          - generic [ref=e2955]:
+            - button [ref=e2957]
+            - generic [ref=e2960]:
+              - generic [ref=e2961]: "#"
+              - generic [ref=e2962]: "002"
+            - generic [ref=e2963]:
+              - heading "نالا عمرو" [level=4] [ref=e2964]
+              - generic [ref=e2965]:
+                - text: ٣ ديسمبر ٢٠٢٥
+                - generic [ref=e2968]: •
+                - generic [ref=e2969]: 1 أصناف
+            - generic [ref=e2970]:
+              - button "تعديل" [ref=e2971]
+              - button "حذف" [ref=e2974]
+          - generic [ref=e2979]:
+            - generic [ref=e2982]: "01127580693"
+            - button "نسخ" [ref=e2983]
+            - link "اتصال" [ref=e2987]:
+              - /url: tel:01127580693
+            - link "واتساب" [ref=e2990]:
+              - /url: https://wa.me/201127580693
+          - generic [ref=e2993]: القاهره - 133 عمارات الصفوه شارع المركز التجاري الحي الرابع الهضبة الوسطي المقطم المدخل اليمين الدور الرابع الشقه اليمين اللي في الوش - القاهره
+          - link "عرض على جوجل ماب" [ref=e3002]:
+            - /url: https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D9%87%20133%20%D8%B9%D9%85%D8%A7%D8%B1%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B5%D9%81%D9%88%D9%87%20%D8%B4%D8%A7%D8%B1%D8%B9%20%D8%A7%D9%84%D9%85%D8%B1%D9%83%D8%B2%20%D8%A7%D9%84%D8%AA%D8%AC%D8%A7%D8%B1%D9%8A%20%D8%A7%D9%84%D8%AD%D9%8A%20%D8%A7%D9%84%D8%B1%D8%A7%D8%A8%D8%B9%20%D8%A7%D9%84%D9%87%D8%B6%D8%A8%D8%A9%20%D8%A7%D9%84%D9%88%D8%B3%D8%B7%D9%8A%20%D8%A7%D9%84%D9%85%D9%82%D8%B7%D9%85%20%D8%A7%D9%84%D9%85%D8%AF%D8%AE%D9%84%20%D8%A7%D9%84%D9%8A%D9%85%D9%8A%D9%86%20%D8%A7%D9%84%D8%AF%D9%88%D8%B1%20%D8%A7%D9%84%D8%B1%D8%A7%D8%A8%D8%B9%20%D8%A7%D9%84%D8%B4%D9%82%D9%87%20%D8%A7%D9%84%D9%8A%D9%85%D9%8A%D9%86%20%D8%A7%D9%84%D9%84%D9%8A%20%D9%81%D9%8A%20%D8%A7%D9%84%D9%88%D8%B4%20-%20%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D9%87
+          - generic [ref=e3004]:
+            - text: سالوبيت واتر بروف مبطن للبيبي – Rhino ×1
+            - generic [ref=e3005]: 399 ج.م
+          - generic [ref=e3007]:
+            - generic [ref=e3008]:
+              - generic [ref=e3009]: تم التوصيل
+              - generic [ref=e3014]: 459 ج.م
+              - generic [ref=e3015]: "|"
+              - generic [ref=e3016]: 1 منتج
+            - generic [ref=e3017]:
+              - link "واتساب" [ref=e3018]:
+                - /url: https://wa.me/201127580693
+              - link "اتصال مباشر" [ref=e3021]:
+                - /url: tel:01127580693
+        - generic [ref=e3025] [cursor=pointer]:
+          - generic [ref=e3026]:
+            - button [ref=e3028]
+            - generic [ref=e3031]:
+              - generic [ref=e3032]: "#"
+              - generic [ref=e3033]: "001"
+            - generic [ref=e3034]:
+              - heading "Yasmeen Abdelbaset" [level=4] [ref=e3035]
+              - generic [ref=e3036]:
+                - text: ٣ ديسمبر ٢٠٢٥
+                - generic [ref=e3039]: •
+                - generic [ref=e3040]: 1 أصناف
+            - generic [ref=e3041]:
+              - button "تعديل" [ref=e3042]
+              - button "حذف" [ref=e3045]
+          - generic [ref=e3050]:
+            - generic [ref=e3053]: "01064857518"
+            - button "نسخ" [ref=e3054]
+            - link "اتصال" [ref=e3058]:
+              - /url: tel:01064857518
+            - link "واتساب" [ref=e3061]:
+              - /url: https://wa.me/201064857518
+          - generic [ref=e3064]: القاهره - مدينة بدر الحي الثاني المجاورة الأولى عمارة 197 - القاهره
+          - link "عرض على جوجل ماب" [ref=e3073]:
+            - /url: https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D9%87%20%D9%85%D8%AF%D9%8A%D9%86%D8%A9%20%D8%A8%D8%AF%D8%B1%20%D8%A7%D9%84%D8%AD%D9%8A%20%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%8A%20%D8%A7%D9%84%D9%85%D8%AC%D8%A7%D9%88%D8%B1%D8%A9%20%D8%A7%D9%84%D8%A3%D9%88%D9%84%D9%89%20%D8%B9%D9%85%D8%A7%D8%B1%D8%A9%20197%20-%20%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D9%87
+          - generic [ref=e3075]:
+            - text: سالوبيت وتر بروف - Pink doll ×1
+            - generic [ref=e3076]: "[7]"
+            - generic [ref=e3077]: 350 ج.م
+          - generic [ref=e3079]:
+            - generic [ref=e3080]:
+              - generic [ref=e3081]: تم التوصيل
+              - generic [ref=e3086]: 340 ج.م
+              - generic [ref=e3087]: "|"
+              - generic [ref=e3088]: 1 منتج
+            - generic [ref=e3089]:
+              - link "واتساب" [ref=e3090]:
+                - /url: https://wa.me/201064857518
+              - link "اتصال مباشر" [ref=e3093]:
+                - /url: tel:01064857518
+        - generic [ref=e3097] [cursor=pointer]:
+          - generic [ref=e3098]:
+            - button [ref=e3100]
+            - generic [ref=e3103]:
+              - generic [ref=e3104]: "#"
+              - generic [ref=e3105]: "001"
+            - generic [ref=e3106]:
+              - heading "ام مازن" [level=4] [ref=e3107]
+              - generic [ref=e3108]:
+                - text: ١٦ مايو ٢٠٢٥
+                - generic [ref=e3111]: •
+                - generic [ref=e3112]: 1 أصناف
+            - generic [ref=e3113]:
+              - button "تعديل" [ref=e3114]
+              - button "حذف" [ref=e3117]
+          - generic [ref=e3122]:
+            - generic [ref=e3125]: "01027150099"
+            - button "نسخ" [ref=e3126]
+            - link "اتصال" [ref=e3130]:
+              - /url: tel:01027150099
+            - link "واتساب" [ref=e3133]:
+              - /url: https://wa.me/201027150099
+          - generic [ref=e3136]: الدقهلية - العنوان المنصوره مركز منيه النصر دقهليه قريه برمبال القديمه شارع المعهد الديني - الدقهلية
+          - link "عرض على جوجل ماب" [ref=e3145]:
+            - /url: https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D8%AF%D9%82%D9%87%D9%84%D9%8A%D8%A9%20%D8%A7%D9%84%D8%B9%D9%86%D9%88%D8%A7%D9%86%20%D8%A7%D9%84%D9%85%D9%86%D8%B5%D9%88%D8%B1%D9%87%20%D9%85%D8%B1%D9%83%D8%B2%20%D9%85%D9%86%D9%8A%D9%87%20%D8%A7%D9%84%D9%86%D8%B5%D8%B1%20%D8%AF%D9%82%D9%87%D9%84%D9%8A%D9%87%20%D9%82%D8%B1%D9%8A%D9%87%20%D8%A8%D8%B1%D9%85%D8%A8%D8%A7%D9%84%20%D8%A7%D9%84%D9%82%D8%AF%D9%8A%D9%85%D9%87%20%D8%B4%D8%A7%D8%B1%D8%B9%20%D8%A7%D9%84%D9%85%D8%B9%D9%87%D8%AF%20%D8%A7%D9%84%D8%AF%D9%8A%D9%86%D9%8A%20%20-%20%D8%A7%D9%84%D8%AF%D9%82%D9%87%D9%84%D9%8A%D8%A9
+          - generic [ref=e3147]:
+            - text: طقم مواليد قطن 3 قطع ×1
+            - generic [ref=e3148]: "[3]"
+            - generic [ref=e3149]: 295 ج.م
+          - generic [ref=e3151]:
+            - generic [ref=e3152]:
+              - generic [ref=e3153]: تم التوصيل
+              - generic [ref=e3158]: 365 ج.م
+              - generic [ref=e3159]: "|"
+              - generic [ref=e3160]: 1 منتج
+            - generic [ref=e3161]:
+              - link "واتساب" [ref=e3162]:
+                - /url: https://wa.me/201027150099
+              - link "اتصال مباشر" [ref=e3165]:
+                - /url: tel:01027150099

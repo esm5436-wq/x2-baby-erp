@@ -1,0 +1,43 @@
+- generic [ref=e4]:
+  - generic [ref=e6]:
+    - heading "X 2 B A B Y E R P" [level=1] [ref=e13]:
+      - generic [ref=e14]: X
+      - generic: "2"
+      - generic: B
+      - generic: A
+      - generic: B
+      - generic: "Y"
+      - generic: E
+      - generic: R
+      - generic: P
+    - paragraph [ref=e15]: نظام إدارة المخزون والمبيعات
+    - generic [ref=e16]:
+      - img [ref=e17]
+      - text: ثقة أكثر من ١٠٠٠ عميل
+  - generic [ref=e22]:
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - button "تبديل السمة" [ref=e25] [cursor=pointer]:
+          - img [ref=e26]
+        - generic [ref=e32]:
+          - heading "تسجيل الدخول" [level=2] [ref=e33]
+          - paragraph [ref=e34]: أهلاً بك في نظام X2
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - generic:
+            - img
+          - generic: اسم المستخدم
+          - textbox "اسم المستخدم" [active] [ref=e37]
+        - generic [ref=e38]:
+          - generic:
+            - img
+          - generic: كلمة المرور
+          - textbox "كلمة المرور" [ref=e39]
+          - button "إظهار كلمة المرور" [ref=e40] [cursor=pointer]:
+            - img [ref=e41]
+        - button "تسجيل الدخول" [ref=e44] [cursor=pointer]:
+          - img [ref=e45]
+          - text: تسجيل الدخول
+    - generic [ref=e49]:
+      - img [ref=e50]
+      - text: ثقة أكثر من ١٠٠٠ عميل

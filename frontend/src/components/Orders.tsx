@@ -64,6 +64,7 @@ import BatchEditModal from './BatchEditModal';
 import type { BatchField } from './BatchEditModal';
 import InvoicePrintModal from './InvoicePrintModal';
 import WaybillPrintModal from './WaybillPrintModal';
+import { API_BASE } from '../lib/api';
 import CustomerDetail from './CustomerDetail';
 
 const StatCard = ({ icon: Icon, title, value, unit, subValue, color, description }: { 
@@ -846,7 +847,7 @@ const Orders: React.FC<OrdersProps> = ({
     }
     autoFillTimer.current = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/customers/search?q=${encodeURIComponent(phone)}`);
+        const res = await fetch(`${API_BASE}/customers/search?q=${encodeURIComponent(phone)}`);
         if (!res.ok) return;
         const customers = await res.json();
         const match = customers.find((c: any) => c.phone.replace(/\s/g, '') === phone.replace(/\s/g, ''));
@@ -874,7 +875,7 @@ const Orders: React.FC<OrdersProps> = ({
   const [contactCompanies, setContactCompanies] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch('/api/contacts/companies')
+    fetch(`${API_BASE}/contacts/companies`)
       .then(r => r.json())
       .then(rows => {
         setContactCompanies(rows.filter((r: any) => r.entityType === 'شركة شحن').map((r: any) => r.companyName));
@@ -931,7 +932,7 @@ const Orders: React.FC<OrdersProps> = ({
   const [savedCoupons, setSavedCoupons] = useState<Record<string, { discount: number; is_percent: boolean }>>({});
 
   useEffect(() => {
-    fetch('/api/coupons').then(r => r.json()).then((data: { code: string; discount: number; is_percent: boolean }[]) => {
+    fetch(`${API_BASE}/coupons`).then(r => r.json()).then((data: { code: string; discount: number; is_percent: boolean }[]) => {
       const map: Record<string, { discount: number; is_percent: boolean }> = {};
       data.forEach(c => { map[c.code] = { discount: c.discount, is_percent: !!c.is_percent }; });
       setSavedCoupons(map);
@@ -1438,7 +1439,7 @@ const Orders: React.FC<OrdersProps> = ({
 
   const handleViewCustomerFromOrder = async (customerId: string, order: Order) => {
     try {
-      const res = await fetch(`/api/customers/${customerId}`);
+      const res = await fetch(`${API_BASE}/customers/${customerId}`);
       const data = await res.json();
       if (data.customer) {
         setViewingCustomerFromOrder(data.customer);

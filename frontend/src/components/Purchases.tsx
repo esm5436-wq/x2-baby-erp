@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { API_BASE } from '../lib/api';
 import { 
   Plus, 
   Search, 
@@ -107,10 +108,10 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
     try {
       setIsLoading(true);
       const [invRes, supRes, expRes, conRes] = await Promise.all([
-        fetch('/api/purchase-invoices'),
-        fetch('/api/suppliers'),
-        fetch('/api/expenses'),
-        fetch('/api/contacts')
+        fetch(`${API_BASE}/purchase-invoices`),
+        fetch(`${API_BASE}/suppliers`),
+        fetch(`${API_BASE}/expenses`),
+        fetch(`${API_BASE}/contacts`)
       ]);
       const invData = await invRes.json();
       const supData = await supRes.json();
@@ -138,7 +139,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
       }
       try {
         setIsLoading(true);
-        const response = await fetch('/api/expenses', {
+        const response = await fetch(`${API_BASE}/expenses`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -173,7 +174,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
       const supplierName = suppliers.find(s => s.id === newInvoice.supplierId)?.name || contacts.find(c => c.id === newInvoice.supplierId)?.companyName;
       const payload = { ...newInvoice, supplierName };
       
-      const response = await fetch('/api/purchase-invoices', {
+      const response = await fetch(`${API_BASE}/purchase-invoices`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -203,7 +204,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
   const handleDeleteExpense = async (id: number) => {
     if (window.confirm('هل تريد حذف هذا المصروف؟')) {
       try {
-        const response = await fetch(`/api/expenses/${id}`, { method: 'DELETE' });
+        const response = await fetch(`${API_BASE}/expenses/${id}`, { method: 'DELETE' });
         if (response.ok) fetchData();
       } catch (error) {
         console.error('Error deleting expense:', error);
@@ -429,7 +430,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                         <div className="flex items-center justify-between px-2">
                           <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">المورد</label>
                           <div className="flex gap-1">
-                            <button onClick={() => { fetch('/api/contacts/specializations').then(r => r.json()).then(setContactSpecializations).catch(() => {}); setShowContactModal(true); }} className="text-[10px] font-black text-teal-600 hover:bg-teal-50 dark:hover:bg-teal-900/20 px-2 py-1 rounded-lg transition-all border border-teal-200 dark:border-teal-800 flex items-center gap-1">
+                            <button onClick={() => { fetch(`${API_BASE}/contacts/specializations`).then(r => r.json()).then(setContactSpecializations).catch(() => {}); setShowContactModal(true); }} className="text-[10px] font-black text-teal-600 hover:bg-teal-50 dark:hover:bg-teal-900/20 px-2 py-1 rounded-lg transition-all border border-teal-200 dark:border-teal-800 flex items-center gap-1">
                               <Plus size={12} /> إضافة جهة
                             </button>
                           </div>
@@ -825,14 +826,14 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
           onClose={() => setShowContactModal(false)}
           onSave={async (data) => {
             try {
-              await fetch('/api/contacts', {
+              await fetch(`${API_BASE}/contacts`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
               });
               setShowContactModal(false);
               setContactSpecializations([]);
-              const res = await fetch('/api/contacts');
+              const res = await fetch(`${API_BASE}/contacts`);
               if (res.ok) setContacts(await res.json());
             } catch (err) {
               console.error('Failed to save contact:', err);

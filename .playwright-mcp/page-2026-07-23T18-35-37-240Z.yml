@@ -1,0 +1,84 @@
+- generic [ref=e27]:
+  - button "المساعد الذكي" [ref=e28] [cursor=pointer]
+  - navigation [ref=e32]:
+    - generic [ref=e39]:
+      - heading "X2 BABY" [level=1] [ref=e40]
+      - paragraph [ref=e41]: الجودة، الثقة، والأمان
+    - generic [ref=e42]:
+      - link "المخزون" [ref=e44] [cursor=pointer]:
+        - /url: "#/"
+      - link "الطلبات" [ref=e51] [cursor=pointer]:
+        - /url: "#/orders"
+      - link "المشتريات" [ref=e57] [cursor=pointer]:
+        - /url: "#/purchases"
+      - link "الحسابات والمالية" [ref=e63] [cursor=pointer]:
+        - /url: "#/accounts"
+      - link "جهات الاتصال" [ref=e68] [cursor=pointer]:
+        - /url: "#/contacts"
+      - link "العملاء" [ref=e76] [cursor=pointer]:
+        - /url: "#/customers"
+      - link "سجل النشاطات" [ref=e83] [cursor=pointer]:
+        - /url: "#/activity-logs"
+      - link "Easy Orders" [ref=e88] [cursor=pointer]:
+        - /url: "#/easy-orders"
+      - link "إدارة البيانات" [ref=e94] [cursor=pointer]:
+        - /url: "#/settings"
+    - generic [ref=e99]:
+      - generic [ref=e101]:
+        - generic [ref=e102]: الهوية التجارية
+        - generic [ref=e103]: "\" الجودة، الثقة، والأمان \""
+      - button "الوضع النهاري" [ref=e104] [cursor=pointer]
+      - button "تسجيل الخروج" [ref=e113] [cursor=pointer]
+  - main [ref=e126]:
+    - generic [ref=e127]:
+      - generic [ref=e128]:
+        - heading [level=2] [ref=e129]
+        - generic [ref=e135]:
+          - textbox "ابحث عن منتج..." [ref=e140]
+          - button "استيراد منتجات" [disabled] [ref=e141]
+          - button "إضافة منتج" [ref=e147] [cursor=pointer]
+      - generic [ref=e149]:
+        - generic [ref=e150]: "فلاتر وترتيب:"
+        - button "تحديد الكل" [ref=e154] [cursor=pointer]
+        - button "تصدير البيانات" [ref=e157] [cursor=pointer]
+        - combobox [ref=e162] [cursor=pointer]:
+          - option "كل الموردين" [selected]
+        - generic [ref=e163]:
+          - button "قص الصور لملء الإطار" [ref=e164] [cursor=pointer]
+          - generic [ref=e169]:
+            - button "▦ شبكة" [ref=e170] [cursor=pointer]:
+              - generic [ref=e171]: ▦
+              - generic [ref=e172]: شبكة
+            - button "☰ جدول" [ref=e173] [cursor=pointer]:
+              - generic [ref=e174]: ☰
+              - generic [ref=e175]: جدول
+            - button "⊞ مدمج" [ref=e176] [cursor=pointer]:
+              - generic [ref=e177]: ⊞
+              - generic [ref=e178]: مدمج
+            - button "⊟ مفصل" [ref=e179] [cursor=pointer]:
+              - generic [ref=e180]: ⊟
+              - generic [ref=e181]: مفصل
+        - combobox [ref=e183] [cursor=pointer]:
+          - option "التاريخ" [selected]
+          - option "الاسم"
+          - option "السعر"
+          - option "المخزون"
+        - button "▼" [ref=e184] [cursor=pointer]
+        - combobox [ref=e188] [cursor=pointer]:
+          - option "جميع التصنيفات" [selected]
+        - combobox [ref=e189] [cursor=pointer]:
+          - option "جميع الوسوم (Tags)" [selected]
+        - button "بحث متقدم" [ref=e190] [cursor=pointer]
+      - generic [ref=e193]:
+        - generic [ref=e200]:
+          - generic [ref=e201]: إجمالي القطع
+          - text: "0"
+        - generic [ref=e210]:
+          - generic [ref=e211]: إجمالي التكلفة
+          - generic [ref=e212]: 0 ج.م
+        - generic [ref=e219]:
+          - generic [ref=e220]: قيمة البيع المتوقعة
+          - generic [ref=e221]: 0 ج.م
+        - generic [ref=e227]:
+          - generic [ref=e228]: الربح المتوقع
+          - generic [ref=e229]: 0 ج.م

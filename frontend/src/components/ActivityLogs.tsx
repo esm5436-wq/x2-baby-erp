@@ -4,7 +4,7 @@ import { Search, ChevronLeft, ChevronRight, ChevronDown, RotateCcw, Filter, X, C
 import { useNavigate } from 'react-router-dom';
 import { useUndoRedo } from '../contexts/UndoRedoContext';
 
-const API_BASE = '/api';
+import { API_BASE } from '../lib/api';
 
 const ENTITY_ICONS: Record<string, React.ReactNode> = {
   product: <Package size={18} />,
