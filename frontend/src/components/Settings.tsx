@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Download, Upload, Database, AlertCircle, AlertTriangle, Check, Clock, Palette, Image as ImageIcon, Trash2, Save, Tag, Plus, ChevronDown, ChevronRight, Edit2, Sparkles, Key, ArrowUp, ArrowDown, Eye, EyeOff, X, Printer, Percent, RotateCcw, History } from 'lucide-react';
 import { AppState, Category } from '../types';
 import { compressImage } from '../lib/imageUtils';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface SettingsProps {
   state: AppState;
@@ -13,6 +14,7 @@ interface SettingsProps {
 import { API_BASE } from '../lib/api';
 
 const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) => {
+  const { uiTheme, setTheme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
   const sloganDesignInputRef = useRef<HTMLInputElement>(null);
@@ -779,6 +781,27 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
 
       <div className="flex items-center gap-2 mb-2"><ImageIcon className="text-accent" /><h2 className="text-2xl font-bold">إعدادات العرض</h2></div>
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.12 }} className="bg-white dark:bg-slate-900 p-8 rounded-[32px] shadow-sm border border-gray-100 dark:border-slate-800">
+        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800/50 rounded-2xl mb-4">
+          <div>
+            <h4 className="font-black">مظهر التطبيق</h4>
+            <p className="text-xs text-gray-400 mt-1">اختر بين التصميم الكلاسيكي أو Material Design 3 الحديث.</p>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button
+              onClick={() => setTheme('classic')}
+              className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${uiTheme === 'classic' ? 'bg-accent text-white shadow-md' : 'bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:opacity-80'}`}
+            >
+              كلاسيكي
+            </button>
+            <button
+              onClick={() => setTheme('material3')}
+              className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${uiTheme === 'material3' ? 'bg-accent text-white shadow-md' : 'bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:opacity-80'}`}
+            >
+              Material 3
+            </button>
+          </div>
+        </div>
+
         <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800/50 rounded-2xl">
           <div>
             <h4 className="font-black">إظهار الصور كاملة بدون قص</h4>
