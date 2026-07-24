@@ -26,6 +26,7 @@ import { LogOut } from 'lucide-react';
 import LoginPage from './components/LoginPage';
 import * as XLSX from 'xlsx';
 import { API_BASE } from './lib/api';
+import { MD3AppShell } from './components/md3/MD3AppShell';
 
 const MainLayout: React.FC<{
   state: AppState;
@@ -210,11 +211,168 @@ const MainLayout: React.FC<{
     return () => setOnRefreshState(null);
   }, [setOnRefreshState, refreshAppState]);
 
+  const routesElement = (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route 
+          path="/" 
+          element={
+            <Inventory 
+              products={state.products} 
+              categories={state.categories}
+              branding={{ 
+                logo: state.brandLogo, 
+                name: state.brandName, 
+                slogan: state.brandSlogan,
+                sloganDesign: state.brandSloganDesign
+              }}
+              onUpdateProduct={handleUpdateProduct} 
+              onSaveProduct={handleSaveProduct}
+              onDeleteProduct={handleDeleteProduct}
+              onDeleteMultipleProducts={handleDeleteMultipleProducts}
+              onBatchUpdateProducts={handleBatchUpdateProducts}
+              isLoading={loading}
+              importProductsPreview={importProductsPreview}
+              onImportProductsFetch={onImportProductsFetch}
+              onImportProductsConfirm={onImportProductsConfirm}
+              onImportProductsClose={() => setImportProductsPreview(null)}
+              suppliers={state.suppliers || []}
+              contacts={state.contacts || []}
+              orders={state.orders}
+            />
+          } 
+        />
+        <Route 
+          path="/orders" 
+          element={
+            <Orders 
+              orders={state.orders} 
+              products={state.products} 
+              branding={{ 
+                logo: state.brandLogo, 
+                name: state.brandName, 
+                slogan: state.brandSlogan,
+                sloganDesign: state.brandSloganDesign
+              }}
+              invoiceSettings={state.invoiceSettings}
+              onAddOrder={handleAddOrder} 
+              onUpdateOrder={handleUpdateOrder}
+              onDeleteOrder={handleDeleteOrder}
+              onDeleteMultipleOrders={handleDeleteMultipleOrders}
+              onBatchUpdateOrders={handleBatchUpdateOrders}
+              onUpdateStatus={handleUpdateOrderStatus}
+              onUpdateMultipleStatus={handleUpdateMultipleOrderStatus}
+              isLoading={loading}
+              importOrdersPreview={importOrdersPreview}
+              onImportOrdersFetch={onImportOrdersFetch}
+              onImportOrdersConfirm={onImportOrdersConfirm}
+              onImportOrdersClose={() => setImportOrdersPreview(null)}
+            />
+          } 
+        />
+        <Route path="/dispatch" element={<Navigate to="/orders" replace />} />
+        <Route 
+          path="/purchases" 
+          element={
+            <Purchases 
+              products={state.products} 
+              categories={state.categories}
+              suppliers={state.suppliers}
+              contacts={state.contacts || []}
+              branding={{ 
+                logo: state.brandLogo, 
+                name: state.brandName, 
+                slogan: state.brandSlogan,
+                sloganDesign: state.brandSloganDesign
+              }}
+              onSaveProduct={handleSaveProduct}
+              onRefresh={() => {
+                fetch(`${API_BASE}/state`)
+                  .then(res => res.json())
+                  .then(data => setState(data));
+              }} 
+            />
+          } 
+        />
+        <Route 
+          path="/accounts" 
+          element={
+            <Accounts 
+              orders={state.orders} 
+              products={state.products}
+              contacts={state.contacts || []}
+              targets={state.targets || []}
+              branding={{ 
+                logo: state.brandLogo, 
+                name: state.brandName, 
+                slogan: state.brandSlogan,
+                sloganDesign: state.brandSloganDesign
+              }}
+              taxEnabled={state.taxEnabled}
+              taxRate={state.taxRate}
+              onSaveTarget={handleSaveTarget}
+              onDeleteTarget={handleDeleteTarget}
+            />
+          } 
+        />
+        <Route 
+          path="/activity-logs" 
+          element={
+            <ActivityLogs 
+              onRefresh={() => {
+                fetch(`${API_BASE}/state`)
+                  .then(res => res.json())
+                  .then(data => setState(data));
+              }} 
+            />
+          } 
+        />
+        <Route 
+          path="/contacts" 
+          element={
+            <Contacts 
+              contacts={state.contacts}
+              branding={{ 
+                logo: state.brandLogo, 
+                name: state.brandName, 
+                slogan: state.brandSlogan,
+                sloganDesign: state.brandSloganDesign
+              }}
+            />
+          } 
+        />
+        <Route 
+          path="/customers" 
+          element={
+            <Customers 
+              customers={state.customers}
+              orders={state.orders}
+              branding={{ 
+                logo: state.brandLogo, 
+                name: state.brandName, 
+                slogan: state.brandSlogan,
+                sloganDesign: state.brandSloganDesign
+              }}
+            />
+          } 
+        />
+        <Route 
+          path="/settings" 
+          element={<Settings state={state} onImport={handleImportState} onUpdateState={(update) => setState(prev => ({ ...prev, ...update }))} />} 
+        />
+        <Route 
+          path="/easy-orders" 
+          element={<EasyOrdersPanel state={state} onUpdateState={(update) => setState(prev => ({ ...prev, ...update }))} />} 
+        />
+      </Routes>
+    </AnimatePresence>
+  );
+
   return (
-    <div className={`min-h-screen flex transition-colors duration-500 overflow-x-hidden pb-20 md:pb-0 transition-[padding-right] duration-150 ease-out ${
-      isMD3 ? 'bg-[var(--md3-background)]' : 'bg-slate-50 dark:bg-slate-950'
-    }`}
-      style={{ paddingRight: isLg ? 'var(--sidebar-width, 256px)' : undefined }}>
+    <div className={`min-h-screen flex transition-colors duration-500 overflow-x-hidden ${
+      isMD3 ? 'pb-20 md:pb-0' : 'pb-20 md:pb-0 transition-[padding-right] duration-150 ease-out'
+    } ${isMD3 ? 'bg-[var(--md3-background)]' : 'bg-slate-50 dark:bg-slate-950'}`}
+      style={!isMD3 ? { paddingRight: isLg ? 'var(--sidebar-width, 256px)' : undefined } : undefined}>
       <AIAssistant 
         state={state} 
         onUpdateOrderStatus={handleUpdateOrderStatus} 
@@ -324,6 +482,7 @@ const MainLayout: React.FC<{
         )}
       </AnimatePresence>
 
+      {!isMD3 && (
       <motion.nav 
         ref={sidebarRef}
         initial={{ x: 300 }}
@@ -484,7 +643,9 @@ const MainLayout: React.FC<{
           </div>
         </div>
       </motion.nav>
+      )}
 
+      {!isMD3 && (
       <nav className={`fixed bottom-0 left-0 right-0 flex md:hidden justify-around items-center px-2 z-50 ${
         isMD3 
           ? 'h-20 bg-[var(--md3-surface-container)] shadow-[var(--md3-elevation-2)] pb-[env(safe-area-inset-bottom,0px)]'
@@ -587,163 +748,27 @@ const MainLayout: React.FC<{
           )}
         </NavLink>
       </nav>
+      )}
 
-      <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route 
-              path="/" 
-              element={
-                <Inventory 
-                  products={state.products} 
-                  categories={state.categories}
-                  branding={{ 
-                    logo: state.brandLogo, 
-                    name: state.brandName, 
-                    slogan: state.brandSlogan,
-                    sloganDesign: state.brandSloganDesign
-                  }}
-                  onUpdateProduct={handleUpdateProduct} 
-                  onSaveProduct={handleSaveProduct}
-                  onDeleteProduct={handleDeleteProduct}
-                  onDeleteMultipleProducts={handleDeleteMultipleProducts}
-                  onBatchUpdateProducts={handleBatchUpdateProducts}
-                  isLoading={loading}
-                  importProductsPreview={importProductsPreview}
-                  onImportProductsFetch={onImportProductsFetch}
-                  onImportProductsConfirm={onImportProductsConfirm}
-                  onImportProductsClose={() => setImportProductsPreview(null)}
-                  suppliers={state.suppliers || []}
-                  contacts={state.contacts || []}
-                  orders={state.orders}
-                />
-              } 
-            />
-            <Route 
-              path="/orders" 
-              element={
-                <Orders 
-                  orders={state.orders} 
-                  products={state.products} 
-                  branding={{ 
-                    logo: state.brandLogo, 
-                    name: state.brandName, 
-                    slogan: state.brandSlogan,
-                    sloganDesign: state.brandSloganDesign
-                  }}
-                  invoiceSettings={state.invoiceSettings}
-                  onAddOrder={handleAddOrder} 
-                  onUpdateOrder={handleUpdateOrder}
-                  onDeleteOrder={handleDeleteOrder}
-                  onDeleteMultipleOrders={handleDeleteMultipleOrders}
-                  onBatchUpdateOrders={handleBatchUpdateOrders}
-                  onUpdateStatus={handleUpdateOrderStatus}
-                  onUpdateMultipleStatus={handleUpdateMultipleOrderStatus}
-                  isLoading={loading}
-                  importOrdersPreview={importOrdersPreview}
-                  onImportOrdersFetch={onImportOrdersFetch}
-                  onImportOrdersConfirm={onImportOrdersConfirm}
-                  onImportOrdersClose={() => setImportOrdersPreview(null)}
-                />
-              } 
-            />
-            <Route path="/dispatch" element={<Navigate to="/orders" replace />} />
-            <Route 
-              path="/purchases" 
-              element={
-                <Purchases 
-                  products={state.products} 
-                  categories={state.categories}
-                  suppliers={state.suppliers}
-                  contacts={state.contacts || []}
-                  branding={{ 
-                    logo: state.brandLogo, 
-                    name: state.brandName, 
-                    slogan: state.brandSlogan,
-                    sloganDesign: state.brandSloganDesign
-                  }}
-                  onSaveProduct={handleSaveProduct}
-                  onRefresh={() => {
-                    fetch(`${API_BASE}/state`)
-                      .then(res => res.json())
-                      .then(data => setState(data));
-                  }} 
-                />
-              } 
-            />
-            <Route 
-              path="/accounts" 
-              element={
-                <Accounts 
-                  orders={state.orders} 
-                  products={state.products}
-                  contacts={state.contacts || []}
-                  targets={state.targets || []}
-                  branding={{ 
-                    logo: state.brandLogo, 
-                    name: state.brandName, 
-                    slogan: state.brandSlogan,
-                    sloganDesign: state.brandSloganDesign
-                  }}
-                  taxEnabled={state.taxEnabled}
-                  taxRate={state.taxRate}
-                  onSaveTarget={handleSaveTarget}
-                  onDeleteTarget={handleDeleteTarget}
-                />
-              } 
-            />
-            <Route 
-              path="/activity-logs" 
-              element={
-                <ActivityLogs 
-                  onRefresh={() => {
-                    fetch(`${API_BASE}/state`)
-                      .then(res => res.json())
-                      .then(data => setState(data));
-                  }} 
-                />
-              } 
-            />
-            <Route 
-              path="/contacts" 
-              element={
-                <Contacts 
-                  contacts={state.contacts}
-                  branding={{ 
-                    logo: state.brandLogo, 
-                    name: state.brandName, 
-                    slogan: state.brandSlogan,
-                    sloganDesign: state.brandSloganDesign
-                  }}
-                />
-              } 
-            />
-            <Route 
-              path="/customers" 
-              element={
-                <Customers 
-                  customers={state.customers}
-                  orders={state.orders}
-                  branding={{ 
-                    logo: state.brandLogo, 
-                    name: state.brandName, 
-                    slogan: state.brandSlogan,
-                    sloganDesign: state.brandSloganDesign
-                  }}
-                />
-              } 
-            />
-            <Route 
-              path="/settings" 
-              element={<Settings state={state} onImport={handleImportState} onUpdateState={(update) => setState(prev => ({ ...prev, ...update }))} />} 
-            />
-            <Route 
-              path="/easy-orders" 
-              element={<EasyOrdersPanel state={state} onUpdateState={(update) => setState(prev => ({ ...prev, ...update }))} />} 
-            />
-          </Routes>
-        </AnimatePresence>
-      </main>
+      {isMD3 ? (
+        <MD3AppShell
+          darkMode={darkMode}
+          toggleDarkMode={() => setDarkMode(!darkMode)}
+          logout={() => logout()}
+          brandLogo={state.brandLogo}
+          brandName={state.brandName}
+          brandSlogan={state.brandSlogan}
+          brandSloganDesign={state.brandSloganDesign}
+        >
+          <div className="p-4 md:p-8 overflow-x-hidden">
+            {routesElement}
+          </div>
+        </MD3AppShell>
+      ) : (
+        <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
+          {routesElement}
+        </main>
+      )}
 
       <AnimatePresence>
         {showInstallToast && !installDismissed && (
