@@ -27,6 +27,7 @@ import LoginPage from './components/LoginPage';
 import * as XLSX from 'xlsx';
 import { API_BASE } from './lib/api';
 import { MD3AppShell } from './components/md3/MD3AppShell';
+import { MD3TopBar } from './components/md3/MD3TopBar';
 
 const MainLayout: React.FC<{
   state: AppState;
@@ -384,15 +385,29 @@ const MainLayout: React.FC<{
       {/* Custom Toast Notification */}
       <AnimatePresence>
         {notification && (
-          <motion.div 
-            initial={{ opacity: 0, y: 50, x: '-50%' }}
-            animate={{ opacity: 1, y: 0, x: '-50%' }}
-            exit={{ opacity: 0, y: 50, x: '-50%' }}
-            className={`fixed bottom-24 md:bottom-10 left-1/2 -translate-x-1/2 z-[300] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 font-black text-sm ${notification.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}
-          >
-            {notification.type === 'success' ? <Check size={20} /> : <AlertCircle size={20} />}
-            {notification.message}
-          </motion.div>
+          isMD3 ? (
+            <motion.div 
+              initial={{ opacity: 0, y: 50, x: '-50%' }}
+              animate={{ opacity: 1, y: 0, x: '-50%' }}
+              exit={{ opacity: 0, y: 50, x: '-50%' }}
+              className="md3-snackbar"
+            >
+              <span className="md3-snackbar-icon">
+                {notification.type === 'success' ? <Check size={20} /> : <AlertCircle size={20} />}
+              </span>
+              <span className="md3-snackbar-text">{notification.message}</span>
+            </motion.div>
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0, y: 50, x: '-50%' }}
+              animate={{ opacity: 1, y: 0, x: '-50%' }}
+              exit={{ opacity: 0, y: 50, x: '-50%' }}
+              className={`fixed bottom-24 md:bottom-10 left-1/2 -translate-x-1/2 z-[300] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 font-black text-sm ${notification.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}
+            >
+              {notification.type === 'success' ? <Check size={20} /> : <AlertCircle size={20} />}
+              {notification.message}
+            </motion.div>
+          )
         )}
       </AnimatePresence>
 
@@ -760,8 +775,26 @@ const MainLayout: React.FC<{
           brandSlogan={state.brandSlogan}
           brandSloganDesign={state.brandSloganDesign}
         >
-          <div className="p-4 md:p-8 overflow-x-hidden">
-            {routesElement}
+          <div className="overflow-x-hidden">
+            <MD3TopBar
+              title={(() => {
+                const path = location.pathname;
+                if (path === '/') return 'المخزون';
+                if (path === '/orders') return 'الطلبات';
+                if (path === '/purchases') return 'المشتريات';
+                if (path === '/accounts') return 'الحسابات والمالية';
+                if (path === '/contacts') return 'جهات الاتصال';
+                if (path === '/customers') return 'العملاء';
+                if (path === '/activity-logs') return 'سجل النشاطات';
+                if (path === '/easy-orders') return 'Easy Orders';
+                if (path === '/settings') return 'إدارة البيانات';
+                return 'X2 ERP';
+              })()}
+              subtitle={state.brandName || 'X2 BABY'}
+            />
+            <div className="p-4 md:p-8">
+              {routesElement}
+            </div>
           </div>
         </MD3AppShell>
       ) : (
