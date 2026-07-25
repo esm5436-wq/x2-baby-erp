@@ -1,33 +1,29 @@
-
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { HashRouter, Routes, Route, Navigate, NavLink, useLocation } from 'react-router-dom';
-import { 
-  Check, AlertCircle, Package, Upload, Plus, ShoppingBag, 
-  BarChart3, Settings as SettingsIcon, Save, Sun, Moon, TrendingUp, Truck, Activity, ArrowRightLeft, Download
-} from 'lucide-react';
-import { Users, UserCheck } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Download, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { AppState, Order, OrderStatus, Product, Variant } from './types';
-import Inventory from './components/Inventory';
-import Orders from './components/Orders';
-import Purchases from './components/Purchases';
-import Accounts from './components/Accounts';
-import Settings from './components/Settings';
+import { AppState, Order, Product } from './types';
 import AIAssistant from './components/AIAssistant';
-import Contacts from './components/Contacts';
-import Customers from './components/Customers';
-import ActivityLogs from './components/ActivityLogs';
-import EasyOrdersPanel from './components/EasyOrdersPanel';
 import InstallGuideModal from './components/InstallGuideModal';
+import AppLayout from './components/layout/AppLayout';
+import AppTopBar from './components/layout/AppTopBar';
+
+const Inventory = React.lazy(() => import('./components/Inventory'));
+const Dashboard = React.lazy(() => import('./components/Dashboard'));
+const Orders = React.lazy(() => import('./components/Orders'));
+const Purchases = React.lazy(() => import('./components/Purchases'));
+const Accounts = React.lazy(() => import('./components/Accounts'));
+const Settings = React.lazy(() => import('./components/Settings'));
+const Contacts = React.lazy(() => import('./components/Contacts'));
+const Customers = React.lazy(() => import('./components/Customers'));
+const ActivityLogs = React.lazy(() => import('./components/ActivityLogs'));
+const EasyOrdersPanel = React.lazy(() => import('./components/EasyOrdersPanel'));
 import { UndoRedoProvider, useUndoRedo } from './contexts/UndoRedoContext';
 import { useAuth } from './contexts/AuthContext';
 import { useTheme } from './contexts/ThemeContext';
-import { LogOut } from 'lucide-react';
 import LoginPage from './components/LoginPage';
-import * as XLSX from 'xlsx';
 import { API_BASE } from './lib/api';
-import { MD3AppShell } from './components/md3/MD3AppShell';
-import { MD3TopBar } from './components/md3/MD3TopBar';
+import { MD3Dialog, MD3Snackbar, useSnackbar } from './components/md3';
 
 const MainLayout: React.FC<{
   state: AppState;
@@ -79,58 +75,20 @@ const MainLayout: React.FC<{
   const isMD3 = uiTheme === 'material3';
   const toggleDarkMode = () => setDarkMode(!darkMode);
 
-  const [sidebarWidth, setSidebarWidth] = useState(() => {
-    const saved = localStorage.getItem('erp_sidebar_width');
-    return saved ? Math.max(180, Math.min(400, parseInt(saved))) : 256;
-  });
-  const sidebarWidthRef = useRef(sidebarWidth);
-  const isDraggingRef = useRef(false);
-  const sidebarRef = useRef<HTMLDivElement>(null);
-  const isCollapsed = sidebarWidth < 120;
-  sidebarWidthRef.current = sidebarWidth;
-
-  const handleSidebarDrag = useCallback((e: React.PointerEvent) => {
-    const el = e.currentTarget as HTMLElement;
-    el.setPointerCapture(e.pointerId);
-    isDraggingRef.current = true;
-    const startX = e.clientX;
-    const startWidth = sidebarWidthRef.current;
-    const sidebarEl = sidebarRef.current;
-
-    const onMove = (e: PointerEvent) => {
-      const diff = startX - e.clientX;
-      const newWidth = Math.max(100, Math.min(400, Math.round(startWidth + diff)));
-      sidebarWidthRef.current = newWidth;
-      if (sidebarEl) sidebarEl.style.width = newWidth + 'px';
-      document.documentElement.style.setProperty('--sidebar-width', newWidth + 'px');
-    };
-
-    const onUp = () => {
-      isDraggingRef.current = false;
-      el.removeEventListener('pointermove', onMove);
-      el.removeEventListener('pointerup', onUp);
-      document.body.style.userSelect = '';
-      const finalWidth = sidebarWidthRef.current;
-      setSidebarWidth(finalWidth);
-      localStorage.setItem('erp_sidebar_width', String(finalWidth));
-    };
-
-    el.addEventListener('pointermove', onMove);
-    el.addEventListener('pointerup', onUp);
-    document.body.style.userSelect = 'none';
-    e.preventDefault();
-  }, []);
-
-  const [isLg, setIsLg] = useState(window.innerWidth >= 1024);
-  useEffect(() => {
-    const onResize = () => setIsLg(window.innerWidth >= 1024);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.style.setProperty('--sidebar-width', sidebarWidth + 'px');
-  }, [sidebarWidth]);
+  const pageTitle = (() => {
+    const path = location.pathname;
+    if (path === '/') return 'لوحة التحكم';
+    if (path === '/inventory') return 'المخزون';
+    if (path === '/orders') return 'الطلبات';
+    if (path === '/purchases') return 'المشتريات';
+    if (path === '/accounts') return 'الحسابات والمالية';
+    if (path === '/contacts') return 'جهات الاتصال';
+    if (path === '/customers') return 'العملاء';
+    if (path === '/activity-logs') return 'سجل النشاطات';
+    if (path === '/easy-orders') return 'Easy Orders';
+    if (path === '/settings') return 'إدارة البيانات';
+    return 'X2 ERP';
+  })();
 
   const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
   useEffect(() => {
@@ -213,10 +171,21 @@ const MainLayout: React.FC<{
   }, [setOnRefreshState, refreshAppState]);
 
   const routesElement = (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+    <Suspense fallback={
+      <div className="flex items-center justify-center py-32">
+        <div className="w-8 h-8 border-4 border-[var(--md-sys-color-primary,#6750A4)] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
         <Route 
           path="/" 
+          element={
+            <Dashboard state={state} />
+          } 
+        />
+        <Route 
+          path="/inventory" 
           element={
             <Inventory 
               products={state.products} 
@@ -367,13 +336,11 @@ const MainLayout: React.FC<{
         />
       </Routes>
     </AnimatePresence>
+    </Suspense>
   );
 
   return (
-    <div className={`min-h-screen flex transition-colors duration-500 overflow-x-hidden ${
-      isMD3 ? 'pb-20 md:pb-0' : 'pb-20 md:pb-0 transition-[padding-right] duration-150 ease-out'
-    } ${isMD3 ? 'bg-[var(--md3-background)]' : 'bg-slate-50 dark:bg-slate-950'}`}
-      style={!isMD3 ? { paddingRight: isLg ? 'var(--sidebar-width, 256px)' : undefined } : undefined}>
+    <>
       <AIAssistant 
         state={state} 
         onUpdateOrderStatus={handleUpdateOrderStatus} 
@@ -382,426 +349,50 @@ const MainLayout: React.FC<{
         onRefreshState={refreshAppState}
       />
 
-      {/* Custom Toast Notification */}
-      <AnimatePresence>
-        {notification && (
-          isMD3 ? (
-            <motion.div 
-              initial={{ opacity: 0, y: 50, x: '-50%' }}
-              animate={{ opacity: 1, y: 0, x: '-50%' }}
-              exit={{ opacity: 0, y: 50, x: '-50%' }}
-              className="md3-snackbar"
-            >
-              <span className="md3-snackbar-icon">
-                {notification.type === 'success' ? <Check size={20} /> : <AlertCircle size={20} />}
-              </span>
-              <span className="md3-snackbar-text">{notification.message}</span>
-            </motion.div>
-          ) : (
-            <motion.div 
-              initial={{ opacity: 0, y: 50, x: '-50%' }}
-              animate={{ opacity: 1, y: 0, x: '-50%' }}
-              exit={{ opacity: 0, y: 50, x: '-50%' }}
-              className={`fixed bottom-24 md:bottom-10 left-1/2 -translate-x-1/2 z-[300] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 font-black text-sm ${notification.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}
-            >
-              {notification.type === 'success' ? <Check size={20} /> : <AlertCircle size={20} />}
-              {notification.message}
-            </motion.div>
-          )
-        )}
-      </AnimatePresence>
-
-      {/* Welcome Modal */}
-      <AnimatePresence>
-        {showWelcome && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" 
-              onClick={() => setShowWelcome(false)} 
-            />
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 30 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 30 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative bg-white dark:bg-slate-900 rounded-[48px] w-full max-w-xl shadow-2xl overflow-hidden border border-white/20"
-            >
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500"></div>
-              
-              <div className="p-10 text-center space-y-6">
-                <motion.div 
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="w-44 h-44 bg-white rounded-[32px] flex items-center justify-center mx-auto mb-6 shadow-xl overflow-hidden ring-4 ring-accent/5"
-                >
-                  {state.brandLogo ? (
-                    <img src={state.brandLogo} alt="Logo" className="w-full h-full object-cover" />
-                  ) : (
-                    <ShoppingBag size={40} className="text-accent" />
-                  )}
-                </motion.div>
-                
-                <div className="space-y-2">
-                  <h2 className="text-3xl font-black text-slate-900 dark:text-white">مرحباً بك في X2 BABY</h2>
-                  <p className="text-slate-500 dark:text-slate-400 text-lg font-medium max-w-md mx-auto">
-                    النظام فارغ حالياً. يمكنك البدء بإضافة منتجات جديدة يدوياً أو استعادة نسخة احتياطية سابقة.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-8">
-                   <button 
-                     onClick={() => welcomeFileInputRef.current?.click()}
-                     className="group relative p-6 bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl hover:border-accent dark:hover:border-accent transition-all hover:bg-blue-50 dark:hover:bg-slate-800/80"
-                   >
-                     <div className="flex flex-col items-center gap-3">
-                       <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                         <Upload size={24} className="text-accent" />
-                       </div>
-                       <div className="text-center">
-                         <h3 className="font-bold text-slate-900 dark:text-white">رفع نسخة احتياطية</h3>
-                         <p className="text-xs text-slate-400 font-bold mt-1">ملف JSON سابق</p>
-                       </div>
-                     </div>
-                   </button>
-
-                   <button 
-                     onClick={() => setShowWelcome(false)}
-                     className="group relative p-6 bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl hover:border-emerald-500 dark:hover:border-emerald-500 transition-all hover:bg-emerald-50 dark:hover:bg-slate-800/80"
-                   >
-                     <div className="flex flex-col items-center gap-3">
-                       <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                         <Plus size={24} className="text-emerald-500" />
-                       </div>
-                       <div className="text-center">
-                         <h3 className="font-bold text-slate-900 dark:text-white">بدء نظام من الصفر</h3>
-                         <p className="text-xs text-slate-400 font-bold mt-1">إنشاء مخزون فارغ</p>
-                       </div>
-                     </div>
-                   </button>
-                </div>
-              </div>
-              
-              <input 
-                type="file" 
-                accept=".json" 
-                ref={welcomeFileInputRef} 
-                className="hidden" 
-                onChange={handleWelcomeFileChange} 
-              />
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {!isMD3 && (
-      <motion.nav 
-        ref={sidebarRef}
-        initial={{ x: 300 }}
-        animate={{ x: 0 }}
-        transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className={`fixed right-0 top-0 bottom-0 hidden lg:flex flex-col z-50 ${
-          isMD3 
-            ? 'bg-[var(--md3-surface-container)] shadow-[var(--md3-elevation-1)] p-4'
-            : 'bg-white dark:bg-slate-900 border-l border-gray-100 dark:border-slate-800 p-6'
-        }`}
-        style={{ width: sidebarWidth }}
+      <MD3Dialog
+        isOpen={showWelcome}
+        onClose={() => setShowWelcome(false)}
+        title="مرحباً بك في X2 BABY"
+        maxWidth="md"
+        actions={[
+          { label: 'بدء نظام من الصفر', onClick: () => setShowWelcome(false), variant: 'outlined' },
+          { label: 'نسخة احتياطية', onClick: () => welcomeFileInputRef.current?.click(), variant: 'filled' }
+        ]}
       >
-        <div className="flex-shrink-0 mb-4">
-          <motion.div 
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-col items-center gap-3 text-center"
-          >
-            <motion.div 
-              whileHover={{ scale: 1.05, rotate: 2 }}
-              className={`${isCollapsed ? 'w-10 h-10' : 'w-24 h-24'} bg-white rounded-[32px] flex items-center justify-center shadow-md overflow-hidden ring-1 ring-gray-100 dark:ring-slate-800 transition-all`}
-            >
-              {state.brandLogo ? (
-                <img src={state.brandLogo} alt="Logo" className="w-full h-full object-cover" />
-              ) : (
-                <ShoppingBag size={isCollapsed ? 18 : 32} />
-              )}
-            </motion.div>
-            <motion.div
-              animate={{ width: isCollapsed ? 0 : 'auto', opacity: isCollapsed ? 0 : 1 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="overflow-hidden whitespace-nowrap"
-            >
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">{state.brandName || 'X2 BABY'}</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-bold">{state.brandSlogan || 'نظام إدارة المخزون'}</p>
-              {state.brandSloganDesign && (
-                <div className="mt-2 p-1.5 bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm">
-                  <img src={state.brandSloganDesign} alt="Slogan Design" className="w-full h-auto object-contain max-h-[60px] mx-auto" />
-                </div>
-              )}
-            </motion.div>
-          </motion.div>
-        </div>
-
-        <div className="flex flex-col gap-2 flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar min-h-0 py-2">
-          {[
-            { to: "/", icon: <Package size={20} />, label: "المخزون", color: "bg-primary text-blue-900" },
-            { to: "/orders", icon: <ShoppingBag size={20} />, label: "الطلبات", color: "bg-secondary text-red-900" },
-            { to: "/purchases", icon: <ShoppingBag size={20} className="text-indigo-500" />, label: "المشتريات", color: "bg-indigo-50 text-indigo-900" },
-            { to: "/accounts", icon: <BarChart3 size={20} />, label: "الحسابات والمالية", color: "bg-accent text-white" },
-            { to: "/contacts", icon: <Users size={20} />, label: "جهات الاتصال", color: "bg-teal-50 text-teal-900" },
-            { to: "/customers", icon: <UserCheck size={20} />, label: "العملاء", color: "bg-pink-50 text-pink-900" },
-            { to: "/activity-logs", icon: <Activity size={20} />, label: "سجل النشاطات", color: "bg-amber-50 text-amber-900" },
-            { to: "/easy-orders", icon: <ArrowRightLeft size={20} />, label: "Easy Orders", color: "bg-indigo-50 text-indigo-900" },
-            { to: "/settings", icon: <SettingsIcon size={20} />, label: "إدارة البيانات", color: "bg-gray-200 text-gray-900" }
-          ].map((link, i) => (
-            <motion.div
-              key={link.to}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 + (i * 0.05) }}
-            >
-              <NavLink 
-                to={link.to} 
-                className={({ isActive }) => isMD3
-                  ? `flex items-center py-3 px-4 transition-all font-semibold ${isCollapsed ? 'justify-center gap-0 [&>svg]:scale-125' : 'gap-3'} ${isActive ? 'bg-[var(--md3-secondary-container)] text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)] hover:bg-[var(--md3-surface-container-highest)]'}`
-                  : `flex items-center p-3 rounded-xl transition-all font-bold ${isCollapsed ? 'justify-center gap-0 [&>svg]:scale-125' : 'gap-3'} ${isActive ? `${link.color} shadow-sm scale-105` : 'text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:scale-[1.02]'}`
-                }
-              >
-                {link.icon}
-                <motion.span
-                  animate={{ width: isCollapsed ? 0 : 'auto', opacity: isCollapsed ? 0 : 1 }}
-                  transition={{ duration: 0.25, ease: 'easeInOut' }}
-                  className="overflow-hidden whitespace-nowrap"
-                >
-                  {link.label}
-                </motion.span>
-              </NavLink>
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="pt-4 border-t border-gray-100 dark:border-slate-800 space-y-3 flex-shrink-0"
-        >
-          <motion.div
-            animate={{ height: isCollapsed ? 0 : 'auto', opacity: isCollapsed ? 0 : 1 }}
-            transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className="overflow-hidden"
-          >
-            {state.brandSlogan && !state.brandSloganDesign && (
-              <div className="p-3 bg-accent/5 dark:bg-accent/10 rounded-2xl border border-accent/10 dark:border-accent/20 text-center space-y-1">
-                <div className="text-[8px] font-black text-accent uppercase tracking-widest leading-none">الهوية التجارية</div>
-                <div className="text-[10px] font-black text-slate-900 dark:text-white leading-tight italic">
-                  " {state.brandSlogan} "
-                </div>
-              </div>
+        <div className="text-center space-y-4">
+          <div className="w-32 h-32 bg-[var(--md-sys-color-surface-container)] rounded-3xl flex items-center justify-center mx-auto shadow-md overflow-hidden">
+            {state.brandLogo ? (
+              <img src={state.brandLogo} alt="Logo" className="w-full h-full object-cover" />
+            ) : (
+              <ShoppingBag size={40} className="text-[var(--md-sys-color-primary)]" />
             )}
-          </motion.div>
-
-          <button 
-            onClick={toggleDarkMode}
-            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-3 transition-all font-bold text-sm ${
-              isMD3 
-                ? 'rounded-[28px] bg-[var(--md3-surface-container-highest)] text-[var(--md3-on-surface)] hover:bg-[var(--md3-outline-variant)]'
-                : 'rounded-xl bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-200 hover:opacity-90'
-            }`}
-          >
-            <span className={`flex items-center ${isCollapsed ? 'gap-0 [&>svg]:scale-125' : 'gap-3'}`}>
-              {darkMode ? <Sun size={20} className="text-yellow-500" /> : <Moon size={20} className="text-indigo-400" />}
-              <motion.span
-                animate={{ width: isCollapsed ? 0 : 'auto', opacity: isCollapsed ? 0 : 1 }}
-                transition={{ duration: 0.25, ease: 'easeInOut' }}
-                className="overflow-hidden whitespace-nowrap"
-              >
-                {darkMode ? 'الوضع النهاري' : 'الوضع الليلي'}
-              </motion.span>
-            </span>
-          </button>
-
-          <button
-            onClick={() => logout()}
-            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-3 transition-all font-bold text-sm ${
-              isMD3 
-                ? 'rounded-[28px] bg-[var(--md3-error-container)] text-[var(--md3-on-error-container)] hover:opacity-90'
-                : 'rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40'
-            }`}
-          >
-            <span className={`flex items-center ${isCollapsed ? 'gap-0 [&>svg]:scale-125' : 'gap-3'}`}>
-              <LogOut size={20} />
-              <motion.span
-                animate={{ width: isCollapsed ? 0 : 'auto', opacity: isCollapsed ? 0 : 1 }}
-                transition={{ duration: 0.25, ease: 'easeInOut' }}
-                className="overflow-hidden whitespace-nowrap"
-              >
-                تسجيل الخروج
-              </motion.span>
-            </span>
-          </button>
-        </motion.div>
-
-        {/* Drag Handle */}
-        <div
-          onPointerDown={handleSidebarDrag}
-          className="absolute -left-4 top-0 bottom-0 w-8 z-50 cursor-col-resize group touch-none"
-        >
-          <div className="absolute left-1/2 top-0 bottom-0 w-[3px] -translate-x-1/2 bg-gray-200 dark:bg-slate-700 group-hover:bg-accent group-active:bg-accent transition-colors rounded-full" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-12 rounded-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-sm opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity flex items-center justify-center">
-            <div className="flex flex-col gap-0.5 items-center">
-              <div className="w-0.5 h-1.5 rounded-full bg-gray-300 dark:bg-slate-600" />
-              <div className="w-0.5 h-1.5 rounded-full bg-gray-300 dark:bg-slate-600" />
-              <div className="w-0.5 h-1.5 rounded-full bg-gray-300 dark:bg-slate-600" />
-            </div>
           </div>
+          <p className="text-[var(--md-sys-color-on-surface-variant)] font-medium">
+            النظام فارغ حالياً. يمكنك البدء بإضافة منتجات جديدة يدوياً أو استعادة نسخة احتياطية سابقة.
+          </p>
         </div>
-      </motion.nav>
-      )}
+        <input type="file" accept=".json" ref={welcomeFileInputRef} className="hidden" onChange={handleWelcomeFileChange} />
+      </MD3Dialog>
 
-      {!isMD3 && (
-      <nav className={`fixed bottom-0 left-0 right-0 flex md:hidden justify-around items-center px-2 z-50 ${
-        isMD3 
-          ? 'h-20 bg-[var(--md3-surface-container)] shadow-[var(--md3-elevation-2)] pb-[env(safe-area-inset-bottom,0px)]'
-          : 'h-16 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 shadow-lg'
-      }`}>
-        <NavLink to="/" className={({ isActive }) => isMD3
-          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
-          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
-        }>
-          {({ isActive }) => (
-            <>
-              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
-              <Package size={22} />
-              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>المخزون</span>
-            </>
-          )}
-        </NavLink>
-        <NavLink to="/orders" className={({ isActive }) => isMD3
-          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
-          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
-        }>
-          {({ isActive }) => (
-            <>
-              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
-              <ShoppingBag size={22} />
-              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>الطلبات</span>
-            </>
-          )}
-        </NavLink>
-        <NavLink to="/purchases" className={({ isActive }) => isMD3
-          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
-          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
-        }>
-          {({ isActive }) => (
-            <>
-              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
-              <ShoppingBag size={22} />
-              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>مشتريات</span>
-            </>
-          )}
-        </NavLink>
-        <NavLink to="/accounts" className={({ isActive }) => isMD3
-          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
-          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
-        }>
-          {({ isActive }) => (
-            <>
-              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
-              <BarChart3 size={22} />
-              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>الحسابات</span>
-            </>
-          )}
-        </NavLink>
-        <NavLink to="/contacts" className={({ isActive }) => isMD3
-          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
-          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
-        }>
-          {({ isActive }) => (
-            <>
-              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
-              <Users size={22} />
-              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>جهات</span>
-            </>
-          )}
-        </NavLink>
-        <NavLink to="/customers" className={({ isActive }) => isMD3
-          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
-          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
-        }>
-          {({ isActive }) => (
-            <>
-              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
-              <UserCheck size={22} />
-              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>عملاء</span>
-            </>
-          )}
-        </NavLink>
-        <NavLink to="/activity-logs" className={({ isActive }) => isMD3
-          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
-          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
-        }>
-          {({ isActive }) => (
-            <>
-              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
-              <Activity size={22} />
-              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>نشاطات</span>
-            </>
-          )}
-        </NavLink>
-        <NavLink to="/settings" className={({ isActive }) => isMD3
-          ? `flex flex-col items-center justify-center gap-0.5 relative py-1 ${isActive ? 'text-[var(--md3-on-secondary-container)]' : 'text-[var(--md3-on-surface-variant)]'}`
-          : `flex flex-col items-center gap-1 ${isActive ? 'text-accent font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`
-        }>
-          {({ isActive }) => (
-            <>
-              {isMD3 && isActive && <span className="absolute top-0 w-14 h-8 bg-[var(--md3-secondary-container)] rounded-full -z-1" />}
-              <SettingsIcon size={22} />
-              <span className={isMD3 ? 'text-[11px] font-semibold' : 'text-[10px]'}>البيانات</span>
-            </>
-          )}
-        </NavLink>
-      </nav>
-      )}
-
-      {isMD3 ? (
-        <MD3AppShell
-          darkMode={darkMode}
-          toggleDarkMode={() => setDarkMode(!darkMode)}
-          logout={() => logout()}
-          brandLogo={state.brandLogo}
-          brandName={state.brandName}
-          brandSlogan={state.brandSlogan}
-          brandSloganDesign={state.brandSloganDesign}
-        >
-          <div className="overflow-x-hidden">
-            <MD3TopBar
-              title={(() => {
-                const path = location.pathname;
-                if (path === '/') return 'المخزون';
-                if (path === '/orders') return 'الطلبات';
-                if (path === '/purchases') return 'المشتريات';
-                if (path === '/accounts') return 'الحسابات والمالية';
-                if (path === '/contacts') return 'جهات الاتصال';
-                if (path === '/customers') return 'العملاء';
-                if (path === '/activity-logs') return 'سجل النشاطات';
-                if (path === '/easy-orders') return 'Easy Orders';
-                if (path === '/settings') return 'إدارة البيانات';
-                return 'X2 ERP';
-              })()}
-              subtitle={state.brandName || 'X2 BABY'}
-            />
-            <div className="p-4 md:p-8">
-              {routesElement}
-            </div>
-          </div>
-        </MD3AppShell>
-      ) : (
-        <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
+      <AppLayout
+        title={pageTitle}
+        subtitle={state.brandName || 'X2 BABY'}
+        brandLogo={state.brandLogo}
+        brandName={state.brandName}
+        brandSlogan={state.brandSlogan}
+        brandSloganDesign={state.brandSloganDesign}
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
+        logout={() => logout()}
+      >
+        <AppTopBar
+          title={pageTitle}
+          subtitle={state.brandName || 'X2 BABY'}
+        />
+        <div className="p-4 md:p-8">
           {routesElement}
-        </main>
-      )}
+        </div>
+      </AppLayout>
 
       <AnimatePresence>
         {showInstallToast && !installDismissed && (
@@ -828,7 +419,7 @@ const MainLayout: React.FC<{
       </AnimatePresence>
 
       <InstallGuideModal isOpen={showInstallModal} onClose={() => setShowInstallModal(false)} />
-    </div>
+    </>
   );
 };
 
@@ -871,6 +462,7 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [importProductsPreview, setImportProductsPreview] = useState<Product[] | null>(null);
   const [importOrdersPreview, setImportOrdersPreview] = useState<Order[] | null>(null);
+  const { messages: snackMessages, show: showSnack, dismiss: dismissSnack } = useSnackbar();
 
   const welcomeFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -942,8 +534,7 @@ const App: React.FC = () => {
   }
 
   const showNotification = (message: string, type: 'success' | 'error') => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
+    showSnack(message, { type });
   };
 
   const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
@@ -1193,6 +784,7 @@ const App: React.FC = () => {
         handleSaveTarget={handleSaveTarget} handleDeleteTarget={handleDeleteTarget} handleImportState={handleImportState}
         setPushUndo={setPushUndo}
       />
+      <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
       </UndoRedoProvider>
     </HashRouter>
     </>

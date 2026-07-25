@@ -50,6 +50,21 @@
   --md-sys-color-inverse-surface: #313033;
   --md-sys-color-inverse-on-surface: #F4EFF4;
   --md-sys-color-inverse-primary: #D0BCFF;
+  /* Success (non-standard but essential for ERP) */
+  --md-sys-color-success: #2E7D32;
+  --md-sys-color-on-success: #FFFFFF;
+  --md-sys-color-success-container: #C8E6C9;
+  --md-sys-color-on-success-container: #1B5E20;
+  /* Warning */
+  --md-sys-color-warning: #F57C00;
+  --md-sys-color-on-warning: #FFFFFF;
+  --md-sys-color-warning-container: #FFE0B2;
+  --md-sys-color-on-warning-container: #E65100;
+  /* Info */
+  --md-sys-color-info: #0288D1;
+  --md-sys-color-on-info: #FFFFFF;
+  --md-sys-color-info-container: #B3E5FC;
+  --md-sys-color-on-info-container: #01579B;
   /* Scrim */
   --md-sys-color-scrim: #000000;
 
@@ -87,6 +102,15 @@
   --md-sys-elevation-3: 0px 1px 3px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15);
   --md-sys-elevation-4: 0px 2px 3px rgba(0, 0, 0, 0.3), 0px 6px 10px 4px rgba(0, 0, 0, 0.15);
   --md-sys-elevation-5: 0px 4px 4px rgba(0, 0, 0, 0.3), 0px 8px 12px 6px rgba(0, 0, 0, 0.15);
+
+  /* ── Z-Index Scale ──── */
+  --md-sys-z-base: 0;
+  --md-sys-z-dropdown: 100;
+  --md-sys-z-sticky: 200;
+  --md-sys-z-overlay: 300;
+  --md-sys-z-modal: 400;
+  --md-sys-z-popup: 500;
+  --md-sys-z-toast: 600;
 
   /* ── Typography (Roboto + Cairo) ──── */
   --md-sys-typescale-display-large-size: 57px;
@@ -206,6 +230,30 @@
   --md-sys-breakpoint-tablet: 600px;
   --md-sys-breakpoint-desktop: 840px;
   --md-sys-breakpoint-wide: 1200px;
+
+  /* ── Layout: Sidebar ──── */
+  --md-sys-sidebar-expanded-width: 280px;
+  --md-sys-sidebar-collapsed-width: 72px;
+  --md-sys-sidebar-rail-width: 80px;
+  --md-sys-sidebar-transition: 300ms cubic-bezier(0.2, 0, 0, 1);
+
+  /* ── Layout: Bottom Navigation ──── */
+  --md-sys-bottom-nav-height: 80px;
+  --md-sys-bottom-nav-item-size: 64px;
+  --md-sys-bottom-nav-indicator-height: 32px;
+  --md-sys-bottom-nav-floating-margin: 12px;
+  --md-sys-bottom-nav-radius: 28px;
+
+  /* ── Layout: Top App Bar ──── */
+  --md-sys-top-bar-height: 64px;
+  --md-sys-top-bar-mobile-height: 56px;
+
+  /* ── Layout: Content ──── */
+  --md-sys-content-max-width: 1440px;
+  --md-sys-content-padding-x: 16px;
+  --md-sys-content-padding-y: 16px;
+  --md-sys-content-padding-x-desktop: 32px;
+  --md-sys-content-padding-y-desktop: 32px;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -228,6 +276,21 @@
   --md-sys-color-on-error: #601410;
   --md-sys-color-error-container: #8C1D18;
   --md-sys-color-on-error-container: #F9DEDC;
+  /* Success (dark) */
+  --md-sys-color-success: #81C784;
+  --md-sys-color-on-success: #1B5E20;
+  --md-sys-color-success-container: #2E7D32;
+  --md-sys-color-on-success-container: #C8E6C9;
+  /* Warning (dark) */
+  --md-sys-color-warning: #FFB74D;
+  --md-sys-color-on-warning: #E65100;
+  --md-sys-color-warning-container: #F57C00;
+  --md-sys-color-on-warning-container: #FFE0B2;
+  /* Info (dark) */
+  --md-sys-color-info: #4FC3F7;
+  --md-sys-color-on-info: #01579B;
+  --md-sys-color-info-container: #0288D1;
+  --md-sys-color-on-info-container: #B3E5FC;
   --md-sys-color-surface: #1C1B1F;
   --md-sys-color-on-surface: #E6E1E5;
   --md-sys-color-surface-dim: #141218;
@@ -270,6 +333,44 @@
   color: var(--md-sys-color-on-surface);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Material Symbols Rounded — Icon Base Styles
+   ═══════════════════════════════════════════════════════════════ */
+[data-theme="material3"] .material-symbols-rounded {
+  font-family: 'Material Symbols Rounded';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+[data-theme="material3"] .md3-icon-filled {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+[data-theme="material3"] .md3-icon-20 {
+  font-size: 20px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+}
+
+[data-theme="material3"] .md3-icon-24 {
+  font-size: 24px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+[data-theme="material3"] .md3-icon-40 {
+  font-size: 40px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 40;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -415,9 +516,9 @@
   }
   .md3-ripple:active::after {
     opacity: 0.12;
-    transform: scale(2.5);
-    transition: transform 0.6s var(--md-sys-motion-easing-standard-decelerate),
-                opacity 0.3s var(--md-sys-motion-easing-standard-decelerate);
+    transform: scale(1.5);
+    transition: transform 0.4s var(--md-sys-motion-easing-standard-decelerate),
+                opacity 0.25s var(--md-sys-motion-easing-standard-decelerate);
   }
 
   /* ── Focus Ring ──── */
@@ -490,11 +591,11 @@
   }
   .md3-button-filled:hover {
     box-shadow: var(--md-sys-elevation-1);
-    filter: brightness(1.08);
+    opacity: 0.92;
   }
   .md3-button-filled:active {
     box-shadow: var(--md-sys-elevation-0);
-    filter: brightness(0.95);
+    opacity: 0.88;
   }
   .md3-button-filled:disabled {
     background-color: rgba(var(--md-sys-color-on-surface-rgb), 0.12);
@@ -508,11 +609,11 @@
   }
   .md3-button-tonal:hover {
     box-shadow: var(--md-sys-elevation-1);
-    filter: brightness(1.05);
+    opacity: 0.94;
   }
   .md3-button-tonal:active {
     box-shadow: var(--md-sys-elevation-0);
-    filter: brightness(0.95);
+    opacity: 0.90;
   }
   .md3-button-tonal:disabled {
     background-color: rgba(var(--md-sys-color-on-surface-rgb), 0.12);
@@ -527,11 +628,11 @@
   }
   .md3-button-elevated:hover {
     box-shadow: var(--md-sys-elevation-2);
-    filter: brightness(1.04);
+    opacity: 0.96;
   }
   .md3-button-elevated:active {
     box-shadow: var(--md-sys-elevation-1);
-    filter: brightness(0.96);
+    opacity: 0.92;
   }
   .md3-button-elevated:disabled {
     background-color: rgba(var(--md-sys-color-on-surface-rgb), 0.12);
@@ -595,11 +696,11 @@
   }
   .md3-fab:hover {
     box-shadow: var(--md-sys-elevation-4);
-    filter: brightness(1.06);
+    opacity: 0.92;
   }
   .md3-fab:active {
     box-shadow: var(--md-sys-elevation-3);
-    filter: brightness(0.95);
+    opacity: 0.88;
   }
   .md3-fab:focus-visible {
     outline: 2px solid var(--md-sys-color-primary);
@@ -661,7 +762,7 @@
     box-shadow: var(--md-sys-elevation-0);
   }
   .md3-card-filled:hover {
-    filter: brightness(1.02);
+    opacity: 0.96;
   }
 
   /* Outlined */
@@ -698,7 +799,8 @@
     font-size: var(--md-sys-typescale-body-large-size);
     color: var(--md-sys-color-on-surface-variant);
     pointer-events: none;
-    transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+    transition: transform var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+                color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
     z-index: 2;
     background: transparent;
     padding: 0 4px;
@@ -763,7 +865,8 @@
     right: 0;
     height: 1px;
     background-color: var(--md-sys-color-on-surface-variant);
-    transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+    transition: height var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+                background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
   }
   .md3-field-filled:focus-within::after {
     height: 2px;
@@ -870,14 +973,16 @@
     cursor: pointer;
     user-select: none;
     white-space: nowrap;
-    transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+    transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+                color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+                box-shadow var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
     -webkit-tap-highlight-color: transparent;
   }
   .md3-chip:hover {
-    filter: brightness(0.96);
+    opacity: 0.92;
   }
   .md3-chip:active {
-    filter: brightness(0.92);
+    opacity: 0.88;
   }
   .md3-chip:focus-visible {
     outline: 2px solid var(--md-sys-color-primary);
@@ -1283,7 +1388,7 @@
     text-decoration: none;
     position: relative;
     overflow: hidden;
-    transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+    transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
   }
   .md3-nav-drawer-item:hover {
     background-color: rgba(var(--md-sys-color-on-surface-rgb), 0.08);
@@ -1532,7 +1637,8 @@
     border: 2px solid var(--md-sys-color-outline);
     border-radius: var(--md-sys-shape-full);
     cursor: pointer;
-    transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+    transition: border-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+                background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
     background: transparent;
   }
   .md3-switch::after {
@@ -1545,7 +1651,9 @@
     height: 16px;
     border-radius: var(--md-sys-shape-full);
     background-color: var(--md-sys-color-outline);
-    transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+    transition: left var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+                width var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+                background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
   }
   .md3-switch.md3-switch-checked {
     background-color: var(--md-sys-color-primary);
@@ -1574,7 +1682,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+    transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+                border-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
   }
   .md3-checkbox.md3-checkbox-checked {
     background-color: var(--md-sys-color-primary);
@@ -1590,7 +1699,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+    transition: border-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
   }
   .md3-radio.md3-radio-checked {
     border-color: var(--md-sys-color-primary);
@@ -1780,6 +1889,50 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   DESKTOP SIDEBAR — Collapsible
+   ═══════════════════════════════════════════════════════════════ */
+[data-theme="material3"] {
+  .md3-desktop-sidebar {
+    background-color: var(--md-sys-color-surface-container-low);
+    border-left: 1px solid var(--md-sys-color-outline-variant);
+    transition: width var(--md-sys-sidebar-transition);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .md3-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: var(--md-sys-shape-full);
+    color: var(--md-sys-color-on-surface-variant);
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: background-color 0.15s, color 0.15s;
+    margin-bottom: 4px;
+  }
+
+  .md3-sidebar-item:hover {
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .md3-sidebar-item-active {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    font-weight: 500;
+  }
+
+  .md3-sidebar-item-active:hover {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
    TOP APP BAR — Small
    Fixed at top, 64dp height, title start-aligned
    ═══════════════════════════════════════════════════════════════ */
@@ -1953,4 +2106,888 @@
   cursor: pointer;
   padding: 0;
   text-transform: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL FORM STYLING — Auto-applied to existing HTML elements
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Inputs, textareas, selects */
+[data-theme="material3"] input[type="text"],
+[data-theme="material3"] input[type="number"],
+[data-theme="material3"] input[type="email"],
+[data-theme="material3"] input[type="password"],
+[data-theme="material3"] input[type="date"],
+[data-theme="material3"] input[type="search"],
+[data-theme="material3"] input:not([type]),
+[data-theme="material3"] textarea,
+[data-theme="material3"] select {
+  background-color: var(--md-sys-color-surface-container-highest);
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--md-sys-color-on-surface);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: 'Roboto', 'Cairo', sans-serif;
+}
+[data-theme="material3"] input:focus,
+[data-theme="material3"] textarea:focus,
+[data-theme="material3"] select:focus {
+  outline: none;
+  border-color: var(--md-sys-color-primary);
+  border-width: 2px;
+  box-shadow: 0 0 0 1px var(--md-sys-color-primary);
+}
+[data-theme="material3"] input::placeholder,
+[data-theme="material3"] textarea::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.7;
+}
+
+/* Search inputs — pill shape */
+[data-theme="material3"] input[type="search"],
+[data-theme="material3"] input[placeholder*="بحث"],
+[data-theme="material3"] input[placeholder*="البحث"],
+[data-theme="material3"] input[placeholder*="Search"] {
+  border-radius: 28px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* Buttons — primary class .bg-accent */
+[data-theme="material3"] button.bg-accent,
+[data-theme="material3"] button[class*="bg-accent"] {
+  background-color: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+  border-radius: 20px;
+  font-weight: 700;
+  padding: 10px 24px;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  transition: box-shadow 0.2s, transform 0.1s;
+}
+[data-theme="material3"] button.bg-accent:hover,
+[data-theme="material3"] button[class*="bg-accent"]:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+[data-theme="material3"] button.bg-accent:active,
+[data-theme="material3"] button[class*="bg-accent"]:active {
+  transform: scale(0.97);
+}
+
+/* Danger buttons */
+[data-theme="material3"] button.bg-red-500,
+[data-theme="material3"] button.bg-red-600,
+[data-theme="material3"] button[class*="bg-red"] {
+  background-color: var(--md-sys-color-error) !important;
+  color: var(--md-sys-color-on-error) !important;
+  border-radius: 20px;
+}
+
+/* Cards — bg-white → surface */
+[data-theme="material3"] .bg-white,
+[data-theme="material3"] div[class*="bg-white "] {
+  background-color: var(--md-sys-color-surface-container-low) !important;
+}
+[data-theme="material3"] .dark\:bg-slate-900,
+[data-theme="material3"] div[class*="dark:bg-slate-900"] {
+  background-color: var(--md-sys-color-surface-container) !important;
+}
+
+/* Rounded containers */
+[data-theme="material3"] [class*="rounded-[32px]"],
+[data-theme="material3"] [class*="rounded-3xl"] {
+  border-radius: 24px !important;
+}
+
+/* Tables */
+[data-theme="material3"] table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+[data-theme="material3"] thead {
+  background-color: var(--md-sys-color-surface-container);
+}
+[data-theme="material3"] thead th {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--md-sys-color-on-surface-variant);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+[data-theme="material3"] tbody tr {
+  transition: background-color 0.15s;
+}
+[data-theme="material3"] tbody tr:hover {
+  background-color: rgba(var(--md-sys-color-on-surface-rgb, 27, 27, 31), 0.04);
+}
+[data-theme="material3"] tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(var(--md-sys-color-outline-rgb, 0, 0, 0), 0.08);
+  font-size: 14px;
+  color: var(--md-sys-color-on-surface);
+}
+[data-theme="material3"] tbody td:first-child {
+  border-radius: 12px 0 0 12px;
+}
+[data-theme="material3"] tbody td:last-child {
+  border-radius: 0 12px 12px 0;
+}
+
+/* Checkbox / Radio MD3 style */
+[data-theme="material3"] input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--md-sys-color-on-surface-variant);
+  border-radius: 4px;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  position: relative;
+}
+[data-theme="material3"] input[type="checkbox"]:checked {
+  background-color: var(--md-sys-color-primary);
+  border-color: var(--md-sys-color-primary);
+}
+[data-theme="material3"] input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 6px;
+  height: 10px;
+  border: solid var(--md-sys-color-on-primary);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+[data-theme="material3"] input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+/* Toggle switch */
+[data-theme="material3"] button[class*="rounded-full"][class*="bg-accent"],
+[data-theme="material3"] button[class*="rounded-full"][class*="bg-gray-300"] {
+  border-radius: 16px !important;
+}
+
+/* Stat bars */
+[data-theme="material3"] [class*="bg-accent/10"],
+[data-theme="material3"] [class*="bg-accent/5"] {
+  background-color: rgba(var(--md-sys-color-primary-rgb, 0, 0, 0), 0.08) !important;
+}
+[data-theme="material3"] [class*="text-accent"] {
+  color: var(--md-sys-color-primary) !important;
+}
+
+/* Tags / badges */
+[data-theme="material3"] [class*="bg-green-100"],
+[data-theme="material3"] [class*="bg-green-50"] {
+  background-color: var(--md-sys-color-primary-container) !important;
+  color: var(--md-sys-color-on-primary-container) !important;
+}
+[data-theme="material3"] [class*="bg-red-100"],
+[data-theme="material3"] [class*="bg-red-50"] {
+  background-color: var(--md-sys-color-error-container) !important;
+  color: var(--md-sys-color-on-error-container) !important;
+}
+[data-theme="material3"] [class*="bg-yellow-100"],
+[data-theme="material3"] [class*="bg-amber-100"],
+[data-theme="material3"] [class*="bg-orange-100"] {
+  background-color: #FFE0B2 !important;
+  color: #E65100 !important;
+}
+[data-theme="material3"] [class*="bg-blue-100"],
+[data-theme="material3"] [class*="bg-sky-100"] {
+  background-color: var(--md-sys-color-secondary-container) !important;
+  color: var(--md-sys-color-on-secondary-container) !important;
+}
+
+/* Scrollbar */
+[data-theme="material3"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+[data-theme="material3"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+[data-theme="material3"] ::-webkit-scrollbar-thumb {
+  background-color: var(--md-sys-color-outline-variant);
+  border-radius: 4px;
+}
+[data-theme="material3"] ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--md-sys-color-outline);
+}
+
+/* Selection */
+[data-theme="material3"] ::selection {
+  background-color: rgba(var(--md-sys-color-primary-rgb, 0, 0, 0), 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL MODAL / DIALOG STYLING — Auto-applies to ALL modals
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Modal overlay — normalize ALL overlays to MD3 scrim (32% black) */
+[data-theme="material3"] div.fixed.inset-0 {
+  background-color: rgba(0, 0, 0, 0.32) !important;
+}
+
+/* Modal containers — all border-radius → 28px, bg → surface-container-high */
+[data-theme="material3"] .fixed[class*="z-"][class*="bg-white"],
+[data-theme="material3"] .fixed[class*="z-"] > div[class*="bg-white"][class*="rounded-"],
+[data-theme="material3"] .absolute[class*="z-"][class*="bg-white"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-[40px]"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-[48px]"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-[32px]"],
+[data-theme="material3"] div[class*="dark:bg-slate-900"][class*="rounded-[40px]"],
+[data-theme="material3"] div[class*="dark:bg-slate-900"][class*="rounded-[32px]"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-3xl"][class*="shadow-2xl"] {
+  background-color: var(--md-sys-color-surface-container-high) !important;
+  border-radius: 28px !important;
+  border-color: var(--md-sys-color-outline-variant) !important;
+}
+
+/* Dark mode modal containers */
+[data-theme="material3"] .dark div[class*="bg-white"][class*="rounded-"],
+[data-theme="material3"] div[class*="dark:bg-slate-900"][class*="rounded-[40px]"],
+[data-theme="material3"] div[class*="dark:bg-slate-900"][class*="rounded-[32px]"] {
+  background-color: var(--md-sys-color-surface-container-high) !important;
+}
+
+/* Modal sticky headers */
+[data-theme="material3"] div[class*="sticky"][class*="top-0"][class*="bg-white"] {
+  background-color: var(--md-sys-color-surface-container-high) !important;
+  border-color: var(--md-sys-color-outline-variant) !important;
+}
+[data-theme="material3"] div[class*="sticky"][class*="top-0"][class*="dark:bg-slate-900"] {
+  background-color: var(--md-sys-color-surface-container-high) !important;
+}
+
+/* Remove gradient top accent bars — MD3 doesn't use them */
+[data-theme="material3"] .h-2[class*="bg-gradient-to-r"][class*="from-indigo"],
+[data-theme="material3"] .h-2[class*="bg-gradient-to-r"][class*="from-blue"],
+[data-theme="material3"] div[class*="h-2"][class*="bg-gradient"][class*="rounded"] {
+  display: none !important;
+}
+
+/* Modal form inputs — all get MD3 styling */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] input[type="text"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] input[type="number"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] input[type="email"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] input[type="password"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] input[type="date"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] input[type="search"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] input:not([type]),
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] textarea,
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] select {
+  background-color: var(--md-sys-color-surface-container-highest) !important;
+  border: 1px solid var(--md-sys-color-outline) !important;
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  color: var(--md-sys-color-on-surface) !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] input:focus,
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] textarea:focus,
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] select:focus {
+  border-color: var(--md-sys-color-primary) !important;
+  border-width: 2px !important;
+  box-shadow: 0 0 0 1px var(--md-sys-color-primary) !important;
+  outline: none !important;
+}
+
+/* Old bg-gray-50 inputs inside modals → surface-container-highest */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] div[class*="bg-gray-50"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] div[class*="dark:bg-slate-800"] {
+  background-color: var(--md-sys-color-surface-container-highest) !important;
+}
+
+/* Modal save/submit buttons — accent → primary */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-accent"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-teal"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-indigo-500"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-indigo-600"] {
+  background: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+  border-radius: 20px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
+  transition: box-shadow 0.2s, transform 0.1s !important;
+}
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-accent"]:hover,
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-teal"]:hover,
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-indigo-500"]:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18) !important;
+}
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-accent"]:active,
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-teal"]:active {
+  transform: scale(0.97) !important;
+}
+
+/* Modal cancel/secondary buttons → outlined style */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-gray-100"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="dark:bg-slate-800"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-gray-50"] {
+  background-color: var(--md-sys-color-surface-container-highest) !important;
+  color: var(--md-sys-color-on-surface) !important;
+  border-radius: 20px !important;
+  font-weight: 700 !important;
+}
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-gray-100"]:hover,
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-gray-50"]:hover {
+  background-color: var(--md-sys-color-surface-container) !important;
+}
+
+/* Modal gradient buttons → flat primary */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-gradient"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="from-indigo"] {
+  background: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+  border-radius: 20px !important;
+}
+
+/* Modal danger buttons → error color */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-red"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="text-red"] {
+  color: var(--md-sys-color-error) !important;
+}
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-red-50"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-red-600"] {
+  background: var(--md-sys-color-error) !important;
+  color: var(--md-sys-color-on-error) !important;
+}
+
+/* Modal success buttons */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-emerald"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-green"] {
+  background: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+}
+
+/* Modal active layout buttons (e.g. print modal layout selectors) */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="bg-indigo-500"][class*="text-white"] {
+  background: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+}
+
+/* Modal stat info boxes */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] div[class*="bg-gray-50"][class*="rounded-"] {
+  background-color: var(--md-sys-color-surface-container) !important;
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+}
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] div[class*="bg-blue-50"][class*="rounded-"] {
+  background-color: var(--md-sys-color-secondary-container) !important;
+}
+
+/* Modal text colors — gray-900/white → on-surface */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] span[class*="text-gray-900"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] h2[class*="text-gray-900"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] h3[class*="text-gray-900"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] p[class*="text-gray-900"] {
+  color: var(--md-sys-color-on-surface) !important;
+}
+
+/* Modal sub-text colors — gray-400/500 → on-surface-variant */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] span[class*="text-gray-400"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] p[class*="text-gray-400"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] span[class*="text-gray-500"] {
+  color: var(--md-sys-color-on-surface-variant) !important;
+}
+
+/* Modal border separators → outline-variant */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"][class*="border-b"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"][class*="border-t"] {
+  border-color: var(--md-sys-color-outline-variant) !important;
+}
+
+/* Modal border-gray-100 → outline-variant */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"][class*="border-gray-100"] {
+  border-color: var(--md-sys-color-outline-variant) !important;
+}
+
+/* Modal inner cards (nested rounded containers) */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] div[class*="rounded-2xl"][class*="border-2"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] div[class*="rounded-3xl"][class*="border-2"] {
+  border-color: var(--md-sys-color-outline-variant) !important;
+  background-color: var(--md-sys-color-surface-container) !important;
+}
+
+/* Modal field active states (e.g. batch edit toggle fields) */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] div[class*="bg-indigo-50"],
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] div[class*="bg-indigo-500/5"] {
+  background-color: rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.08) !important;
+  border-color: var(--md-sys-color-primary) !important;
+}
+
+/* Modal close buttons (X icon) */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="text-gray-400"]:hover,
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] button[class*="text-gray-300"]:hover {
+  color: var(--md-sys-color-on-surface) !important;
+}
+
+/* Modal checkbox styling */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] input[type="checkbox"] {
+  accent-color: var(--md-sys-color-primary) !important;
+}
+
+/* Modal select dropdowns */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] select {
+  appearance: auto !important;
+}
+
+/* Modal scrollable content areas */
+[data-theme="material3"] div[class*="bg-white"][class*="rounded-"] > div[class*="overflow-y-auto"] {
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-sys-color-outline-variant) transparent;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL MODAL OVERRIDES FOR DARK MODE (dark:bg-slate-900 variants)
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="material3"].dark div[class*="bg-white"][class*="rounded-"] {
+  background-color: var(--md-sys-color-surface-container-high) !important;
+}
+[data-theme="material3"].dark div[class*="bg-white"][class*="rounded-"] input[type="text"],
+[data-theme="material3"].dark div[class*="bg-white"][class*="rounded-"] input[type="number"],
+[data-theme="material3"].dark div[class*="bg-white"][class*="rounded-"] input:not([type]),
+[data-theme="material3"].dark div[class*="bg-white"][class*="rounded-"] textarea,
+[data-theme="material3"].dark div[class*="bg-white"][class*="rounded-"] select {
+  background-color: var(--md-sys-color-surface-container-highest) !important;
+  border-color: var(--md-sys-color-outline) !important;
+  color: var(--md-sys-color-on-surface) !important;
+}
+
+/* Skeleton loading */
+@keyframes md3-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+[data-theme="material3"] .animate-pulse {
+  background: linear-gradient(90deg,
+    var(--md-sys-color-surface-container-highest) 25%,
+    var(--md-sys-color-surface-container-high) 50%,
+    var(--md-sys-color-surface-container-highest) 75%
+  );
+  background-size: 200% 100%;
+  animation: md3-shimmer 1.5s infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 2: Comprehensive Dark Mode + Status Color Overrides
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Dark Mode: All dark:bg-slate-* classes ──── */
+[data-theme="material3"].dark .dark\:bg-slate-50 { background-color: var(--md-sys-color-surface-container-lowest) !important; }
+[data-theme="material3"].dark .dark\:bg-slate-100 { background-color: var(--md-sys-color-surface-container-low) !important; }
+[data-theme="material3"].dark .dark\:bg-slate-200 { background-color: var(--md-sys-color-surface-container) !important; }
+[data-theme="material3"].dark .dark\:bg-slate-300 { background-color: var(--md-sys-color-surface-container-high) !important; }
+[data-theme="material3"].dark .dark\:bg-slate-700 { background-color: var(--md-sys-color-surface-container-high) !important; }
+[data-theme="material3"].dark .dark\:bg-slate-800 { background-color: var(--md-sys-color-surface-container) !important; }
+[data-theme="material3"].dark .dark\:bg-slate-800\/50 { background-color: rgba(var(--md-sys-color-surface-container-rgb, 33, 31, 38), 0.5) !important; }
+[data-theme="material3"].dark .dark\:bg-slate-800\/30 { background-color: rgba(var(--md-sys-color-surface-container-rgb, 33, 31, 38), 0.3) !important; }
+[data-theme="material3"].dark .dark\:bg-slate-800\/40 { background-color: rgba(var(--md-sys-color-surface-container-rgb, 33, 31, 38), 0.4) !important; }
+[data-theme="material3"].dark .dark\:bg-slate-900 { background-color: var(--md-sys-color-surface) !important; }
+[data-theme="material3"].dark .dark\:bg-slate-900\/50 { background-color: rgba(var(--md-sys-color-surface-rgb, 28, 27, 31), 0.5) !important; }
+[data-theme="material3"].dark .dark\:bg-slate-950 { background-color: var(--md-sys-color-surface-dim) !important; }
+
+/* ── Dark Mode: All dark:text-* classes ──── */
+[data-theme="material3"].dark .dark\:text-white { color: var(--md-sys-color-on-surface) !important; }
+[data-theme="material3"].dark .dark\:text-gray-200 { color: var(--md-sys-color-on-surface) !important; }
+[data-theme="material3"].dark .dark\:text-gray-300 { color: var(--md-sys-color-on-surface-variant) !important; }
+[data-theme="material3"].dark .dark\:text-gray-400 { color: var(--md-sys-color-on-surface-variant) !important; }
+[data-theme="material3"].dark .dark\:text-gray-500 { color: var(--md-sys-color-on-surface-variant) !important; }
+[data-theme="material3"].dark .dark\:text-gray-600 { color: var(--md-sys-color-on-surface-variant) !important; }
+
+/* ── Dark Mode: All dark:border-* classes ──── */
+[data-theme="material3"].dark .dark\:border-slate-700 { border-color: var(--md-sys-color-outline) !important; }
+[data-theme="material3"].dark .dark\:border-slate-800 { border-color: var(--md-sys-color-outline-variant) !important; }
+[data-theme="material3"].dark .dark\:border-slate-800\/50 { border-color: rgba(var(--md-sys-color-outline-variant-rgb, 73, 69, 79), 0.5) !important; }
+[data-theme="material3"].dark .dark\:border-slate-900 { border-color: var(--md-sys-color-outline-variant) !important; }
+
+/* ── Dark Mode: All dark:hover:bg-* classes ──── */
+[data-theme="material3"].dark .dark\:hover\:bg-slate-600:hover { background-color: var(--md-sys-color-surface-container-high) !important; }
+[data-theme="material3"].dark .dark\:hover\:bg-slate-700:hover { background-color: var(--md-sys-color-surface-container-high) !important; }
+[data-theme="material3"].dark .dark\:hover\:bg-slate-800:hover { background-color: var(--md-sys-color-surface-container-high) !important; }
+[data-theme="material3"].dark .dark\:hover\:bg-slate-800\/50:hover { background-color: rgba(var(--md-sys-color-surface-container-rgb, 33, 31, 38), 0.5) !important; }
+
+/* ── Dark Mode: All dark:divide-* classes ──── */
+[data-theme="material3"].dark .dark\:divide-slate-800 > * + * { border-color: var(--md-sys-color-outline-variant) !important; }
+
+/* ── Status Colors: Tailwind emerald/green classes → success tokens ──── */
+[data-theme="material3"] .bg-emerald-50,
+[data-theme="material3"] .bg-green-50 { background-color: var(--md-sys-color-success-container) !important; }
+[data-theme="material3"] .bg-emerald-100,
+[data-theme="material3"] .bg-green-100 { background-color: var(--md-sys-color-success-container) !important; }
+[data-theme="material3"] .dark\:bg-emerald-900\/20,
+[data-theme="material3"] .dark\:bg-emerald-900\/30,
+[data-theme="material3"] .dark\:bg-green-900\/20,
+[data-theme="material3"] .dark\:bg-green-900\/30 { background-color: var(--md-sys-color-success-container) !important; }
+[data-theme="material3"] .text-emerald-500,
+[data-theme="material3"] .text-emerald-600,
+[data-theme="material3"] .text-emerald-700,
+[data-theme="material3"] .text-green-500,
+[data-theme="material3"] .text-green-600,
+[data-theme="material3"] .text-green-700 { color: var(--md-sys-color-success) !important; }
+[data-theme="material3"] .dark\:text-emerald-300,
+[data-theme="material3"] .dark\:text-emerald-400,
+[data-theme="material3"] .dark\:text-green-300,
+[data-theme="material3"] .dark\:text-green-400 { color: var(--md-sys-color-success) !important; }
+[data-theme="material3"] .border-emerald-200,
+[data-theme="material3"] .border-emerald-300,
+[data-theme="material3"] .border-green-200,
+[data-theme="material3"] .border-green-300 { border-color: var(--md-sys-color-success) !important; }
+[data-theme="material3"] .dark\:border-emerald-700,
+[data-theme="material3"] .dark\:border-emerald-800\/30,
+[data-theme="material3"] .dark\:border-green-700 { border-color: var(--md-sys-color-success) !important; }
+
+/* ── Status Colors: Tailwind amber/yellow/orange classes → warning tokens ──── */
+[data-theme="material3"] .bg-amber-50,
+[data-theme="material3"] .bg-yellow-50,
+[data-theme="material3"] .bg-orange-50 { background-color: var(--md-sys-color-warning-container) !important; }
+[data-theme="material3"] .bg-amber-100,
+[data-theme="material3"] .bg-yellow-100,
+[data-theme="material3"] .bg-orange-100 { background-color: var(--md-sys-color-warning-container) !important; }
+[data-theme="material3"] .dark\:bg-amber-900\/10,
+[data-theme="material3"] .dark\:bg-amber-900\/20,
+[data-theme="material3"] .dark\:bg-amber-900\/30,
+[data-theme="material3"] .dark\:bg-yellow-900\/20,
+[data-theme="material3"] .dark\:bg-yellow-900\/30,
+[data-theme="material3"] .dark\:bg-orange-900\/20 { background-color: var(--md-sys-color-warning-container) !important; }
+[data-theme="material3"] .text-amber-500,
+[data-theme="material3"] .text-amber-600,
+[data-theme="material3"] .text-amber-700,
+[data-theme="material3"] .text-yellow-500,
+[data-theme="material3"] .text-yellow-600,
+[data-theme="material3"] .text-yellow-700,
+[data-theme="material3"] .text-orange-500,
+[data-theme="material3"] .text-orange-600,
+[data-theme="material3"] .text-orange-700 { color: var(--md-sys-color-warning) !important; }
+[data-theme="material3"] .dark\:text-amber-300,
+[data-theme="material3"] .dark\:text-amber-400,
+[data-theme="material3"] .dark\:text-yellow-300,
+[data-theme="material3"] .dark\:text-yellow-400 { color: var(--md-sys-color-warning) !important; }
+[data-theme="material3"] .border-amber-200,
+[data-theme="material3"] .border-amber-300,
+[data-theme="material3"] .border-amber-700,
+[data-theme="material3"] .border-yellow-200,
+[data-theme="material3"] .border-yellow-300,
+[data-theme="material3"] .border-orange-200 { border-color: var(--md-sys-color-warning) !important; }
+[data-theme="material3"] .dark\:border-amber-700,
+[data-theme="material3"] .dark\:border-amber-900\/30 { border-color: var(--md-sys-color-warning) !important; }
+
+/* ── Status Colors: Tailwind red classes → error tokens ──── */
+[data-theme="material3"] .bg-red-50 { background-color: var(--md-sys-color-error-container) !important; }
+[data-theme="material3"] .bg-red-100 { background-color: var(--md-sys-color-error-container) !important; }
+[data-theme="material3"] .dark\:bg-red-900\/20,
+[data-theme="material3"] .dark\:bg-red-900\/30 { background-color: var(--md-sys-color-error-container) !important; }
+[data-theme="material3"] .text-red-500,
+[data-theme="material3"] .text-red-600,
+[data-theme="material3"] .text-red-700 { color: var(--md-sys-color-error) !important; }
+[data-theme="material3"] .dark\:text-red-300,
+[data-theme="material3"] .dark\:text-red-400 { color: var(--md-sys-color-error) !important; }
+[data-theme="material3"] .border-red-200,
+[data-theme="material3"] .border-red-300,
+[data-theme="material3"] .border-red-400 { border-color: var(--md-sys-color-error) !important; }
+[data-theme="material3"] .dark\:border-red-900\/30 { border-color: var(--md-sys-color-error) !important; }
+
+/* ── Status Colors: Tailwind blue/sky classes → info/secondary tokens ──── */
+[data-theme="material3"] .bg-blue-50,
+[data-theme="material3"] .bg-sky-50 { background-color: var(--md-sys-color-info-container) !important; }
+[data-theme="material3"] .bg-blue-100,
+[data-theme="material3"] .bg-sky-100 { background-color: var(--md-sys-color-info-container) !important; }
+[data-theme="material3"] .dark\:bg-blue-900\/10,
+[data-theme="material3"] .dark\:bg-blue-900\/20,
+[data-theme="material3"] .dark\:bg-blue-900\/30,
+[data-theme="material3"] .dark\:bg-sky-900\/20 { background-color: var(--md-sys-color-info-container) !important; }
+[data-theme="material3"] .text-blue-400,
+[data-theme="material3"] .text-blue-500,
+[data-theme="material3"] .text-blue-600,
+[data-theme="material3"] .text-blue-700,
+[data-theme="material3"] .text-sky-500 { color: var(--md-sys-color-info) !important; }
+[data-theme="material3"] .dark\:text-blue-300,
+[data-theme="material3"] .dark\:text-blue-400 { color: var(--md-sys-color-info) !important; }
+[data-theme="material3"] .border-blue-100,
+[data-theme="material3"] .border-blue-200,
+[data-theme="material3"] .border-blue-800\/30,
+[data-theme="material3"] .border-sky-200 { border-color: var(--md-sys-color-info) !important; }
+[data-theme="material3"] .dark\:border-blue-800\/30 { border-color: var(--md-sys-color-info) !important; }
+
+/* ── Status Colors: Tailwind purple/indigo classes → tertiary tokens ──── */
+[data-theme="material3"] .bg-purple-50,
+[data-theme="material3"] .bg-indigo-50 { background-color: var(--md-sys-color-tertiary-container) !important; }
+[data-theme="material3"] .bg-purple-100,
+[data-theme="material3"] .bg-indigo-100 { background-color: var(--md-sys-color-tertiary-container) !important; }
+[data-theme="material3"] .dark\:bg-purple-900\/20,
+[data-theme="material3"] .dark\:bg-purple-900\/30,
+[data-theme="material3"] .dark\:bg-indigo-900\/20,
+[data-theme="material3"] .dark\:bg-indigo-500\/5 { background-color: var(--md-sys-color-tertiary-container) !important; }
+[data-theme="material3"] .text-purple-500,
+[data-theme="material3"] .text-purple-600,
+[data-theme="material3"] .text-purple-700,
+[data-theme="material3"] .text-indigo-500,
+[data-theme="material3"] .text-indigo-600,
+[data-theme="material3"] .text-indigo-700 { color: var(--md-sys-color-tertiary) !important; }
+[data-theme="material3"] .dark\:text-purple-300,
+[data-theme="material3"] .dark\:text-purple-400,
+[data-theme="material3"] .dark\:text-indigo-300,
+[data-theme="material3"] .dark\:text-indigo-400 { color: var(--md-sys-color-tertiary) !important; }
+[data-theme="material3"] .border-purple-200,
+[data-theme="material3"] .border-indigo-200,
+[data-theme="material3"] .border-indigo-500\/30 { border-color: var(--md-sys-color-tertiary) !important; }
+
+/* ── Status Colors: Tailwind rose/pink classes → error/tertiary tokens ──── */
+[data-theme="material3"] .bg-rose-50,
+[data-theme="material3"] .bg-pink-50 { background-color: var(--md-sys-color-error-container) !important; }
+[data-theme="material3"] .bg-rose-100,
+[data-theme="material3"] .bg-pink-100 { background-color: var(--md-sys-color-error-container) !important; }
+[data-theme="material3"] .text-rose-500,
+[data-theme="material3"] .text-rose-600,
+[data-theme="material3"] .text-pink-500,
+[data-theme="material3"] .text-pink-600 { color: var(--md-sys-color-error) !important; }
+
+/* ── Common component patterns ──── */
+
+/* bg-gray-50 → surface-container-lowest */
+[data-theme="material3"] .bg-gray-50 { background-color: var(--md-sys-color-surface-container-lowest) !important; }
+[data-theme="material3"] .dark\:bg-gray-50 { background-color: var(--md-sys-color-surface-container-lowest) !important; }
+[data-theme="material3"] .bg-gray-50\/50 { background-color: rgba(var(--md-sys-color-surface-container-lowest-rgb, 247, 242, 250), 0.5) !important; }
+
+/* bg-gray-100 → surface-container */
+[data-theme="material3"] .bg-gray-100 { background-color: var(--md-sys-color-surface-container) !important; }
+
+/* text-gray-900 → on-surface */
+[data-theme="material3"] .text-gray-900 { color: var(--md-sys-color-on-surface) !important; }
+
+/* text-gray-400 → on-surface-variant */
+[data-theme="material3"] .text-gray-400 { color: var(--md-sys-color-on-surface-variant) !important; }
+
+/* text-gray-500 → on-surface-variant */
+[data-theme="material3"] .text-gray-500 { color: var(--md-sys-color-on-surface-variant) !important; }
+
+/* text-gray-600 → on-surface-variant */
+[data-theme="material3"] .text-gray-600 { color: var(--md-sys-color-on-surface-variant) !important; }
+
+/* text-gray-700 → on-surface */
+[data-theme="material3"] .text-gray-700 { color: var(--md-sys-color-on-surface) !important; }
+
+/* text-gray-300 → outline */
+[data-theme="material3"] .text-gray-300 { color: var(--md-sys-color-outline) !important; }
+
+/* text-gray-200 → on-surface-variant (light mode) */
+[data-theme="material3"] .text-gray-200 { color: var(--md-sys-color-on-surface-variant) !important; }
+
+/* text-gray-800 → on-surface */
+[data-theme="material3"] .text-gray-800 { color: var(--md-sys-color-on-surface) !important; }
+
+/* bg-gray-200 → surface-container */
+[data-theme="material3"] .bg-gray-200 { background-color: var(--md-sys-color-surface-container) !important; }
+
+/* bg-gray-300 → surface-container-high */
+[data-theme="material3"] .bg-gray-300 { background-color: var(--md-sys-color-surface-container-high) !important; }
+
+/* border-gray-300 → outline-variant */
+[data-theme="material3"] .border-gray-300 { border-color: var(--md-sys-color-outline-variant) !important; }
+
+/* hover:bg-gray-200 → surface-container-high */
+[data-theme="material3"] .hover\:bg-gray-200:hover { background-color: var(--md-sys-color-surface-container-high) !important; }
+
+/* hover:text-gray-400, hover:text-gray-600 → on-surface-variant */
+[data-theme="material3"] .hover\:text-gray-400:hover { color: var(--md-sys-color-on-surface-variant) !important; }
+[data-theme="material3"] .hover\:text-gray-600:hover { color: var(--md-sys-color-on-surface) !important; }
+
+/* hover:border-gray-300 → outline */
+[data-theme="material3"] .hover\:border-gray-300:hover { border-color: var(--md-sys-color-outline) !important; }
+
+/* focus:border-teal-* → primary */
+[data-theme="material3"] .focus\:border-teal-500:focus { border-color: var(--md-sys-color-primary) !important; }
+[data-theme="material3"] .focus\:border-teal-600:focus { border-color: var(--md-sys-color-primary) !important; }
+
+/* border-accent (non-focus) → primary */
+[data-theme="material3"] [class*="border-accent"]:not(:focus) { border-color: var(--md-sys-color-primary) !important; }
+
+/* divide-gray-50, divide-gray-100 → outline-variant */
+[data-theme="material3"] .divide-gray-50 > * + * { border-color: var(--md-sys-color-outline-variant) !important; }
+[data-theme="material3"] .divide-gray-100 > * + * { border-color: var(--md-sys-color-outline-variant) !important; }
+
+/* text-slate-600 → on-surface-variant */
+[data-theme="material3"] .text-slate-600 { color: var(--md-sys-color-on-surface-variant) !important; }
+
+/* text-slate-500 → on-surface-variant */
+[data-theme="material3"] .text-slate-500 { color: var(--md-sys-color-on-surface-variant) !important; }
+
+/* text-slate-700 → on-surface */
+[data-theme="material3"] .text-slate-700 { color: var(--md-sys-color-on-surface) !important; }
+
+/* bg-slate-100, bg-slate-50 → surface tokens */
+[data-theme="material3"] .bg-slate-100 { background-color: var(--md-sys-color-surface-container) !important; }
+[data-theme="material3"] .bg-slate-50 { background-color: var(--md-sys-color-surface-container-low) !important; }
+
+/* bg-slate-200 → surface-container */
+[data-theme="material3"] .bg-slate-200 { background-color: var(--md-sys-color-surface-container) !important; }
+
+/* bg-slate-300 → surface-container-high */
+[data-theme="material3"] .bg-slate-300 { background-color: var(--md-sys-color-surface-container-high) !important; }
+
+/* border-slate-200, border-slate-700 → outline-variant */
+[data-theme="material3"] .border-slate-200 { border-color: var(--md-sys-color-outline-variant) !important; }
+[data-theme="material3"] .border-slate-700 { border-color: var(--md-sys-color-outline) !important; }
+
+/* border-gray-100 → outline-variant */
+[data-theme="material3"] .border-gray-100 { border-color: var(--md-sys-color-outline-variant) !important; }
+[data-theme="material3"] .border-gray-50 { border-color: var(--md-sys-color-outline-variant) !important; }
+
+/* border-gray-200 → outline-variant */
+[data-theme="material3"] .border-gray-200 { border-color: var(--md-sys-color-outline-variant) !important; }
+
+/* hover:bg-gray-100 → surface-container-high */
+[data-theme="material3"] .hover\:bg-gray-100:hover { background-color: var(--md-sys-color-surface-container-high) !important; }
+[data-theme="material3"] .hover\:bg-gray-50:hover { background-color: var(--md-sys-color-surface-container-low) !important; }
+
+/* border-gray-50 dark:border-slate-800/50 → outline-variant */
+[data-theme="material3"] .dark\:border-slate-800\/50 { border-color: var(--md-sys-color-outline-variant) !important; }
+
+/* Focus ring: focus:border-accent → primary */
+[data-theme="material3"] .focus\:border-accent:focus { border-color: var(--md-sys-color-primary) !important; }
+[data-theme="material3"] .ring-accent\/20 { --tw-ring-color: rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.2) !important; }
+
+/* Shadow standardization */
+[data-theme="material3"] .shadow-sm { box-shadow: var(--md-sys-elevation-1) !important; }
+[data-theme="material3"] .shadow-md { box-shadow: var(--md-sys-elevation-2) !important; }
+[data-theme="material3"] .shadow-lg { box-shadow: var(--md-sys-elevation-3) !important; }
+[data-theme="material3"] .shadow-xl { box-shadow: var(--md-sys-elevation-4) !important; }
+[data-theme="material3"] .shadow-2xl { box-shadow: var(--md-sys-elevation-5) !important; }
+
+/* Backdrop standardization */
+[data-theme="material3"] .backdrop-blur-sm { backdrop-filter: blur(8px) !important; }
+[data-theme="material3"] .backdrop-blur-md { backdrop-filter: blur(12px) !important; }
+
+/* rounded-[32px] → standard 24px */
+[data-theme="material3"] [class*="rounded-\[32px\]"] { border-radius: 24px !important; }
+[data-theme="material3"] [class*="rounded-\[40px\]"] { border-radius: 28px !important; }
+[data-theme="material3"] [class*="rounded-\[48px\]"] { border-radius: 28px !important; }
+[data-theme="material3"] [class*="rounded-\[28px\]"] { border-radius: 24px !important; }
+
+/* Table improvements */
+[data-theme="material3"] table thead th {
+  color: var(--md-sys-color-on-surface-variant) !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant) !important;
+}
+[data-theme="material3"] table tbody tr:hover {
+  background-color: rgba(var(--md-sys-color-on-surface-rgb, 28, 27, 31), 0.04) !important;
+}
+[data-theme="material3"] table tbody td {
+  color: var(--md-sys-color-on-surface) !important;
+  border-bottom: 1px solid rgba(var(--md-sys-color-outline-variant-rgb, 73, 69, 79), 0.3) !important;
+}
+
+/* Gradient accent bars → hidden */
+[data-theme="material3"] .bg-gradient-to-r { background-image: none !important; }
+
+/* All gradient backgrounds → solid MD3 colors */
+[data-theme="material3"] [class*="bg-gradient-to-br"],
+[data-theme="material3"] [class*="bg-gradient-to-r"] {
+  background-image: none !important;
+}
+[data-theme="material3"] [class*="from-indigo-"],
+[data-theme="material3"] [class*="to-indigo-"] {
+  background-color: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+}
+[data-theme="material3"] [class*="from-amber-"],
+[data-theme="material3"] [class*="to-amber-"],
+[data-theme="material3"] [class*="from-orange-"],
+[data-theme="material3"] [class*="to-orange-"] {
+  background-color: var(--md-sys-color-warning) !important;
+  color: var(--md-sys-color-on-warning) !important;
+}
+[data-theme="material3"] [class*="from-emerald-"],
+[data-theme="material3"] [class*="to-emerald-"],
+[data-theme="material3"] [class*="from-green-"],
+[data-theme="material3"] [class*="to-green-"] {
+  background-color: var(--md-sys-color-success) !important;
+  color: var(--md-sys-color-on-success) !important;
+}
+[data-theme="material3"] [class*="from-blue-"],
+[data-theme="material3"] [class*="to-blue-"],
+[data-theme="material3"] [class*="from-sky-"],
+[data-theme="material3"] [class*="to-sky-"] {
+  background-color: var(--md-sys-color-info) !important;
+  color: var(--md-sys-color-on-info) !important;
+}
+[data-theme="material3"] [class*="from-purple-"],
+[data-theme="material3"] [class*="to-purple-"],
+[data-theme="material3"] [class*="from-pink-"],
+[data-theme="material3"] [class*="to-pink-"] {
+  background-color: var(--md-sys-color-tertiary) !important;
+  color: var(--md-sys-color-on-tertiary) !important;
+}
+[data-theme="material3"] [class*="from-red-"],
+[data-theme="material3"] [class*="to-red-"] {
+  background-color: var(--md-sys-color-error) !important;
+  color: var(--md-sys-color-on-error) !important;
+}
+[data-theme="material3"] [class*="from-teal-"],
+[data-theme="material3"] [class*="to-teal-"] {
+  background-color: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+}
+/* Fix icon-only gradient containers (stat card headers etc.) */
+[data-theme="material3"] [class*="rounded-"][class*="flex"][class*="items-center"][class*="justify-center"][class*="bg-gradient"] {
+  background-color: var(--md-sys-color-primary-container) !important;
+  color: var(--md-sys-color-on-primary-container) !important;
+}
+/* Gradient text inside gradient bg → keep white */
+[data-theme="material3"] [class*="from-indigo-"] [class*="text-white"],
+[data-theme="material3"] [class*="from-amber-"] [class*="text-white"],
+[data-theme="material3"] [class*="from-emerald-"] [class*="text-white"],
+[data-theme="material3"] [class*="from-blue-"] [class*="text-white"],
+[data-theme="material3"] [class*="from-purple-"] [class*="text-white"],
+[data-theme="material3"] [class*="from-teal-"] [class*="text-white"],
+[data-theme="material3"] [class*="from-orange-"] [class*="text-white"],
+[data-theme="material3"] [class*="from-pink-"] [class*="text-white"] {
+  color: inherit !important;
+}
+/* Shadow on gradient buttons → MD3 elevation */
+[data-theme="material3"] [class*="shadow-indigo-"],
+[data-theme="material3"] [class*="shadow-amber-"],
+[data-theme="material3"] [class*="shadow-orange-"],
+[data-theme="material3"] [class*="shadow-emerald-"],
+[data-theme="material3"] [class*="shadow-blue-"] {
+  box-shadow: var(--md-sys-elevation-2) !important;
+}
+/* Light tint gradients (from-blue-50 to-blue-100 etc.) → container colors */
+[data-theme="material3"] [class*="from-blue-50"][class*="to-blue-100"],
+[data-theme="material3"] [class*="from-emerald-50"][class*="to-emerald-100"],
+[data-theme="material3"] [class*="from-amber-50"][class*="to-amber-100"],
+[data-theme="material3"] [class*="from-purple-50"][class*="to-purple-100"],
+[data-theme="material3"] [class*="from-gray-50"][class*="to-white"] {
+  background-image: none !important;
+  background-color: var(--md-sys-color-surface-container-low) !important;
+}
+[data-theme="material3"] .dark [class*="from-blue-900"],
+[data-theme="material3"] .dark [class*="from-emerald-900"],
+[data-theme="material3"] .dark [class*="from-amber-900"],
+[data-theme="material3"] .dark [class*="from-purple-900"],
+[data-theme="material3"] .dark [class*="from-slate-800"] {
+  background-image: none !important;
+}
+
+/* Card containers: force surface colors */
+[data-theme="material3"] [class*="bg-white"][class*="rounded-"] {
+  background-color: var(--md-sys-color-surface-container-low) !important;
+}
+
+/* Empty state dashed borders */
+[data-theme="material3"] [class*="border-dashed"] {
+  border-color: var(--md-sys-color-outline-variant) !important;
 }
