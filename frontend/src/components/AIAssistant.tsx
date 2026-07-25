@@ -307,7 +307,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
             whileHover={{ scale: 1.1, rotate: 5 }}
             whileTap={{ scale: 0.9 }}
             onClick={toggleOpen}
-            className="fixed bottom-20 md:bottom-6 left-6 z-[250] w-14 h-14 bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] rounded-full shadow-md flex items-center justify-center cursor-pointer hover:shadow-lg transition-shadow"
+            className="fixed bottom-20 md:bottom-6 left-6 z-[250] w-14 h-14 rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-all"
+            style={{ backgroundColor: 'var(--md-sys-color-primary-container, #c2e7ff)', color: 'var(--md-sys-color-on-primary-container, #001e2e)' }}
             title="المساعد الذكي"
           >
             <Sparkles size={24} className="animate-pulse" />

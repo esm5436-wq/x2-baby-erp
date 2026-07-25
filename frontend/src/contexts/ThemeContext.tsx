@@ -92,13 +92,13 @@ const PRIMARY_COLOR_KEY = 'erp_md3_primary_color';
 const SECONDARY_COLOR_KEY = 'erp_md3_secondary_color';
 
 const ThemeContext = createContext<ThemeContextType>({
-  uiTheme: 'classic',
+  uiTheme: 'material3',
   setTheme: () => {},
   darkMode: false,
   toggleDarkMode: () => {},
   setDarkMode: () => {},
-  isMaterial3: false,
-  isClassic: true,
+  isMaterial3: true,
+  isClassic: false,
   primaryColor: DEFAULT_PRIMARY,
   secondaryColor: DEFAULT_SECONDARY,
   setPrimaryColor: () => {},
@@ -112,7 +112,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [uiTheme, setThemeState] = useState<ThemeType>(() => {
     const saved = localStorage.getItem(THEME_STORAGE_KEY);
     if (saved === 'material3' || saved === 'classic') return saved;
-    return 'classic';
+    return 'material3';
   });
 
   const [darkMode, setDarkModeState] = useState(() => {

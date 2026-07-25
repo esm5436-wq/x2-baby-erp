@@ -21,7 +21,7 @@ interface AppTopBarProps {
 }
 
 const AppTopBar: React.FC<AppTopBarProps> = ({ title, subtitle, actions }) => {
-  const { uiTheme, darkMode } = useTheme();
+  const { uiTheme, darkMode, toggleDarkMode } = useTheme();
   const isMD3 = uiTheme === 'material3';
 
   const bgColor = isMD3
@@ -80,6 +80,37 @@ const AppTopBar: React.FC<AppTopBarProps> = ({ title, subtitle, actions }) => {
           {actions}
         </div>
       )}
+
+      <button
+        onClick={toggleDarkMode}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 40,
+          height: 40,
+          borderRadius: '50%',
+          border: 'none',
+          cursor: 'pointer',
+          flexShrink: 0,
+          backgroundColor: isMD3
+            ? 'var(--md-sys-color-surface-container-highest)'
+            : darkMode ? '#1e293b' : '#f1f5f9',
+          color: isMD3
+            ? 'var(--md-sys-color-on-surface)'
+            : darkMode ? '#f1f5f9' : '#0f172a',
+          transition: 'all 0.2s ease',
+        }}
+        title={darkMode ? 'الوضع النهاري' : 'الوضع الليلي'}
+      >
+        {isMD3 ? (
+          <span className="material-symbols-rounded" style={{ fontSize: 22 }}>
+            {darkMode ? 'light_mode' : 'dark_mode'}
+          </span>
+        ) : (
+          <span style={{ fontSize: 18 }}>{darkMode ? '☀️' : '🌙'}</span>
+        )}
+      </button>
     </div>
   );
 };
