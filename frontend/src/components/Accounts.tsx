@@ -46,6 +46,7 @@ import {
 } from 'recharts';
 import { Order, OrderStatus, Product, FinancialTarget, Branding } from '../types';
 import { exportToExcel, exportToPDF, exportToHTML, exportToCSV, exportToJSON } from '../lib/exportService';
+import { MD3Button, MD3IconButton, MD3Dialog } from './md3';
 
 interface AccountsProps {
   orders: Order[];
@@ -390,7 +391,7 @@ const Accounts: React.FC<AccountsProps> = ({
         <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center">
           <BarChart3 className="text-accent animate-bounce" size={32} />
         </div>
-        <p className="text-sm font-black text-gray-400 dark:text-gray-500">جاري تحميل البيانات المالية...</p>
+        <p className="text-sm font-black text-[var(--md-sys-color-on-surface-variant)]">جاري تحميل البيانات المالية...</p>
       </div>
     );
   }
@@ -404,86 +405,48 @@ const Accounts: React.FC<AccountsProps> = ({
       className="space-y-4 pb-20"
     >
       {/* Global Explanation Modal */}
-      <AnimatePresence>
-        {activeExplainModal && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md"
-          >
-            <motion.div 
-              className="absolute inset-0 cursor-pointer" 
-              onClick={() => setActiveExplainModal(null)} 
-            />
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[40px] shadow-2xl border border-gray-100 dark:border-slate-800 overflow-hidden relative z-10"
-            >
-            <button 
-              onClick={() => setActiveExplainModal(null)}
-              className="absolute top-6 left-6 p-2 bg-gray-100 dark:bg-slate-800 rounded-full text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors z-20"
-            >
-              <Trash2 size={20} className="rotate-45" />
-            </button>
+      <MD3Dialog
+        isOpen={!!activeExplainModal}
+        onClose={() => setActiveExplainModal(null)}
+        title={activeExplainModal?.title}
+        icon={activeExplainModal?.icon}
+        maxWidth="lg"
+        actions={[
+          { label: 'فهمت الأرقام، شكراً!', onClick: () => {}, variant: 'filled' }
+        ]}
+      >
+        <div className="space-y-6">
+          <div className="p-5 bg-[var(--md-sys-color-surface-container)] rounded-[24px] border border-[var(--md-sys-color-outline-variant)]/20">
+            <h4 className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest mb-3 flex items-center gap-2">
+              <Info size={14} className="text-accent" />
+              ما هو هذا الرقم؟
+            </h4>
+            <p className="text-sm font-bold text-[var(--md-sys-color-on-surface)] leading-relaxed text-right">
+              {activeExplainModal?.description}
+            </p>
+          </div>
 
-            <div className="p-8">
-              <div className="flex items-center gap-4 mb-8">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-${activeExplainModal.color}-100 dark:bg-${activeExplainModal.color}-900/30`}>
-                  {activeExplainModal.icon}
-                </div>
-                <div>
-                  <h3 className="text-xl font-black text-gray-900 dark:text-white">{activeExplainModal.title}</h3>
-                  <p className="text-xs text-gray-500 font-bold mt-0.5 uppercase tracking-widest">كن خبيراً في أرقام مشروعك</p>
-                </div>
-              </div>
+          <div className="p-5 bg-blue-50 dark:bg-blue-900/10 rounded-[24px] border border-blue-100 dark:border-blue-900/30">
+            <h4 className="text-xs font-black text-blue-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+              <Zap size={14} className="fill-blue-500" />
+              مثال توضيحي
+            </h4>
+            <p className="text-sm font-bold text-blue-900 dark:text-blue-300 leading-relaxed text-right">
+              {activeExplainModal?.example}
+            </p>
+          </div>
 
-              <div className="space-y-6">
-                <div className="p-5 bg-gray-50 dark:bg-slate-800/50 rounded-[24px] border border-gray-100 dark:border-slate-700/50">
-                  <h4 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <Info size={14} className="text-accent" />
-                    ما هو هذا الرقم؟
-                  </h4>
-                  <p className="text-sm font-bold text-gray-800 dark:text-gray-200 leading-relaxed text-right">
-                    {activeExplainModal.description}
-                  </p>
-                </div>
-
-                <div className="p-5 bg-blue-50 dark:bg-blue-900/10 rounded-[24px] border border-blue-100 dark:border-blue-900/30">
-                  <h4 className="text-xs font-black text-blue-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <Zap size={14} className="fill-blue-500" />
-                    مثال توضيحي
-                  </h4>
-                  <p className="text-sm font-bold text-blue-900 dark:text-blue-300 leading-relaxed text-right">
-                    {activeExplainModal.example}
-                  </p>
-                </div>
-
-                <div className="p-5 bg-emerald-50 dark:bg-emerald-900/10 rounded-[24px] border border-emerald-100 dark:border-emerald-900/30">
-                  <h4 className="text-xs font-black text-emerald-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <Target size={14} className="text-emerald-500" />
-                    قاعدة الأمان المالية
-                  </h4>
-                  <p className="text-sm font-black text-emerald-800 dark:text-emerald-400 leading-relaxed text-right">
-                    {activeExplainModal.safetyRule}
-                  </p>
-                </div>
-              </div>
-
-              <button 
-                onClick={() => setActiveExplainModal(null)}
-                className="w-full mt-8 py-4 bg-accent text-white font-black rounded-2xl shadow-lg shadow-accent/20 hover:scale-[1.02] transition-transform"
-              >
-                فهمت الأرقام، شكراً!
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          <div className="p-5 bg-emerald-50 dark:bg-emerald-900/10 rounded-[24px] border border-emerald-100 dark:border-emerald-900/30">
+            <h4 className="text-xs font-black text-emerald-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+              <Target size={14} className="text-emerald-500" />
+              قاعدة الأمان المالية
+            </h4>
+            <p className="text-sm font-black text-emerald-800 dark:text-emerald-400 leading-relaxed text-right">
+              {activeExplainModal?.safetyRule}
+            </p>
+          </div>
+        </div>
+      </MD3Dialog>
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <motion.div 
@@ -491,16 +454,17 @@ const Accounts: React.FC<AccountsProps> = ({
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <h2 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+          <h2 className="text-3xl font-black text-[var(--md-sys-color-on-surface)] flex items-center gap-3">
             <motion.div 
               whileHover={{ rotate: 10, scale: 1.1 }}
-              className="p-2 bg-accent rounded-2xl shadow-lg shadow-accent/20"
+              className="p-2 rounded-2xl shadow-lg shadow-accent/20"
+              style={{ backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)' }}
             >
-              <BarChart3 className="text-white" size={24} />
+              <BarChart3 size={24} />
             </motion.div>
             الحسابات والمالية ✨
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 font-bold mt-1 mr-12">تقرير الأداء المالي والمصروفات بكل حب</p>
+          <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] font-bold mt-1 mr-12">تقرير الأداء المالي والمصروفات بكل حب</p>
         </motion.div>
 
         <motion.div 
@@ -509,62 +473,52 @@ const Accounts: React.FC<AccountsProps> = ({
           transition={{ delay: 0.3 }}
           className="flex flex-wrap gap-2 items-center"
         >
-          <div className="flex bg-white dark:bg-slate-900 rounded-2xl p-1.5 shadow-sm border border-gray-100 dark:border-slate-800">
+          <div className="flex bg-[var(--md-sys-color-surface)] rounded-2xl p-1.5 shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
             <button 
               onClick={() => setDateFilter('today')}
-              className={`px-5 py-2 rounded-xl text-xs font-black transition-all ${dateFilter === 'today' ? 'bg-accent text-white shadow-md' : 'text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-slate-800'}`}
+              className={`px-5 py-2 rounded-xl text-xs font-black transition-all ${dateFilter === 'today' ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md' : 'text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-container)]'}`}
             >
               اليوم
             </button>
             <button 
               onClick={() => setDateFilter('month')}
-              className={`px-5 py-2 rounded-xl text-xs font-black transition-all ${dateFilter === 'month' ? 'bg-accent text-white shadow-md' : 'text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-slate-800'}`}
+              className={`px-5 py-2 rounded-xl text-xs font-black transition-all ${dateFilter === 'month' ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md' : 'text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-container)]'}`}
             >
               هذا الشهر
             </button>
             <button 
               onClick={() => setDateFilter('all')}
-              className={`px-5 py-2 rounded-xl text-xs font-black transition-all ${dateFilter === 'all' ? 'bg-accent text-white shadow-md' : 'text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-slate-800'}`}
+              className={`px-5 py-2 rounded-xl text-xs font-black transition-all ${dateFilter === 'all' ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md' : 'text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-container)]'}`}
             >
               الكل
             </button>
             <button 
               onClick={() => setDateFilter('custom')}
-              className={`px-5 py-2 rounded-xl text-xs font-black transition-all ${dateFilter === 'custom' ? 'bg-accent text-white shadow-md' : 'text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-slate-800'}`}
+              className={`px-5 py-2 rounded-xl text-xs font-black transition-all ${dateFilter === 'custom' ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-md' : 'text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-container)]'}`}
             >
               مخصص
             </button>
           </div>
 
           <div className="relative">
-            <button
-              onClick={() => setShowExportDropdown(prev => !prev)}
-              onBlur={() => setTimeout(() => setShowExportDropdown(false), 200)}
+            <MD3Button
+              variant="filled"
+              icon={<Download size={16} />}
+              iconPosition="start"
               disabled={isExporting}
-              className="px-4 py-3 bg-accent text-white rounded-2xl shadow-lg shadow-accent/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 text-xs font-black"
+              onClick={() => setShowExportDropdown(prev => !prev)}
             >
-              <Download size={16} />
               تصدير
-              <ChevronDown size={14} />
-            </button>
+              <ChevronDown size={14} className="mr-1" />
+            </MD3Button>
             {showExportDropdown && (
               <div className="absolute top-full left-0 mt-1 w-40 z-50">
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 p-1.5">
-                  <button onClick={() => { handleExportStats('excel'); setShowExportDropdown(false); }} className="w-full text-right px-3 py-2 rounded-xl text-[10px] font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center gap-2">
-                    <BarChart2 size={14} className="text-emerald-500" /> Excel
-                  </button>
-                  <button onClick={() => { handleExportStats('pdf'); setShowExportDropdown(false); }} className="w-full text-right px-3 py-2 rounded-xl text-[10px] font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center gap-2">
-                    <Printer size={14} className="text-red-500" /> PDF
-                  </button>
-                  <button onClick={() => { handleExportStats('html'); setShowExportDropdown(false); }} className="w-full text-right px-3 py-2 rounded-xl text-[10px] font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center gap-2">
-                    <Globe size={14} className="text-accent" /> ويب تفاعلي
-                  </button>
-                  <button onClick={() => { handleExportStats('csv' as any); setShowExportDropdown(false); }} className="w-full text-right px-3 py-2 rounded-xl text-[10px] font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center gap-2">
-                    <FileText size={14} className="text-slate-500" /> CSV
-                  </button>
-                  <button onClick={() => { handleExportStats('json' as any); setShowExportDropdown(false); }} className="w-full text-right px-3 py-2 rounded-xl text-[10px] font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center gap-2">
-                    <Code size={14} className="text-slate-800" /> JSON
-                  </button>
+                <div className="bg-[var(--md-sys-color-surface)] rounded-2xl shadow-md border border-[var(--md-sys-color-outline-variant)]/20 p-1.5">
+                  <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('excel'); setShowExportDropdown(false); }} icon={<BarChart2 size={14} className="text-emerald-500" />}>Excel</MD3Button>
+                  <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('pdf'); setShowExportDropdown(false); }} icon={<Printer size={14} className="text-red-500" />}>PDF</MD3Button>
+                  <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('html'); setShowExportDropdown(false); }} icon={<Globe size={14} className="text-accent" />}>ويب تفاعلي</MD3Button>
+                  <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('csv' as any); setShowExportDropdown(false); }} icon={<FileText size={14} className="text-slate-500" />}>CSV</MD3Button>
+                  <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('json' as any); setShowExportDropdown(false); }} icon={<Code size={14} className="text-slate-800" />}>JSON</MD3Button>
                 </div>
               </div>
             )}
@@ -573,9 +527,9 @@ const Accounts: React.FC<AccountsProps> = ({
       </div>
 
       {dateFilter === 'custom' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-800 animate-in slide-in-from-top-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[var(--md-sys-color-surface)] p-6 rounded-3xl shadow-sm border border-[var(--md-sys-color-outline-variant)]/20 animate-in slide-in-from-top-2">
           <div className="space-y-2">
-            <label className="text-xs font-black text-gray-500 dark:text-gray-400 mr-2">تاريخ البداية</label>
+            <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] mr-2">تاريخ البداية</label>
             <input
               type="date"
               value={dateRange.start}
@@ -584,7 +538,7 @@ const Accounts: React.FC<AccountsProps> = ({
             />
           </div>
           <div className="space-y-2">
-            <label className="text-xs font-black text-gray-500 dark:text-gray-400 mr-2">تاريخ النهاية</label>
+            <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] mr-2">تاريخ النهاية</label>
             <input
               type="date"
               value={dateRange.end}
@@ -626,7 +580,7 @@ const Accounts: React.FC<AccountsProps> = ({
               color: "blue",
               icon: <DollarSign size={24} className="text-blue-600" />
             })}
-            className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 group relative cursor-pointer overflow-hidden transition-colors hover:bg-blue-50/50 dark:hover:bg-blue-900/10"
+            className="bg-[var(--md-sys-color-surface)] p-4 rounded-2xl shadow-sm border border-[var(--md-sys-color-outline-variant)]/20 group relative cursor-pointer overflow-hidden transition-colors hover:bg-blue-50/50 dark:hover:bg-blue-900/10"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
@@ -634,7 +588,7 @@ const Accounts: React.FC<AccountsProps> = ({
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest block mb-0.5">إجمالي المبيعات 💰</span>
+                  <span className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-black uppercase tracking-widest block mb-0.5">إجمالي المبيعات 💰</span>
                   <motion.div animate={{ rotate: [0, 5, -5, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
                     <HelpCircle size={14} className="text-accent" />
                   </motion.div>
@@ -642,7 +596,7 @@ const Accounts: React.FC<AccountsProps> = ({
                 <p className="text-[10px] text-blue-600 dark:text-blue-400 font-black">{financialData.ordersCount} طلب</p>
               </div>
             </div>
-            <h3 className="text-xl font-black text-gray-900 dark:text-white tabular-nums">{formatCurrency(financialData.totalSales)}</h3>
+            <h3 className="text-xl font-black text-[var(--md-sys-color-on-surface)] tabular-nums">{formatCurrency(financialData.totalSales)}</h3>
           </motion.div>
 
           <motion.div 
@@ -660,7 +614,7 @@ const Accounts: React.FC<AccountsProps> = ({
               color: "orange",
               icon: <TrendingDown size={24} className="text-orange-600" />
             })}
-            className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 group relative cursor-pointer overflow-hidden transition-colors hover:bg-orange-50/50 dark:hover:bg-orange-900/10"
+            className="bg-[var(--md-sys-color-surface)] p-4 rounded-2xl shadow-sm border border-[var(--md-sys-color-outline-variant)]/20 group relative cursor-pointer overflow-hidden transition-colors hover:bg-orange-50/50 dark:hover:bg-orange-900/10"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
@@ -668,7 +622,7 @@ const Accounts: React.FC<AccountsProps> = ({
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest block mb-0.5">تكلفة المنتجات 📦</span>
+                  <span className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-black uppercase tracking-widest block mb-0.5">تكلفة المنتجات 📦</span>
                   <HelpCircle size={14} className="text-accent" />
                 </div>
                 <p className="text-[10px] text-orange-600 dark:text-orange-400 font-black">
@@ -676,7 +630,7 @@ const Accounts: React.FC<AccountsProps> = ({
                 </p>
               </div>
             </div>
-            <h3 className="text-xl font-black text-gray-900 dark:text-white tabular-nums">{formatCurrency(financialData.totalCOGS)}</h3>
+            <h3 className="text-xl font-black text-[var(--md-sys-color-on-surface)] tabular-nums">{formatCurrency(financialData.totalCOGS)}</h3>
           </motion.div>
 
           <motion.div 
@@ -694,7 +648,7 @@ const Accounts: React.FC<AccountsProps> = ({
               color: "slate",
               icon: <Package size={24} className="text-slate-600 dark:text-slate-400" />
             })}
-            className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 group relative cursor-pointer overflow-hidden transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
+            className="bg-[var(--md-sys-color-surface)] p-4 rounded-2xl shadow-sm border border-[var(--md-sys-color-outline-variant)]/20 group relative cursor-pointer overflow-hidden transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
@@ -702,13 +656,13 @@ const Accounts: React.FC<AccountsProps> = ({
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest block mb-0.5">الاستثمار الكلي 📉</span>
+                  <span className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-black uppercase tracking-widest block mb-0.5">الاستثمار الكلي 📉</span>
                   <HelpCircle size={14} className="text-accent" />
                 </div>
                 <p className="text-[10px] text-slate-500 dark:text-slate-400 font-black truncate">كافة مبالغ الشراء والصرف</p>
               </div>
             </div>
-            <h3 className="text-xl font-black text-gray-900 dark:text-white tabular-nums">{formatCurrency(financialData.lifetimeTotalSpend || 0)}</h3>
+            <h3 className="text-xl font-black text-[var(--md-sys-color-on-surface)] tabular-nums">{formatCurrency(financialData.lifetimeTotalSpend || 0)}</h3>
           </motion.div>
 
           <motion.div 
@@ -733,7 +687,7 @@ const Accounts: React.FC<AccountsProps> = ({
                 icon: <Sparkles size={24} className="text-indigo-600" />
               });
             }}
-            className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 group relative cursor-pointer overflow-hidden transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
+            className="bg-[var(--md-sys-color-surface)] p-4 rounded-2xl shadow-sm border border-[var(--md-sys-color-outline-variant)]/20 group relative cursor-pointer overflow-hidden transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
@@ -741,7 +695,7 @@ const Accounts: React.FC<AccountsProps> = ({
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest block mb-0.5">استرداد رأس المال 🔄</span>
+                  <span className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-black uppercase tracking-widest block mb-0.5">استرداد رأس المال 🔄</span>
                   <HelpCircle size={14} className="text-accent" />
                 </div>
                 <p className="text-[10px] text-indigo-600 font-black">
@@ -786,10 +740,10 @@ const Accounts: React.FC<AccountsProps> = ({
                 color: "emerald",
                 icon: <TrendingUp size={24} className="text-white" />
               })}
-              className={`p-5 rounded-[32px] shadow-xl relative cursor-pointer border-2 group overflow-hidden h-full flex flex-col justify-center ${
+              className={`p-5 rounded-[32px] shadow-md relative cursor-pointer border-2 group overflow-hidden h-full flex flex-col justify-center ${
                 financialData.netProfit >= 0 
-                  ? 'bg-emerald-500 border-emerald-400' 
-                  : 'bg-red-500 border-red-400'
+                  ? 'bg-[var(--md-sys-color-primary)] border-[var(--md-sys-color-primary)]/40' 
+                  : 'bg-[var(--md-sys-color-error)] border-[var(--md-sys-color-error)]/40'
               }`}
             >
               <motion.div 
@@ -797,7 +751,7 @@ const Accounts: React.FC<AccountsProps> = ({
                 transition={{ repeat: Infinity, duration: 3 }}
                 className="absolute inset-0 bg-white/20 blur-3xl pointer-events-none"
               />
-              <div className="relative z-10 text-white">
+              <div className={`relative z-10 ${financialData.netProfit >= 0 ? 'text-[var(--md-sys-color-on-primary)]' : 'text-[var(--md-sys-color-on-error)]'}`}>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">صافي الربح النهائي 🏆</span>
@@ -824,7 +778,7 @@ const Accounts: React.FC<AccountsProps> = ({
             </motion.div>
 
             {/* Financial Targets Card - Now side-by-side with Profit */}
-            <div className="md:col-span-1 lg:col-span-2 bg-white dark:bg-slate-900 rounded-[32px] p-6 shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden relative">
+            <div className="md:col-span-1 lg:col-span-2 bg-[var(--md-sys-color-surface)] rounded-[32px] p-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]/20 overflow-hidden relative">
               <div className="flex items-center justify-between mb-6">
                 <h3 
                   onClick={() => setActiveExplainModal({
@@ -835,14 +789,16 @@ const Accounts: React.FC<AccountsProps> = ({
                     color: "accent",
                     icon: <Target size={24} className="text-accent" />
                   })}
-                  className="font-black text-gray-900 dark:text-white text-base flex items-center gap-2 cursor-pointer group"
+                  className="font-black text-[var(--md-sys-color-on-surface)] text-base flex items-center gap-2 cursor-pointer group"
                 >
                   <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center">
                     <Target size={16} className="text-accent" />
                   </div>
                   تحقيق الأهداف 🎯
                 </h3>
-                <button 
+                <MD3IconButton
+                  icon={<Plus size={16} />}
+                  variant="filled"
                   onClick={() => {
                     setEditingTarget(null);
                     setTargetForm({
@@ -854,16 +810,13 @@ const Accounts: React.FC<AccountsProps> = ({
                     });
                     setShowTargetModal(true);
                   }}
-                  className="w-8 h-8 flex items-center justify-center bg-accent text-white rounded-lg font-black shadow-lg shadow-accent/20 hover:scale-105 active:scale-95 transition-all text-xs"
-                >
-                  <Plus size={16} />
-                </button>
+                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
                 {targets.length === 0 ? (
-                  <div className="col-span-full py-10 text-center border-2 border-dashed border-gray-100 dark:border-slate-800 rounded-3xl">
-                    <p className="text-xs font-bold text-gray-400 dark:text-gray-500">لا توجد أهداف حالية. 🎯</p>
+                  <div className="col-span-full py-10 text-center border-2 border-dashed border-[var(--md-sys-color-outline-variant)]/20 rounded-3xl">
+                    <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">لا توجد أهداف حالية. 🎯</p>
                   </div>
                 ) : (
                   targets.map(target => {
@@ -883,16 +836,16 @@ const Accounts: React.FC<AccountsProps> = ({
                         className="p-3 bg-gray-50/50 dark:bg-slate-800/40 rounded-2xl border border-transparent hover:border-accent/10 flex flex-col justify-between"
                       >
                         <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-black text-gray-900 dark:text-white text-[10px] truncate max-w-[120px]">{target.title}</h4>
+                          <h4 className="font-black text-[var(--md-sys-color-on-surface)] text-[10px] truncate max-w-[120px]">{target.title}</h4>
                           <span className="text-[10px] font-black text-accent">{progress.toFixed(0)}%</span>
                         </div>
-                        <div className="h-1 bg-white dark:bg-slate-900 rounded-full overflow-hidden mb-2">
+                        <div className="h-1 bg-[var(--md-sys-color-surface)] rounded-full overflow-hidden mb-2">
                           <div className={`h-full transition-all duration-1000 ${progress >= 100 ? 'bg-emerald-500' : 'bg-accent'}`} style={{ width: `${progress}%` }} />
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-[8px] font-bold text-gray-400 dark:text-gray-500">{formatCurrency(target.amount)}</span>
+                          <span className="text-[8px] font-bold text-[var(--md-sys-color-on-surface-variant)]">{formatCurrency(target.amount)}</span>
                           <div className="flex gap-1">
-                            <button onClick={() => openEditTarget(target)} className="p-1 text-gray-400 dark:text-gray-500 hover:text-accent"><Zap size={10} /></button>
+                            <button onClick={() => openEditTarget(target)} className="p-1 text-[var(--md-sys-color-on-surface-variant)] hover:text-accent"><Zap size={10} /></button>
                           </div>
                         </div>
                       </motion.div>
@@ -903,7 +856,7 @@ const Accounts: React.FC<AccountsProps> = ({
             </div>
           </div>
           
-          <div className="space-y-8 mt-8 border-t border-gray-100 dark:border-slate-800 pt-8">
+          <div className="space-y-8 mt-8 border-t border-[var(--md-sys-color-outline-variant)]/20 pt-8">
             <div className="flex flex-col gap-8">
               {/* Coverage & Break-even simplified */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -917,14 +870,14 @@ const Accounts: React.FC<AccountsProps> = ({
                     color: "accent",
                     icon: <Layers size={24} className="text-accent" />
                   })}
-                  className="p-6 bg-white dark:bg-slate-900 rounded-[32px] border border-gray-100 dark:border-slate-800 shadow-sm cursor-pointer"
+                  className="p-6 bg-[var(--md-sys-color-surface)] rounded-[32px] border border-[var(--md-sys-color-outline-variant)]/20 shadow-sm cursor-pointer"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-black text-gray-500 uppercase tracking-widest">نسبة التغطية 📊</span>
+                    <span className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">نسبة التغطية 📊</span>
                     <HelpCircle size={14} className="text-accent" />
                   </div>
                   <div className="flex items-baseline gap-2 mb-3">
-                    <span className="text-3xl font-black text-gray-900 dark:text-white">
+                    <span className="text-3xl font-black text-[var(--md-sys-color-on-surface)]">
                       {Math.round((financialData.grossProfit / (financialData.totalOPEX || 1)) * 100)}%
                     </span>
                   </div>
@@ -947,17 +900,17 @@ const Accounts: React.FC<AccountsProps> = ({
                     color: "accent",
                     icon: <Target size={24} className="text-accent" />
                   });}}
-                  className="p-6 bg-white dark:bg-slate-900 rounded-[32px] border border-gray-100 dark:border-slate-800 shadow-sm cursor-pointer"
+                  className="p-6 bg-[var(--md-sys-color-surface)] rounded-[32px] border border-[var(--md-sys-color-outline-variant)]/20 shadow-sm cursor-pointer"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-black text-gray-500 uppercase tracking-widest">هدف التعادل 🎯</span>
+                    <span className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">هدف التعادل 🎯</span>
                     <HelpCircle size={14} className="text-accent" />
                   </div>
-                  <p className="text-2xl font-black text-gray-900 dark:text-white">
+                  <p className="text-2xl font-black text-[var(--md-sys-color-on-surface)]">
                     {formatCurrency(financialData.totalSales > 0 && financialData.grossProfit > 0 ? (financialData.totalOPEX / (financialData.grossProfit / financialData.totalSales)) : 0)}
                   </p>
-                  <div className="mt-3 flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800 rounded-2xl">
-                    <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold">باقي:</span>
+                  <div className="mt-3 flex items-center justify-between p-3 bg-[var(--md-sys-color-surface-container)] rounded-2xl">
+                    <span className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-bold">باقي:</span>
                     <span className="text-xs font-black text-accent">
                       {formatCurrency(Math.max(0, (financialData.totalSales > 0 && financialData.grossProfit > 0 ? (financialData.totalOPEX / (financialData.grossProfit / financialData.totalSales)) : 0) - financialData.totalSales))}
                     </span>
@@ -974,17 +927,17 @@ const Accounts: React.FC<AccountsProps> = ({
                     color: financialData.netProfit >= 0 ? "emerald" : "orange",
                     icon: <DollarSign size={24} className={financialData.netProfit >= 0 ? "text-emerald-500" : "text-orange-500"} />
                   })}
-                  className="p-6 bg-white dark:bg-slate-900 rounded-[32px] border border-gray-100 dark:border-slate-800 shadow-sm cursor-pointer"
+                  className="p-6 bg-[var(--md-sys-color-surface)] rounded-[32px] border border-[var(--md-sys-color-outline-variant)]/20 shadow-sm cursor-pointer"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-black text-gray-500 uppercase tracking-widest">حالة التغطية 📉</span>
+                    <span className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">حالة التغطية 📉</span>
                     <HelpCircle size={14} className="text-accent" />
                   </div>
                   <p className={`text-2xl font-black ${financialData.netProfit >= 0 ? 'text-emerald-600' : 'text-orange-600'}`}>
                     {financialData.netProfit >= 0 ? '✅ تغطية كاملة' : formatCurrency(financialData.totalOPEX - financialData.grossProfit)}
                   </p>
-                  <div className="mt-3 flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800 rounded-2xl">
-                    <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold">الحالة:</span>
+                  <div className="mt-3 flex items-center justify-between p-3 bg-[var(--md-sys-color-surface-container)] rounded-2xl">
+                    <span className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-bold">الحالة:</span>
                     <span className={`text-[10px] font-black ${financialData.netProfit >= 0 ? 'text-emerald-500' : 'text-orange-500'}`}>
                       {financialData.netProfit >= 0 ? '🟢 أمان مالي' : '🟡 مرحلة تعافي'}
                     </span>
@@ -993,7 +946,7 @@ const Accounts: React.FC<AccountsProps> = ({
               </div>
 
               {/* Solid Area Chart View */}
-              <div className="bg-white dark:bg-slate-900 border-2 border-gray-50 dark:border-slate-800 rounded-[48px] overflow-hidden flex flex-col min-h-[500px] shadow-2xl relative group">
+              <div className="bg-[var(--md-sys-color-surface)] border-2 border-gray-50 dark:border-slate-800 rounded-[48px] overflow-hidden flex flex-col min-h-[200px] shadow-lg relative group">
                 <motion.div 
                   whileHover={{ scale: 1.01 }}
                   onClick={() => setActiveExplainModal({
@@ -1007,16 +960,16 @@ const Accounts: React.FC<AccountsProps> = ({
                   className="p-10 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-6 cursor-pointer z-10"
                 >
                   <div>
-                    <h5 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3 relative">
+                    <h5 className="text-2xl font-black text-[var(--md-sys-color-on-surface)] flex items-center gap-3 relative">
                       <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
                         <BarChart2 size={24} className="text-blue-500" />
                       </div>
                       خريطة نقطة التعادل الاستراتيجية 🗺️
                     </h5>
-                    <p className="text-xs text-gray-500 font-bold mt-2 mr-14">تحليل بصري دقيق للمسافات بين المبيعات والمصروفات</p>
+                    <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] font-bold mt-2 mr-14">تحليل بصري دقيق للمسافات بين المبيعات والمصروفات</p>
                   </div>
                   
-                  <div className="flex items-center gap-6 bg-gray-50 dark:bg-slate-800/80 p-3 px-6 rounded-3xl border border-gray-100 dark:border-slate-700/50">
+                  <div className="flex items-center gap-6 bg-[var(--md-sys-color-surface-container)]/80 p-3 px-6 rounded-3xl border border-gray-100 dark:border-slate-700/50">
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)]" />
                       <span className="text-xs font-black text-gray-600 dark:text-gray-400">منطقة المبيعات</span>
@@ -1106,7 +1059,7 @@ const Accounts: React.FC<AccountsProps> = ({
                 </div>
 
                 {/* Bottom Education Bar */}
-                <div className="bg-gray-50 dark:bg-slate-800/50 p-6 border-t border-gray-100 dark:border-slate-800 mt-4">
+                <div className="bg-[var(--md-sys-color-surface-container)]/50 p-6 border-t border-[var(--md-sys-color-outline-variant)]/20 mt-4">
                   <div className="flex items-center gap-4 text-xs font-black text-blue-600 dark:text-blue-400">
                     <HelpCircle size={20} />
                     <span>نصيحة: كلما ابتعد الخط الأزرق (المبيعات) عن الخط البرتقالي (التكاليف) للأعلى، زاد صافي ربحك الحقيقي وتضاعف نمو مشروعك.</span>
@@ -1115,7 +1068,7 @@ const Accounts: React.FC<AccountsProps> = ({
               </div>
 
               {/* Performance Table */}
-              <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 shadow-sm border border-gray-100 dark:border-slate-800">
+              <div className="bg-[var(--md-sys-color-surface)] rounded-3xl p-5 shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
                 <div className="flex items-center justify-between mb-4">
                   <h3 
                     onClick={() => setActiveExplainModal({
@@ -1126,7 +1079,7 @@ const Accounts: React.FC<AccountsProps> = ({
                       color: "accent",
                       icon: <ShoppingBag size={24} className="text-accent" />
                     })}
-                    className="font-black text-gray-900 dark:text-white text-lg flex items-center gap-3 cursor-pointer group"
+                    className="font-black text-[var(--md-sys-color-on-surface)] text-lg flex items-center gap-3 cursor-pointer group"
                   >
                     <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center">
                       <ShoppingBag size={18} className="text-accent" />
@@ -1176,9 +1129,9 @@ const Accounts: React.FC<AccountsProps> = ({
                             </div>
                           </td>
                           <td className="py-3 text-center">
-                            <span className="font-bold text-sm text-gray-500 dark:text-gray-400">{prod.totalSold}</span>
+                            <span className="font-bold text-sm text-[var(--md-sys-color-on-surface-variant)]">{prod.totalSold}</span>
                           </td>
-                          <td className="py-3 text-center font-black text-sm text-gray-900 dark:text-white">
+                          <td className="py-3 text-center font-black text-sm text-[var(--md-sys-color-on-surface)]">
                             {formatCurrency(prod.revenue)}
                           </td>
                           <td className="py-3 text-center">
@@ -1192,13 +1145,13 @@ const Accounts: React.FC<AccountsProps> = ({
               </div>
 
               {/* Expenses Display */}
-              <div className="bg-white dark:bg-slate-900 rounded-[32px] p-6 shadow-sm border border-gray-100 dark:border-slate-800">
+              <div className="bg-[var(--md-sys-color-surface)] rounded-[32px] p-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
                       <TrendingDown size={18} className="text-red-500" />
                     </div>
-                    <h3 className="font-black text-gray-900 dark:text-white text-base">سجل المصروفات</h3>
+                    <h3 className="font-black text-[var(--md-sys-color-on-surface)] text-base">سجل المصروفات</h3>
                   </div>
                   <motion.div 
                     whileHover={{ scale: 1.02 }}
@@ -1213,15 +1166,15 @@ const Accounts: React.FC<AccountsProps> = ({
                     className="bg-amber-50 dark:bg-amber-900/10 px-4 py-2 rounded-xl border border-amber-100 dark:border-amber-900/30 cursor-pointer group flex items-center gap-2"
                   >
                     <span className="text-xs font-black text-amber-600 dark:text-amber-400">إجمالي الصرف</span>
-                    <h4 className="text-sm font-black text-gray-900 dark:text-white tabular-nums">{formatCurrency(financialData.totalOPEX)}</h4>
+                    <h4 className="text-sm font-black text-[var(--md-sys-color-on-surface)] tabular-nums">{formatCurrency(financialData.totalOPEX)}</h4>
                     <HelpCircle size={12} className="text-amber-400" />
                   </motion.div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {expenses.length === 0 ? (
-                    <div className="col-span-full py-12 text-center border-2 border-dashed border-gray-100 dark:border-slate-800 rounded-3xl">
-                      <p className="text-xs font-bold text-gray-400 dark:text-gray-500">لا يوجد سجل مصروفات حالياً. 👀</p>
+                    <div className="col-span-full py-12 text-center border-2 border-dashed border-[var(--md-sys-color-outline-variant)]/20 rounded-3xl">
+                      <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">لا يوجد سجل مصروفات حالياً. 👀</p>
                     </div>
                   ) : (
                     expenses.map(exp => (
@@ -1234,10 +1187,10 @@ const Accounts: React.FC<AccountsProps> = ({
                         <div>
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-xs font-black text-gray-800 dark:text-gray-200">{exp.category}</span>
-                            <span className="text-[9px] text-gray-400 dark:text-gray-500">{new Date(exp.created_at).toLocaleDateString('ar-EG')}</span>
+                            <span className="text-[9px] text-[var(--md-sys-color-on-surface-variant)]">{new Date(exp.created_at).toLocaleDateString('ar-EG')}</span>
                           </div>
                           {exp.description && (
-                            <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold line-clamp-1">{exp.description}</p>
+                            <p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-bold line-clamp-1">{exp.description}</p>
                           )}
                         </div>
                         <div className="flex items-center gap-2">
@@ -1254,108 +1207,76 @@ const Accounts: React.FC<AccountsProps> = ({
         </div>
       </div>
       {/* Target Modal */}
-      <AnimatePresence>
-        {showTargetModal && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md"
-          >
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-slate-900 w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl relative"
-            >
-              <div className="p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                    <Target size={20} className="text-accent" />
-                  </div>
-                  <h3 className="text-xl font-black text-gray-900 dark:text-white">
-                    {editingTarget ? 'تعديل الهدف 🎯' : 'إضافة هدف جديد 🎯'}
-                  </h3>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-black text-gray-400 dark:text-gray-500 uppercase mb-2 mr-1">عنوان الهدف</label>
-                    <input 
-                      type="text"
-                      value={targetForm.title}
-                      onChange={(e) => setTargetForm({...targetForm, title: e.target.value})}
-                      placeholder="مثلاً: مبيعات الصيف"
-                      className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-accent font-bold"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-<label className="block text-xs font-black text-gray-400 dark:text-gray-500 uppercase mb-2 mr-1">المبلغ (ج.م)</label>
-                      <input 
-                        type="number"
-                        value={targetForm.amount}
-                        onChange={(e) => setTargetForm({...targetForm, amount: e.target.value})}
-                        className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-accent font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-black text-gray-400 dark:text-gray-500 uppercase mb-2 mr-1">النوع</label>
-                      <select 
-                        value={targetForm.category}
-                        onChange={(e) => setTargetForm({...targetForm, category: e.target.value as any})}
-                        className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-accent font-bold"
-                      >
-                        <option value="net_profit">صافي الربح</option>
-                        <option value="total_sales">إجمالي المبيعات</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-black text-gray-400 dark:text-gray-500 uppercase mb-2 mr-1">تاريخ البدء</label>
-                      <input 
-                        type="date"
-                        value={targetForm.startDate}
-                        onChange={(e) => setTargetForm({...targetForm, startDate: e.target.value})}
-                        className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-accent font-bold"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-black text-gray-400 dark:text-gray-500 uppercase mb-2 mr-1">الموعد النهائي</label>
-                      <input 
-                        type="date"
-                        value={targetForm.deadline}
-                        onChange={(e) => setTargetForm({...targetForm, deadline: e.target.value})}
-                        className="w-full p-4 bg-gray-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-accent font-bold"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-3 mt-8">
-                  <button 
-                    onClick={handleSaveTargetAction}
-                    className="flex-1 py-4 bg-accent text-white font-black rounded-2xl shadow-lg shadow-accent/20 hover:opacity-90"
-                  >
-                    {editingTarget ? 'حفظ التغييرات' : 'إضافة الهدف'}
-                  </button>
-                  <button 
-                    onClick={() => setShowTargetModal(false)}
-                    className="px-6 py-4 bg-gray-100 dark:bg-slate-800 text-gray-500 font-black rounded-2xl"
-                  >
-                    إلغاء
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <MD3Dialog
+        isOpen={showTargetModal}
+        onClose={() => setShowTargetModal(false)}
+        title={editingTarget ? 'تعديل الهدف 🎯' : 'إضافة هدف جديد 🎯'}
+        icon={<Target size={20} />}
+        maxWidth="md"
+        actions={[
+          { label: editingTarget ? 'حفظ التغييرات' : 'إضافة الهدف', onClick: handleSaveTargetAction, variant: 'filled' },
+          { label: 'إلغاء', onClick: () => {}, variant: 'text' }
+        ]}
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase mb-2 mr-1">عنوان الهدف</label>
+            <input 
+              type="text"
+              value={targetForm.title}
+              onChange={(e) => setTargetForm({...targetForm, title: e.target.value})}
+              placeholder="مثلاً: مبيعات الصيف"
+              className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border-none rounded-2xl focus:ring-2 focus:ring-accent font-bold"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase mb-2 mr-1">المبلغ (ج.م)</label>
+              <input 
+                type="number"
+                value={targetForm.amount}
+                onChange={(e) => setTargetForm({...targetForm, amount: e.target.value})}
+                className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border-none rounded-2xl focus:ring-2 focus:ring-accent font-bold"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase mb-2 mr-1">النوع</label>
+              <select 
+                value={targetForm.category}
+                onChange={(e) => setTargetForm({...targetForm, category: e.target.value as any})}
+                className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border-none rounded-2xl focus:ring-2 focus:ring-accent font-bold"
+              >
+                <option value="net_profit">صافي الربح</option>
+                <option value="total_sales">إجمالي المبيعات</option>
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase mb-2 mr-1">تاريخ البدء</label>
+              <input 
+                type="date"
+                value={targetForm.startDate}
+                onChange={(e) => setTargetForm({...targetForm, startDate: e.target.value})}
+                className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border-none rounded-2xl focus:ring-2 focus:ring-accent font-bold"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase mb-2 mr-1">الموعد النهائي</label>
+              <input 
+                type="date"
+                value={targetForm.deadline}
+                onChange={(e) => setTargetForm({...targetForm, deadline: e.target.value})}
+                className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border-none rounded-2xl focus:ring-2 focus:ring-accent font-bold"
+              />
+            </div>
+          </div>
+        </div>
+      </MD3Dialog>
 
 
     </motion.div>
   );
 };
 
-export default Accounts;
+export default React.memo(Accounts);

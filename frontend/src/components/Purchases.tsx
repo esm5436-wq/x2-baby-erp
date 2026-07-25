@@ -36,6 +36,8 @@ import ContactModal from './ContactModal';
 import { exportToExcel, exportToPDF, exportToHTML, exportToCSV, exportToJSON } from '../lib/exportService';
 import { compressImage } from '../lib/imageUtils';
 import { Globe } from 'lucide-react';
+import { MD3Button, MD3IconButton } from './md3';
+import { MD3EmptyState, MD3Badge } from './md3';
 
 interface PurchasesProps {
   products: Product[];
@@ -389,7 +391,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
               whileHover={{ x: 5 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setView('list')}
-              className="flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-accent font-black transition-all"
+              className="flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-accent font-black transition-colors duration-200"
             >
               <ArrowRight size={20} />
               العودة للسجل
@@ -398,13 +400,13 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
             <div className="flex bg-gray-100 dark:bg-slate-800 p-1 rounded-2xl">
               <button 
                 onClick={() => setTransactionType('inventory')}
-                className={`px-6 py-2 rounded-xl text-xs font-black transition-all ${transactionType === 'inventory' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
+                className={`px-6 py-2 rounded-xl text-xs font-black transition-colors duration-200 ${transactionType === 'inventory' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
               >
                 شراء بضاعة (مورد)
               </button>
               <button 
                 onClick={() => setTransactionType('expense')}
-                className={`px-6 py-2 rounded-xl text-xs font-black transition-all ${transactionType === 'expense' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
+                className={`px-6 py-2 rounded-xl text-xs font-black transition-colors duration-200 ${transactionType === 'expense' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
               >
                 مصروف عام (نثرية)
               </button>
@@ -430,7 +432,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                         <div className="flex items-center justify-between px-2">
                           <label className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">المورد</label>
                           <div className="flex gap-1">
-                            <button onClick={() => { fetch(`${API_BASE}/contacts/specializations`).then(r => r.json()).then(setContactSpecializations).catch(() => {}); setShowContactModal(true); }} className="text-[10px] font-black text-teal-600 hover:bg-teal-50 dark:hover:bg-teal-900/20 px-2 py-1 rounded-lg transition-all border border-teal-200 dark:border-teal-800 flex items-center gap-1">
+                            <button onClick={() => { fetch(`${API_BASE}/contacts/specializations`).then(r => r.json()).then(setContactSpecializations).catch(() => {}); setShowContactModal(true); }} className="text-[10px] font-black text-teal-600 hover:bg-teal-50 dark:hover:bg-teal-900/20 px-2 py-1 rounded-lg transition-colors duration-200 border border-teal-200 dark:border-teal-800 flex items-center gap-1">
                               <Plus size={12} /> إضافة جهة
                             </button>
                           </div>
@@ -476,7 +478,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                           </div>
                           <input type="text" placeholder="اسم المنتج..." value={productSearch} onChange={(e) => setProductSearch(e.target.value)} className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl font-bold text-sm" />
                           {filteredProducts.length > 0 && !selectedProduct && (
-                            <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-xl rounded-xl z-20 overflow-hidden divide-y divide-gray-50 dark:divide-slate-800/50">
+                            <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-md rounded-xl z-20 overflow-hidden divide-y divide-gray-50 dark:divide-slate-800/50">
                               {filteredProducts.map(p => (
                                 <button key={p.id} onClick={() => { setSelectedProduct(p); setProductSearch(p.name); if (p.variants.length === 1) setSelectedVariantId(p.variants[0].id); setItemForm(prev => ({ ...prev, buyPrice: p.wholesalePrice || p.costPrice || 0 })); }} className="w-full text-right p-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-between"><span className="font-black text-sm">{p.name}</span></button>
                               ))}
@@ -503,7 +505,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                             </div>
                           )}
                         </div>
-                        <div className="md:col-span-1"><button onClick={addItemToInvoice} className="w-full h-11 bg-accent text-white rounded-xl flex items-center justify-center hover:scale-105 transition-all shadow-lg"><Plus size={20} /></button></div>
+                        <div className="md:col-span-1"><MD3IconButton icon={<Plus size={20} />} onClick={addItemToInvoice} variant="filled" /></div>
                       </div>
                     </div>
                     <div className="overflow-x-auto">
@@ -581,21 +583,21 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                 <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 block mb-6 uppercase tracking-wider">
                   {transactionType === 'inventory' ? 'صورة الفاتورة الورقية' : 'صورة الإيصال'}
                 </label>
-                <div onClick={() => document.getElementById('invoice-img')?.click()} className="aspect-square bg-gray-50 dark:bg-slate-800 rounded-[24px] border-2 border-dashed border-gray-200 dark:border-slate-700 flex flex-col items-center justify-center cursor-pointer hover:border-accent group transition-all overflow-hidden relative">
+                <div onClick={() => document.getElementById('invoice-img')?.click()} className="aspect-square bg-gray-50 dark:bg-slate-800 rounded-[24px] border-2 border-dashed border-gray-200 dark:border-slate-700 flex flex-col items-center justify-center cursor-pointer hover:border-accent group transition-colors duration-200 overflow-hidden relative">
                   {newInvoice.image ? <img src={newInvoice.image} className="w-full h-full object-cover" /> : <Upload className="text-gray-500 dark:text-gray-400 group-hover:text-accent" size={32} />}
                   <input type="file" id="invoice-img" className="hidden" accept="image/*" onChange={handleImageUpload} />
                 </div>
               </motion.div>
-              <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }} className="bg-accent p-8 rounded-[32px] shadow-xl text-white space-y-6">
+              <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }} className="p-8 rounded-[32px] shadow-md space-y-6" style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }}>
                 <div className="space-y-1">
                   <span className="text-[10px] font-black opacity-60 uppercase">المبلغ الإجمالي</span>
                   <h3 className="text-4xl font-black italic">
                     {formatCurrency(transactionType === 'inventory' ? (newInvoice.totalAmount || 0) : Number(expenseForm.amount || 0))}
                   </h3>
                 </div>
-                <button onClick={handleCreateInvoice} disabled={isLoading} className="w-full py-5 bg-white text-accent rounded-[20px] font-black shadow-lg hover:scale-[1.02] active:scale-95 transition-all">
+                <MD3Button variant="filled" fullWidth onClick={handleCreateInvoice} disabled={isLoading}>
                   {isLoading ? 'جاري الحفظ...' : (transactionType === 'inventory' ? 'حفظ الفاتورة وتحديث المخزن' : 'حفظ وتسجيل المصروف')}
-                </button>
+                </MD3Button>
               </motion.div>
             </div>
           </div>
@@ -610,62 +612,58 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-              <h2 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-3"><div className="p-2 bg-accent rounded-2xl shadow-lg"><ShoppingBag className="text-white" size={24} /></div>حركة المشتريات</h2>
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+                <div className="p-2 rounded-2xl shadow-lg" style={{ backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)' }}>
+                  <ShoppingBag size={24} />
+                </div>
+                حركة المشتريات
+              </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 font-bold mt-1 mr-12">إدارة الموردين وتوريدات المنتجات</p>
             </motion.div>
             
             <div className="flex gap-3">
-              <motion.button 
-                whileHover={{ scale: 1.05 }} 
-                whileTap={{ scale: 0.95 }} 
-                onClick={() => handleExportPurchases('excel')} 
+              <MD3IconButton
+                icon={<FileSpreadsheet size={18} />}
+                onClick={() => handleExportPurchases('excel')}
                 disabled={isExporting}
-                className={`p-2 bg-emerald-600 text-white rounded-xl shadow-lg font-black transition-all ${isExporting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                variant="tonal"
                 title="تصدير Excel"
-              >
-                <FileSpreadsheet size={18} />
-              </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.05 }} 
-                whileTap={{ scale: 0.95 }} 
-                onClick={() => handleExportPurchases('pdf')} 
+              />
+              <MD3IconButton
+                icon={<Printer size={18} />}
+                onClick={() => handleExportPurchases('pdf')}
                 disabled={isExporting}
-                className={`p-2 bg-red-600 text-white rounded-xl shadow-lg font-black transition-all ${isExporting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                variant="filled"
                 title="تصدير PDF"
-              >
-                <Printer size={18} />
-              </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.05 }} 
-                whileTap={{ scale: 0.95 }} 
-                onClick={() => handleExportPurchases('html')} 
+              />
+              <MD3IconButton
+                icon={<Globe size={18} />}
+                onClick={() => handleExportPurchases('html')}
                 disabled={isExporting}
-                className={`p-2 bg-accent text-white rounded-xl shadow-lg font-black transition-all ${isExporting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                variant="standard"
                 title="تصدير ويب تفاعلي"
-              >
-                <Globe size={18} />
-              </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.05 }} 
-                whileTap={{ scale: 0.95 }} 
-                onClick={() => handleExportPurchases('csv' as any)} 
+              />
+              <MD3IconButton
+                icon={<FileText size={18} />}
+                onClick={() => handleExportPurchases('csv' as any)}
                 disabled={isExporting}
-                className={`p-2 bg-slate-600 text-white rounded-xl shadow-lg font-black transition-all ${isExporting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                variant="outlined"
                 title="تصدير CSV"
-              >
-                <FileText size={18} />
-              </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.05 }} 
-                whileTap={{ scale: 0.95 }} 
-                onClick={() => handleExportPurchases('json' as any)} 
+              />
+              <MD3IconButton
+                icon={<Code size={18} />}
+                onClick={() => handleExportPurchases('json' as any)}
                 disabled={isExporting}
-                className={`p-2 bg-slate-800 text-white rounded-xl shadow-lg font-black transition-all ${isExporting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                variant="outlined"
                 title="تصدير JSON"
+              />
+              <MD3Button
+                variant="filled"
+                icon={<Plus size={20} />}
+                onClick={() => setView('create')}
               >
-                <Code size={18} />
-              </motion.button>
-              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setView('create')} className="flex items-center gap-3 bg-accent text-white px-8 py-3 rounded-2xl shadow-lg font-black transition-all"><Plus size={20} />تسجيل مصروف / مشتريات</motion.button>
+                تسجيل مصروف / مشتريات
+              </MD3Button>
             </div>
           </div>
           <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-sm border border-gray-100 dark:border-slate-800">
@@ -706,7 +704,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                   </select>
                   <ChevronDown className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={12} />
                 </div>
-                <button onClick={() => setSortAsc(p => !p)} className={`px-3 py-2 rounded-xl flex items-center gap-1.5 font-black text-[11px] transition-all ${sortAsc ? 'bg-accent text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-700'}`} title={sortAsc ? 'تصاعدي' : 'تنازلي'}>
+                <button onClick={() => setSortAsc(p => !p)} className={`px-3 py-2 rounded-xl flex items-center gap-1.5 font-black text-[11px] transition-colors duration-200 ${sortAsc ? 'bg-accent text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-700'}`} title={sortAsc ? 'تصاعدي' : 'تنازلي'}>
                   <ArrowUpDown size={14} /> {sortAsc ? '▲' : '▼'}
                 </button>
               </div>
@@ -734,7 +732,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                   className="divide-y divide-gray-50 dark:divide-slate-800/50"
                 >
                   {filteredList.map((item) => (
-                    <motion.tr variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }} key={item.id} className="group hover:bg-gray-50/50 dark:hover:bg-slate-800/30 transition-all">
+                    <motion.tr variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }} key={item.id} className="group hover:bg-gray-50/50 dark:hover:bg-slate-800/30 transition-colors duration-200">
                       <td className="p-5">
                         <div className="flex items-center gap-3">
                           <div className={`p-2 rounded-lg ${item.type === 'inventory' ? 'bg-accent/10 text-accent' : 'bg-red-50 dark:bg-red-900/20 text-red-500'}`}>
@@ -767,9 +765,9 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                       </td>
                       <td className="p-5 text-center">
                         {item.type === 'expense' ? (
-                          <button onClick={() => handleDeleteExpense(item.id)} className="p-1.5 text-gray-300 dark:text-gray-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"><Trash2 size={14} /></button>
+                          <button onClick={() => handleDeleteExpense(item.id)} className="p-1.5 text-gray-300 dark:text-gray-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-colors duration-200"><Trash2 size={14} /></button>
                         ) : (
-                          <ChevronRight size={16} className="text-gray-500 dark:text-gray-400 group-hover:text-accent transition-all" />
+                          <ChevronRight size={16} className="text-gray-500 dark:text-gray-400 group-hover:text-accent transition-colors duration-200" />
                         )}
                       </td>
                     </motion.tr>
@@ -777,10 +775,10 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                 </motion.tbody>
               </table>
               {filteredList.length === 0 && (
-                <div className="py-20 text-center">
-                  <ShoppingBag size={40} className="mx-auto mb-4 opacity-10" />
-                  <p className="text-sm text-gray-400 dark:text-gray-500 font-bold italic">لا توجد عمليات تطابق البحث</p>
-                </div>
+                <MD3EmptyState
+                  icon={<ShoppingBag size={40} />}
+                  title="لا توجد عمليات تطابق البحث"
+                />
               )}
             </div>
           </div>

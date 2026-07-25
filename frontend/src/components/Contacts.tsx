@@ -9,6 +9,7 @@ import ContactDetail from './ContactDetail';
 import { formatDate } from '../lib/formatDate';
 
 import { API_BASE } from '../lib/api';
+import { MD3Button, MD3IconButton, MD3StatCard, MD3EmptyState } from './md3';
 
 interface ContactsProps {
   contacts: Contact[];
@@ -26,7 +27,7 @@ const CopyBtn: React.FC<{ text: string }> = ({ text }) => {
   }, [text]);
   return (
     <button onClick={e => { e.stopPropagation(); handleCopy(); }}
-      className="shrink-0 p-0.5 rounded hover:bg-gray-100 dark:hover:bg-slate-700 transition-all text-gray-300 hover:text-teal-500"
+      className="shrink-0 p-0.5 rounded hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors duration-200 text-gray-300 hover:text-teal-500"
       title="نسخ"
     >
       {copied ? (
@@ -254,9 +255,11 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
           animate={{ x: 0, opacity: 1 }}
           className="text-2xl font-black flex items-center gap-3 text-gray-900 dark:text-white shrink-0"
         >
-          <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.8 }}>
-            <Users className="text-teal-500" size={32} />
-          </motion.div>
+            <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.8 }}>
+              <div className="p-2 rounded-2xl" style={{ backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)' }}>
+                <Users size={24} />
+              </div>
+            </motion.div>
           جهات الاتصال والشركات
         </motion.h2>
         <div className="flex flex-wrap gap-4 w-full lg:w-auto items-center justify-center lg:justify-end">
@@ -274,16 +277,9 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
               onChange={e => setSearch(e.target.value)}
             />
           </motion.div>
-          <motion.button
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => { setEditContact(undefined); setModalOpen(true); }}
-            className="bg-teal-600 text-white px-6 py-3.5 rounded-2xl flex items-center gap-2 font-black shadow-md hover:bg-teal-700 transition-all active:scale-95 text-xs md:text-sm"
-          >
-            <Plus size={20} /> إضافة جهة
-          </motion.button>
+          <MD3Button variant="filled" icon={<Plus size={20} />} onClick={() => { setEditContact(undefined); setModalOpen(true); }}>
+            إضافة جهة
+          </MD3Button>
         </div>
       </div>
 
@@ -342,14 +338,12 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
           </select>
           <ChevronDown className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={12} />
         </div>
-        <button onClick={() => setSortAsc(p => !p)} className={`px-3 py-2.5 rounded-xl flex items-center gap-1.5 font-black text-[11px] transition-all ${sortAsc ? 'bg-accent text-white' : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-800'}`} title={sortAsc ? 'تصاعدي' : 'تنازلي'}>
-          <ArrowUpDown size={14} /> {sortAsc ? '▲' : '▼'}
-        </button>
+        <MD3IconButton icon={<ArrowUpDown size={14} />} onClick={() => setSortAsc(p => !p)} variant={sortAsc ? 'filled' : 'standard'} title={sortAsc ? 'تصاعدي' : 'تنازلي'} />
 
         {hasActiveFilters && (
-          <button onClick={resetFilters} className="text-[10px] font-black text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-xl transition-all flex items-center gap-1">
-            <X size={12} /> رسيت الفلاتر
-          </button>
+          <MD3Button variant="text" size="small" icon={<X size={12} />} onClick={resetFilters}>
+            رسيت الفلاتر
+          </MD3Button>
         )}
       </div>
 
@@ -357,50 +351,39 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-wrap gap-4 md:gap-8 justify-center lg:justify-start items-center bg-white dark:bg-slate-900 p-4 md:px-8 rounded-[32px] border border-gray-50 dark:border-slate-800 shadow-sm"
+        className="grid grid-cols-3 gap-4"
       >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-teal-50 dark:bg-teal-900/20 flex items-center justify-center text-teal-600">
-            <Building2 size={20} />
-          </div>
-          <div>
-            <div className="text-[10px] font-black text-gray-400 dark:text-gray-500">إجمالي الجهات</div>
-            <div className="text-lg font-black text-gray-900 dark:text-white">{contacts.length}</div>
-          </div>
-        </div>
-        <div className="w-px h-10 bg-gray-100 dark:bg-slate-800"></div>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-600">
-            <CheckCircle size={20} />
-          </div>
-          <div>
-            <div className="text-[10px] font-black text-gray-400 dark:text-gray-500">نشط</div>
-            <div className="text-lg font-black text-emerald-600 dark:text-emerald-400">{contacts.filter(c => c.status === 'نشط').length}</div>
-          </div>
-        </div>
-        <div className="w-px h-10 bg-gray-100 dark:bg-slate-800"></div>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-600">
-            <XCircle size={20} />
-          </div>
-          <div>
-            <div className="text-[10px] font-black text-gray-400 dark:text-gray-500">غير نشط</div>
-            <div className="text-lg font-black text-red-600 dark:text-red-400">{contacts.filter(c => c.status === 'غير نشط').length}</div>
-          </div>
-        </div>
+        <MD3StatCard
+          icon={<Building2 size={20} />}
+          label="إجمالي الجهات"
+          value={contacts.length}
+          iconBg="bg-teal-100 dark:bg-teal-900/20 text-teal-600"
+        />
+        <MD3StatCard
+          icon={<CheckCircle size={20} />}
+          label="نشط"
+          value={contacts.filter(c => c.status === 'نشط').length}
+          iconBg="bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600"
+        />
+        <MD3StatCard
+          icon={<XCircle size={20} />}
+          label="غير نشط"
+          value={contacts.filter(c => c.status === 'غير نشط').length}
+          iconBg="bg-red-100 dark:bg-red-900/20 text-red-600"
+        />
       </motion.div>
 
       {/* Contacts Grid */}
       {contacts.length === 0 ? (
-        <div className="text-center py-20">
-          <Users size={64} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
-          <p className="text-xl font-black text-gray-400 dark:text-gray-500">لا توجد جهات اتصال مطابقة</p>
-          <button onClick={() => { setEditContact(undefined); setModalOpen(true); }}
-            className="mt-4 px-6 py-3 bg-teal-600 text-white rounded-2xl font-black hover:bg-teal-700 transition-all"
-          >
-            إضافة أول جهة اتصال
-          </button>
-        </div>
+        <MD3EmptyState
+          icon={<Users size={32} />}
+          title="لا توجد جهات اتصال مطابقة"
+          action={
+            <MD3Button variant="filled" onClick={() => { setEditContact(undefined); setModalOpen(true); }}>
+              إضافة أول جهة اتصال
+            </MD3Button>
+          }
+        />
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4">
           {sortedContacts.map((contact, idx) => {
@@ -417,7 +400,7 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.03 }}
               onClick={() => { setDetailContact(contact); setDetailOpen(true); }}
-              className="bg-white dark:bg-slate-900 rounded-[20px] p-3 border border-gray-100 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer"
+              className="bg-white dark:bg-slate-900 rounded-[20px] p-3 border border-gray-100 dark:border-slate-800 hover:shadow-md transition-colors duration-200 cursor-pointer"
             >
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div className="flex items-center gap-2 min-w-0">
@@ -468,29 +451,24 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
                     </div>
                   ) : null}
                   <div className="flex gap-0.5" onClick={e => e.stopPropagation()}>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); toggleStatus(contact); }}
-                      className={`p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-all ${
-                        contact.status === 'نشط' ? 'text-red-400' : 'text-emerald-400'
-                      }`}
+                    <MD3IconButton
+                      icon={contact.status === 'نشط' ? <XCircle size={14} /> : <CheckCircle size={14} />}
+                      onClick={(e: any) => { e.stopPropagation(); toggleStatus(contact); }}
                       title={contact.status === 'نشط' ? 'تعطيل' : 'تفعيل'}
-                    >
-                      {contact.status === 'نشط' ? <XCircle size={14} /> : <CheckCircle size={14} />}
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setEditContact(contact); setModalOpen(true); }}
-                      className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-all text-gray-400 hover:text-blue-500"
+                      size={28}
+                    />
+                    <MD3IconButton
+                      icon={<Edit2 size={14} />}
+                      onClick={(e: any) => { e.stopPropagation(); setEditContact(contact); setModalOpen(true); }}
                       title="تعديل"
-                    >
-                      <Edit2 size={14} />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setDeleteConfirm(contact.id); }}
-                      className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-all text-gray-400 hover:text-red-500"
+                      size={28}
+                    />
+                    <MD3IconButton
+                      icon={<Trash2 size={14} />}
+                      onClick={(e: any) => { e.stopPropagation(); setDeleteConfirm(contact.id); }}
                       title="حذف"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                      size={28}
+                    />
                   </div>
                 </div>
               </div>
@@ -601,7 +579,7 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
                           return (
                             <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
                               onClick={e => e.stopPropagation()}
-                              className={`${lc.color} transition-all p-0.5`}
+                              className={`${lc.color} transition-colors duration-200 p-0.5`}
                               title={link.url}>
                               {lc.icon}
                             </a>
@@ -622,8 +600,8 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
                 <div onClick={e => e.stopPropagation()} className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-800">
                   <p className="text-xs font-bold text-red-500 mb-2">تأكيد حذف هذه الجهة؟</p>
                   <div className="flex gap-2">
-                    <button onClick={() => handleDelete(contact.id)} className="flex-1 px-3 py-1.5 bg-red-500 text-white rounded-xl font-black text-[11px] hover:bg-red-600 transition-all">حذف</button>
-                    <button onClick={() => setDeleteConfirm(null)} className="flex-1 px-3 py-1.5 bg-gray-100 dark:bg-slate-800 text-gray-500 rounded-xl font-black text-[11px] hover:bg-gray-200 transition-all">إلغاء</button>
+                    <MD3Button variant="filled" size="small" onClick={() => handleDelete(contact.id)} className="flex-1">حذف</MD3Button>
+                    <MD3Button variant="outlined" size="small" onClick={() => setDeleteConfirm(null)} className="flex-1">إلغاء</MD3Button>
                   </div>
                 </div>
               )}
@@ -653,4 +631,4 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
   );
 };
 
-export default Contacts;
+export default React.memo(Contacts);

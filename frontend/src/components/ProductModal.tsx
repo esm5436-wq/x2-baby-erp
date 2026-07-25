@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useUnsavedCheck } from '../hooks/useUnsavedCheck';
 import { 
-  X, 
   Upload,
   Plus,
   Trash2,
@@ -21,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Product, Variant, Category } from '../types';
 import { formatDate } from '../lib/formatDate';
+import { MD3Dialog, MD3Button } from './md3';
 
 interface OptionCategory {
   id: string;
@@ -244,12 +244,19 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
   };
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-y-auto" dir="rtl" onClick={() => withUnsavedCheck(onClose)}>
-      <div className="bg-white dark:bg-slate-900 rounded-[40px] w-full max-w-3xl shadow-2xl relative flex flex-col max-h-[90vh] border border-gray-100 dark:border-slate-800" onClick={e => e.stopPropagation()}>
-        <div className="p-8 border-b dark:border-slate-800 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-900 z-10 rounded-t-[40px] shadow-sm text-right">
-          <h3 className="text-2xl font-black text-gray-900 dark:text-white">{(product && !product.id.toString().startsWith('p-')) ? 'تعديل المنتج' : 'إضافة منتج جديد'}</h3>
-          <button onClick={() => withUnsavedCheck(onClose)} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full text-gray-400 dark:text-gray-500 hover:text-red-500 transition-all"><X size={28}/></button>
-        </div>
+    <MD3Dialog
+      isOpen={true}
+      onClose={() => withUnsavedCheck(onClose)}
+      title={(product && !product.id.toString().startsWith('p-')) ? 'تعديل المنتج' : 'إضافة منتج جديد'}
+      icon={<span className="material-symbols-rounded" style={{ fontSize: 24 }}>inventory_2</span>}
+      maxWidth="xl"
+      actions={[
+        ...(product ? [{ label: 'حذف', onClick: () => { if(window.confirm('هل أنت متأكد من حذف المنتج نهائياً من النظام؟')) { markClean(); onDeleteAction(product.id); onClose(); } }, variant: 'danger' as const }] : []),
+        { label: 'إلغاء', onClick: () => withUnsavedCheck(onClose), variant: 'text' as const },
+        { label: 'حفظ التغييرات والمنتج', onClick: () => { markClean(); onSave(p); onClose(); }, variant: 'filled' as const }
+      ]}
+    >
+      <div dir="rtl" className="text-right">
         {product && !product.id.toString().startsWith('p-') && (
           <div className="px-8 pt-3 pb-0">
             <div className="flex items-center gap-3 text-[10px] font-bold text-gray-400 dark:text-gray-500">
@@ -262,7 +269,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
           <div className="grid grid-cols-2 gap-6">
             <div className="col-span-2 md:col-span-1 space-y-2">
               <label className="text-xs font-black text-gray-600 dark:text-gray-400 pr-1 uppercase tracking-widest">اسم المنتج</label>
-              <input className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-all shadow-sm" placeholder="أدخل اسم المنتج..." value={p.name} onChange={e => setP({...p, name: e.target.value})} />
+              <input className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-colors duration-200 shadow-sm" placeholder="أدخل اسم المنتج..." value={p.name} onChange={e => setP({...p, name: e.target.value})} />
             </div>
             <div className="col-span-2 md:col-span-1 space-y-2">
               <label className="text-xs font-black text-gray-500 dark:text-gray-400 pr-1 uppercase tracking-widest">رقم SKU (تلقائي)</label>
@@ -273,7 +280,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
             <div className="col-span-2 md:col-span-1 space-y-2">
               <label className="text-xs font-black text-gray-600 dark:text-gray-400 pr-1 uppercase tracking-widest">التصنيف</label>
               {categories.length > 0 ? (
-                <select className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-all shadow-sm appearance-none" value={p.category} onChange={e => setP({...p, category: e.target.value})}>
+                <select className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-colors duration-200 shadow-sm appearance-none" value={p.category} onChange={e => setP({...p, category: e.target.value})}>
                   <option value="عام">-- اختر تصنيفاً --</option>
                   {categories.filter(c => !c.parentId).map(mainCat => (
                     <React.Fragment key={mainCat.id}>
@@ -295,7 +302,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
             </div>
             <div className="col-span-2 space-y-2">
               <label className="text-xs font-black text-gray-600 dark:text-gray-400 pr-1 uppercase tracking-widest">المورد</label>
-              <select className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-all shadow-sm appearance-none" value={p.supplierId || ''} onChange={e => setP({...p, supplierId: e.target.value})}>
+              <select className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-colors duration-200 shadow-sm appearance-none" value={p.supplierId || ''} onChange={e => setP({...p, supplierId: e.target.value})}>
                 <option value="">اختار المورد...</option>
                 {suppliers.map(s => <option key={s.id} value={s.id}>{s.name} ({s.phone}{s.phone2 ? ` / ${s.phone2}` : ''})</option>)}
                 {contacts && contacts
@@ -326,7 +333,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
 
               <div className="relative">
                 <input 
-                  className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-all shadow-sm" 
+                  className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-colors duration-200 shadow-sm" 
                   placeholder="أضف وسم جديد (مثال: شتوي) واضغط Enter..." 
                   value={pendingTag}
                   onChange={e => {
@@ -360,7 +367,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
                       setPendingTag('');
                     }
                   }}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-accent text-white rounded-xl shadow-lg hover:opacity-90 active:scale-95 transition-all"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-accent text-white rounded-xl shadow-lg hover:opacity-90 active:scale-95 transition-all duration-200"
                 >
                   <Plus size={18} />
                 </button>
@@ -380,23 +387,23 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
                     )}
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-1">
                       {idx > 0 && (
-                        <button type="button" onClick={() => handleSetMainImage(idx)} className="w-7 h-7 bg-white rounded-full flex items-center justify-center text-gray-700 hover:text-accent transition-all shadow" title="تعيين كأساسية"><Check size={14} /></button>
+                        <button type="button" onClick={() => handleSetMainImage(idx)} className="w-7 h-7 bg-white rounded-full flex items-center justify-center text-gray-700 hover:text-accent transition-colors duration-200 shadow" title="تعيين كأساسية"><Check size={14} /></button>
                       )}
                       {(p.images || [p.image].filter(Boolean)).length > 1 && (
-                        <button type="button" onClick={() => handleRemoveImage(idx)} className="w-7 h-7 bg-white rounded-full flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all shadow" title="حذف"><Trash2 size={12} /></button>
+                        <button type="button" onClick={() => handleRemoveImage(idx)} className="w-7 h-7 bg-white rounded-full flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-colors duration-200 shadow" title="حذف"><Trash2 size={12} /></button>
                       )}
                     </div>
                   </div>
                 ))}
 
-                <button type="button" onClick={() => galleryFileInputRef.current?.click()} className="w-24 h-24 rounded-2xl border-2 border-dashed border-gray-200 dark:border-slate-700 flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-accent hover:text-accent transition-all bg-gray-50/50 dark:bg-slate-800/50">
+                <button type="button" onClick={() => galleryFileInputRef.current?.click()} className="w-24 h-24 rounded-2xl border-2 border-dashed border-gray-200 dark:border-slate-700 flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-accent hover:text-accent transition-colors duration-200 bg-gray-50/50 dark:bg-slate-800/50">
                   <Upload size={20} />
                   <span className="text-[8px] font-black">رفع صور</span>
                 </button>
 
                 <div className="w-24 h-24 rounded-2xl border-2 border-dashed border-gray-200 dark:border-slate-700 flex flex-col items-center justify-center gap-1 text-gray-400 bg-gray-50/50 dark:bg-slate-800/50 p-1">
                   <input className="w-full text-[8px] text-gray-500 text-center bg-transparent outline-none" placeholder="URL صورة" value={pendingImageUrl} onChange={e => setPendingImageUrl(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddImageUrl(); } }} />
-                  <button type="button" onClick={handleAddImageUrl} className="text-[8px] font-black bg-accent text-white px-2 py-1 rounded-lg hover:opacity-90 transition-all active:scale-95"><LinkIcon size={10} className="inline" /> إضافة</button>
+                  <button type="button" onClick={handleAddImageUrl} className="text-[8px] font-black bg-accent text-white px-2 py-1 rounded-lg hover:opacity-90 transition-colors duration-200 active:scale-95"><LinkIcon size={10} className="inline" /> إضافة</button>
                 </div>
               </div>
               <input type="file" accept="image/*" multiple className="hidden" ref={galleryFileInputRef} onChange={handleGalleryUpload} />
@@ -406,7 +413,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
             <div className="space-y-2">
               <label className="text-xs font-black text-gray-600 dark:text-gray-400 pr-1 uppercase tracking-widest">سعر البيع الافتراضي</label>
               <div className="relative group/price">
-                <input type="number" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-black text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-all shadow-sm" value={p.price} onChange={e => setP({...p, price: Number(e.target.value)})} />
+                <input type="number" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-black text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-colors duration-200 shadow-sm" value={p.price} onChange={e => setP({...p, price: Number(e.target.value)})} />
                 
                 {/* Smart Price Suggestion */}
                 {(p.wholesalePrice || 0) > 0 && (
@@ -425,13 +432,13 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
                         const cost = (p.wholesalePrice || 0) + (p.packagingCost || 0);
                         const suggested = Math.ceil((cost * 1.45) / 5) * 5 - 1; // 45% margin approx + rounding to 9
                         setP({...p, price: suggested});
-                      }} className="cursor-pointer text-[10px] font-black bg-accent text-white px-3 py-1.5 rounded-lg hover:opacity-90 active:scale-95 transition-all">
+                      }} className="cursor-pointer text-[10px] font-black bg-accent text-white px-3 py-1.5 rounded-lg hover:opacity-90 active:scale-95 transition-all duration-200">
                         تطبيق السعر الموصى به
                       </div>
                     </div>
                     
                     {showPriceHelp && (
-                      <div className="bg-white dark:bg-slate-900 border border-accent/20 rounded-xl p-4 space-y-3 shadow-xl animate-in fade-in slide-in-from-top-2 duration-300 relative z-20">
+                      <div className="bg-white dark:bg-slate-900 border border-accent/20 rounded-xl p-4 space-y-3 shadow-md animate-in fade-in slide-in-from-top-2 duration-300 relative z-20">
                         <div className="flex items-start gap-3">
                           <TrendingUp size={18} className="text-blue-500 mt-1" />
                           <div>
@@ -478,7 +485,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
                             key={tier.label}
                             type="button"
                             onClick={() => setP({...p, price: Math.round(suggested)})}
-                            className="bg-white dark:bg-slate-900 p-2 rounded-xl border border-gray-100 dark:border-slate-700 hover:border-accent transition-all text-right group/tier"
+                            className="bg-white dark:bg-slate-900 p-2 rounded-xl border border-gray-100 dark:border-slate-700 hover:border-accent transition-colors duration-200 text-right group/tier"
                           >
                             <div className="text-[8px] font-black text-gray-400 dark:text-gray-500 group-hover/tier:text-accent">{tier.label}</div>
                             <div className={`text-xs font-black ${tier.color}`}>{Math.round(suggested)} ج.م</div>
@@ -495,7 +502,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
             </div>
             <div className="space-y-2">
               <label className="text-xs font-black text-gray-600 dark:text-gray-400 pr-1 uppercase tracking-widest">سعر الجملة</label>
-              <input type="number" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-black text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-all shadow-sm" 
+              <input type="number" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-black text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-colors duration-200 shadow-sm" 
                 value={p.wholesalePrice || 0} 
                 onChange={e => {
                   const ws = Number(e.target.value);
@@ -506,7 +513,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
             </div>
             <div className="space-y-2">
               <label className="text-xs font-black text-gray-600 dark:text-gray-400 pr-1 uppercase tracking-widest">تكلفة التغليف</label>
-              <input type="number" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-black text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-all shadow-sm" 
+              <input type="number" className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-black text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-colors duration-200 shadow-sm" 
                 value={p.packagingCost || 0} 
                 onChange={e => {
                   const pk = Number(e.target.value);
@@ -527,7 +534,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
           <div className="border-t border-gray-100 dark:border-slate-800 pt-8 space-y-6">
              <div className="flex justify-between items-center">
                <h4 className="font-black text-lg text-gray-900 dark:text-white">خيارات المتغيرات</h4>
-               <button onClick={() => setOptions([...options, {id: `o-${Date.now()}`, name: 'المقاس', values: []}])} className="text-xs font-black bg-accent text-white px-4 py-2.5 rounded-xl flex items-center gap-2 hover:opacity-90 shadow-md transition-all active:scale-95">
+               <button onClick={() => setOptions([...options, {id: `o-${Date.now()}`, name: 'المقاس', values: []}])} className="text-xs font-black bg-accent text-white px-4 py-2.5 rounded-xl flex items-center gap-2 hover:opacity-90 shadow-md transition-all duration-200 active:scale-95">
                  <Plus size={16}/> أضف خياراً
                </button>
              </div>
@@ -548,7 +555,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
                         </span>
                       ))}
                     </div>
-                    <input className="w-full bg-gray-50 dark:bg-slate-900 p-3 rounded-2xl text-[10px] font-bold text-gray-900 dark:text-white outline-none border border-gray-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:border-accent transition-all shadow-inner text-right" placeholder="اكتب واضغط Enter..." onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); const val = (e.target as any).value.trim(); if (val) handleAddValue(opt.id, val); (e.target as any).value = ''; } }} />
+                    <input className="w-full bg-gray-50 dark:bg-slate-900 p-3 rounded-2xl text-[10px] font-bold text-gray-900 dark:text-white outline-none border border-gray-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:border-accent transition-colors duration-200 shadow-inner text-right" placeholder="اكتب واضغط Enter..." onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); const val = (e.target as any).value.trim(); if (val) handleAddValue(opt.id, val); (e.target as any).value = ''; } }} />
                   </div>
                 ))}
              </div>
@@ -565,21 +572,21 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
                      <span className="text-[8px] font-black text-gray-400 dark:text-gray-500">الكمية</span>
                      <input type="number" className="w-20 p-2 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-xl text-center font-black text-sm text-gray-900 dark:text-white focus:border-accent outline-none" value={bulkQty} onChange={e => setBulkQty(e.target.value)} />
                    </div>
-                   <button onClick={applyQtyToAll} className="px-3 py-2 bg-accent text-white font-black rounded-xl text-[10px] hover:opacity-90 transition-all active:scale-95">تطبيق</button>
+                    <button onClick={applyQtyToAll} className="px-3 py-2 bg-accent text-white font-black rounded-xl text-[10px] hover:opacity-90 transition-all duration-200 active:scale-95">تطبيق</button>
                  </div>
                  <div className="flex items-center gap-2">
                    <div className="flex flex-col gap-1">
                      <span className="text-[8px] font-black text-gray-400 dark:text-gray-500">السعر</span>
                      <input type="number" className="w-24 p-2 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-xl text-center font-black text-sm text-gray-900 dark:text-white focus:border-accent outline-none" value={bulkPrice} onChange={e => setBulkPrice(e.target.value)} />
                    </div>
-                   <button onClick={applyPriceToAll} className="px-3 py-2 bg-accent text-white font-black rounded-xl text-[10px] hover:opacity-90 transition-all active:scale-95">تطبيق</button>
+                    <button onClick={applyPriceToAll} className="px-3 py-2 bg-accent text-white font-black rounded-xl text-[10px] hover:opacity-90 transition-all duration-200 active:scale-95">تطبيق</button>
                  </div>
                  <div className="flex items-center gap-2">
                    <div className="flex flex-col gap-1">
                      <span className="text-[8px] font-black text-gray-400 dark:text-gray-500">حد التنبيه</span>
                      <input type="number" className="w-20 p-2 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-xl text-center font-black text-sm text-gray-900 dark:text-white focus:border-accent outline-none" value={bulkThreshold} onChange={e => setBulkThreshold(e.target.value)} />
                    </div>
-                   <button onClick={applyThresholdToAll} className="px-3 py-2 bg-accent text-white font-black rounded-xl text-[10px] hover:opacity-90 transition-all active:scale-95">تطبيق</button>
+                    <button onClick={applyThresholdToAll} className="px-3 py-2 bg-accent text-white font-black rounded-xl text-[10px] hover:opacity-90 transition-all duration-200 active:scale-95">تطبيق</button>
                  </div>
                </div>
              </div>
@@ -616,31 +623,13 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
                         </tr>
                       ))}
                     </tbody>
-                 </table>
-               </div>
-             </div>
+                  </table>
           </div>
-        </div>
-        <div className="p-8 border-t dark:border-slate-800 flex gap-4 sticky bottom-0 bg-white dark:bg-slate-900 rounded-b-[40px] shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
-          <button onClick={() => {markClean(); onSave(p); onClose();}} className="flex-1 bg-accent text-white font-black py-5 rounded-[24px] shadow-xl hover:opacity-90 transition-all text-lg active:scale-95">حفظ التغييرات والمنتج</button>
-          {product && (
-            <button 
-              onClick={() => {
-                if(window.confirm('هل أنت متأكد من حذف المنتج نهائياً من النظام؟')) {
-                  markClean();
-                  onDeleteAction(product.id);
-                  onClose();
-                }
-              }} 
-              className="p-5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-[24px] border border-transparent hover:border-red-100 dark:hover:border-red-900/30 transition-all shadow-sm"
-              title="حذف المنتج نهائياً"
-            >
-              <Trash2 size={28}/>
-            </button>
-          )}
-        </div>
+            </div>
+          </div>
       </div>
-    </div>
+      </div>
+    </MD3Dialog>
   );
 };
 

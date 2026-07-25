@@ -46,7 +46,7 @@ import {
   FileSpreadsheet,
   Printer,
   TrendingUp,
-  HelpCircle,
+
   Calendar,
   Eye,
   Terminal,
@@ -66,46 +66,7 @@ import InvoicePrintModal from './InvoicePrintModal';
 import WaybillPrintModal from './WaybillPrintModal';
 import { API_BASE } from '../lib/api';
 import CustomerDetail from './CustomerDetail';
-
-const StatCard = ({ icon: Icon, title, value, unit, subValue, color, description }: { 
-  icon: any, title: string, value: string, unit?: string, subValue?: string, color: string, description: string 
-}) => {
-  const [showTooltip, setShowTooltip] = useState(false);
-  return (
-    <div className="bg-white dark:bg-slate-900 p-5 rounded-[32px] shadow-sm border border-gray-50 dark:border-slate-800 flex flex-col justify-between group hover:shadow-lg transition-all relative">
-      <div className="flex items-center justify-between mb-2">
-        <div className={`w-10 h-10 rounded-2xl ${color} flex items-center justify-center`}>
-          <Icon size={20} />
-        </div>
-        <div className="relative">
-          <button 
-            onMouseEnter={() => setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
-            className="text-gray-300 dark:text-gray-600 hover:text-accent transition-colors p-1"
-          >
-            <HelpCircle size={16} />
-          </button>
-          {showTooltip && (
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-slate-900 dark:bg-gray-100 text-white dark:text-slate-900 text-[11px] font-bold p-3 rounded-2xl shadow-xl z-50 pointer-events-none">
-              <div className="relative">{description}</div>
-              <div className="absolute top-full left-1/2 -translate-x-1/2 w-3 h-3 bg-slate-900 dark:bg-gray-100 rotate-45 -mt-1.5"></div>
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">{title}</div>
-      <span className="font-black text-2xl text-gray-900 dark:text-white leading-tight">
-        {value} {unit && <span className="text-[10px] text-gray-400 dark:text-gray-500">{unit}</span>}
-      </span>
-      {subValue && (
-        <div className="text-[9px] font-bold text-gray-400 dark:text-gray-500 mt-1 flex items-center gap-1 opacity-80">
-          <div className="w-1 h-1 rounded-full bg-gray-300" />
-          {subValue}
-        </div>
-      )}
-    </div>
-  );
-};
+import { MD3StatCard, MD3Dialog } from './md3';
 import { Product, Order, OrderItem, OrderStatus, Variant, ShippingMethod, Branding, ViewMode, InvoiceSettings, Customer } from '../types';
 import ViewSwitcher from './ViewSwitcher';
 import { exportToExcel, exportToPDF, exportToHTML, exportToCSV, exportToJSON } from '../lib/exportService';
@@ -211,7 +172,7 @@ const SearchableSelect: React.FC<{
     <div className="relative" ref={wrapperRef}>
       <div 
         ref={triggerRef}
-        className={`w-full pr-10 pl-4 py-3 bg-gray-50 dark:bg-slate-800 border ${isOpen ? 'border-accent ring-2 ring-accent/20' : 'border-gray-200 dark:border-slate-700'} rounded-2xl flex items-center justify-between cursor-pointer transition-all ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+        className={`w-full pr-10 pl-4 py-3 bg-gray-50 dark:bg-slate-800 border ${isOpen ? 'border-accent ring-2 ring-accent/20' : 'border-gray-200 dark:border-slate-700'} rounded-2xl flex items-center justify-between cursor-pointer transition-colors duration-200 ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
         onClick={handleToggle}
       >
         <div className="flex items-center gap-2 truncate">
@@ -251,7 +212,7 @@ const SearchableSelect: React.FC<{
       {icon && <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">{icon}</div>}
 
       {isOpen && (
-        <div className={`absolute ${dropdownUp ? 'bottom-full mb-2' : 'top-full mt-2'} w-full bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl shadow-xl z-[200] overflow-hidden animate-in fade-in zoom-in duration-200`}>
+        <div className={`absolute ${dropdownUp ? 'bottom-full mb-2' : 'top-full mt-2'} w-full bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl shadow-md z-[200] overflow-hidden animate-in fade-in zoom-in duration-200`}>
           <div className="p-2 border-b border-gray-50 dark:border-slate-700">
             <div className="relative">
               <Search size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
@@ -312,11 +273,11 @@ const SearchableSelect: React.FC<{
 
       {hoveredImage && (
         <div
-          style={{ position: 'fixed', top: tooltipPos.top, left: tooltipPos.left, zIndex: 9999 }}
+          style={{ position: 'fixed', top: tooltipPos.top, left: tooltipPos.left, zIndex: 700 }}
           onMouseEnter={() => { if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current); }}
           onMouseLeave={() => setHoveredImage(null)}
         >
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 p-2">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-2">
             <img src={hoveredImage} className="w-36 h-36 rounded-xl object-cover max-w-none" alt="" />
           </div>
         </div>
@@ -350,7 +311,7 @@ const OrderDetails: React.FC<{ order: Order }> = ({ order }) => {
         <div className="mt-6 pt-6 border-t border-gray-100 dark:border-slate-700">
             <button 
                 onClick={() => setShow(!show)}
-                className="w-full flex items-center justify-center gap-2 text-[10px] font-black text-gray-400 dark:text-gray-500 hover:text-accent transition-all uppercase tracking-widest py-2 border border-dashed border-gray-200 dark:border-slate-700 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800"
+                className="w-full flex items-center justify-center gap-2 text-[10px] font-black text-gray-400 dark:text-gray-500 hover:text-accent transition-colors duration-200 uppercase tracking-widest py-2 border border-dashed border-gray-200 dark:border-slate-700 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800"
             >
                 {show ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
                 <span>تفاصيل تقنية إضافية (IDs, UTM, Payment)</span>
@@ -417,7 +378,7 @@ const SyncOrderEditor: React.FC<{
     onSave: (o: Order) => void; 
     onCancel: () => void;
   }> = ({ order, onSave, onCancel }) => {
-     const [formData, setFormData] = useState<Order>(JSON.parse(JSON.stringify(order)));
+     const [formData, setFormData] = useState<Order>(() => JSON.parse(JSON.stringify(order)));
   
      const handleItemChange = (idx: number, field: keyof OrderItem, value: any) => {
         const newItems = [...formData.items];
@@ -502,15 +463,15 @@ const SyncOrderEditor: React.FC<{
           </div>
   
           <div className="flex justify-end gap-3 pt-4">
-              <button onClick={onCancel} className="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 dark:hover:bg-slate-800 rounded-xl transition-all">إلغاء</button>
-              <button onClick={() => onSave(formData)} className="px-6 py-2 bg-accent text-white font-bold rounded-xl shadow-md hover:opacity-90 transition-all">حفظ التعديلات</button>
+              <button onClick={onCancel} className="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 dark:hover:bg-slate-800 rounded-xl transition-colors duration-200">إلغاء</button>
+              <button onClick={() => onSave(formData)} className="px-6 py-2 bg-accent text-white font-bold rounded-xl shadow-md hover:opacity-90 transition-opacity duration-200">حفظ التعديلات</button>
           </div>
        </div>
      );
 };
 
 const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => void; onSaveAll: (os: Order[]) => void; onClose: () => void; }> = ({ orders, onSaveItem, onSaveAll, onClose }) => {
-    const [localOrders, setLocalOrders] = useState<Order[]>(JSON.parse(JSON.stringify(orders)));
+    const [localOrders, setLocalOrders] = useState<Order[]>(() => JSON.parse(JSON.stringify(orders)));
     const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
     const [expandedId, setExpandedId] = useState<string | null>(orders[0]?.id || null);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -528,48 +489,40 @@ const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => voi
     };
   
     return (
-      <AnimatePresence>
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg overflow-y-auto"
-        >
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="bg-white dark:bg-slate-900 rounded-[40px] w-full max-w-5xl shadow-2xl relative flex flex-col max-h-[90vh] border border-white/20 dark:border-slate-800"
-          >
-            <div className="p-8 border-b dark:border-slate-800 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-900 rounded-t-[40px] z-10 shadow-sm">
-              <div><h3 className="text-2xl font-black text-gray-900 dark:text-white">مراجعة الطلبات المستوردة</h3></div>
-              <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full text-gray-400 dark:text-gray-500 hover:text-red-500 transition-all"><X size={32} /></button>
-            </div>
-            <div className="p-6 space-y-4 overflow-y-auto flex-1 bg-gray-50/50 dark:bg-slate-950/50">
+      <MD3Dialog
+        isOpen={true}
+        onClose={onClose}
+        title="مراجعة الطلبات المستوردة"
+        maxWidth="xl"
+        actions={[
+          { label: 'إغلاق', onClick: onClose, variant: 'text' as const },
+          { label: 'حفظ الكل', onClick: () => onSaveAll(localOrders.filter(o => !savedIds.has(o.id))), variant: 'filled' as const, icon: <Check size={18} strokeWidth={3} /> }
+        ]}
+      >
+        <div className="space-y-4">
               {localOrders.map((order, index) => (
                 <motion.div 
                   key={order.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className={`border-2 rounded-[36px] overflow-hidden bg-white dark:bg-slate-800 shadow-lg transition-all ${savedIds.has(order.id) ? 'opacity-60 border-green-100 dark:border-green-900/30' : 'border-white dark:border-slate-800'}`}
+                   className={`border-2 rounded-[36px] overflow-hidden bg-[var(--md-sys-color-surface-container-low)] shadow-lg transition-all duration-200 ${savedIds.has(order.id) ? 'opacity-60 border-green-100 dark:border-green-900/30' : 'border-[var(--md-sys-color-outline-variant)]/20'}`}
                 >
                   <button onClick={() => setExpandedId(expandedId === order.id ? null : order.id)} className="w-full flex items-center gap-6 p-6 text-right group">
                     <motion.div 
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="w-16 h-16 rounded-[24px] bg-blue-50 dark:bg-slate-900 flex items-center justify-center shadow-md border border-gray-100 dark:border-slate-700 font-black text-accent"
+                       className="w-16 h-16 rounded-[24px] bg-[var(--md-sys-color-surface-container)] flex items-center justify-center shadow-md border border-[var(--md-sys-color-outline-variant)]/20 font-black text-[var(--md-sys-color-primary)]"
                     >
                       {order.customerName.charAt(0)}
                     </motion.div>
                     <div className="flex-1">
-                      <h4 className="font-black text-xl text-gray-900 dark:text-white">
+                      <h4 className="font-black text-xl text-[var(--md-sys-color-on-surface)]">
                       {order.customerId ? (
-                        <button onClick={e => { e.stopPropagation(); handleViewCustomerFromOrder(order.customerId!, order); }} className="text-accent hover:underline text-right">{order.customerName}</button>
+                        <button onClick={e => { e.stopPropagation(); handleViewCustomerFromOrder(order.customerId!, order); }} className="text-[var(--md-sys-color-primary)] hover:underline text-right">{order.customerName}</button>
                       ) : order.customerName}
                     </h4>
-                      <div className="flex gap-4 mt-1 text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">
+                      <div className="flex gap-4 mt-1 text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">
                           <span>{(order.totalAmount || 0).toLocaleString()} ج.م</span>
                           <span>{order.items.length} أصناف</span>
                           <span>{new Date(order.createdAt).toLocaleDateString('ar-EG')}</span>
@@ -586,17 +539,17 @@ const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => voi
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden"
                       >
-                        <div className="p-8 bg-white dark:bg-slate-800 border-t border-gray-50 dark:border-slate-700">
+                        <div className="p-8 bg-[var(--md-sys-color-surface-container)] border-t border-[var(--md-sys-color-outline-variant)]/20">
                             {editingId === order.id ? (
                                 <SyncOrderEditor order={order} onSave={handleUpdateOrder} onCancel={() => setEditingId(null)} />
                             ) : (
                                 <div className="space-y-4">
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      <div className="p-4 bg-gray-50 dark:bg-slate-900 rounded-2xl">
-                                          <h5 className="font-bold text-gray-500 text-xs mb-1">تفاصيل العميل</h5>
-                                          <p className="font-bold text-gray-900 dark:text-white">
+                                      <div className="p-4 bg-[var(--md-sys-color-surface-container-low)] rounded-2xl">
+                                          <h5 className="font-bold text-[var(--md-sys-color-on-surface-variant)] text-xs mb-1">تفاصيل العميل</h5>
+                                          <p className="font-bold text-[var(--md-sys-color-on-surface)]">
                                             {order.customerId ? (
-                                              <button onClick={e => { e.stopPropagation(); handleViewCustomerFromOrder(order.customerId!, order); }} className="text-accent hover:underline text-right">{order.customerName}</button>
+                                              <button onClick={e => { e.stopPropagation(); handleViewCustomerFromOrder(order.customerId!, order); }} className="text-[var(--md-sys-color-primary)] hover:underline text-right">{order.customerName}</button>
                                             ) : order.customerName}
                                           </p>
                                           <p className="text-sm text-gray-500">{order.customerPhone}</p>
@@ -604,30 +557,30 @@ const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => voi
                                           {order.city && <p className="text-sm text-gray-500 mt-1"><span className="font-bold">المدينة:</span> {order.city}</p>}
                                           {(order as any).customerSource && <p className="text-sm text-gray-500 mt-1"><span className="font-bold">المصدر:</span> {(order as any).customerSource}</p>}
                                       </div>
-                                      <div className="p-4 bg-gray-50 dark:bg-slate-900 rounded-2xl">
-                                          <h5 className="font-bold text-gray-500 text-xs mb-1">الأصناف ({order.items.length})</h5>
+                                      <div className="p-4 bg-[var(--md-sys-color-surface-container-low)] rounded-2xl">
+                                          <h5 className="font-bold text-[var(--md-sys-color-on-surface-variant)] text-xs mb-1">الأصناف ({order.items.length})</h5>
                                           <ul className="space-y-1">
                                               {order.items.map((item, idx) => (
-                                                  <li key={idx} className="text-sm font-bold text-gray-800 dark:text-gray-200 flex justify-between">
+                                                  <li key={idx} className="text-sm font-bold text-[var(--md-sys-color-on-surface)] flex justify-between">
                                                       <span>{item.quantity}x {item.productName} ({item.variantLabel})</span>
                                                       <span>{((item.price || 0) * (item.quantity || 0)).toLocaleString()} ج.م</span>
                                                   </li>
                                               ))}
                                           </ul>
-                                          <div className="mt-2 pt-2 border-t border-gray-200 dark:border-slate-700 text-xs text-gray-500 space-y-1">
+                                          <div className="mt-2 pt-2 border-t border-[var(--md-sys-color-outline-variant)]/20 text-xs text-[var(--md-sys-color-on-surface-variant)] space-y-1">
                                               <div className="flex justify-between"><span>الشحن:</span> <span>{order.shippingCost || 0} ج.م</span></div>
                                               {order.coupon && <div className="flex justify-between text-amber-600"><span>كوبون ({order.coupon}):</span> <span>-{order.couponDiscount} ج.م</span></div>}
-                                                <div className="flex justify-between font-bold text-gray-900 dark:text-white mt-1 pt-1 border-t border-gray-200"><span>الإجمالي:</span> <span className="text-green-500 dark:text-green-400">{order.totalAmount} ج.م</span></div>
+                                                <div className="flex justify-between font-bold text-[var(--md-sys-color-on-surface)] mt-1 pt-1 border-t border-[var(--md-sys-color-outline-variant)]/20"><span>الإجمالي:</span> <span className="text-green-500 dark:text-green-400">{order.totalAmount} ج.م</span></div>
                                           </div>
                                       </div>
                                   </div>
                                   <OrderDetails order={order} />
-                                  <div className="flex justify-end gap-3 pt-4 border-t border-gray-50 dark:border-slate-800">
+                                  <div className="flex justify-end gap-3 pt-4 border-t border-[var(--md-sys-color-outline-variant)]/20">
                                       <motion.button 
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => setEditingId(order.id)} 
-                                        className="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-black rounded-2xl border border-blue-100 dark:border-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all flex items-center gap-2"
+                                        className="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-black rounded-2xl border border-blue-100 dark:border-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-200 flex items-center gap-2"
                                       >
                                         <Edit2 size={18}/> تعديل
                                       </motion.button>
@@ -635,15 +588,15 @@ const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => voi
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => setLocalOrders(prev => prev.filter(o => o.id !== order.id))} 
-                                        className="px-6 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-black rounded-2xl border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 transition-all"
+                                        className="px-6 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-black rounded-2xl border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200"
                                       >
                                         استبعاد الطلب
                                       </motion.button>
                                       <motion.button 
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
-                                        onClick={() => handleSaveOrder(order)} 
-                                        className="px-12 py-3 bg-accent text-white font-black rounded-2xl shadow-lg hover:opacity-90 transition-all"
+                                         onClick={() => handleSaveOrder(order)} 
+                                         className="px-12 py-3 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] font-black rounded-2xl shadow-lg hover:opacity-90 transition-opacity duration-200"
                                       >
                                         قبول وحفظ
                                       </motion.button>
@@ -656,33 +609,10 @@ const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => voi
                   </AnimatePresence>
                 </motion.div>
               ))}
-            </div>
-            <div className="p-8 border-t dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 rounded-b-[40px] shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
-              <div className="text-xl font-black text-gray-900 dark:text-white">المتبقي: <span className="text-accent">{localOrders.length - savedIds.size}</span> طلبات</div>
-              <div className="flex gap-4">
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => onSaveAll(localOrders.filter(o => !savedIds.has(o.id)))} 
-                  className="bg-green-600 text-white font-black px-12 py-5 rounded-[24px] shadow-xl hover:bg-green-700 transition-all flex items-center gap-3 text-lg"
-                >
-                  <Check size={28} strokeWidth={3}/> حفظ الكل
-                </motion.button>
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={onClose} 
-                  className="px-10 py-5 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 rounded-[24px] font-black hover:bg-gray-200 dark:hover:bg-slate-700 transition-all"
-                >
-                  إغلاق
-                </motion.button>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      </MD3Dialog>
     );
-};
+  };
 
 const SHIPPING_STATUSES = [
   OrderStatus.CONFIRMED,
@@ -1898,9 +1828,13 @@ const Orders: React.FC<OrdersProps> = ({
           >
             <motion.div 
               whileHover={{ rotate: [0, -20, 20, 0] }} 
-              className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20"
+              className="w-12 h-12 rounded-2xl flex items-center justify-center"
+              style={{
+                backgroundColor: 'var(--md-sys-color-primary-container)',
+                color: 'var(--md-sys-color-on-primary-container)',
+              }}
             >
-              <ShoppingBag size={22} className="text-white" />
+              <ShoppingBag size={22} />
             </motion.div>
             <div>
               <h1 className="text-2xl font-black text-gray-900 dark:text-white">الطلبات</h1>
@@ -1914,7 +1848,7 @@ const Orders: React.FC<OrdersProps> = ({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={selectAll}
-                className={`px-4 py-2.5 rounded-2xl flex items-center gap-2 font-black text-[11px] border transition-all active:scale-95 ${selectedIds.size === orders.length && orders.length > 0 ? 'bg-blue-500 text-white border-blue-500' : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400 border-gray-100 dark:border-slate-800'}`}
+                className={`px-4 py-2.5 rounded-2xl flex items-center gap-2 font-black text-[11px] border transition-all duration-200 active:scale-95 ${selectedIds.size === orders.length && orders.length > 0 ? 'bg-blue-500 text-white border-blue-500' : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400 border-gray-100 dark:border-slate-800'}`}
                 title="تحديد الكل"
             >
                 {selectedIds.size === orders.length && orders.length > 0 ? <CheckSquare size={16} /> : <Square size={16} />}
@@ -1929,7 +1863,11 @@ const Orders: React.FC<OrdersProps> = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => isShippingFilter ? (setWaybillOrders(orders.filter(o => selectedIds.has(o.id))), setWaybillModalOpen(true)) : setIsInvoicePrintOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[11px] shadow-lg hover:shadow-xl transition-all active:scale-95"
+              className="flex items-center gap-2 px-4 py-2.5 text-white rounded-2xl font-black text-[11px] shadow-lg hover:shadow-md transition-all duration-200 active:scale-95"
+              style={{
+                backgroundColor: 'var(--md-sys-color-tertiary)',
+                color: 'var(--md-sys-color-on-tertiary)',
+              }}
             >
               <Printer size={16} />
               <span className="hidden sm:inline">{isShippingFilter ? 'طباعة بوليصة' : 'طباعة فاتورة'}</span>
@@ -1941,7 +1879,7 @@ const Orders: React.FC<OrdersProps> = ({
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setImportStep('source')} 
                 disabled={isLoading} 
-                className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 text-gray-500 dark:text-gray-400 px-4 py-2.5 rounded-2xl flex items-center gap-2 font-black text-[11px] shadow-sm hover:shadow-md transition-all active:scale-95 disabled:opacity-50"
+                className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 text-gray-500 dark:text-gray-400 px-4 py-2.5 rounded-2xl flex items-center gap-2 font-black text-[11px] shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 disabled:opacity-50"
             >
                 <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''}/> استيراد طلبات
             </motion.button>
@@ -1949,7 +1887,11 @@ const Orders: React.FC<OrdersProps> = ({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => { resetForm(); setIsAdding(true); setEditingOrderId('new'); }}
-                className="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white px-5 py-2.5 rounded-2xl flex items-center gap-2 font-black text-[11px] shadow-lg shadow-indigo-500/20 transition-all active:scale-95"
+                className="text-white px-5 py-2.5 rounded-2xl flex items-center gap-2 font-black text-[11px] shadow-lg transition-all duration-200 active:scale-95"
+                style={{
+                  backgroundColor: 'var(--md-sys-color-primary)',
+                  color: 'var(--md-sys-color-on-primary)',
+                }}
             >
                 <Plus size={18} />
                 <span>طلب جديد</span>
@@ -1959,123 +1901,108 @@ const Orders: React.FC<OrdersProps> = ({
 
       {isShippingFilter ? (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          <StatCard
-            icon={Truck}
-            title="إجمالي الشحنات"
+          <MD3StatCard
+            icon={<Truck size={20} />}
+            label="إجمالي الشحنات"
             value={dispatchStats.count.toString()}
             unit="طلب"
-            color="bg-accent/10 text-accent"
-            description="إجمالي عدد الطلبات التي دخلت مرحلة التجهيز أو الشحن."
+            iconBg="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
+            tooltip="إجمالي عدد الطلبات التي دخلت مرحلة التجهيز أو الشحن."
           />
-          <StatCard
-            icon={PackageCheck}
-            title="قيمة التحصيل"
+          <MD3StatCard
+            icon={<PackageCheck size={20} />}
+            label="قيمة التحصيل"
             value={formatCurrency(dispatchStats.totalCollected)}
-            subValue={`شحن: محلي (${formatCurrency(dispatchStats.localShipping)}) | خارجي (${formatCurrency(dispatchStats.externalShipping)})`}
-            color="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600"
-            description="إجمالي الأموال التي يجب تحصيلها من العملاء."
+            subtitle={`شحن: محلي (${formatCurrency(dispatchStats.localShipping)}) | خارجي (${formatCurrency(dispatchStats.externalShipping)})`}
+            iconBg="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600"
+            tooltip="إجمالي الأموال التي يجب تحصيلها من العملاء."
           />
-          <StatCard
-            icon={MapPin}
-            title="تغطية المحافظات"
+          <MD3StatCard
+            icon={<MapPin size={20} />}
+            label="تغطية المحافظات"
             value={dispatchStats.distinctCities.toString()}
             unit="مدينة"
-            color="bg-orange-50 dark:bg-orange-900/20 text-orange-600"
-            description="عدد المدن المختلفة التي يتم الشحن إليها."
+            iconBg="bg-orange-100 dark:bg-orange-900/30 text-orange-600"
+            tooltip="عدد المدن المختلفة التي يتم الشحن إليها."
           />
-          <StatCard
-            icon={Clock}
-            title="متوسط الشحنة"
+          <MD3StatCard
+            icon={<Clock size={20} />}
+            label="متوسط الشحنة"
             value={formatCurrency(dispatchStats.avgValue)}
-            color="bg-blue-50 dark:bg-blue-900/20 text-blue-600"
-            description="متوسط قيمة المبلغ المطلوب لكل شحنة."
+            iconBg="bg-blue-100 dark:bg-blue-900/30 text-blue-600"
+            tooltip="متوسط قيمة المبلغ المطلوب لكل شحنة."
           />
-          <StatCard
-            icon={Package}
-            title="قطع قيد الشحن"
+          <MD3StatCard
+            icon={<Package size={20} />}
+            label="قطع قيد الشحن"
             value={dispatchStats.totalItems.toString()}
             unit="قطعة"
-            color="bg-purple-50 dark:bg-purple-900/20 text-purple-600"
-            description="إجمالي عدد المنتجات داخل الشحنات الحالية."
+            iconBg="bg-purple-100 dark:bg-purple-900/30 text-purple-600"
+            tooltip="إجمالي عدد المنتجات داخل الشحنات الحالية."
           />
         </div>
       ) : (
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <StatCard 
-          icon={ShoppingBag} 
-          title="إجمالي الطلبات" 
+        <MD3StatCard 
+          icon={<ShoppingBag size={20} />} 
+          label="إجمالي الطلبات" 
           value={orderStats.total.toString()} 
           unit="طلب" 
-          subValue={`شحن داخلي: ${orderStats.localOrderCount} | شحن خارجي: ${orderStats.externalOrderCount}`}
-          color="bg-accent/10 text-accent" 
-          description="العدد الكلي للطلبات المسجلة في النظام لأي حالة. يساعدك في تتبع حجم العمل الإجمالي."
+          subtitle={`شحن داخلي: ${orderStats.localOrderCount} | شحن خارجي: ${orderStats.externalOrderCount}`}
+          iconBg="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
+          tooltip="العدد الكلي للطلبات المسجلة في النظام لأي حالة. يساعدك في تتبع حجم العمل الإجمالي."
         />
 
-        <StatCard 
-          icon={TrendingUp} 
-          title="إجمالي المبيعات" 
+        <MD3StatCard 
+          icon={<TrendingUp size={20} />} 
+          label="إجمالي المبيعات" 
           value={formatCurrency(orderStats.revenue)} 
-          subValue={`شحن: محلي (${formatCurrency(orderStats.localShipping)}) | خارجي (${formatCurrency(orderStats.externalShipping)}) | الإجمالي: ${formatCurrency(orderStats.shipping)}`}
-          color="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600" 
-          description="هذا الرقم يمثل القيمة الكلية لكل المبيعات المسجلة. يتم حسابه عن طريق جمع (سعر المنتجات في كل طلب + تكلفة الشحن المحددة). هو المؤشر الأساسي لحجم التدفق المالي الداخل (Gross Revenue) قبل خصم أي تكاليف."
+          subtitle={`شحن: محلي (${formatCurrency(orderStats.localShipping)}) | خارجي (${formatCurrency(orderStats.externalShipping)}) | الإجمالي: ${formatCurrency(orderStats.shipping)}`}
+          iconBg="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600" 
+          tooltip="هذا الرقم يمثل القيمة الكلية لكل المبيعات المسجلة. يتم حسابه عن طريق جمع (سعر المنتجات في كل طلب + تكلفة الشحن المحددة). هو المؤشر الأساسي لحجم التدفق المالي الداخل (Gross Revenue) قبل خصم أي تكاليف."
         />
 
-        <StatCard 
-          icon={Calculator} 
-          title="الأرباح التقديرية" 
+        <MD3StatCard 
+          icon={<Calculator size={20} />} 
+          label="الأرباح التقديرية" 
           value={formatCurrency(orderStats.profit)} 
-          color="bg-blue-50 dark:bg-blue-900/20 text-blue-600" 
-          description="يمثل صافي الربح المتوقع من هذه الطلبات. يتم احتسابه بدقة من خلال المعادلة: (إجمالي مدفوعات العملاء - (تكلفة المنتجات الأصلية + مصاريف الشحن)). هذا المؤشر يساعدك في معرفة الجدوى الاقتصادية الحقيقية لعملياتك بعد استبعاد التكاليف المباشرة."
+          iconBg="bg-blue-100 dark:bg-blue-900/30 text-blue-600" 
+          tooltip="يمثل صافي الربح المتوقع من هذه الطلبات. يتم احتسابه بدقة من خلال المعادلة: (إجمالي مدفوعات العملاء - (تكلفة المنتجات الأصلية + مصاريف الشحن)). هذا المؤشر يساعدك في معرفة الجدوى الاقتصادية الحقيقية لعملياتك بعد استبعاد التكاليف المباشرة."
         />
 
-        <StatCard 
-          icon={CheckCircle} 
-          title="طلبات مكتملة" 
+        <MD3StatCard 
+          icon={<CheckCircle size={20} />} 
+          label="طلبات مكتملة" 
           value={orderStats.completed.toString()} 
           unit="طلب" 
-          color="bg-purple-50 dark:bg-purple-900/20 text-purple-600" 
-          description="هي الطلبات التي تمت دورتها بنجاح ووصلت لحالة 'تم التوصيل'. هذا الرقم يعكس نجاح المبيعات المحققة فعلياً والتي تم تحصيل ثمنها، وهو المعيار الحقيقي لنجاح العمل."
+          iconBg="bg-purple-100 dark:bg-purple-900/30 text-purple-600" 
+          tooltip="هي الطلبات التي تمت دورتها بنجاح ووصلت لحالة 'تم التوصيل'. هذا الرقم يعكس نجاح المبيعات المحققة فعلياً والتي تم تحصيل ثمنها، وهو المعيار الحقيقي لنجاح العمل."
         />
 
-        <StatCard 
-          icon={Clock} 
-          title="طلبات انتظار" 
+        <MD3StatCard 
+          icon={<Clock size={20} />} 
+          label="طلبات انتظار" 
           value={orderStats.pending.toString()} 
           unit="طلب" 
-          color="bg-orange-50 dark:bg-orange-900/20 text-orange-600" 
-          description="تشمل جميع الطلبات التي تم إنشاؤها ولكنها لم تصل بعد لحالة 'تم التوصيل' أو 'ملغى'. هي مؤشر على حجم العمل المتراكم حالياً والذي يتطلب جهداً في المتابعة أو التجهيز أو الشحن."
+          iconBg="bg-orange-100 dark:bg-orange-900/30 text-orange-600" 
+          tooltip="تشمل جميع الطلبات التي تم إنشاؤها ولكنها لم تصل بعد لحالة 'تم التوصيل' أو 'ملغى'. هي مؤشر على حجم العمل المتراكم حالياً والذي يتطلب جهداً في المتابعة أو التجهيز أو الشحن."
         />
       </div>
       )}
 
       <input type="file" accept=".json" className="hidden" ref={importJsonInputRef} onChange={handleImportFileChange} />
 
-      <AnimatePresence>
-        {importStep !== 'none' && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-             className="fixed inset-0 z-[400] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-          >
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-slate-900 rounded-[40px] p-8 max-w-lg w-full shadow-2xl space-y-6 relative overflow-hidden"
-            >
-              <div className="text-center space-y-2">
-                <div className="w-16 h-16 bg-blue-50 dark:bg-slate-800 text-accent rounded-3xl flex items-center justify-center mx-auto mb-4">
-                  {importStep === 'url_input' ? <Globe size={32} /> : <RefreshCw size={32} />}
-                </div>
-                <h3 className="text-2xl font-black text-gray-900 dark:text-white">
-                  {importStep === 'source' ? 'استيراد طلبات من المتجر' : 'رابط الطلبات'}
-                </h3>
-                <p className="text-gray-500 dark:text-gray-400 font-bold">
-                  {importStep === 'source' ? 'اختر مصدر البيانات:' : 'أدخل رابط JSON للطلبات:'}
-                </p>
-              </div>
-              
+      <MD3Dialog
+        isOpen={importStep !== 'none'}
+        onClose={() => setImportStep(importStep === 'url_input' ? 'source' : 'none')}
+        title={importStep === 'source' ? 'استيراد طلبات من المتجر' : 'رابط الطلبات'}
+        description={importStep === 'source' ? 'اختر مصدر البيانات:' : 'أدخل رابط JSON للطلبات:'}
+        icon={importStep === 'url_input' ? <Globe size={24} /> : <RefreshCw size={24} />}
+        maxWidth="md"
+        actions={[
+          { label: importStep === 'url_input' ? 'رجوع' : 'إلغاء', onClick: () => setImportStep(importStep === 'url_input' ? 'source' : 'none'), variant: 'text' as const }
+        ]}
+      >
               <div className="grid grid-cols-1 gap-4">
                 {importStep === 'source' && (
                   <motion.div 
@@ -2089,20 +2016,20 @@ const Orders: React.FC<OrdersProps> = ({
                       whileHover={{ scale: 1.02, x: -5 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleImportSourceChoice('feed')} 
-                      className="w-full flex items-center gap-4 p-5 bg-indigo-50 dark:bg-slate-800 border border-indigo-100 dark:border-slate-700 rounded-3xl text-right hover:bg-indigo-100 dark:hover:bg-slate-700 transition-all group"
+                      className="w-full flex items-center gap-4 p-5 bg-indigo-50 dark:bg-slate-800 border border-indigo-100 dark:border-slate-700 rounded-3xl text-right hover:bg-indigo-100 dark:hover:bg-slate-700 transition-colors duration-200 group"
                     >
-                      <div className="w-12 h-12 bg-white dark:bg-slate-900 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform"><Globe size={24} /></div>
-                      <div><h4 className="font-black text-gray-900 dark:text-white text-sm">رابط API</h4><p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold">جلب الطلبات عبر رابط</p></div>
+                      <div className="w-12 h-12 bg-[var(--md-sys-color-surface)] rounded-2xl flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform"><Globe size={24} /></div>
+                      <div><h4 className="font-black text-[var(--md-sys-color-on-surface)] text-sm">رابط API</h4><p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-bold">جلب الطلبات عبر رابط</p></div>
                     </motion.button>
                     <motion.button 
                       variants={{ hidden: { opacity: 0, x: 20 }, show: { opacity: 1, x: 0 } }}
                       whileHover={{ scale: 1.02, x: -5 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleImportSourceChoice('json')} 
-                      className="w-full flex items-center gap-4 p-5 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 rounded-3xl text-right hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-all group"
+                      className="w-full flex items-center gap-4 p-5 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 rounded-3xl text-right hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors duration-200 group"
                     >
-                      <div className="w-12 h-12 bg-white dark:bg-slate-900 rounded-2xl flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform"><FileJson size={24} /></div>
-                      <div><h4 className="font-black text-gray-900 dark:text-white text-sm">ملف JSON</h4><p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold">رفع ملف من جهازك</p></div>
+                      <div className="w-12 h-12 bg-[var(--md-sys-color-surface)] rounded-2xl flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform"><FileJson size={24} /></div>
+                      <div><h4 className="font-black text-[var(--md-sys-color-on-surface)] text-sm">ملف JSON</h4><p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-bold">رفع ملف من جهازك</p></div>
                     </motion.button>
                   </motion.div>
                 )}
@@ -2114,10 +2041,10 @@ const Orders: React.FC<OrdersProps> = ({
                     className="space-y-4"
                   >
                      <div className="space-y-2">
-                       <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-2 uppercase">رابط API</label>
+                       <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] px-2 uppercase">رابط API</label>
                        <input 
                         type="url" 
-                        className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-all font-bold text-gray-800 dark:text-white text-xs" 
+                        className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl outline-none focus:border-[var(--md-sys-color-primary)] focus:bg-[var(--md-sys-color-surface)] transition-all duration-200 font-bold text-[var(--md-sys-color-on-surface)] text-xs" 
                         placeholder="https://example.com/orders.json"
                         value={importUrl}
                         onChange={e => setImportUrl(e.target.value)}
@@ -2127,26 +2054,15 @@ const Orders: React.FC<OrdersProps> = ({
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={handleImportUrlSubmit}
-                      className="w-full py-5 bg-accent text-white rounded-2xl font-black shadow-xl hover:opacity-90 transition-all text-lg active:scale-95"
+                      className="w-full py-5 rounded-2xl font-black shadow-xl hover:opacity-90 transition-all duration-200 text-lg active:scale-95"
+                      style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }}
                      >
                        جلب البيانات
                      </motion.button>
                   </motion.div>
                 )}
               </div>
-
-              <div className="flex gap-2 pt-4">
-                <button 
-                  onClick={() => setImportStep(importStep === 'url_input' ? 'source' : 'none')}
-                  className="flex-1 py-4 bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 rounded-2xl font-black hover:bg-gray-100 dark:hover:bg-slate-700 transition-all border border-gray-100 dark:border-slate-700"
-                >
-                  {importStep === 'url_input' ? 'رجوع' : 'إلغاء'}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </MD3Dialog>
 
       {importOrdersPreview && <SyncReviewModal orders={importOrdersPreview} onSaveItem={onAddOrder} onSaveAll={onImportOrdersConfirm} onClose={onImportOrdersClose} />}
 
@@ -2161,7 +2077,7 @@ const Orders: React.FC<OrdersProps> = ({
             <input 
               type="text"
               placeholder="بحث ذكي (اسم، هاتف، رقم أوردر، منتج...)"
-              className="w-full pr-12 pl-4 py-3 bg-gray-50 dark:bg-slate-800 border border-transparent focus:border-accent rounded-2xl outline-none font-bold text-sm transition-all"
+              className="w-full pr-12 pl-4 py-3 bg-gray-50 dark:bg-slate-800 border border-transparent focus:border-accent rounded-2xl outline-none font-bold text-sm transition-colors duration-200"
               value={orderSearch}
               onChange={e => setOrderSearch(e.target.value)}
             />
@@ -2171,7 +2087,7 @@ const Orders: React.FC<OrdersProps> = ({
             <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest whitespace-nowrap">ترتيب:</span>
             <div className="relative">
               <select 
-                className="px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-transparent focus:border-accent rounded-2xl outline-none font-black text-xs cursor-pointer appearance-none min-w-[120px] transition-all"
+                className="px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-transparent focus:border-accent rounded-2xl outline-none font-black text-xs cursor-pointer appearance-none min-w-[120px] transition-colors duration-200"
                 value={sortField}
                 onChange={e => setSortField(e.target.value)}
               >
@@ -2182,7 +2098,7 @@ const Orders: React.FC<OrdersProps> = ({
               </select>
               <ChevronDown className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={12} />
             </div>
-            <button onClick={() => setSortAsc(p => !p)} className={`px-3 py-3 rounded-2xl flex items-center gap-1.5 font-black text-xs transition-all ${sortAsc ? 'bg-accent text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 border border-transparent'}`} title={sortAsc ? 'تصاعدي' : 'تنازلي'}>
+            <button onClick={() => setSortAsc(p => !p)} className={`px-3 py-3 rounded-2xl flex items-center gap-1.5 font-black text-xs transition-colors duration-200 ${sortAsc ? 'bg-accent text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 border border-transparent'}`} title={sortAsc ? 'تصاعدي' : 'تنازلي'}>
               <ArrowUpDown size={14} /> {sortAsc ? '▲' : '▼'}
             </button>
           </div>
@@ -2190,7 +2106,7 @@ const Orders: React.FC<OrdersProps> = ({
           <div className="flex items-center gap-2 w-full md:w-auto">
             <Calendar className="text-gray-400 dark:text-gray-500 hidden sm:block" size={16} />
             <select 
-              className="px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-transparent focus:border-accent rounded-2xl outline-none font-black text-xs cursor-pointer appearance-none min-w-[120px] transition-all"
+              className="px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-transparent focus:border-accent rounded-2xl outline-none font-black text-xs cursor-pointer appearance-none min-w-[120px] transition-colors duration-200"
               value={dateFilter}
               onChange={e => setDateFilter(e.target.value as any)}
             >
@@ -2238,7 +2154,7 @@ const Orders: React.FC<OrdersProps> = ({
             <button
               onClick={() => setFilterDropdownOpen(prev => !prev)}
               onBlur={() => setTimeout(() => setFilterDropdownOpen(false), 200)}
-              className="flex items-center gap-2 px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-transparent rounded-2xl font-black text-xs cursor-pointer min-w-[150px] transition-all"
+              className="flex items-center gap-2 px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-transparent rounded-2xl font-black text-xs cursor-pointer min-w-[150px] transition-colors duration-200"
             >
               {statusFilter === 'الكل' && <span>جميع الحالات</span>}
               {statusFilter === 'all_shipping' && <span>الشحن</span>}
@@ -2252,7 +2168,7 @@ const Orders: React.FC<OrdersProps> = ({
             </button>
             {filterDropdownOpen && (
               <div className="absolute top-full right-0 mt-1 w-56 z-50">
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 p-1.5 max-h-64 overflow-y-auto">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-1.5 max-h-64 overflow-y-auto">
                   <button
                     onClick={() => { setStatusFilter('الكل'); setFilterDropdownOpen(false); }}
                     className="w-full text-right px-3 py-2 rounded-xl text-[10px] font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center justify-between"
@@ -2297,7 +2213,7 @@ const Orders: React.FC<OrdersProps> = ({
                 setDateFilter('all');
                 setCustomDateRange({ start: '', end: '' });
               }}
-              className="p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl transition-all"
+              className="p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl transition-colors duration-200"
               title="تصفير الفلاتر"
             >
               <X size={20} />
@@ -2310,42 +2226,22 @@ const Orders: React.FC<OrdersProps> = ({
         </motion.div>
       )}
 
-      <AnimatePresence>
-        {isAdding && (
-          <div className="fixed inset-0 z-[200] flex items-start justify-center p-4 pt-12 overflow-y-auto">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => withUnsavedCheck(resetForm)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-            />
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              onClick={e => e.stopPropagation()}
-              className="relative w-full max-w-4xl bg-white dark:bg-slate-900 rounded-[40px] shadow-2xl overflow-hidden p-8"
-            >
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-md shadow-indigo-500/20">
-                {editingOrderId && editingOrderId !== 'new' ? <Edit2 size={20} className="text-white" /> : <Plus size={20} className="text-white" />}
-              </div>
-              <div>
-                <h3 className="text-lg font-black text-gray-900 dark:text-white">{editingOrderId && editingOrderId !== 'new' ? 'تعديل بيانات الطلب' : 'إنشاء طلب جديد'}</h3>
-                <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500">أدخل بيانات الطلب كاملة</p>
-              </div>
-            </div>
-            <button onClick={() => withUnsavedCheck(resetForm)} className="px-5 py-2.5 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 text-gray-500 rounded-2xl font-black text-xs hover:bg-gray-50 transition-all">إلغاء</button>
-          </div>
+      <MD3Dialog
+        isOpen={isAdding}
+        onClose={() => withUnsavedCheck(resetForm)}
+        title={editingOrderId && editingOrderId !== 'new' ? 'تعديل بيانات الطلب' : 'إنشاء طلب جديد'}
+        description="أدخل بيانات الطلب كاملة"
+        icon={editingOrderId && editingOrderId !== 'new' ? <Edit2 size={20} /> : <Plus size={20} />}
+        maxWidth="xl"
+        persistent
+      >
 
           {editingOrderId && editingOrderId !== 'new' && (() => {
             const editingOrder = orders.find(o => o.id === editingOrderId);
             if (!editingOrder) return null;
             return (
               <div className="flex items-center gap-4 mb-6 px-1">
-                <div className="text-[10px] font-bold text-gray-400 dark:text-gray-500">
+                <div className="text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)]">
                   <span>تاريخ الإضافة: {formatDate(editingOrder.createdAt, 'full')}</span>
                   {editingOrder.updatedAt && <span className="mr-3">آخر تعديل: {formatDate(editingOrder.updatedAt, 'full')}</span>}
                 </div>
@@ -2357,24 +2253,24 @@ const Orders: React.FC<OrdersProps> = ({
             {/* Form Fields... */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-xs font-black text-gray-500 dark:text-gray-400 pr-1">اسم العميل</label>
+                <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] pr-1">اسم العميل</label>
                 <div className="relative">
-                  <User size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input required className="w-full pr-9 pl-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 transition-all text-sm font-bold" placeholder="الاسم الثلاثي" value={formData.customerName} onChange={e => setFormData({...formData, customerName: e.target.value})} />
+                  <User size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)]" />
+                  <input required className="w-full pr-9 pl-4 py-2.5 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none text-[var(--md-sys-color-on-surface)] focus:bg-[var(--md-sys-color-surface)] transition-colors duration-200 text-sm font-bold" placeholder="الاسم الثلاثي" value={formData.customerName} onChange={e => setFormData({...formData, customerName: e.target.value})} />
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black text-gray-500 dark:text-gray-400 pr-1">رقم الهاتف</label>
+                <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] pr-1">رقم الهاتف</label>
                 <div className="relative">
-                  <Phone size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input required type="tel" className="w-full pr-9 pl-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white font-mono text-sm font-bold" placeholder="01xxxxxxxxx" value={formData.customerPhone} onChange={e => setFormData({...formData, customerPhone: e.target.value})} />
+                  <Phone size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)]" />
+                  <input required type="tel" className="w-full pr-9 pl-4 py-2.5 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none text-[var(--md-sys-color-on-surface)] font-mono text-sm font-bold" placeholder="01xxxxxxxxx" value={formData.customerPhone} onChange={e => setFormData({...formData, customerPhone: e.target.value})} />
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black text-gray-500 dark:text-gray-400 pr-1">هاتف بديل</label>
+                <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] pr-1">هاتف بديل</label>
                 <div className="relative">
-                  <Phone size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input type="tel" className="w-full pr-9 pl-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white font-mono text-sm font-bold" placeholder="01xxxxxxxxx" value={formData.altPhone} onChange={e => setFormData({...formData, altPhone: e.target.value})} />
+                  <Phone size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)]" />
+                  <input type="tel" className="w-full pr-9 pl-4 py-2.5 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none text-[var(--md-sys-color-on-surface)] font-mono text-sm font-bold" placeholder="01xxxxxxxxx" value={formData.altPhone} onChange={e => setFormData({...formData, altPhone: e.target.value})} />
                 </div>
               </div>
               <div className="space-y-2">
@@ -2382,25 +2278,25 @@ const Orders: React.FC<OrdersProps> = ({
                 <SearchableSelect options={governorateOptions} value={formData.city} onChange={handleCityChange} placeholder="اختر المحافظة..." icon={<MapPin size={16} />} />
               </div>
               <div className="md:col-span-2 space-y-2">
-                <label className="text-xs font-black text-gray-500 dark:text-gray-400 pr-1">العنوان التفصيلي</label>
-                <input required className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 transition-all text-sm font-bold" placeholder="رقم العمارة - اسم الشارع - علامة مميزة" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
+                <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] pr-1">العنوان التفصيلي</label>
+                <input required className="w-full px-4 py-2.5 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none text-[var(--md-sys-color-on-surface)] focus:bg-[var(--md-sys-color-surface)] transition-colors duration-200 text-sm font-bold" placeholder="رقم العمارة - اسم الشارع - علامة مميزة" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
               </div>
               
                {/* Google Maps URL + Map Preview */}
                <div className="md:col-span-2 space-y-3">
-                 <label className="text-xs font-black text-gray-600 dark:text-gray-400 pr-1 flex items-center gap-1.5">
-                   <Navigation size={14} /> رابط خريطة جوجل
-                 </label>
-                 <div className="relative">
-                   <MapPin size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                   <input
-                     value={formData.mapUrl}
-                     onChange={e => handleMapUrlChange(e.target.value)}
-                     className="w-full pr-9 pl-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 transition-all text-sm font-bold font-mono"
+                  <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] pr-1 flex items-center gap-1.5">
+                    <Navigation size={14} /> رابط خريطة جوجل
+                  </label>
+                  <div className="relative">
+                    <MapPin size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)]" />
+                    <input
+                      value={formData.mapUrl}
+                      onChange={e => handleMapUrlChange(e.target.value)}
+                      className="w-full pr-9 pl-4 py-2.5 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none text-[var(--md-sys-color-on-surface)] focus:bg-[var(--md-sys-color-surface)] transition-colors duration-200 text-sm font-bold font-mono"
                      placeholder="https://maps.google.com/?q=30.0444,31.2357"
                    />
                  </div>
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500 pr-1 font-bold">
+                  <p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] pr-1 font-bold">
                     الصق رابط جوجل ماب وسيتم تحديد الموقع تلقائياً، أو اكتب العنوان لمعاينة الخريطة
                   </p>
                   {(() => {
@@ -2444,8 +2340,8 @@ const Orders: React.FC<OrdersProps> = ({
                   })()}
                 </div>
                {editingOrderId && editingOrderId !== 'new' && (
-                  <div className="md:col-span-2 p-5 bg-gray-50 dark:bg-slate-900/50 rounded-[24px] border border-gray-100 dark:border-slate-800">
-                     <h4 className="text-[10px] font-black text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-1.5">
+                 <div className="md:col-span-2 p-5 bg-[var(--md-sys-color-surface-container)] rounded-[24px] border border-[var(--md-sys-color-outline-variant)]/20">
+                      <h4 className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] mb-3 flex items-center gap-1.5">
                         تغيير حالة الطلب
                      </h4>
                      <div className="flex flex-wrap gap-2">
@@ -2454,10 +2350,10 @@ const Orders: React.FC<OrdersProps> = ({
                               key={status}
                               type="button"
                               onClick={() => setFormData(prev => ({ ...prev, status }))}
-                              className={`px-3 py-1.5 rounded-full text-[10px] font-black transition-all border ${
+                              className={`px-3 py-1.5 rounded-full text-[10px] font-black transition-colors duration-200 border ${
                                  formData.status === status
                                     ? getStatusStyle(status)
-                                    : 'bg-white dark:bg-slate-800 text-gray-400 dark:text-gray-500 border-gray-100 dark:border-slate-700'
+                                     : 'bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface-variant)] border-[var(--md-sys-color-outline-variant)]/20'
                               }`}
                            >
                               {status}
@@ -2466,22 +2362,24 @@ const Orders: React.FC<OrdersProps> = ({
                      </div>
                   </div>
                )}
-               <div className="md:col-span-2 p-5 bg-gray-50 dark:bg-slate-900/50 rounded-[24px] border border-gray-100 dark:border-slate-800 relative space-y-4">
+               <div className="md:col-span-2 p-5 bg-[var(--md-sys-color-surface-container)] rounded-[24px] border border-[var(--md-sys-color-outline-variant)]/20 relative space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-4">
                       <div className="space-y-1 flex-1 min-w-[200px]">
-                        <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 block mb-2">نوع التوصيل</label>
+                        <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] block mb-2">نوع التوصيل</label>
                         <div className="flex gap-2">
                            <button 
                                type="button"
                                onClick={() => setFormData({...formData, shippingMethod: ShippingMethod.LOCAL})}
-                               className={`flex-1 py-2.5 px-4 rounded-xl text-[10px] font-black transition-all border ${formData.shippingMethod === ShippingMethod.LOCAL ? 'bg-gradient-to-br from-indigo-500 to-indigo-600 text-white border-indigo-500' : 'bg-white dark:bg-slate-800 text-gray-400 dark:text-gray-500 border-gray-100 dark:border-slate-700'}`}
+                                className={`flex-1 py-2.5 px-4 rounded-xl text-[10px] font-black transition-colors duration-200 border ${formData.shippingMethod === ShippingMethod.LOCAL ? 'text-white border-transparent' : 'bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface-variant)] border-[var(--md-sys-color-outline-variant)]/20'}`}
+                               style={formData.shippingMethod === ShippingMethod.LOCAL ? { backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' } : {}}
                            >
                                توصيل محلي
                            </button>
                            <button 
                                type="button"
                                onClick={() => setFormData({...formData, shippingMethod: ShippingMethod.EXTERNAL})}
-                               className={`flex-1 py-2.5 px-4 rounded-xl text-[10px] font-black transition-all border ${formData.shippingMethod === ShippingMethod.EXTERNAL ? 'bg-gradient-to-br from-indigo-500 to-blue-600 text-white border-indigo-500' : 'bg-white dark:bg-slate-800 text-gray-400 dark:text-gray-500 border-gray-100 dark:border-slate-700'}`}
+                                className={`flex-1 py-2.5 px-4 rounded-xl text-[10px] font-black transition-colors duration-200 border ${formData.shippingMethod === ShippingMethod.EXTERNAL ? 'text-white border-transparent' : 'bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface-variant)] border-[var(--md-sys-color-outline-variant)]/20'}`}
+                               style={formData.shippingMethod === ShippingMethod.EXTERNAL ? { backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' } : {}}
                            >
                                شحن خارجي
                            </button>
@@ -2490,12 +2388,12 @@ const Orders: React.FC<OrdersProps> = ({
                       
                       {formData.shippingMethod === ShippingMethod.EXTERNAL && (
                         <div className="space-y-1 flex-1 min-w-[200px] animate-in slide-in-from-right-2 fade-in">
-                          <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 block mb-2">اسم شركة الشحن</label>
+                          <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] block mb-2">اسم شركة الشحن</label>
                           <div className="relative group">
-                            <Truck size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 z-10" />
+                            <Truck size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)] z-10" />
                             <input 
                               list="shipping-companies"
-                              className="w-full pr-9 pl-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-xs font-bold focus:border-blue-500 transition-all"
+                              className="w-full pr-9 pl-4 py-2.5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none text-xs font-bold focus:border-blue-500 transition-colors duration-200"
                               placeholder="ادخل اسم الشركة..."
                               value={formData.shippingCompany}
                               onChange={e => setFormData({...formData, shippingCompany: e.target.value})}
@@ -2510,15 +2408,15 @@ const Orders: React.FC<OrdersProps> = ({
                       )}
 
                       <div className="space-y-1 flex-1 min-w-[120px]">
-                        <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 block mb-2">سعر الشحن</label>
-                        <input type="number" className={`w-full py-2.5 px-3 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl text-center font-black text-sm ${isFreeShipping ? 'text-gray-500 dark:text-gray-400 line-through' : 'text-gray-900 dark:text-white'}`} value={formData.shippingCost} disabled={isFreeShipping} onChange={e => setFormData({...formData, shippingCost: Number(e.target.value)})} />
+                        <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] block mb-2">سعر الشحن</label>
+                        <input type="number" className={`w-full py-2.5 px-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl text-center font-black text-sm ${isFreeShipping ? 'text-[var(--md-sys-color-on-surface-variant)] line-through' : 'text-[var(--md-sys-color-on-surface)]'}`} value={formData.shippingCost} disabled={isFreeShipping} onChange={e => setFormData({...formData, shippingCost: Number(e.target.value)})} />
                       </div>
-                      <div className="flex items-center gap-2 bg-white dark:bg-slate-800 px-3 py-2 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm self-end">
+                      <div className="flex items-center gap-2 bg-[var(--md-sys-color-surface)] px-3 py-2 rounded-xl border border-[var(--md-sys-color-outline-variant)]/20 shadow-sm self-end">
                           <input type="checkbox" id="free-shipping" checked={isFreeShipping} onChange={(e) => toggleFreeShipping(e.target.checked)} className="w-5 h-5 accent-fuchsia-500 cursor-pointer rounded-md" />
                           <label htmlFor="free-shipping" className="text-[10px] font-black cursor-pointer text-fuchsia-600 dark:text-fuchsia-400 select-none">شحن مجاني</label>
                       </div>
                   </div>
-                   <div className="border-t border-gray-200 dark:border-slate-700 pt-4">
+                    <div className="border-t border-[var(--md-sys-color-outline-variant)]/20 pt-4">
                        <div className="flex items-center gap-2 mb-4">
                            <input type="checkbox" id="use-coupon" checked={useCoupon} onChange={(e) => setUseCoupon(e.target.checked)} className="w-5 h-5 accent-emerald-500 cursor-pointer rounded-md" />
                            <label htmlFor="use-coupon" className="text-[10px] font-black cursor-pointer text-emerald-600 dark:text-emerald-400 select-none flex items-center gap-1"><Tag size={13}/> تفعيل كوبون خصم</label>
@@ -2526,23 +2424,23 @@ const Orders: React.FC<OrdersProps> = ({
 {useCoupon && (
                        <>
                            <div className="flex bg-gray-100 dark:bg-slate-800 rounded-xl p-0.5 mb-4">
-                               <button type="button"
-                                 onClick={() => { setCouponMode('saved'); setFormData(prev => ({ ...prev, coupon: '' })); }}
-                                 className={`flex-1 py-1.5 text-xs font-black rounded-lg transition-all ${couponMode === 'saved' ? 'bg-white dark:bg-slate-700 shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
-                               >الكوبونات المحفوظة</button>
-                               <button type="button"
-                                 onClick={() => { setCouponMode('custom'); setFormData(prev => ({ ...prev, coupon: 'خصم مخصص' })); }}
-                                 className={`flex-1 py-1.5 text-xs font-black rounded-lg transition-all ${couponMode === 'custom' ? 'bg-white dark:bg-slate-700 shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                       <button type="button"
+                                  onClick={() => { setCouponMode('saved'); setFormData(prev => ({ ...prev, coupon: '' })); }}
+                                  className={`flex-1 py-1.5 text-xs font-black rounded-lg transition-all duration-200 ${couponMode === 'saved' ? 'bg-[var(--md-sys-color-surface)] shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] dark:hover:text-gray-300'}`}
+                                >الكوبونات المحفوظة</button>
+                                <button type="button"
+                                  onClick={() => { setCouponMode('custom'); setFormData(prev => ({ ...prev, coupon: 'خصم مخصص' })); }}
+                                  className={`flex-1 py-1.5 text-xs font-black rounded-lg transition-all duration-200 ${couponMode === 'custom' ? 'bg-[var(--md-sys-color-surface)] shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] dark:hover:text-gray-300'}`}
                                >خصم مخصص</button>
                            </div>
                            {couponMode === 'saved' ? (
                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
                                 <div className="space-y-1 relative" ref={couponContainerRef}>
-                                   <label className="text-[10px] font-black text-gray-500">كود الكوبون</label>
+                                   <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)]">كود الكوبون</label>
                                    <input
                                        type="text"
                                        placeholder="CODE"
-                                       className="w-full py-2.5 px-3 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl text-center font-bold uppercase text-xs outline-none focus:border-fuchsia-500"
+                                       className="w-full py-2.5 px-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl text-center font-bold uppercase text-xs outline-none focus:border-fuchsia-500"
                                        value={formData.coupon}
                                        onChange={e => {
                                            const val = e.target.value.toUpperCase();
@@ -2567,14 +2465,14 @@ const Orders: React.FC<OrdersProps> = ({
                                        }}
                                    />
                                    {showCouponDropdown && filteredCoupons.length > 0 && (
-                                     <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl shadow-xl z-30 max-h-36 overflow-y-auto">
+                                     <div className="absolute top-full left-0 right-0 mt-1 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl shadow-md z-30 max-h-36 overflow-y-auto">
                                        {filteredCoupons.map(code => {
                                          const info = allCoupons[code];
                                          return (
-                                         <div key={code} className="px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700">
+                                         <div key={code} className="px-3 py-2 hover:bg-[var(--md-sys-color-surface-container)]">
                                            <button
                                              type="button"
-                                             className="text-xs font-bold text-gray-700 dark:text-gray-200 w-full text-right"
+                                             className="text-xs font-bold text-[var(--md-sys-color-on-surface)] w-full text-right"
                                              onClick={() => {
                                                setFormData(prev => ({
                                                  ...prev,
@@ -2585,7 +2483,7 @@ const Orders: React.FC<OrdersProps> = ({
                                                setShowCouponDropdown(false);
                                              }}
                                            >
-                                             {code} <span className="text-[10px] text-gray-400">({info.discount} {info.is_percent ? '%' : 'ج.م'})</span>
+                                              {code} <span className="text-[10px] text-[var(--md-sys-color-on-surface-variant)]">({info.discount} {info.is_percent ? '%' : 'ج.م'})</span>
                                            </button>
                                          </div>
                                          );
@@ -2594,31 +2492,31 @@ const Orders: React.FC<OrdersProps> = ({
                                    )}
                                 </div>
                                 <div className="space-y-1">
-                                  <label className="text-[10px] font-black text-gray-500 flex justify-between items-center">قيمة الخصم<span className="text-[8px] bg-gray-200 dark:bg-slate-700 px-2 py-0.5 rounded text-gray-600 dark:text-gray-300 font-bold">{isPercentDiscount ? 'نسبة %' : 'مبلغ ثابت'}</span></label>
+                                  <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] flex justify-between items-center">قيمة الخصم<span className="text-[8px] bg-[var(--md-sys-color-surface-container)] px-2 py-0.5 rounded text-[var(--md-sys-color-on-surface)] font-bold">{isPercentDiscount ? 'نسبة %' : 'مبلغ ثابت'}</span></label>
                                   <div className="relative">
                                       <input type="number" className="w-full py-2.5 pl-10 pr-3 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl text-center font-black text-sm text-red-500 dark:text-red-400 outline-none cursor-not-allowed opacity-70" value={formData.couponDiscount} readOnly />
-                                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 font-bold text-[10px] pointer-events-none">{isPercentDiscount ? <Percent size={13}/> : 'ج.م'}</div>
-                                  </div>
+                                       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)] font-bold text-[10px] pointer-events-none">{isPercentDiscount ? <Percent size={13}/> : 'ج.م'}</div>
+                                   </div>
                                 </div>
                            </div>
                            ) : (
                            <div className="animate-in fade-in slide-in-from-top-2">
                                <div className="flex gap-3 items-end">
                                  <div className="flex-1 space-y-1">
-                                   <label className="text-[10px] font-black text-gray-500">نوع الخصم</label>
-                                   <div className="flex bg-gray-100 dark:bg-slate-800 rounded-xl p-0.5">
+                                   <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)]">نوع الخصم</label>
+                                   <div className="flex bg-[var(--md-sys-color-surface-container)] rounded-xl p-0.5">
                                      <button type="button"
                                        onClick={() => setIsPercentDiscount(true)}
-                                       className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${isPercentDiscount ? 'bg-white dark:bg-slate-700 shadow-sm text-red-500 dark:text-red-400' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                                       className={`flex-1 py-2 text-xs font-black rounded-lg transition-all duration-200 ${isPercentDiscount ? 'bg-[var(--md-sys-color-surface)] shadow-sm text-red-500 dark:text-red-400' : 'text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] dark:hover:text-gray-300'}`}
                                      >نسبة %</button>
                                      <button type="button"
                                        onClick={() => setIsPercentDiscount(false)}
-                                       className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${!isPercentDiscount ? 'bg-white dark:bg-slate-700 shadow-sm text-red-500 dark:text-red-400' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                                       className={`flex-1 py-2 text-xs font-black rounded-lg transition-all duration-200 ${!isPercentDiscount ? 'bg-[var(--md-sys-color-surface)] shadow-sm text-red-500 dark:text-red-400' : 'text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] dark:hover:text-gray-300'}`}
                                      >مبلغ ثابت</button>
                                    </div>
                                  </div>
                                  <div className="flex-1 space-y-1">
-                                   <label className="text-[10px] font-black text-gray-500">قيمة الخصم</label>
+                                   <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)]">قيمة الخصم</label>
                                    <div className="relative">
                                      <input type="number"
                                        className="w-full py-2.5 pl-10 pr-3 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl text-center font-black text-sm text-red-500 dark:text-red-400 outline-none"
@@ -2637,18 +2535,18 @@ const Orders: React.FC<OrdersProps> = ({
               </div>
               <div className="space-y-2 md:col-span-2">
                  <button type="button" onClick={() => document.getElementById('advanced-fields')?.classList.toggle('hidden')} className="text-[11px] font-black text-violet-600 dark:text-violet-400 flex items-center gap-1 hover:underline"><Plus size={13}/> حقول إضافية (UTM, Ref, Notes)</button>
-                 <div id="advanced-fields" className={`${editingOrderId && editingOrderId !== 'new' ? '' : 'hidden'} grid grid-cols-1 md:grid-cols-2 gap-3 mt-2 pt-3 border-t border-gray-100 dark:border-slate-800`}>
-                    <input className="py-2.5 px-3 bg-gray-50 dark:bg-slate-800 rounded-xl text-xs font-bold dark:text-gray-200 border border-gray-100 dark:border-slate-700 outline-none focus:bg-white dark:focus:bg-slate-900 transition-all" placeholder="ملاحظات (Notes)" value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} />
-                    <input className="py-2.5 px-3 bg-gray-50 dark:bg-slate-800 rounded-xl text-xs font-bold dark:text-gray-200 border border-gray-100 dark:border-slate-700 outline-none focus:bg-white dark:focus:bg-slate-900 transition-all" placeholder="بيانات إضافية (Extra Data)" value={formData.extraData} onChange={e => setFormData({...formData, extraData: e.target.value})} />
-                     <input className="py-2.5 px-3 bg-gray-50 dark:bg-slate-800 rounded-xl text-xs font-bold dark:text-gray-200 border border-gray-100 dark:border-slate-700 outline-none focus:bg-white dark:focus:bg-slate-900 transition-all" placeholder="مصدر الحملة (UTM Source)" value={formData.utmSource} onChange={e => setFormData({...formData, utmSource: e.target.value})} />
-                    <input className="py-2.5 px-3 bg-gray-50 dark:bg-slate-800 rounded-xl text-xs font-bold dark:text-gray-200 border border-gray-100 dark:border-slate-700 outline-none focus:bg-white dark:focus:bg-slate-900 transition-all" placeholder="مصدر العميل (Customer Source)" value={formData.customerSource} onChange={e => setFormData({...formData, customerSource: e.target.value})} />
-                    <input className="py-2.5 px-3 bg-gray-50 dark:bg-slate-800 rounded-xl text-xs font-bold dark:text-gray-200 border border-gray-100 dark:border-slate-700 outline-none focus:bg-white dark:focus:bg-slate-900 transition-all" placeholder="Ref" value={formData.ref} onChange={e => setFormData({...formData, ref: e.target.value})} />
+                  <div id="advanced-fields" className={`${editingOrderId && editingOrderId !== 'new' ? '' : 'hidden'} grid grid-cols-1 md:grid-cols-2 gap-3 mt-2 pt-3 border-t border-[var(--md-sys-color-outline-variant)]/20`}>
+                     <input className="py-2.5 px-3 bg-[var(--md-sys-color-surface-container)] rounded-xl text-xs font-bold dark:text-gray-200 border border-[var(--md-sys-color-outline-variant)]/20 outline-none focus:bg-[var(--md-sys-color-surface)] transition-colors duration-200" placeholder="ملاحظات (Notes)" value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} />
+                     <input className="py-2.5 px-3 bg-[var(--md-sys-color-surface-container)] rounded-xl text-xs font-bold dark:text-gray-200 border border-[var(--md-sys-color-outline-variant)]/20 outline-none focus:bg-[var(--md-sys-color-surface)] transition-colors duration-200" placeholder="بيانات إضافية (Extra Data)" value={formData.extraData} onChange={e => setFormData({...formData, extraData: e.target.value})} />
+                      <input className="py-2.5 px-3 bg-[var(--md-sys-color-surface-container)] rounded-xl text-xs font-bold dark:text-gray-200 border border-[var(--md-sys-color-outline-variant)]/20 outline-none focus:bg-[var(--md-sys-color-surface)] transition-colors duration-200" placeholder="مصدر الحملة (UTM Source)" value={formData.utmSource} onChange={e => setFormData({...formData, utmSource: e.target.value})} />
+                     <input className="py-2.5 px-3 bg-[var(--md-sys-color-surface-container)] rounded-xl text-xs font-bold dark:text-gray-200 border border-[var(--md-sys-color-outline-variant)]/20 outline-none focus:bg-[var(--md-sys-color-surface)] transition-colors duration-200" placeholder="مصدر العميل (Customer Source)" value={formData.customerSource} onChange={e => setFormData({...formData, customerSource: e.target.value})} />
+                     <input className="py-2.5 px-3 bg-[var(--md-sys-color-surface-container)] rounded-xl text-xs font-bold dark:text-gray-200 border border-[var(--md-sys-color-outline-variant)]/20 outline-none focus:bg-[var(--md-sys-color-surface)] transition-colors duration-200" placeholder="Ref" value={formData.ref} onChange={e => setFormData({...formData, ref: e.target.value})} />
                   </div>
               </div>
             </div>
-            <hr className="border-gray-100 dark:border-slate-800" />
+            <hr className="border-[var(--md-sys-color-outline-variant)]/20" />
             <div className="space-y-4">
-              <h4 className="font-black text-gray-900 dark:text-white text-sm flex items-center gap-2">
+              <h4 className="font-black text-[var(--md-sys-color-on-surface)] text-sm flex items-center gap-2">
                 <Package size={16} className="text-cyan-500" /> منتجات الطلب
               </h4>
               <div className="flex flex-wrap gap-2.5 items-end">
@@ -2680,23 +2578,23 @@ const Orders: React.FC<OrdersProps> = ({
                       );
                     })()}
                     <div className="flex-none flex gap-2.5 items-end">
-                      <input type="number" min="1" className="w-20 py-2.5 px-3 bg-gray-50 dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 outline-none text-gray-900 dark:text-white font-bold text-xs text-center" value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value))} />
-                      <button type="button" onClick={addItemToOrder} className="py-2.5 px-4 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-xl text-xs font-black transition-all shadow-sm hover:opacity-90 whitespace-nowrap">+ إضافة</button>
+                      <input type="number" min="1" className="w-20 py-2.5 px-3 bg-[var(--md-sys-color-surface-container)] rounded-xl border border-[var(--md-sys-color-outline-variant)]/20 outline-none text-[var(--md-sys-color-on-surface)] font-bold text-xs text-center" value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value))} />
+                       <button type="button" onClick={addItemToOrder} className="py-2.5 px-4 rounded-xl text-xs font-black transition-opacity duration-200 shadow-sm hover:opacity-90 whitespace-nowrap" style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }}>+ إضافة</button>
                     </div>
                   </>
                 )}
               </div>
               {orderItems.length > 0 && (
-                 <div className="border border-gray-100 dark:border-slate-700 rounded-2xl overflow-x-auto shadow-sm">
+                 <div className="border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl overflow-x-auto shadow-sm">
                    <table className="w-full text-right text-sm min-w-[550px]">
-                    <thead className="bg-gray-50 dark:bg-slate-800 border-b border-gray-100 dark:border-slate-700">
+                    <thead className="bg-[var(--md-sys-color-surface-container)] border-b border-[var(--md-sys-color-outline-variant)]/20">
                       <tr>
-                        <th className="p-3 font-black text-[10px] text-gray-500 dark:text-gray-400 text-center w-10">الصورة</th>
-                        <th className="p-3 font-black text-[10px] text-gray-500 dark:text-gray-400 text-right">المنتج</th>
-                        <th className="p-3 font-black text-[10px] text-gray-500 dark:text-gray-400 text-right">الخيار</th>
-                        <th className="p-3 font-black text-[10px] text-gray-500 dark:text-gray-400 text-center">SKU</th>
-                        <th className="p-3 font-black text-[10px] text-gray-500 dark:text-gray-400 text-center">الكمية</th>
-                        <th className="p-3 font-black text-[10px] text-gray-500 dark:text-gray-400 text-center">السعر</th>
+                        <th className="p-3 font-black text-[10px] text-[var(--md-sys-color-on-surface-variant)] text-center w-10">الصورة</th>
+                        <th className="p-3 font-black text-[10px] text-[var(--md-sys-color-on-surface-variant)] text-right">المنتج</th>
+                        <th className="p-3 font-black text-[10px] text-[var(--md-sys-color-on-surface-variant)] text-right">الخيار</th>
+                        <th className="p-3 font-black text-[10px] text-[var(--md-sys-color-on-surface-variant)] text-center">SKU</th>
+                        <th className="p-3 font-black text-[10px] text-[var(--md-sys-color-on-surface-variant)] text-center">الكمية</th>
+                        <th className="p-3 font-black text-[10px] text-[var(--md-sys-color-on-surface-variant)] text-center">السعر</th>
                         <th className="p-3"></th>
                       </tr>
                     </thead>
@@ -2708,7 +2606,7 @@ const Orders: React.FC<OrdersProps> = ({
                                 <div className="inline-block">
                                   <img
                                     src={item.image}
-                                    className="w-9 h-9 rounded-lg object-cover border border-gray-100 dark:border-slate-700 cursor-pointer"
+                                    className="w-9 h-9 rounded-lg object-cover border border-[var(--md-sys-color-outline-variant)]/20 cursor-pointer"
                                     onClick={() => setPreviewImage(item.image)}
                                     alt=""
                                     onMouseEnter={e => {
@@ -2728,12 +2626,12 @@ const Orders: React.FC<OrdersProps> = ({
                                 </div>
                               )}
                             </td>
-                            <td className="p-3 font-bold text-xs text-gray-800 dark:text-gray-200">
+                            <td className="p-3 font-bold text-xs text-[var(--md-sys-color-on-surface)]">
                               {editingItemIndex === idx ? (
                                 <span className="flex items-center gap-1.5"><Edit2 size={12} className="text-indigo-500" /> {item.productName}</span>
                               ) : item.productName}
                             </td>
-                             <td className="p-3 text-[10px] text-gray-500 dark:text-gray-400 font-bold min-w-[160px]">
+                             <td className="p-3 text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-bold min-w-[160px]">
                                 {editingItemIndex === idx ? (
                                   (() => {
                                     const prod = products.find(p => p.id === item.productId);
@@ -2757,14 +2655,14 @@ const Orders: React.FC<OrdersProps> = ({
                                 ) : item.variantLabel}
                                </td>
                               <td className="p-3 text-center">
-                                <span className="font-mono text-[10px] font-bold text-gray-500 dark:text-gray-400">
+                                <span className="font-mono text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)]">
                                   {item.sku || '—'}
                                   {item.skuStatus === 'unmatched' && <span className="text-red-500 mr-1" title="SKU غير متطابق - يتطلب مراجعة">⚠️</span>}
                                 </span>
                               </td>
                             <td className="p-3 text-center font-black text-xs dark:text-white">
                               {editingItemIndex === idx ? (
-                                <input type="number" min="1" className="w-16 mx-auto py-1.5 px-2 bg-white dark:bg-slate-800 rounded-lg border border-gray-100 dark:border-slate-700 outline-none text-gray-900 dark:text-white font-bold text-xs text-center" value={editQuantity} onChange={(e) => setEditQuantity(parseInt(e.target.value) || 1)} />
+                                <input type="number" min="1" className="w-16 mx-auto py-1.5 px-2 bg-[var(--md-sys-color-surface)] rounded-lg border border-[var(--md-sys-color-outline-variant)]/20 outline-none text-[var(--md-sys-color-on-surface)] font-bold text-xs text-center" value={editQuantity} onChange={(e) => setEditQuantity(parseInt(e.target.value) || 1)} />
                               ) : item.quantity}
                             </td>
                             <td className="p-3 text-center font-black text-xs text-green-500 dark:text-green-400">
@@ -2795,17 +2693,17 @@ const Orders: React.FC<OrdersProps> = ({
                          </tr>
                       ))}
                     </tbody>
-                    <tfoot className="bg-gray-50 dark:bg-slate-900/50 border-t border-gray-100 dark:border-slate-700">
+                    <tfoot className="bg-[var(--md-sys-color-surface-container)] border-t border-[var(--md-sys-color-outline-variant)]/20">
                        <tr>
                            <td colSpan={6} className="p-0">
                              <div className="flex flex-col gap-1 p-4 text-xs">
                                 <div className="flex justify-between items-center px-3 max-w-[250px] mr-auto">
-                                   <span className="text-gray-500 font-bold">مجموع المنتجات:</span>
-                                   <span className="font-black text-gray-900 dark:text-white">{itemsTotal.toLocaleString()} ج.م</span>
+                                   <span className="text-[var(--md-sys-color-on-surface-variant)] font-bold">مجموع المنتجات:</span>
+                                   <span className="font-black text-[var(--md-sys-color-on-surface)]">{itemsTotal.toLocaleString()} ج.م</span>
                                 </div>
                                 <div className="flex justify-between items-center px-3 max-w-[250px] mr-auto">
-                                   <span className="text-gray-500 font-bold">الشحن:</span>
-                                   <span className="font-black text-gray-900 dark:text-white">{isFreeShipping ? <span className="text-emerald-600">مجاني</span> : `${formData.shippingCost} ج.م`}</span>
+                                   <span className="text-[var(--md-sys-color-on-surface-variant)] font-bold">الشحن:</span>
+                                   <span className="font-black text-[var(--md-sys-color-on-surface)]">{isFreeShipping ? <span className="text-emerald-600">مجاني</span> : `${formData.shippingCost} ج.م`}</span>
                                 </div>
                                 {useCoupon && formData.couponDiscount > 0 && (
                                    <div className="flex justify-between items-center px-3 max-w-[250px] mr-auto text-emerald-600">
@@ -2813,9 +2711,9 @@ const Orders: React.FC<OrdersProps> = ({
                                       <span className="font-black">-{calculatedDiscount} ج.م</span>
                                    </div>
                                 )}
-                                <div className="mx-auto w-[250px] h-px bg-gray-200 dark:bg-slate-700 my-1"></div>
+                                <div className="mx-auto w-[250px] h-px bg-[var(--md-sys-color-outline-variant)]/20 my-1"></div>
                                 <div className="flex justify-between items-center px-3 max-w-[250px] mr-auto text-sm">
-                                   <span className="font-black text-gray-900 dark:text-white">الإجمالي:</span>
+                                   <span className="font-black text-[var(--md-sys-color-on-surface)]">الإجمالي:</span>
                                     <span className="font-black text-green-500 dark:text-green-400">{Math.max(0, finalTotal).toLocaleString()} ج.م</span>
                                 </div>
                              </div>
@@ -2826,16 +2724,13 @@ const Orders: React.FC<OrdersProps> = ({
                 </div>
               )}
             </div>
-            <button type="submit" className="w-full bg-gradient-to-br from-indigo-500 to-indigo-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-indigo-500/20 hover:opacity-90 transition-all text-base flex justify-center items-center gap-2">
+            <button type="submit" className="w-full text-white font-black py-4 rounded-2xl shadow-lg hover:opacity-90 transition-opacity duration-200 text-base flex justify-center items-center gap-2" style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }}>
                 <CheckCircle size={20} />
                 {editingOrderId && editingOrderId !== 'new' ? 'حفظ التعديلات' : 'حفظ وتأكيد الطلب'} 
                 <span className="text-xs opacity-80 text-green-200">({Math.max(0, finalTotal).toLocaleString()} ج.م)</span>
             </button>
           </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      </MD3Dialog>
 
       <AnimatePresence>
         {previewImage && (
@@ -2843,7 +2738,7 @@ const Orders: React.FC<OrdersProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[400] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[400] flex items-center justify-center bg-black/60"
             onClick={() => setPreviewImage(null)}
           >
             <motion.img
@@ -2861,11 +2756,11 @@ const Orders: React.FC<OrdersProps> = ({
 
       {tableHoveredImage && (
         <div
-          style={{ position: 'fixed', top: tableTooltipPos.top, left: tableTooltipPos.left, zIndex: 9999 }}
+          style={{ position: 'fixed', top: tableTooltipPos.top, left: tableTooltipPos.left, zIndex: 700 }}
           onMouseEnter={() => { if (tableHoverTimeoutRef.current) clearTimeout(tableHoverTimeoutRef.current); }}
           onMouseLeave={() => setTableHoveredImage(null)}
         >
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 p-2">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-2">
             <img src={tableHoveredImage} className="w-36 h-36 rounded-xl object-cover max-w-none" alt="" />
           </div>
         </div>
@@ -2896,7 +2791,7 @@ const Orders: React.FC<OrdersProps> = ({
                 layout
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`bg-white dark:bg-slate-900 rounded-[24px] shadow-sm border transition-all relative ${isSelected ? 'ring-4 ring-blue-500/30 border-blue-500' : 'border-gray-100 dark:border-slate-800 hover:shadow-lg'}`}
+                className={`bg-white dark:bg-slate-900 rounded-[24px] shadow-sm border transition-all duration-200 relative ${isSelected ? 'ring-4 ring-blue-500/30 border-blue-500' : 'border-gray-100 dark:border-slate-800 hover:shadow-lg'}`}
               >
                  <div 
                    className="p-5 cursor-pointer select-none"
@@ -2907,13 +2802,13 @@ const Orders: React.FC<OrdersProps> = ({
                       <div onClick={(e) => e.stopPropagation()} className="mt-1">
                          <button 
                             onClick={() => toggleSelect(order.id)} 
-                            className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${isSelected ? 'bg-blue-500 text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-slate-700'}`}
+                            className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors duration-200 ${isSelected ? 'bg-blue-500 text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-slate-700'}`}
                          >
                             {isSelected ? <Check size={12} strokeWidth={3} /> : <Square size={12} />}
                          </button>
                       </div>
 
-                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-500 flex flex-col items-center justify-center shrink-0 shadow-sm">
+                       <div className="w-11 h-11 rounded-xl flex flex-col items-center justify-center shrink-0 shadow-sm" style={{ backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)' }}>
                          <span className="text-[8px] text-white/70 font-black leading-none">#</span>
                          <span className="text-xs font-black text-white leading-none">{displayOrderId(order.id).split('-').pop()}</span>
                       </div>
@@ -2934,7 +2829,8 @@ const Orders: React.FC<OrdersProps> = ({
                              whileHover={{ scale: 1.05 }}
                              whileTap={{ scale: 0.95 }}
                              onClick={() => startEditing(order)}
-                             className="px-2.5 py-1.5 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white text-[10px] font-bold shadow-md shadow-indigo-500/20 flex items-center gap-1.5 transition-all"
+                              className="px-2.5 py-1.5 rounded-xl text-[10px] font-bold shadow-md flex items-center gap-1.5 transition-colors duration-200"
+                              style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }}
                              title="تعديل"
                           >
                              <Edit2 size={12} />
@@ -2942,7 +2838,7 @@ const Orders: React.FC<OrdersProps> = ({
                           </motion.button>
                          <button 
                             onClick={(e) => handleDeleteSingle(order.id, e as any)}
-                            className="p-1.5 rounded-lg text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 transition-all"
+                            className="p-1.5 rounded-lg text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 transition-colors duration-200"
                             title="حذف"
                          >
                             <Trash2 size={14} />
@@ -2957,7 +2853,7 @@ const Orders: React.FC<OrdersProps> = ({
                           <span className="font-mono text-sm" dir="ltr">{order.customerPhone}</span>
                           <button 
                              onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(order.customerPhone); }}
-                             className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 hover:text-blue-500 transition-all"
+                             className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 hover:text-blue-500 transition-colors duration-200"
                              title="نسخ"
                           >
                              <Copy size={14} />
@@ -2965,7 +2861,7 @@ const Orders: React.FC<OrdersProps> = ({
                           <a 
                              href={`tel:${order.customerPhone}`} 
                              onClick={e => e.stopPropagation()}
-                             className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-emerald-500 hover:text-emerald-600 transition-all"
+                             className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-emerald-500 hover:text-emerald-600 transition-colors duration-200"
                              title="اتصال"
                           >
                              <Phone size={14} />
@@ -2975,7 +2871,7 @@ const Orders: React.FC<OrdersProps> = ({
                              target="_blank"
                              rel="noopener noreferrer"
                              onClick={e => e.stopPropagation()}
-                             className="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all"
+                             className="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200"
                              title="واتساب"
                           >
                              <FaWhatsapp size={15} />
@@ -3039,7 +2935,7 @@ const Orders: React.FC<OrdersProps> = ({
                                 </span>
                                 {activeStatusOrderId === order.id && (
                                    <div className="absolute bottom-full right-0 mb-2 w-48 pt-1 z-50">
-                                      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 p-1.5">
+                                      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-1.5">
                                          <div className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-3 py-1.5">تغيير الحالة</div>
                                          {Object.values(OrderStatus).map(status => (
                                             <button
@@ -3073,14 +2969,14 @@ const Orders: React.FC<OrdersProps> = ({
                                       href={`https://wa.me/20${waNumber}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="p-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-400 hover:text-emerald-600 transition-all border border-gray-100 dark:border-slate-700"
+                                      className="p-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-400 hover:text-emerald-600 transition-colors duration-200 border border-gray-100 dark:border-slate-700"
                                       title="واتساب"
                                    >
                                       <FaWhatsapp size={16} />
                                    </a>
                                    <a 
                                       href={`tel:${order.customerPhone}`}
-                                      className="p-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all border border-gray-100 dark:border-slate-700"
+                                      className="p-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200 border border-gray-100 dark:border-slate-700"
                                       title="اتصال مباشر"
                                    >
                                       <Phone size={15} />
@@ -3127,9 +3023,9 @@ const Orders: React.FC<OrdersProps> = ({
                  const isSelected = selectedIds.has(order.id);
                  const waNumber = order.customerPhone?.replace(/^0/, '');
                  return (
-                  <tr key={order.id} onClick={() => setViewingOrderId(order.id)} className={`cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-slate-800/50 ${isSelected ? 'bg-blue-500/5' : ''}`}>
+                  <tr key={order.id} onClick={() => setViewingOrderId(order.id)} className={`cursor-pointer transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-slate-800/50 ${isSelected ? 'bg-blue-500/5' : ''}`}>
                      <td className="p-4" onClick={e => e.stopPropagation()}>
-                       <button onClick={() => toggleSelect(order.id)} className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${isSelected ? 'bg-blue-500 text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400'}`}>
+                       <button onClick={() => toggleSelect(order.id)} className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors duration-200 ${isSelected ? 'bg-blue-500 text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400'}`}>
                          {isSelected ? <Check size={16} strokeWidth={3} /> : <Square size={16} />}
                         </button>
                      </td>
@@ -3146,7 +3042,7 @@ const Orders: React.FC<OrdersProps> = ({
                              target="_blank"
                              rel="noopener noreferrer"
                              onClick={e => e.stopPropagation()}
-                             className="p-1 rounded hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-400 hover:text-emerald-600 transition-all"
+                             className="p-1 rounded hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-400 hover:text-emerald-600 transition-colors duration-200"
                              title="واتساب"
                           >
                              <FaWhatsapp size={13} />
@@ -3166,7 +3062,7 @@ const Orders: React.FC<OrdersProps> = ({
                               </span>
                               {activeStatusOrderId === order.id && (
                                  <div className="absolute bottom-full right-0 mb-2 w-48 pt-1 z-50">
-                                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 p-1.5">
+                                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-1.5">
                                        <div className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-3 py-1.5">تغيير الحالة</div>
                                        {Object.values(OrderStatus).map(status => (
                                           <button
@@ -3188,8 +3084,8 @@ const Orders: React.FC<OrdersProps> = ({
                      </td>
                      <td className="p-4">
                         <div className="flex items-center gap-1.5">
-                           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={(e) => { e.stopPropagation(); startEditing(order); }} className="p-2.5 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-md shadow-indigo-500/20 transition-all" title="تعديل"><Edit2 size={15} /></motion.button>
-                          <button onClick={(e) => { e.stopPropagation(); handleDeleteSingle(order.id, e as any); }} className="p-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 transition-all" title="حذف"><Trash2 size={15} /></button>
+                            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={(e) => { e.stopPropagation(); startEditing(order); }} className="p-2.5 rounded-xl shadow-md transition-colors duration-200" style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }} title="تعديل"><Edit2 size={15} /></motion.button>
+                          <button onClick={(e) => { e.stopPropagation(); handleDeleteSingle(order.id, e as any); }} className="p-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200" title="حذف"><Trash2 size={15} /></button>
                         </div>
                      </td>
                    </tr>
@@ -3213,15 +3109,15 @@ const Orders: React.FC<OrdersProps> = ({
                 key={order.id}
                 variants={{ hidden: { opacity: 0, scale: 0.9 }, show: { opacity: 1, scale: 1 } }}
                 onClick={() => setViewingOrderId(order.id)}
-                className={`relative bg-white dark:bg-slate-900 rounded-2xl p-3 border transition-all cursor-pointer ${isSelected ? 'ring-2 ring-blue-500 border-blue-500 shadow-md' : 'border-gray-50 dark:border-slate-800 hover:shadow-md'}`}
+                className={`relative bg-white dark:bg-slate-900 rounded-2xl p-3 border transition-all duration-200 cursor-pointer ${isSelected ? 'ring-2 ring-blue-500 border-blue-500 shadow-md' : 'border-gray-50 dark:border-slate-800 hover:shadow-md'}`}
               >
                 <div className="absolute top-1.5 right-1.5 z-10" onClick={e => e.stopPropagation()}>
-                  <button onClick={() => toggleSelect(order.id)} className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${isSelected ? 'bg-blue-500 text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-slate-700'}`}>
+                  <button onClick={() => toggleSelect(order.id)} className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors duration-200 ${isSelected ? 'bg-blue-500 text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-slate-700'}`}>
                     {isSelected ? <Check size={11} strokeWidth={3} /> : <Square size={11} />}
                   </button>
                 </div>
                 <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center shrink-0">
+                   <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)' }}>
                     <span className="text-[8px] font-black text-white">#</span>
                   </div>
                     <div className="min-w-0 flex-1">
@@ -3248,7 +3144,7 @@ const Orders: React.FC<OrdersProps> = ({
                         </span>
                         {activeStatusOrderId === order.id && (
                            <div className="absolute bottom-full right-0 mb-2 w-44 pt-1 z-50">
-                              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 p-1">
+                              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-1">
                                  <div className="text-[9px] font-black text-gray-400 dark:text-gray-500 px-3 py-1.5">تغيير الحالة</div>
                                  {Object.values(OrderStatus).map(status => (
                                     <button
@@ -3275,7 +3171,7 @@ const Orders: React.FC<OrdersProps> = ({
                      const waCompact = order.customerPhone.replace(/^0/, '');
                      return (
                         <a href={`https://wa.me/20${waCompact}`} target="_blank" rel="noopener noreferrer"
-                           className="p-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 text-emerald-400 hover:text-emerald-600 border border-gray-100 dark:border-slate-700 transition-all" title="واتساب">
+                           className="p-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 text-emerald-400 hover:text-emerald-600 border border-gray-100 dark:border-slate-700 transition-colors duration-200" title="واتساب">
                            <FaWhatsapp size={12} />
                         </a>
                      );
@@ -3300,12 +3196,12 @@ const Orders: React.FC<OrdersProps> = ({
                 key={order.id}
                 variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
                 onClick={() => setViewingOrderId(order.id)}
-                className={`bg-white dark:bg-slate-900 rounded-[20px] p-4 border transition-all cursor-pointer ${isSelected ? 'ring-2 ring-blue-500 border-blue-500 shadow-lg' : 'border-gray-100 dark:border-slate-800 hover:shadow-md'}`}
+                className={`bg-white dark:bg-slate-900 rounded-[20px] p-4 border transition-all duration-200 cursor-pointer ${isSelected ? 'ring-2 ring-blue-500 border-blue-500 shadow-lg' : 'border-gray-100 dark:border-slate-800 hover:shadow-md'}`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div onClick={e => e.stopPropagation()}>
-                      <button onClick={() => toggleSelect(order.id)} className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all ${isSelected ? 'bg-blue-500 text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-700'}`}>
+                      <button onClick={() => toggleSelect(order.id)} className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-200 ${isSelected ? 'bg-blue-500 text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-700'}`}>
                         {isSelected ? <Check size={16} strokeWidth={3} /> : <Square size={16} />}
                       </button>
                     </div>
@@ -3322,7 +3218,7 @@ const Orders: React.FC<OrdersProps> = ({
                            target="_blank"
                            rel="noopener noreferrer"
                            onClick={e => e.stopPropagation()}
-                           className="p-0.5 rounded hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-400 hover:text-emerald-600 transition-all"
+                           className="p-0.5 rounded hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-400 hover:text-emerald-600 transition-colors duration-200"
                            title="واتساب"
                         >
                            <FaWhatsapp size={13} />
@@ -3343,7 +3239,7 @@ const Orders: React.FC<OrdersProps> = ({
                         </span>
                         {activeStatusOrderId === order.id && (
                            <div className="absolute bottom-full right-0 mb-2 w-44 pt-1 z-50">
-                              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 p-1">
+                              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-1">
                                  <div className="text-[9px] font-black text-gray-400 dark:text-gray-500 px-3 py-1.5">تغيير الحالة</div>
                                  {Object.values(OrderStatus).map(status => (
                                     <button
@@ -3365,9 +3261,9 @@ const Orders: React.FC<OrdersProps> = ({
                     <div className="flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
                       {order.customerPhone && (
                         <>
-                          <a href={`https://wa.me/20${waNumber}`} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 text-emerald-400 hover:text-emerald-600 border border-gray-100 dark:border-slate-700 transition-all"><FaWhatsapp size={14} /></a>
+                          <a href={`https://wa.me/20${waNumber}`} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 text-emerald-400 hover:text-emerald-600 border border-gray-100 dark:border-slate-700 transition-colors duration-200"><FaWhatsapp size={14} /></a>
                   <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startEditing(order)} className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm" title="تعديل"><Edit2 size={13} /></motion.button>
-                          <button onClick={(e) => handleDeleteSingle(order.id, e as any)} className="p-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 transition-all" title="حذف"><Trash2 size={13} /></button>
+                          <button onClick={(e) => handleDeleteSingle(order.id, e as any)} className="p-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200" title="حذف"><Trash2 size={13} /></button>
                         </>
                       )}
                     </div>
@@ -3389,61 +3285,38 @@ const Orders: React.FC<OrdersProps> = ({
       )}
 
       {/* Full Order Details Modal */}
-      <AnimatePresence>
-        {viewingOrderId && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setViewingOrderId(null)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            />
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-slate-900 rounded-[40px] w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl relative z-10"
-            >
-               {/* Modal Header */}
-                <div className="sticky top-0 bg-white dark:bg-slate-900 p-6 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between z-10">
-                   <div className="flex items-center gap-4">
-                       <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-md shadow-indigo-500/20">
-                         <ShoppingBag size={22} className="text-white" />
-                      </div>
-                      <div>
-                         <h3 className="text-lg font-black text-gray-900 dark:text-white">تفاصيل الطلب</h3>
-                           <p className="text-[10px] text-gray-500 font-bold flex items-center gap-2 flex-wrap">
-                             #{displayOrderId(orders.find(o => o.id === viewingOrderId)?.id || '')}
-                             <span className="opacity-30">•</span>
-                             <span>{formatDate(orders.find(o => o.id === viewingOrderId)?.createdAt, 'date')}</span>
-                             {(() => {
-                               const modalOrder = orders.find(o => o.id === viewingOrderId);
-                               if (!modalOrder) return null;
-                               return (
-                                 <>
-                                   {modalOrder.updatedAt && <><span className="opacity-30">•</span><span className="text-gray-400">آخر تعديل: {formatDate(modalOrder.updatedAt, 'date')}</span></>}
-                                   <span className="opacity-30">•</span>
-                                   <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black ${getStatusStyle(modalOrder.status)}`}>
-                                     {getStatusIcon(modalOrder.status)}
-                                     {modalOrder.status}
-                                   </span>
-                                 </>
-                               );
-                            })()}
-                          </p>
-                      </div>
-                   </div>
-                   <button 
-                     onClick={() => setViewingOrderId(null)}
-                     className="w-9 h-9 rounded-xl bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-red-500 transition-all"
-                   >
-                      <X size={18} />
-                   </button>
-                </div>
-
-                {/* Modal Content */}
-                <div className="p-6">
+      {viewingOrderId && (() => {
+        const vo = orders.find(o => o.id === viewingOrderId);
+        const trans = vo ? getTransitions(vo.status) : [];
+        return (
+      <MD3Dialog
+        isOpen={!!viewingOrderId}
+        onClose={() => setViewingOrderId(null)}
+        title="تفاصيل الطلب"
+        description={`#${displayOrderId(viewingOrderId)} • ${formatDate(vo?.createdAt, 'date')}${vo?.updatedAt ? ` • آخر تعديل: ${formatDate(vo.updatedAt, 'date')}` : ''}`}
+        icon={<ShoppingBag size={20} />}
+        maxWidth="xl"
+        actions={[
+          { label: 'إغلاق', onClick: () => setViewingOrderId(null), variant: 'text' as const },
+          { label: 'تعديل الطلب', onClick: () => { if(vo) startEditing(vo); setViewingOrderId(null); }, variant: 'tonal' as const, icon: <Edit2 size={15} /> },
+          ...(isShippingFilter && trans.length > 0 ? trans.map(t => ({
+            label: t.label,
+            onClick: () => { if(vo) { onUpdateStatus(vo.id, t.nextStatus); setViewingOrderId(null); } },
+            variant: 'filled' as const,
+            icon: <t.icon size={15} />
+          })) : []),
+          { label: isShippingFilter ? 'طباعة بوليصة' : 'طباعة فاتورة', onClick: () => {
+              if (isShippingFilter && vo) {
+                setWaybillOrders([vo]);
+                setWaybillModalOpen(true);
+              } else {
+                setSinglePrintOrderId(viewingOrderId);
+              }
+              setViewingOrderId(null);
+          }, variant: 'tonal' as const, icon: <Printer size={15} /> }
+        ]}
+      >
+                <div>
                    {orders.find(o => o.id === viewingOrderId) && (() => {
                      const o = orders.find(ord => ord.id === viewingOrderId)!;
                      const mapQuery = encodeURIComponent(`${o.city || ''} ${o.address || ''}`);
@@ -3453,37 +3326,37 @@ const Orders: React.FC<OrdersProps> = ({
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                              {/* LEFT COLUMN - Customer Info with tall map */}
                              <div className="space-y-4">
-                                <div className="bg-gray-50 dark:bg-slate-800/50 p-5 rounded-3xl border border-gray-100 dark:border-slate-800">
-                                  <h4 className="text-[10px] font-black text-gray-400 dark:text-gray-500 tracking-wider mb-4 flex items-center gap-1.5">
+                                <div className="bg-[var(--md-sys-color-surface-container)] p-5 rounded-3xl border border-[var(--md-sys-color-outline-variant)]/20">
+                                   <h4 className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] tracking-wider mb-4 flex items-center gap-1.5">
                                      <User size={12} className="text-violet-500" /> بيانات العميل
                                    </h4>
                                   <div className="space-y-3">
                                      <div>
-                                        <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold mb-0.5">الاسم</span>
-                                        <span className="text-sm font-black text-gray-900 dark:text-white">{o.customerName}</span>
+                                        <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">الاسم</span>
+                                        <span className="text-sm font-black text-[var(--md-sys-color-on-surface)]">{o.customerName}</span>
                                      </div>
                                      <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                           <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold mb-0.5">رقم الهاتف</span>
+                                           <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">رقم الهاتف</span>
                                            <div className="flex items-center gap-1.5">
-                                             <span className="text-sm font-black dark:text-white font-mono" dir="ltr">{o.customerPhone}</span>
-                                             <button onClick={() => navigator.clipboard.writeText(o.customerPhone)} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-blue-500 transition-all"><Copy size={10} /></button>
-                                             <a href={`tel:${o.customerPhone}`} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-emerald-400 hover:text-emerald-500 transition-all"><Phone size={10} /></a>
-                                             <a href={`https://wa.me/20${waNumber}`} target="_blank" rel="noopener noreferrer" className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-emerald-500 transition-all"><FaWhatsapp size={10} /></a>
+                                              <span className="text-sm font-black dark:text-[var(--md-sys-color-on-surface)] font-mono" dir="ltr">{o.customerPhone}</span>
+                                             <button onClick={() => navigator.clipboard.writeText(o.customerPhone)} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-blue-500 transition-colors duration-200"><Copy size={10} /></button>
+                                             <a href={`tel:${o.customerPhone}`} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-emerald-400 hover:text-emerald-500 transition-colors duration-200"><Phone size={10} /></a>
+                                             <a href={`https://wa.me/20${waNumber}`} target="_blank" rel="noopener noreferrer" className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-emerald-500 transition-colors duration-200"><FaWhatsapp size={10} /></a>
                                            </div>
                                         </div>
                                         {o.altPhone && (
                                            <div>
-                                              <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold mb-0.5">هاتف بديل</span>
+                                               <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">هاتف بديل</span>
                                               <div className="flex items-center gap-1.5">
-                                                <span className="text-sm font-black dark:text-white font-mono" dir="ltr">{o.altPhone}</span>
-                                                <button onClick={() => navigator.clipboard.writeText(o.altPhone || '')} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-blue-500 transition-all"><Copy size={10} /></button>
+                                                 <span className="text-sm font-black dark:text-[var(--md-sys-color-on-surface)] font-mono" dir="ltr">{o.altPhone}</span>
+                                                <button onClick={() => navigator.clipboard.writeText(o.altPhone || '')} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-blue-500 transition-colors duration-200"><Copy size={10} /></button>
                                               </div>
                                            </div>
                                         )}
                                      </div>
                                      <div>
-                                        <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold mb-0.5">العنوان</span>
+                                         <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">العنوان</span>
                                         <div className="flex items-center gap-1.5">
                                           <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{o.city}{o.city && o.address ? ' - ' : ''}{o.address}</span>
                                             {(o.mapUrl || (o.latitude && o.longitude) || (mapQuery && mapQuery.length > 3)) && (
@@ -3529,40 +3402,40 @@ const Orders: React.FC<OrdersProps> = ({
 
                              {/* RIGHT COLUMN - Technical, Extra, Notes, Shipping */}
                              <div className="space-y-4">
-                                <div className="bg-gray-50 dark:bg-slate-800/50 p-5 rounded-3xl border border-gray-100 dark:border-slate-800">
-                                   <h4 className="text-[10px] font-black text-gray-400 dark:text-gray-500 tracking-wider mb-4 flex items-center gap-1.5">
+                                 <div className="bg-[var(--md-sys-color-surface-container)] p-5 rounded-3xl border border-[var(--md-sys-color-outline-variant)]/20">
+                                   <h4 className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] tracking-wider mb-4 flex items-center gap-1.5">
                                       <Hash size={12} className="text-amber-500" /> بيانات تقنية
                                    </h4>
                                    <div className="grid grid-cols-2 gap-y-4 gap-x-3">
                                       {o.sourceId && (
-                                         <div className="col-span-2 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-gray-100 dark:border-slate-700">
-                                             <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold mb-0.5">رقم المتجر</span>
+                                         <div className="col-span-2 bg-[var(--md-sys-color-surface)] p-3 rounded-2xl border border-[var(--md-sys-color-outline-variant)]/20">
+                                             <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">رقم المتجر</span>
                                              <span className="text-sm font-black text-amber-600 dark:text-amber-400 font-mono">{o.sourceId}</span>
                                          </div>
                                       )}
                                       <div>
-                                         <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold mb-0.5">المصدر (UTM)</span>
-                                         <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{o.utmSource || '-'}</span>
-                                      </div>
-                                      <div>
-                                         <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold mb-0.5">الحملة</span>
-                                         <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{o.utmCampaign || '-'}</span>
-                                      </div>
-                                      <div>
-                                         <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold mb-0.5">Ref</span>
-                                         <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{o.ref || '-'}</span>
-                                      </div>
-                                      <div>
-                                         <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold mb-0.5">كود الإحالة</span>
-                                         <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{o.referralCode || '-'}</span>
+                                          <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">المصدر (UTM)</span>
+                                          <span className="text-xs font-bold text-[var(--md-sys-color-on-surface)]">{o.utmSource || '-'}</span>
+                                       </div>
+                                       <div>
+                                          <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">الحملة</span>
+                                          <span className="text-xs font-bold text-[var(--md-sys-color-on-surface)]">{o.utmCampaign || '-'}</span>
+                                       </div>
+                                       <div>
+                                          <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">Ref</span>
+                                          <span className="text-xs font-bold text-[var(--md-sys-color-on-surface)]">{o.ref || '-'}</span>
+                                       </div>
+                                       <div>
+                                          <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">كود الإحالة</span>
+                                          <span className="text-xs font-bold text-[var(--md-sys-color-on-surface)]">{o.referralCode || '-'}</span>
                                       </div>
                                    </div>
                                 </div>
 
                                 {o.extraData && (
-                                   <div className="bg-gray-50 dark:bg-slate-800/50 p-5 rounded-3xl border border-gray-100 dark:border-slate-800">
-                                      <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold mb-2">بيانات إضافية</span>
-                                      <div className="text-[11px] font-mono text-gray-600 dark:text-gray-400 break-all bg-white dark:bg-slate-900 p-3 rounded-2xl border border-gray-100 dark:border-slate-800">
+                                    <div className="bg-[var(--md-sys-color-surface-container)] p-5 rounded-3xl border border-[var(--md-sys-color-outline-variant)]/20">
+                                       <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-2">بيانات إضافية</span>
+                                       <div className="text-[11px] font-mono text-[var(--md-sys-color-on-surface-variant)] break-all bg-[var(--md-sys-color-surface)] p-3 rounded-2xl border border-[var(--md-sys-color-outline-variant)]/20">
                                          {o.extraData}
                                       </div>
                                    </div>
@@ -3580,25 +3453,25 @@ const Orders: React.FC<OrdersProps> = ({
                                 )}
 
                                 {/* Shipping Details - bottom of right column */}
-                                <div className="bg-gray-50 dark:bg-slate-800/50 p-5 rounded-3xl border border-gray-100 dark:border-slate-800">
-                                  <h4 className="text-[10px] font-black text-gray-400 dark:text-gray-500 tracking-wider mb-4 flex items-center gap-1.5">
-                                     <Truck size={12} className="text-sky-500" /> تفاصيل الشحن
-                                  </h4>
-                                  <div className="grid grid-cols-2 gap-3">
-                                     <div>
-                                        <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold mb-0.5">نوع التوصيل</span>
+                                 <div className="bg-[var(--md-sys-color-surface-container)] p-5 rounded-3xl border border-[var(--md-sys-color-outline-variant)]/20">
+                                   <h4 className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] tracking-wider mb-4 flex items-center gap-1.5">
+                                      <Truck size={12} className="text-sky-500" /> تفاصيل الشحن
+                                   </h4>
+                                   <div className="grid grid-cols-2 gap-3">
+                                      <div>
+                                         <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">نوع التوصيل</span>
                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-black ${o.shippingMethod === ShippingMethod.LOCAL ? 'bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400' : 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'}`}>
                                            {o.shippingMethod}
                                         </span>
                                      </div>
                                      {o.shippingCompany && (
                                         <div>
-                                           <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold mb-0.5">شركة الشحن</span>
-                                           <span className="text-sm font-black dark:text-white">{o.shippingCompany}</span>
+                                            <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">شركة الشحن</span>
+                                            <span className="text-sm font-black text-[var(--md-sys-color-on-surface)]">{o.shippingCompany}</span>
                                         </div>
                                      )}
                                      <div>
-                                        <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold mb-0.5">رسوم الشحن</span>
+                                         <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">رسوم الشحن</span>
                                         <span className="text-sm font-black text-sky-600 dark:text-sky-400">{o.shippingCost} ج.م</span>
                                      </div>
                                   </div>
@@ -3608,20 +3481,20 @@ const Orders: React.FC<OrdersProps> = ({
 
                         {/* Products Table */}
                         <div className="space-y-3">
-                           <h4 className="text-sm font-black text-gray-900 dark:text-white flex items-center gap-2">
+                           <h4 className="text-sm font-black text-[var(--md-sys-color-on-surface)] flex items-center gap-2">
                               <Package size={16} className="text-cyan-500" /> المنتجات ({o.items.length})
                            </h4>
-                           <div className="border border-gray-100 dark:border-slate-800 rounded-3xl overflow-x-auto shadow-sm">
+                           <div className="border border-[var(--md-sys-color-outline-variant)]/20 rounded-3xl overflow-x-auto shadow-sm">
                                <table className="w-full text-right min-w-[600px]">
-                                  <thead className="bg-gray-50 dark:bg-slate-800/50">
+                                  <thead className="bg-[var(--md-sys-color-surface-container)]">
                                      <tr>
-                                       <th className="p-3 text-[10px] font-black text-gray-400 dark:text-gray-500 text-center w-10">الصورة</th>
-                                        <th className="p-3 text-[10px] font-black text-gray-400 dark:text-gray-500">المنتج</th>
-                                        <th className="p-3 text-[10px] font-black text-gray-400 dark:text-gray-500">الخيار</th>
-                                        <th className="p-3 text-[10px] font-black text-gray-400 dark:text-gray-500 text-center">SKU</th>
-                                        <th className="p-3 text-[10px] font-black text-gray-400 dark:text-gray-500 text-center">الكمية</th>
-                                        <th className="p-3 text-[10px] font-black text-gray-400 dark:text-gray-500 text-center">السعر</th>
-                                        <th className="p-3 text-[10px] font-black text-gray-400 dark:text-gray-500 text-center">الإجمالي</th>
+                                       <th className="p-3 text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] text-center w-10">الصورة</th>
+                                        <th className="p-3 text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)]">المنتج</th>
+                                        <th className="p-3 text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)]">الخيار</th>
+                                        <th className="p-3 text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] text-center">SKU</th>
+                                        <th className="p-3 text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] text-center">الكمية</th>
+                                        <th className="p-3 text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] text-center">السعر</th>
+                                        <th className="p-3 text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] text-center">الإجمالي</th>
                                       </tr>
                                    </thead>
                                    <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
@@ -3641,12 +3514,12 @@ const Orders: React.FC<OrdersProps> = ({
                                                  </div>
                                                )}
                                             </td>
-                                            <td className="p-3 font-black text-sm text-gray-900 dark:text-white">{item.productName}</td>
-                                            <td className="p-3">
-                                               <span className="inline-flex px-2 py-0.5 bg-gray-100 dark:bg-slate-800 rounded-lg text-[9px] font-bold text-gray-500 dark:text-gray-400">{item.variantLabel}</span>
-                                            </td>
-                                            <td className="p-3 text-center">
-                                              <span className="font-mono text-[10px] font-bold text-gray-500 dark:text-gray-400">{item.sku || '—'}{item.skuStatus === 'unmatched' && <span className="text-red-500 mr-1" title="SKU غير متطابق">⚠️</span>}</span>
+                                             <td className="p-3 font-black text-sm text-[var(--md-sys-color-on-surface)]">{item.productName}</td>
+                                             <td className="p-3">
+                                                <span className="inline-flex px-2 py-0.5 bg-[var(--md-sys-color-surface-container)] rounded-lg text-[9px] font-bold text-[var(--md-sys-color-on-surface-variant)]">{item.variantLabel}</span>
+                                             </td>
+                                             <td className="p-3 text-center">
+                                               <span className="font-mono text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)]">{item.sku || '—'}{item.skuStatus === 'unmatched' && <span className="text-red-500 mr-1" title="SKU غير متطابق">⚠️</span>}</span>
                                             </td>
                                             <td className="p-3 text-center font-black dark:text-white text-xs">{item.quantity}</td>
                                             <td className="p-3 text-center text-gray-500 font-bold text-xs">{item.price} ج.م</td>
@@ -3654,17 +3527,17 @@ const Orders: React.FC<OrdersProps> = ({
                                          </tr>
                                       ))}
                                   </tbody>
-                                  <tfoot className="bg-gray-50 dark:bg-slate-800/50">
-                                     <tr>
-                                        <td colSpan={6} className="p-4">
-                                          <div className="flex flex-col items-end gap-1.5 max-w-[240px] mr-auto">
-                                             <div className="flex justify-between w-full text-xs">
-                                                <span className="text-gray-500 font-bold">مجموع المنتجات:</span>
-                                                <span className="font-black text-gray-900 dark:text-white">{o.items.reduce((sum, i) => sum + (i.price * i.quantity), 0).toLocaleString()} ج.م</span>
+                                   <tfoot className="bg-[var(--md-sys-color-surface-container)]">
+                                      <tr>
+                                         <td colSpan={6} className="p-4">
+                                           <div className="flex flex-col items-end gap-1.5 max-w-[240px] mr-auto">
+                                              <div className="flex justify-between w-full text-xs">
+                                                 <span className="text-[var(--md-sys-color-on-surface-variant)] font-bold">مجموع المنتجات:</span>
+                                                 <span className="font-black text-[var(--md-sys-color-on-surface)]">{o.items.reduce((sum, i) => sum + (i.price * i.quantity), 0).toLocaleString()} ج.م</span>
                                              </div>
-                                             <div className="flex justify-between w-full text-xs">
-                                                <span className="text-gray-500 font-bold">الشحن:</span>
-                                                <span className="font-black text-gray-900 dark:text-white">{o.shippingCost} ج.م</span>
+                                              <div className="flex justify-between w-full text-xs">
+                                                 <span className="text-[var(--md-sys-color-on-surface-variant)] font-bold">الشحن:</span>
+                                                 <span className="font-black text-[var(--md-sys-color-on-surface)]">{o.shippingCost} ج.م</span>
                                              </div>
                                              {o.couponDiscount && (
                                                 <div className="flex justify-between w-full text-xs text-emerald-600">
@@ -3672,9 +3545,9 @@ const Orders: React.FC<OrdersProps> = ({
                                                    <span className="font-black">-{o.couponDiscount} ج.م</span>
                                                 </div>
                                              )}
-                                             <div className="h-px w-full bg-gray-200 dark:bg-slate-700 my-0.5"></div>
-                                             <div className="flex justify-between w-full text-sm">
-                                                <span className="font-black text-gray-900 dark:text-white">الإجمالي النهائي:</span>
+                                              <div className="h-px w-full bg-[var(--md-sys-color-outline-variant)]/20 my-0.5"></div>
+                                              <div className="flex justify-between w-full text-sm">
+                                                 <span className="font-black text-[var(--md-sys-color-on-surface)]">الإجمالي النهائي:</span>
                                                  <span className={`font-black ${getStatusTextColor(o.status)}`}>{(o.totalAmount || 0).toLocaleString()} ج.م</span>
                                              </div>
                                           </div>
@@ -3688,69 +3561,9 @@ const Orders: React.FC<OrdersProps> = ({
                      );
                    })()}
                 </div>
-
-                {/* Modal Footer */}
-                <div className="sticky bottom-0 bg-gray-50 dark:bg-slate-800/80 backdrop-blur-md p-6 border-t border-gray-100 dark:border-slate-800 flex justify-end gap-3 rounded-b-[40px]">
-                   <button 
-                     onClick={() => setViewingOrderId(null)}
-                     className="px-6 py-2.5 bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400 font-black text-xs rounded-2xl border border-gray-100 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 transition-all"
-                   >
-                      إغلاق
-                   </button>
-                   <button 
-                     onClick={() => {
-                         const o = orders.find(ord => ord.id === viewingOrderId);
-                         if(o) startEditing(o);
-                         setViewingOrderId(null);
-                     }}
-                      className="px-6 py-2.5 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white font-black text-xs rounded-2xl shadow-lg shadow-indigo-500/20 hover:opacity-90 transition-all"
-                   >
-                       <Edit2 size={15} /> تعديل الطلب
-                    </button>
-                    {isShippingFilter && viewingOrderId && (() => {
-                      const currentOrder = orders.find(o => o.id === viewingOrderId);
-                      if (!currentOrder) return null;
-                      const transitions = getTransitions(currentOrder.status);
-                      if (transitions.length === 0) return null;
-                      return (
-                        <div className="flex gap-2 mr-auto">
-                          {transitions.map(t => (
-                            <button
-                              key={t.nextStatus}
-                              onClick={() => {
-                                onUpdateStatus(currentOrder.id, t.nextStatus);
-                                setViewingOrderId(null);
-                              }}
-                              className={`px-4 py-2.5 rounded-2xl font-black text-xs border transition-all ${t.btnClass}`}
-                            >
-                              <t.icon size={15} className="inline ml-1" />
-                              {t.label}
-                            </button>
-                          ))}
-                        </div>
-                      );
-                    })()}
-                    <button 
-                      onClick={() => {
-                         if (isShippingFilter) {
-                           const o = orders.find(o => o.id === viewingOrderId);
-                           if (o) setWaybillOrders([o]);
-                           setWaybillModalOpen(true);
-                           setViewingOrderId(null);
-                         } else {
-                           setSinglePrintOrderId(viewingOrderId);
-                           setViewingOrderId(null);
-                         }
-                       }}
-                      className="px-6 py-2.5 bg-gradient-to-br from-amber-400 to-orange-500 text-white font-black text-xs rounded-2xl shadow-lg shadow-orange-500/20 hover:opacity-90 transition-all"
-                    >
-                      <Printer size={15} /> {isShippingFilter ? 'طباعة بوليصة' : 'طباعة فاتورة'}
-                    </button>
-                 </div>
-             </motion.div>
-           </div>
-         )}
-       </AnimatePresence>
+      </MD3Dialog>
+        );
+      })()}
 
       {/* Floating Action Bar for Selected Orders */}
       <AnimatePresence>
@@ -3761,7 +3574,7 @@ const Orders: React.FC<OrdersProps> = ({
             exit={{ y: 100, x: "-50%", opacity: 0 }}
             className="fixed bottom-20 md:bottom-8 left-1/2 z-[60]"
           >
-             <div className="bg-white dark:bg-slate-900 px-4 sm:px-6 md:px-8 py-3 md:py-5 rounded-[40px] shadow-2xl border border-indigo-500/20 dark:border-slate-700 flex items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 backdrop-blur-md bg-white/90 dark:bg-slate-900/90 overflow-x-auto custom-scrollbar">
+             <div className="bg-white dark:bg-slate-900 px-4 sm:px-6 md:px-8 py-3 md:py-5 rounded-[40px] shadow-lg border border-indigo-500/20 dark:border-slate-700 flex items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 bg-white/90 dark:bg-slate-900/90 overflow-x-auto custom-scrollbar">
               <div className="flex flex-col">
                  <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase">تم تحديد</span>
                  <span className="text-indigo-500 font-black text-xl">{selectedIds.size} <span className="text-xs">طلب</span></span>
@@ -3808,7 +3621,7 @@ const Orders: React.FC<OrdersProps> = ({
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setIsBulkStatusOpen(!isBulkStatusOpen)}
-                      className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black transition-all shadow-lg active:scale-95 ${isBulkStatusOpen ? 'bg-white text-indigo-500 border border-indigo-500/20' : 'bg-gradient-to-br from-indigo-500 to-blue-600 text-white'}`}
+                      className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black transition-all duration-200 shadow-lg active:scale-95 ${isBulkStatusOpen ? 'bg-white text-indigo-500 border border-indigo-500/20' : 'bg-gradient-to-br from-indigo-500 to-blue-600 text-white'}`}
                     >
                       تغيير الحالة ({selectedIds.size})
                       <ChevronUp size={16} className={`transition-transform duration-300 ${isBulkStatusOpen ? 'rotate-180' : ''}`} />
@@ -3825,7 +3638,7 @@ const Orders: React.FC<OrdersProps> = ({
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 w-64 bg-white dark:bg-slate-800 rounded-[32px] shadow-2xl border border-gray-100 dark:border-slate-700 p-3 z-[70]"
+                            className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 w-64 bg-white dark:bg-slate-800 rounded-[32px] shadow-lg border border-gray-100 dark:border-slate-700 p-3 z-[70]"
                           >
                               <div className="max-h-64 overflow-y-auto custom-scrollbar p-1">
                                  <div className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-3">اختر الحالة الجديدة</div>
@@ -3844,13 +3657,13 @@ const Orders: React.FC<OrdersProps> = ({
                                               setIsBulkStatusOpen(false);
                                           }
                                        }}
-                                       className="w-full text-right px-4 py-3 rounded-2xl text-[11px] font-black text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all flex items-center justify-between group/item"
+                                       className="w-full text-right px-4 py-3 rounded-2xl text-[11px] font-black text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors duration-200 flex items-center justify-between group/item"
                                      >
                                         <span className="flex items-center gap-2">
                                           <div className={`w-2 h-2 rounded-full ${getStatusStyle(status).split(' ')[0]}`}></div>
                                           {status}
                                         </span>
-                                        <ChevronDown size={12} className="opacity-0 group-hover/item:opacity-100 -rotate-90 transition-all" />
+                                        <ChevronDown size={12} className="opacity-0 group-hover/item:opacity-100 -rotate-90 transition-opacity duration-200" />
                                      </button>
                                  ))}
                               </div>
@@ -3866,7 +3679,7 @@ const Orders: React.FC<OrdersProps> = ({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setIsBatchEditOpen(true)}
-                  className="flex items-center gap-2 px-6 py-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-2xl font-black hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all border border-emerald-100 dark:border-emerald-900/30 active:scale-95"
+                  className="flex items-center gap-2 px-6 py-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-2xl font-black hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors duration-200 border border-emerald-100 dark:border-emerald-900/30 active:scale-95"
                 >
                   <Pencil size={20} />
                   تعديل جماعي
@@ -3876,7 +3689,7 @@ const Orders: React.FC<OrdersProps> = ({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setIsExportSettingsOpen(true)}
-                  className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black hover:bg-indigo-700 transition-all shadow-lg active:scale-95"
+                  className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black hover:bg-indigo-700 transition-all duration-200 shadow-lg active:scale-95"
                 >
                   <Download size={20} />
                   تصدير
@@ -3886,7 +3699,7 @@ const Orders: React.FC<OrdersProps> = ({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleBulkDelete}
-                  className="flex items-center gap-2 px-6 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl font-black hover:bg-red-100 dark:hover:bg-red-900/40 transition-all border border-red-100 dark:border-red-900/30 active:scale-95"
+                  className="flex items-center gap-2 px-6 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl font-black hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors duration-200 border border-red-100 dark:border-red-900/30 active:scale-95"
                 >
                   <Trash2 size={20} />
                   حذف
@@ -3896,7 +3709,7 @@ const Orders: React.FC<OrdersProps> = ({
                   whileHover={{ scale: 1.05, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setSelectedIds(new Set())}
-                  className="p-3 bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-gray-500 rounded-2xl hover:text-red-500 transition-all active:scale-95"
+                  className="p-3 bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-gray-500 rounded-2xl hover:text-red-500 transition-all duration-200 active:scale-95"
                   title="إلغاء التحديد"
                 >
                   <X size={24} />
@@ -3954,4 +3767,4 @@ const Orders: React.FC<OrdersProps> = ({
   );
 };
 
-export default Orders;
+export default React.memo(Orders);

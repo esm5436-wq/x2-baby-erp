@@ -30,3 +30,28 @@ uploads/
 *.njsproj
 *.sln
 *.sw?
+
+# Vercel
+.vercel
+
+# Environment files
+.env*
+
+# Playwright MCP test artifacts
+.playwright-mcp/
+
+# Agent skill cache
+.agents/
+
+# Lock files (not needed in repo)
+skills-lock.json
+
+# Screenshots / test images (root level)
+*.png
+
+# Temporary text files
+current-state.txt
+login-page.txt
+
+# Frontend vercel.json (use root vercel.json only)
+frontend/vercel.json

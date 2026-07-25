@@ -307,7 +307,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
             whileHover={{ scale: 1.1, rotate: 5 }}
             whileTap={{ scale: 0.9 }}
             onClick={toggleOpen}
-            className="fixed bottom-20 md:bottom-6 left-6 z-[200] w-14 h-14 bg-gradient-to-tr from-accent to-blue-400 text-white rounded-full shadow-2xl flex items-center justify-center cursor-pointer border-2 border-white dark:border-slate-700"
+            className="fixed bottom-20 md:bottom-6 left-6 z-[250] w-14 h-14 bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] rounded-full shadow-md flex items-center justify-center cursor-pointer hover:shadow-lg transition-shadow"
             title="المساعد الذكي"
           >
             <Sparkles size={24} className="animate-pulse" />
@@ -321,7 +321,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
             animate={isMinimized ? { scale: 1, opacity: 1, y: 0, height: 64, width: 288, borderRadius: 24 } : { scale: 1, opacity: 1, y: 0, height: 600, width: 400, borderRadius: 32 }}
             exit={{ scale: 0.8, opacity: 0, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-6 left-6 z-[200] shadow-2xl border border-gray-100 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 flex flex-col"
+            className="fixed bottom-6 left-6 z-[250] shadow-lg border border-gray-100 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 flex flex-col"
             style={{ 
               maxWidth: '90vw',
               maxHeight: '80vh'
@@ -369,17 +369,17 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.5 }}
                       onClick={clearChat} 
-                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all" 
+                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors duration-200" 
                       title="مسح المحادثة"
                     >
                       <Trash2 size={16} />
                     </motion.button>
                   )}
                 </AnimatePresence>
-                <button onClick={toggleMinimize} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl transition-all">
+                <button onClick={toggleMinimize} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl transition-colors duration-200">
                   {isMinimized ? <Maximize2 size={16} /> : <Minimize2 size={16} />}
                 </button>
-                <button onClick={toggleOpen} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all">
+                <button onClick={toggleOpen} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors duration-200">
                   <X size={20} />
                 </button>
               </div>
@@ -452,7 +452,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
                                   whileHover={{ scale: 1.05 }}
                                   whileTap={{ scale: 0.95 }}
                                   onClick={() => exportTableToExcel(msg.content!)}
-                                  className="mt-3 flex items-center gap-2 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[10px] font-black hover:bg-emerald-700 transition-all shadow-sm w-fit"
+                                  className="mt-3 flex items-center gap-2 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[10px] font-black hover:bg-emerald-700 transition-colors duration-200 shadow-sm w-fit"
                                 >
                                   <Download size={12} />
                                   تصدير الجدول لـ Excel
@@ -495,7 +495,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
                               onClick={() => handleQuickAction(action.prompt)} 
-                              className="whitespace-nowrap px-3 py-1.5 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-full text-[10px] font-black text-gray-600 dark:text-gray-300 hover:bg-accent/10 hover:text-accent transition-all flex items-center gap-1.5 shadow-sm"
+                              className="whitespace-nowrap px-3 py-1.5 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-full text-[10px] font-black text-gray-600 dark:text-gray-300 hover:bg-accent/10 hover:text-accent transition-colors duration-200 flex items-center gap-1.5 shadow-sm"
                             >
                               {action.label}
                             </motion.button>
@@ -527,7 +527,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
                     <div className="relative flex items-center gap-2">
                       <input
                         ref={inputRef}
-                        className="w-full pl-4 pr-24 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl outline-none text-sm font-bold text-gray-900 dark:text-white focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-all shadow-inner"
+                        className="w-full pl-4 pr-24 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl outline-none text-sm font-bold text-gray-900 dark:text-white focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-colors duration-200 shadow-inner"
                         placeholder="اكتب رسالتك هنا..."
                         value={input}
                         onChange={e => setInput(e.target.value)}
@@ -537,7 +537,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
                       />
                       <div className="absolute left-2 flex items-center gap-1.5">
                         <button onClick={() => fileInputRef.current?.click()}
-                          className="w-9 h-9 text-gray-400 hover:text-accent hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg flex items-center justify-center transition-all"
+                          className="w-9 h-9 text-gray-400 hover:text-accent hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg flex items-center justify-center transition-colors duration-200"
                           title="إرفاق صورة"
                           disabled={isLoading}
                         >

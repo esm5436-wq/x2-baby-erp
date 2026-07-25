@@ -159,6 +159,11 @@ export const md3Tokens = {
     pressed: 0.12,
     dragged: 0.16,
   },
+  opacity: {
+    disabled: 0.38,
+    medium: 0.6,
+    high: 0.87,
+  },
   density: {
     default: '0px',
     compact: '-4px',
@@ -169,6 +174,31 @@ export const md3Tokens = {
     tablet: '600px',
     desktop: '840px',
     wide: '1200px',
+  },
+  sidebar: {
+    expandedWidth: '360px',
+    collapsedWidth: '72px',
+    railWidth: '80px',
+    transitionDuration: '300ms',
+  },
+  bottomNav: {
+    height: '80px',
+    itemSize: '64px',
+    indicatorHeight: '32px',
+    indicatorWidth: '64px',
+    floatingMargin: '12px',
+    borderRadius: '28px',
+  },
+  topBar: {
+    height: '64px',
+    mobileHeight: '56px',
+  },
+  content: {
+    maxWidth: '1440px',
+    paddingX: '16px',
+    paddingY: '16px',
+    paddingXDesktop: '32px',
+    paddingYDesktop: '32px',
   },
 } as const;
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, Save, User, Phone, Mail, MapPin, Globe, Tag, FileText, Navigation, RefreshCw } from 'lucide-react';
+import { MD3Dialog, MD3Button, MD3TextField } from './md3';
+import { Globe } from 'lucide-react';
 
 const SOURCE_OPTIONS = ['فيسبوك', 'تيك توك', 'جوجل', 'توصية', 'انستجرام', 'سناب شات', 'إعلان', 'زيارة', 'أخرى'];
 
@@ -74,81 +74,43 @@ export default function CustomerModal({ isOpen, onClose, onSave, initialData, ti
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.name || !form.phone) return;
-    onSave(form);
-  };
-
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-          <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white dark:bg-slate-900 rounded-[32px] w-full max-w-lg shadow-2xl border border-gray-100 dark:border-slate-800 overflow-hidden">
-            <div className="flex items-center justify-between p-6 pb-0">
-              <h2 className="text-lg font-black text-gray-900 dark:text-white">{title || 'بيانات العميل'}</h2>
-              <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"><X size={16} /></button>
-            </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 pr-1 flex items-center gap-1"><User size={12} /> الاسم <span className="text-red-400">*</span></label>
-                  <input required value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white text-sm font-bold" placeholder="اسم العميل" />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 pr-1 flex items-center gap-1"><Phone size={12} /> الهاتف <span className="text-red-400">*</span></label>
-                  <input required value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white text-sm font-bold font-mono" placeholder="01xxxxxxxxx" />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 pr-1">هاتف بديل</label>
-                  <input value={form.altPhone} onChange={e => setForm({...form, altPhone: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white text-sm font-bold font-mono" placeholder="01xxxxxxxxx" />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 pr-1 flex items-center gap-1"><Mail size={12} /> البريد الإلكتروني</label>
-                  <input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white text-sm font-bold" placeholder="email@example.com" />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 pr-1 flex items-center gap-1"><MapPin size={12} /> المحافظة</label>
-                  <input value={form.city} onChange={e => setForm({...form, city: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white text-sm font-bold" placeholder="المحافظة" />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 pr-1 flex items-center gap-1"><Globe size={12} /> المصدر</label>
-                  <select value={form.source} onChange={e => setForm({...form, source: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white text-sm font-bold">
-                    <option value="">اختر المصدر</option>
-                    {SOURCE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 pr-1 flex items-center gap-1"><MapPin size={12} /> العنوان</label>
-                <input value={form.address} onChange={e => setForm({...form, address: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white text-sm font-bold" placeholder="العنوان التفصيلي" />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 pr-1 flex items-center gap-1"><Navigation size={12} /> رابط خريطة جوجل</label>
-                <input value={form.mapUrl} onChange={e => extractMapCoords(e.target.value)} className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white text-sm font-bold font-mono" placeholder="https://maps.google.com/?q=30.0444,31.2357" />
-                {(form.latitude && form.longitude) && (
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400">
-                    <Globe size={10} /> {form.latitude}, {form.longitude}
-                  </div>
-                )}
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 pr-1 flex items-center gap-1"><Tag size={12} /> الوسوم (Tags)</label>
-                <input value={form.tags} onChange={e => setForm({...form, tags: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white text-sm font-bold" placeholder="وسم1, وسم2, وسم3" />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 pr-1 flex items-center gap-1"><FileText size={12} /> ملاحظات الإدارة</label>
-                <textarea value={form.adminNotes} onChange={e => setForm({...form, adminNotes: e.target.value})} rows={2} className="w-full px-3 py-2 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-xl outline-none text-gray-900 dark:text-white text-sm font-bold resize-none" placeholder="ملاحظات داخلية للإدارة..." />
-              </div>
-              <div className="flex gap-3 pt-2">
-                <button type="submit" className="flex-1 py-2.5 bg-accent hover:bg-accent/90 text-white rounded-xl font-black text-sm transition-all flex items-center justify-center gap-2"><Save size={16} /> حفظ</button>
-                <button type="button" onClick={onClose} className="px-6 py-2.5 bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 rounded-xl font-black text-sm hover:bg-gray-200 dark:hover:bg-slate-700 transition-all">إلغاء</button>
-              </div>
-            </form>
-          </motion.div>
+    <MD3Dialog
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title || 'بيانات العميل'}
+      icon={<span className="material-symbols-rounded" style={{ fontSize: 24 }}>person</span>}
+      maxWidth="md"
+      actions={[
+        { label: 'إلغاء', onClick: onClose, variant: 'text' },
+        { label: 'حفظ', onClick: () => { if (!form.name || !form.phone) return; onSave(form); }, variant: 'filled' }
+      ]}
+    >
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <MD3TextField label="الاسم *" value={form.name} onChange={(v) => setForm({...form, name: v})} required fullWidth icon={<span className="material-symbols-rounded" style={{ fontSize: 20 }}>person</span>} />
+          <MD3TextField label="الهاتف *" value={form.phone} onChange={(v) => setForm({...form, phone: v})} required fullWidth icon={<span className="material-symbols-rounded" style={{ fontSize: 20 }}>phone</span>} />
+          <MD3TextField label="هاتف بديل" value={form.altPhone} onChange={(v) => setForm({...form, altPhone: v})} fullWidth />
+          <MD3TextField label="البريد الإلكتروني" type="email" value={form.email} onChange={(v) => setForm({...form, email: v})} fullWidth />
+          <MD3TextField label="المحافظة" value={form.city} onChange={(v) => setForm({...form, city: v})} fullWidth />
+          <div className="space-y-1.5">
+            <label className="text-[12px] font-medium text-[var(--md-sys-color-on-surface-variant)]">المصدر</label>
+            <select value={form.source} onChange={e => setForm({...form, source: e.target.value})} className="w-full px-4 py-3 bg-[var(--md-sys-color-surface-container-highest)] border border-[var(--md-sys-color-outline)] rounded-xl outline-none text-[14px] font-medium text-[var(--md-sys-color-on-surface)]">
+              <option value="">اختر المصدر</option>
+              {SOURCE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
         </div>
-      )}
-    </AnimatePresence>
+        <MD3TextField label="العنوان" value={form.address} onChange={(v) => setForm({...form, address: v})} fullWidth />
+        <MD3TextField label="رابط خريطة جوجل" value={form.mapUrl} onChange={(v) => extractMapCoords(v)} fullWidth />
+        {(form.latitude && form.longitude) && (
+          <div className="flex items-center gap-2 text-[12px] font-medium text-[var(--md-sys-color-on-surface-variant)]">
+            <Globe size={14} /> {form.latitude}, {form.longitude}
+          </div>
+        )}
+        <MD3TextField label="الوسوم" value={form.tags} onChange={(v) => setForm({...form, tags: v})} fullWidth />
+        <MD3TextField label="ملاحظات الإدارة" value={form.adminNotes} onChange={(v) => setForm({...form, adminNotes: v})} fullWidth />
+      </div>
+    </MD3Dialog>
   );
 }

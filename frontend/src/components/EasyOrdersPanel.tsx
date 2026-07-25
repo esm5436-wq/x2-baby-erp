@@ -8,6 +8,7 @@ import {
 import { AppState, Order, Product, EasyOrdersConfig, SyncLogEntry } from '../types';
 
 import { API_BASE } from '../lib/api';
+import { MD3Snackbar, useSnackbar } from './md3';
 
 interface EasyOrdersPanelProps {
   state: AppState;
@@ -18,8 +19,7 @@ type TabKey = 'settings' | 'export' | 'staging' | 'logs';
 
 const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState }) => {
   const [activeTab, setActiveTab] = useState<TabKey>('settings');
-  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-  const notifyTimer = useRef<ReturnType<typeof setTimeout>>();
+  const { messages: snackMessages, show: showSnack, dismiss: dismissSnack } = useSnackbar();
 
   // Settings state
   const [apiKey, setApiKey] = useState('');
@@ -58,10 +58,8 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
   const [stats, setStats] = useState({ pendingOrders: 0, exportedProducts: 0, lastPoll: '', enabled: false, apiKeySet: false });
 
   const showNotification = useCallback((message: string, type: 'success' | 'error') => {
-    if (notifyTimer.current) clearTimeout(notifyTimer.current);
-    setNotification({ message, type });
-    notifyTimer.current = setTimeout(() => setNotification(null), 3000);
-  }, []);
+    showSnack(message, { type });
+  }, [showSnack]);
 
   const saveField = useCallback(async (overrides: Record<string, any>) => {
     const config: Record<string, any> = {
@@ -281,18 +279,12 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 relative p-4 sm:p-8">
-      <AnimatePresence>
-        {notification && (
-          <motion.div initial={{ opacity: 0, y: -50, x: '-50%' }} animate={{ opacity: 1, y: 0, x: '-50%' }} exit={{ opacity: 0, y: -50, x: '-50%' }}
-            className={`fixed top-6 left-1/2 z-[300] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 ${notification.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
-            {notification.type === 'success' ? <Check size={24} /> : <AlertCircle size={24} />}
-            <span className="font-bold">{notification.message}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
 
       <div className="flex items-center gap-3 mb-6">
-        <ArrowRightLeft className="text-accent" size={28} />
+        <div className="p-2 rounded-2xl" style={{ backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)' }}>
+          <ArrowRightLeft size={24} />
+        </div>
         <h1 className="text-3xl font-black">Easy Orders - التكامل</h1>
       </div>
 
@@ -318,7 +310,7 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
       <div className="flex flex-wrap gap-2 border-b border-gray-100 dark:border-slate-800 pb-2">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setActiveTab(t.key)}
-            className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-sm transition-all ${activeTab === t.key ? 'bg-accent text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-slate-800'}`}>
+            className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-sm transition-colors duration-200 ${activeTab === t.key ? 'bg-accent text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-slate-800'}`}>
             {t.icon} {t.label}
           </button>
         ))}
@@ -344,8 +336,8 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
 
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800/50 rounded-2xl">
               <div><h4 className="font-black">تفعيل التكامل</h4><p className="text-xs text-gray-400">تشغيل أو إيقاف الاتصال بـ Easy Orders</p></div>
-              <button onClick={() => { const v = !enabled; setEnabled(v); saveField({ enabled: v }); }} className={`w-14 h-7 rounded-full relative transition-all ${enabled ? 'bg-emerald-500' : 'bg-gray-300'}`}>
-                <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${enabled ? 'left-8' : 'left-1'}`} />
+              <button onClick={() => { const v = !enabled; setEnabled(v); saveField({ enabled: v }); }} className={`w-14 h-7 rounded-full relative transition-colors duration-200 ${enabled ? 'bg-emerald-500' : 'bg-gray-300'}`}>
+                <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${enabled ? 'left-8' : 'left-1'}`} />
               </button>
             </div>
 
@@ -377,8 +369,8 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
 
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800/50 rounded-2xl">
               <div><h4 className="font-black">تأكيد تلقائي</h4><p className="text-xs text-gray-400">تجاوز مراجعة الطلبات وإدراجها مباشرة (إلغاء تفعيل الـ Staging)</p></div>
-              <button onClick={() => { const v = !autoConfirm; setAutoConfirm(v); saveField({ autoConfirm: v }); }} className={`w-14 h-7 rounded-full relative transition-all ${autoConfirm ? 'bg-accent' : 'bg-gray-300'}`}>
-                <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${autoConfirm ? 'left-8' : 'left-1'}`} />
+              <button onClick={() => { const v = !autoConfirm; setAutoConfirm(v); saveField({ autoConfirm: v }); }} className={`w-14 h-7 rounded-full relative transition-colors duration-200 ${autoConfirm ? 'bg-accent' : 'bg-gray-300'}`}>
+                <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${autoConfirm ? 'left-8' : 'left-1'}`} />
               </button>
             </div>
           </div>
@@ -388,8 +380,8 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
 
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800/50 rounded-2xl">
               <div><h4 className="font-black">تتبع المخزون</h4><p className="text-xs text-gray-400">track_stock في Easy Orders</p></div>
-              <button onClick={() => { const v = !trackStock; setTrackStock(v); saveField({ trackStock: v }); }} className={`w-14 h-7 rounded-full relative transition-all ${trackStock ? 'bg-accent' : 'bg-gray-300'}`}>
-                <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${trackStock ? 'left-8' : 'left-1'}`} />
+              <button onClick={() => { const v = !trackStock; setTrackStock(v); saveField({ trackStock: v }); }} className={`w-14 h-7 rounded-full relative transition-colors duration-200 ${trackStock ? 'bg-accent' : 'bg-gray-300'}`}>
+                <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${trackStock ? 'left-8' : 'left-1'}`} />
               </button>
             </div>
 
@@ -402,11 +394,11 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
           </div>
 
           <div className="flex gap-4">
-            <button onClick={handleSaveConfig} className="flex-1 py-4 bg-accent text-white font-black rounded-2xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all">
+            <button onClick={handleSaveConfig} className="flex-1 py-4 bg-accent text-white font-black rounded-2xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all duration-200">
               💾 حفظ الإعدادات
             </button>
             <button onClick={handleTestConnection} disabled={testingConnection || !apiKey}
-              className="px-8 py-4 bg-emerald-500 text-white font-black rounded-2xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2">
+              className="px-8 py-4 bg-emerald-500 text-white font-black rounded-2xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all duration-200 disabled:opacity-50 flex items-center gap-2">
               {testingConnection ? <Loader2 size={20} className="animate-spin" /> : <Zap size={20} />}
               {testingConnection ? 'جارٍ الاختبار...' : 'اختبار الاتصال'}
             </button>
@@ -424,10 +416,10 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
               placeholder="ابحث عن منتج بالاسم أو المعرف..."
               className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl font-bold outline-none focus:border-accent" />
 
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 max-h-[400px] overflow-y-auto custom-scrollbar p-1">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 max-h-[60vh] overflow-y-auto custom-scrollbar p-1">
               {handleSearchProducts().map(p => (
                 <button key={p.id} onClick={() => setSelectedProducts(prev => prev.includes(p.id) ? prev.filter(id => id !== p.id) : [...prev, p.id])}
-                  className={`p-4 rounded-2xl border-2 text-right transition-all ${selectedProducts.includes(p.id) ? 'border-accent bg-accent/5 shadow-md' : 'border-gray-100 dark:border-slate-700 hover:border-gray-300'}`}>
+                  className={`p-4 rounded-2xl border-2 text-right transition-colors duration-200 ${selectedProducts.includes(p.id) ? 'border-accent bg-accent/5 shadow-md' : 'border-gray-100 dark:border-slate-700 hover:border-gray-300'}`}>
                   <div className="flex items-center gap-3">
                     {p.image ? <img src={p.image} className="w-12 h-12 rounded-xl object-cover" /> : <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center"><Package size={20} className="text-gray-400" /></div>}
                     <div className="flex-1 min-w-0">
@@ -448,7 +440,7 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold text-gray-500">تم اختيار {selectedProducts.length} منتج</span>
               <button onClick={handleExportPreview} disabled={selectedProducts.length === 0}
-                className="px-6 py-3 bg-accent text-white font-black rounded-2xl shadow-lg disabled:opacity-50 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
+                className="px-6 py-3 bg-accent text-white font-black rounded-2xl shadow-lg disabled:opacity-50 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center gap-2">
                 <Eye size={18} /> عرض المعاينة
               </button>
             </div>
@@ -491,7 +483,7 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
 
                 <div className="flex gap-4 pt-4 border-t border-gray-100 dark:border-slate-700">
                   <button onClick={handleConfirmExport} disabled={exporting}
-                    className="flex-1 py-4 bg-emerald-500 text-white font-black rounded-2xl shadow-lg disabled:opacity-50 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
+                    className="flex-1 py-4 bg-emerald-500 text-white font-black rounded-2xl shadow-lg disabled:opacity-50 hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2">
                     {exporting ? <Loader2 size={20} className="animate-spin" /> : <Upload size={20} />}
                     {exporting ? 'جاري التصدير...' : 'تأكيد التصدير إلى Easy Orders'}
                   </button>
@@ -512,7 +504,7 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3">
               <button onClick={handlePoll} disabled={polling}
-                className="px-6 py-3 bg-accent text-white font-black rounded-2xl shadow-lg disabled:opacity-50 hover:scale-[1.02] transition-all flex items-center gap-2">
+                className="px-6 py-3 bg-accent text-white font-black rounded-2xl shadow-lg disabled:opacity-50 hover:scale-[1.02] transition-all duration-200 flex items-center gap-2">
                 <RefreshCw size={18} className={polling ? 'animate-spin' : ''} />
                 {polling ? 'جاري الجلب...' : 'جلب الطلبات الآن'}
               </button>
@@ -651,7 +643,7 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
                 <p className="text-gray-400 font-bold italic">لا توجد عمليات مزامنة بعد. ابدأ بتصدير منتج أو جلب طلبات.</p>
               </div>
             ) : (
-              <div className="space-y-2 max-h-[600px] overflow-y-auto custom-scrollbar">
+              <div className="space-y-2 max-h-[80vh] overflow-y-auto custom-scrollbar">
                 {syncLogs.map(log => {
                   const typeConfig: Record<string, { label: string; icon: string; color: string }> = {
                     poll: { label: 'جلب طلبات', icon: '📥', color: 'bg-blue-50 text-blue-700' },
@@ -682,4 +674,4 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
   );
 };
 
-export default EasyOrdersPanel;
+export default React.memo(EasyOrdersPanel);

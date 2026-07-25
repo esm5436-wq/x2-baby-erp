@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, Printer, LayoutGrid, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
+import { LayoutGrid, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 import { Order, Branding, InvoiceSettings } from '../types';
+import { MD3Dialog, MD3Button } from './md3';
 import { QRCodeSVG } from 'qrcode.react';
 import QRCode from 'qrcode';
 import { downscaleDataUrl } from '../lib/imageUtils';
@@ -408,132 +408,105 @@ const WaybillPrintModal: React.FC<WaybillPrintModalProps> = ({ isOpen, onClose, 
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={onClose}
-          />
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: 30 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 30 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative bg-white dark:bg-slate-900 rounded-[40px] w-full max-w-5xl max-h-[90vh] shadow-2xl border border-white/20 overflow-hidden flex flex-col"
-          >
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500" />
+    <MD3Dialog
+      isOpen={isOpen}
+      onClose={onClose}
+      title="طباعة الشحن"
+      icon={<span className="material-symbols-rounded" style={{ fontSize: 24 }}>local_shipping</span>}
+      maxWidth="full"
+    >
+      <p className="text-sm text-gray-500 dark:text-gray-400 font-bold mb-4">
+        {orders.length} بوليصة
+        {duplicateSingle && layout === 1 ? <span className="mr-2 text-emerald-500">· نسختين لكل صفحة</span> : ''}
+      </p>
 
-            <div className="p-6 pb-0 shrink-0">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-2xl font-black text-slate-900 dark:text-white">طباعة بوليصات الشحن</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 font-bold mt-1">
-                    {orders.length} بوليصة
-                    {duplicateSingle && layout === 1 ? <span className="mr-2 text-emerald-500">· نسختين لكل صفحة</span> : ''}
-                  </p>
-                </div>
-                <button onClick={onClose} className="p-3 bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-gray-500 rounded-2xl hover:text-red-500 transition-all active:scale-95">
-                  <X size={22} />
-                </button>
-              </div>
-
-              <div className="flex items-center gap-6 flex-wrap">
-                <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-black text-gray-400">تخطيط الطباعة</span>
-                  <div className="flex gap-2">
-                    {LAYOUT_OPTIONS.map(opt => (
-                      <button
-                        key={opt.value}
-                        onClick={() => { setLayout(opt.value); setPreviewPage(0); if (opt.value !== 1) setDuplicateSingle(false); }}
-                        className={`flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-black transition-all active:scale-95 ${
-                          layout === opt.value
-                            ? 'bg-indigo-500 text-white shadow-lg'
-                            : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700'
-                        }`}
-                      >
-                        <LayoutGrid size={14} />
-                        {opt.label}
-                        <span className="text-[8px] opacity-70">{opt.desc}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex-1" />
-
-                {layout === 1 && (
-                  <button
-                    onClick={() => { setDuplicateSingle(!duplicateSingle); setPreviewPage(0); }}
-                    className={`flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-black transition-all active:scale-95 ${
-                      duplicateSingle
-                        ? 'bg-emerald-500 text-white shadow-lg'
-                        : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700'
-                    }`}
-                    title="نسخ البطاقة لتكرر في الصفحة لتعبئة المساحة الفارغة وتوفير الورق"
-                  >
-                    <Copy size={14} />
-                    {duplicateSingle ? 'نسختين' : 'تكرار'}
-                  </button>
-                )}
-
-                <button
-                  onClick={handlePrint}
-                  className="flex items-center gap-2 px-8 py-3 bg-gradient-to-br from-indigo-500 to-blue-600 text-white rounded-2xl font-black hover:shadow-lg transition-all active:scale-95"
-                >
-                  <Printer size={20} />
-                  طباعة
-                </button>
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
-              <div className="bg-gray-50 dark:bg-slate-900/50 rounded-[32px] p-6 border border-gray-100 dark:border-slate-800">
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-4 mb-4">
-                    <button
-                      onClick={() => setPreviewPage(p => Math.max(0, p - 1))}
-                      disabled={previewPage === 0}
-                      className="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 disabled:opacity-30"
-                    >
-                      <ChevronRight size={18} />
-                    </button>
-                    <span className="text-xs font-black text-gray-500">
-                      صفحة {previewPage + 1} من {totalPages}
-                    </span>
-                    <button
-                      onClick={() => setPreviewPage(p => Math.min(totalPages - 1, p + 1))}
-                      disabled={previewPage >= totalPages - 1}
-                      className="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 disabled:opacity-30"
-                    >
-                      <ChevronLeft size={18} />
-                    </button>
-                  </div>
-                )}
-                <div
-                  className="grid gap-4"
-                  style={{
-                    gridTemplateColumns: cols === 1 ? '1fr' : '1fr 1fr',
-                  }}
-                >
-                  {pageOrders.map((order, idx) => (
-                    <WaybillCard
-                      key={order.id + '_' + idx + '_' + previewPage}
-                      order={order}
-                      branding={branding}
-                      invoiceSettings={invoiceSettings}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
+      <div className="flex items-center gap-6 flex-wrap mb-6">
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] font-black text-gray-400">تخطيط الطباعة</span>
+          <div className="flex gap-2">
+            {LAYOUT_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => { setLayout(opt.value); setPreviewPage(0); if (opt.value !== 1) setDuplicateSingle(false); }}
+                className={`flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-black transition-all active:scale-95 ${
+                  layout === opt.value
+                    ? 'bg-indigo-500 text-white shadow-lg'
+                    : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                <LayoutGrid size={14} />
+                {opt.label}
+                <span className="text-[8px] opacity-70">{opt.desc}</span>
+              </button>
+            ))}
+          </div>
         </div>
-      )}
-    </AnimatePresence>
+
+        <div className="flex-1" />
+
+        {layout === 1 && (
+          <button
+            onClick={() => { setDuplicateSingle(!duplicateSingle); setPreviewPage(0); }}
+            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-black transition-all active:scale-95 ${
+              duplicateSingle
+                ? 'bg-emerald-500 text-white shadow-lg'
+                : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700'
+            }`}
+            title="نسخ البطاقة لتكرر في الصفحة لتعبئة المساحة الفارغة وتوفير الورق"
+          >
+            <Copy size={14} />
+            {duplicateSingle ? 'نسختين' : 'تكرار'}
+          </button>
+        )}
+
+        <MD3Button
+          variant="filled"
+          icon={<span className="material-symbols-rounded" style={{ fontSize: 18 }}>print</span>}
+          onClick={handlePrint}
+        >
+          طباعة
+        </MD3Button>
+      </div>
+
+      <div className="bg-gray-50 dark:bg-slate-900/50 rounded-[32px] p-6 border border-gray-100 dark:border-slate-800">
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <button
+              onClick={() => setPreviewPage(p => Math.max(0, p - 1))}
+              disabled={previewPage === 0}
+              className="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 disabled:opacity-30"
+            >
+              <ChevronRight size={18} />
+            </button>
+            <span className="text-xs font-black text-gray-500">
+              صفحة {previewPage + 1} من {totalPages}
+            </span>
+            <button
+              onClick={() => setPreviewPage(p => Math.min(totalPages - 1, p + 1))}
+              disabled={previewPage >= totalPages - 1}
+              className="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 disabled:opacity-30"
+            >
+              <ChevronLeft size={18} />
+            </button>
+          </div>
+        )}
+        <div
+          className="grid gap-4"
+          style={{
+            gridTemplateColumns: cols === 1 ? '1fr' : '1fr 1fr',
+          }}
+        >
+          {pageOrders.map((order, idx) => (
+            <WaybillCard
+              key={order.id + '_' + idx + '_' + previewPage}
+              order={order}
+              branding={branding}
+              invoiceSettings={invoiceSettings}
+            />
+          ))}
+        </div>
+      </div>
+    </MD3Dialog>
   );
 };
 

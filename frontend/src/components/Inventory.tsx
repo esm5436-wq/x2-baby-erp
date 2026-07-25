@@ -57,6 +57,7 @@ import BatchEditModal from './BatchEditModal';
 import type { BatchField } from './BatchEditModal';
 import ViewSwitcher from './ViewSwitcher';
 import { exportToExcel, exportToPDF, exportToHTML, exportToCSV, exportToJSON } from '../lib/exportService';
+import { MD3Button, MD3IconButton, MD3StatCard, MD3EmptyState, MD3Dialog } from './md3';
 
 interface InventoryProps {
   products: Product[];
@@ -209,14 +210,14 @@ const SyncProductEditor: React.FC<{
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-1">
-          <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-2 uppercase tracking-widest">اسم المنتج</label>
-          <input className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white focus:border-accent outline-none transition-all" value={localProduct.name} onChange={e => setLocalProduct({...localProduct, name: e.target.value})} disabled={isSaved} />
+          <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] px-2 uppercase tracking-widest">اسم المنتج</label>
+          <input className="w-full px-4 py-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-2xl font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] outline-none transition-colors duration-200" value={localProduct.name} onChange={e => setLocalProduct({...localProduct, name: e.target.value})} disabled={isSaved} />
         </div>
         <div className="space-y-1 md:col-span-2">
-          <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-2 uppercase tracking-widest">الوسوم (Tags)</label>
+          <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] px-2 uppercase tracking-widest">الوسوم (Tags)</label>
           <div className="flex flex-wrap gap-1 mb-1 min-h-[30px]">
             {localProduct.tags?.map(tag => (
-              <span key={tag} className="bg-accent/10 text-accent px-2 py-0.5 rounded-lg text-[9px] font-bold flex items-center gap-1 border border-accent/20">
+              <span key={tag} className="bg-[var(--md-sys-color-primary)]/10 text-[var(--md-sys-color-primary)] px-2 py-0.5 rounded-lg text-[9px] font-bold flex items-center gap-1 border border-[var(--md-sys-color-primary)]/20">
                 {tag}
                 {!isSaved && (
                   <button onClick={() => setLocalProduct({...localProduct, tags: localProduct.tags?.filter(t => t !== tag)})}>
@@ -227,7 +228,7 @@ const SyncProductEditor: React.FC<{
             ))}
           </div>
           <input 
-            className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white focus:border-accent outline-none transition-all text-xs" 
+            className="w-full px-4 py-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-2xl font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] outline-none transition-colors duration-200 text-xs" 
             placeholder="أضف وسوم (افصل بفاصلة أو اضغط Enter)..." 
             disabled={isSaved}
             onKeyDown={e => {
@@ -253,19 +254,19 @@ const SyncProductEditor: React.FC<{
           />
         </div>
         <div className="space-y-1">
-          <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-2 uppercase tracking-widest">سعر البيع</label>
+          <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] px-2 uppercase tracking-widest">سعر البيع</label>
           <div className="relative group/price">
-            <input type="number" className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-black text-gray-900 dark:text-white focus:border-accent outline-none transition-all" value={localProduct.price} onChange={e => setLocalProduct({...localProduct, price: Number(e.target.value)})} disabled={isSaved} />
+            <input type="number" className="w-full px-4 py-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-2xl font-black text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] outline-none transition-colors duration-200" value={localProduct.price} onChange={e => setLocalProduct({...localProduct, price: Number(e.target.value)})} disabled={isSaved} />
             
             {!isSaved && (localProduct.wholesalePrice || 0) > 0 && (
-              <div className="mt-3 p-3 bg-accent/5 rounded-2xl border border-accent/10 space-y-2 relative overflow-hidden">
+              <div className="mt-3 p-3 bg-[var(--md-sys-color-primary)]/5 rounded-2xl border border-[var(--md-sys-color-primary)]/10 space-y-2 relative overflow-hidden">
                 <div className="flex items-center justify-between relative z-10">
-                  <div className="flex items-center gap-1.5 text-accent">
+                  <div className="flex items-center gap-1.5 text-[var(--md-sys-color-primary)]">
                     <Sparkles size={14} className="animate-pulse" />
                     <span className="text-[9px] font-black uppercase tracking-wider">اقتراح ذكي</span>
                     <HelpCircle 
                       size={12} 
-                      className="cursor-pointer hover:text-accent-hover transition-colors" 
+                      className="cursor-pointer hover:text-[var(--md-sys-color-primary)]-hover transition-colors" 
                       onClick={() => setShowPriceHelp(!showPriceHelp)}
                     />
                   </div>
@@ -277,29 +278,29 @@ const SyncProductEditor: React.FC<{
                 </div>
 
                 {showPriceHelp && (
-                  <div className="bg-white dark:bg-slate-900 border border-accent/20 rounded-xl p-3 space-y-2 shadow-xl animate-in fade-in slide-in-from-top-1 duration-300 relative z-20">
+                  <div className="bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-primary)]/20 rounded-xl p-3 space-y-2 shadow-md animate-in fade-in slide-in-from-top-1 duration-300 relative z-20">
                     <div className="flex items-start gap-2">
                       <TrendingUp size={14} className="text-blue-500 mt-0.5" />
                       <div>
-                        <h4 className="text-[8px] font-black text-gray-900 dark:text-white mb-0.5">تسعير &quot;سريع&quot;</h4>
+                        <h4 className="text-[8px] font-black text-[var(--md-sys-color-on-surface)] mb-0.5">تسعير &quot;سريع&quot;</h4>
                         <p className="text-[7px] text-gray-500 leading-tight">للنمو السريع وبناء قاعدة عملاء.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
-                      <Target size={14} className="text-accent mt-0.5" />
+                      <Target size={14} className="text-[var(--md-sys-color-primary)] mt-0.5" />
                       <div>
-                        <h4 className="text-[8px] font-black text-gray-900 dark:text-white mb-0.5">تسعير &quot;متوازن&quot;</h4>
+                        <h4 className="text-[8px] font-black text-[var(--md-sys-color-on-surface)] mb-0.5">تسعير &quot;متوازن&quot;</h4>
                         <p className="text-[7px] text-gray-500 leading-tight">المثالي لاستدامة الأرباح.</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
-                      <Trophy size={14} className="text-emerald-500 mt-0.5" />
+                      <Trophy size={14} className="text-[var(--md-sys-color-primary)] mt-0.5" />
                       <div>
-                        <h4 className="text-[8px] font-black text-gray-900 dark:text-white mb-0.5">تسعير &quot;مميز&quot;</h4>
+                        <h4 className="text-[8px] font-black text-[var(--md-sys-color-on-surface)] mb-0.5">تسعير &quot;مميز&quot;</h4>
                         <p className="text-[7px] text-gray-500 leading-tight">للمنتجات الحصرية والجودة.</p>
                       </div>
                     </div>
-                    <p className="text-[6px] text-gray-400 dark:text-gray-500 font-bold italic pt-1 border-t border-gray-50 uppercase">
+                    <p className="text-[6px] text-[var(--md-sys-color-on-surface-variant)] font-bold italic pt-1 border-t border-gray-50 uppercase">
                       * نتبع قواعد التسعير النفسي.
                     </p>
                   </div>
@@ -315,9 +316,9 @@ const SyncProductEditor: React.FC<{
                     let s = Math.ceil((cost * t.m) / 5) * 5;
                     if (s > 10) s -= 1;
                     return (
-                      <button key={t.label} onClick={() => setLocalProduct({...localProduct, price: s})} className="flex-1 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700 p-1 rounded-lg text-center hover:border-accent transition-all">
-                        <div className="text-[7px] font-black text-gray-400 dark:text-gray-500">{t.label}</div>
-                        <div className="text-[9px] font-black text-accent">{s}</div>
+                      <button key={t.label} onClick={() => setLocalProduct({...localProduct, price: s})} className="flex-1 bg-[var(--md-sys-color-surface)] border border-gray-100 dark:border-slate-700 p-1 rounded-lg text-center hover:border-[var(--md-sys-color-primary)] transition-colors duration-200">
+                        <div className="text-[7px] font-black text-[var(--md-sys-color-on-surface-variant)]">{t.label}</div>
+                        <div className="text-[9px] font-black text-[var(--md-sys-color-primary)]">{s}</div>
                       </button>
                     );
                   })}
@@ -329,35 +330,35 @@ const SyncProductEditor: React.FC<{
       </div>
       {/* Image */}
       <div className="space-y-1">
-        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-2 uppercase tracking-widest">صورة المنتج</label>
+        <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] px-2 uppercase tracking-widest">صورة المنتج</label>
         <div className="flex items-center gap-4">
           {localProduct.image && (
-            <img src={localProduct.image} className="w-20 h-20 rounded-2xl object-cover border border-gray-200 dark:border-slate-700" />
+            <img src={localProduct.image} className="w-20 h-20 rounded-2xl object-cover border border-[var(--md-sys-color-outline-variant)]/30" />
           )}
-          <input className="flex-1 px-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white focus:border-accent outline-none transition-all text-xs" value={localProduct.image || ''} onChange={e => setLocalProduct({...localProduct, image: e.target.value})} disabled={isSaved} placeholder="رابط الصورة أو المسار" />
+          <input className="flex-1 px-4 py-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-2xl font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] outline-none transition-colors duration-200 text-xs" value={localProduct.image || ''} onChange={e => setLocalProduct({...localProduct, image: e.target.value})} disabled={isSaved} placeholder="رابط الصورة أو المسار" />
         </div>
       </div>
       {/* Description */}
       <div className="space-y-1">
-        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-2 uppercase tracking-widest">الوصف</label>
-        <textarea className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white focus:border-accent outline-none transition-all text-xs resize-none" rows={3} value={localProduct.description || ''} onChange={e => setLocalProduct({...localProduct, description: e.target.value})} disabled={isSaved} placeholder="وصف المنتج..." />
+        <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] px-2 uppercase tracking-widest">الوصف</label>
+        <textarea className="w-full px-4 py-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-2xl font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] outline-none transition-colors duration-200 text-xs resize-none" rows={3} value={localProduct.description || ''} onChange={e => setLocalProduct({...localProduct, description: e.target.value})} disabled={isSaved} placeholder="وصف المنتج..." />
       </div>
       {/* Category, Brand, Supplier */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-1">
-          <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-2 uppercase tracking-widest">التصنيف</label>
-          <select className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white focus:border-accent outline-none transition-all" value={localProduct.category || ''} onChange={e => setLocalProduct({...localProduct, category: e.target.value})} disabled={isSaved}>
+          <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] px-2 uppercase tracking-widest">التصنيف</label>
+          <select className="w-full px-4 py-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-2xl font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] outline-none transition-colors duration-200" value={localProduct.category || ''} onChange={e => setLocalProduct({...localProduct, category: e.target.value})} disabled={isSaved}>
             <option value="">بدون تصنيف</option>
             {(categories || []).map(cat => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
           </select>
         </div>
         <div className="space-y-1">
-          <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-2 uppercase tracking-widest">العلامة التجارية</label>
-          <input className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white focus:border-accent outline-none transition-all" value={localProduct.brand || ''} onChange={e => setLocalProduct({...localProduct, brand: e.target.value})} disabled={isSaved} placeholder="براند" />
+          <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] px-2 uppercase tracking-widest">العلامة التجارية</label>
+          <input className="w-full px-4 py-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-2xl font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] outline-none transition-colors duration-200" value={localProduct.brand || ''} onChange={e => setLocalProduct({...localProduct, brand: e.target.value})} disabled={isSaved} placeholder="براند" />
         </div>
         <div className="space-y-1">
-          <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-2 uppercase tracking-widest">المورد</label>
-          <select className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white focus:border-accent outline-none transition-all" value={localProduct.supplierId || ''} onChange={e => setLocalProduct({...localProduct, supplierId: e.target.value})} disabled={isSaved}>
+          <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] px-2 uppercase tracking-widest">المورد</label>
+          <select className="w-full px-4 py-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-2xl font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] outline-none transition-colors duration-200" value={localProduct.supplierId || ''} onChange={e => setLocalProduct({...localProduct, supplierId: e.target.value})} disabled={isSaved}>
             <option value="">بدون مورد</option>
             {(suppliers || []).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             {(contacts || []).filter(c => c.entity_type === 'مصنع' || c.entity_type === 'تاجر جملة').map(c => <option key={c.id} value={c.id}>{c.company_name}</option>)}
@@ -369,7 +370,7 @@ const SyncProductEditor: React.FC<{
 };
 
 const SyncReviewModal: React.FC<{ products: Product[]; onSaveItem: (p: Product) => void; onSaveAll: (ps: Product[]) => void; onClose: () => void; categories?: Category[]; suppliers?: any[]; contacts?: any[]; }> = ({ products, onSaveItem, onSaveAll, onClose, categories, suppliers, contacts }) => {
-  const [localProducts, setLocalProducts] = useState<Product[]>(JSON.parse(JSON.stringify(products)));
+  const [localProducts, setLocalProducts] = useState<Product[]>(() => JSON.parse(JSON.stringify(products)));
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [expandedId, setExpandedId] = useState<string | null>(products[0]?.id || null);
 
@@ -381,19 +382,22 @@ const SyncReviewModal: React.FC<{ products: Product[]; onSaveItem: (p: Product) 
   };
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg overflow-y-auto">
-      <div className="bg-white dark:bg-slate-900 rounded-[40px] w-full max-w-5xl shadow-2xl relative flex flex-col max-h-[90vh] border border-white/20 dark:border-slate-800">
-        <div className="p-8 border-b dark:border-slate-800 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-900 rounded-t-[40px] z-10 shadow-sm">
-          <div><h3 className="text-2xl font-black text-gray-900 dark:text-white">مراجعة المنتجات المستوردة</h3></div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full text-gray-400 dark:text-gray-500 hover:text-red-500 transition-all"><X size={32} /></button>
-        </div>
-        <div className="p-6 space-y-4 overflow-y-auto flex-1 bg-gray-50/50 dark:bg-slate-950/50">
+    <MD3Dialog
+      isOpen={true}
+      onClose={onClose}
+      title="بحث الصور"
+      maxWidth="xl"
+      actions={[
+        { label: 'إغلاق', onClick: onClose, variant: 'text' }
+      ]}
+    >
+      <div className="p-6 space-y-4 overflow-y-auto flex-1 bg-[var(--md-sys-color-surface-container)]">
           {localProducts.map(prod => (
             <motion.div 
               key={prod.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`border-2 rounded-[36px] overflow-hidden bg-white dark:bg-slate-800 shadow-lg transition-all ${savedIds.has(prod.id) ? 'opacity-60 border-emerald-100 dark:border-emerald-900/30' : 'border-white dark:border-slate-800'}`}
+              className={`border-2 rounded-[36px] overflow-hidden bg-[var(--md-sys-color-surface)] shadow-lg transition-all duration-200 ${savedIds.has(prod.id) ? 'opacity-60 border-[var(--md-sys-color-primary)]/20' : 'border-[var(--md-sys-color-outline-variant)]/20'}`}
             >
               <button onClick={() => setExpandedId(expandedId === prod.id ? null : prod.id)} className="w-full flex items-center gap-6 p-6 text-right group">
                 <motion.img 
@@ -402,10 +406,10 @@ const SyncReviewModal: React.FC<{ products: Product[]; onSaveItem: (p: Product) 
                   className="w-20 h-20 rounded-[24px] object-cover shadow-md border border-gray-100 dark:border-slate-700" 
                 />
                 <div className="flex-1">
-                  <h4 className="font-black text-xl text-gray-900 dark:text-white">{prod.name}</h4>
-                  <div className="flex gap-4 mt-1 text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest"><span>{(prod.price || 0).toLocaleString()} ج.م</span><span>{prod.category}</span></div>
+                  <h4 className="font-black text-xl text-[var(--md-sys-color-on-surface)]">{prod.name}</h4>
+                  <div className="flex gap-4 mt-1 text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest"><span>{(prod.price || 0).toLocaleString()} ج.م</span><span>{prod.category}</span></div>
                 </div>
-                {savedIds.has(prod.id) ? <Check className="text-emerald-500" size={32} strokeWidth={3}/> : <ChevronDown className={`text-gray-400 dark:text-gray-500 transition-transform duration-300 ${expandedId === prod.id ? 'rotate-180 text-accent' : ''}`} size={32}/>}
+                {savedIds.has(prod.id) ? <Check className="text-[var(--md-sys-color-primary)]" size={32} strokeWidth={3}/> : <ChevronDown className={`text-[var(--md-sys-color-on-surface-variant)] transition-transform duration-300 ${expandedId === prod.id ? 'rotate-180 text-[var(--md-sys-color-primary)]' : ''}`} size={32}/>}
               </button>
               <AnimatePresence>
                 {expandedId === prod.id && !savedIds.has(prod.id) && (
@@ -416,7 +420,7 @@ const SyncReviewModal: React.FC<{ products: Product[]; onSaveItem: (p: Product) 
                     transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                     className="overflow-hidden"
                   >
-                    <div className="p-8 bg-white dark:bg-slate-800 border-t border-gray-50 dark:border-slate-700">
+                    <div className="p-8 bg-[var(--md-sys-color-surface)] border-t border-gray-50 dark:border-slate-700">
                       <SyncProductEditor product={prod} isSaved={false} onSave={handleSaveProduct} onRemove={() => setLocalProducts(prev => prev.filter(p => p.id !== prod.id))} categories={categories} suppliers={suppliers} contacts={contacts} />
                     </div>
                   </motion.div>
@@ -425,15 +429,13 @@ const SyncReviewModal: React.FC<{ products: Product[]; onSaveItem: (p: Product) 
             </motion.div>
           ))}
         </div>
-        <div className="p-8 border-t dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 rounded-b-[40px] shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
-          <div className="text-xl font-black text-gray-900 dark:text-white">المتبقي: <span className="text-accent">{localProducts.length - savedIds.size}</span> منتجات</div>
+        <div className="p-8 border-t border-[var(--md-sys-color-outline-variant)]/20 flex justify-between items-center bg-[var(--md-sys-color-surface)]">
+          <div className="text-xl font-black text-[var(--md-sys-color-on-surface)]">المتبقي: <span className="text-[var(--md-sys-color-primary)]">{localProducts.length - savedIds.size}</span> منتجات</div>
           <div className="flex gap-4">
-            <button onClick={() => onSaveAll(localProducts.filter(p => !savedIds.has(p.id)))} className="bg-emerald-600 text-white font-black px-12 py-5 rounded-[24px] shadow-xl hover:bg-emerald-700 transition-all flex items-center gap-3 text-lg"><Check size={28} strokeWidth={3}/> تخطى وحفظ المنتجات كما هى</button>
-            <button onClick={onClose} className="px-10 py-5 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 rounded-[24px] font-black hover:bg-gray-200 dark:hover:bg-slate-700 transition-all">إغلاق</button>
+            <button onClick={() => onSaveAll(localProducts.filter(p => !savedIds.has(p.id)))} className="bg-emerald-600 text-white font-black px-12 py-5 rounded-[24px] shadow-md hover:bg-emerald-700 transition-colors duration-200 flex items-center gap-3 text-lg"><Check size={28} strokeWidth={3}/> تخطى وحفظ المنتجات كما هى</button>
           </div>
         </div>
-      </div>
-    </div>
+    </MD3Dialog>
   );
 };
 
@@ -1127,13 +1129,18 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
           <motion.h2 
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            className="text-2xl font-black flex items-center gap-3 text-gray-900 dark:text-white shrink-0"
+            className="text-2xl font-black flex items-center gap-3 text-[var(--md-sys-color-on-surface)] shrink-0"
           >
             <motion.div 
               whileHover={{ rotate: 360 }}
               transition={{ duration: 0.8 }}
+              className="w-12 h-12 rounded-2xl flex items-center justify-center"
+              style={{
+                backgroundColor: 'var(--md-sys-color-primary-container)',
+                color: 'var(--md-sys-color-on-primary-container)',
+              }}
             >
-              <Package className="text-accent" size={32} />
+              <Package size={28} />
             </motion.div>
              المخزون المتوفر
           </motion.h2>
@@ -1144,65 +1151,61 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
               whileHover={{ scale: 1.02 }}
               className="relative flex-1 md:min-w-80 md:w-80"
             >
-              <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20}/>
-              <input className="w-full pr-12 pl-4 py-3.5 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl outline-none font-bold text-gray-900 dark:text-white focus:border-accent shadow-sm" placeholder="ابحث عن منتج..." value={q} onChange={e => setQ(e.target.value)} />
+              <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)]" size={20}/>
+              <input className="w-full pr-12 pl-4 py-3.5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl outline-none font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] shadow-sm" placeholder="ابحث عن منتج..." value={q} onChange={e => setQ(e.target.value)} />
             </motion.div>
   
-            <motion.button 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <MD3Button 
+              variant="tonal"
+              icon={<RefreshCw size={20} className={isLoading ? 'animate-spin' : ''}/>} 
               onClick={() => setImportStep('source')} 
-              disabled={isLoading} 
-              className="bg-primary text-blue-900 px-6 py-3.5 rounded-2xl flex items-center gap-2 font-black shadow-md hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 text-xs md:text-sm"
+              disabled={isLoading}
             >
-              <RefreshCw size={20} className={isLoading ? 'animate-spin' : ''}/> استيراد منتجات
-            </motion.button>
-            <motion.button 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setModal({open: true})} 
-              className="bg-gray-900 dark:bg-slate-700 text-white px-6 py-3.5 rounded-2xl flex items-center gap-2 font-black shadow-md hover:opacity-90 transition-all active:scale-95 text-xs md:text-sm"
+              استيراد منتجات
+            </MD3Button>
+            <MD3Button 
+              variant="filled"
+              icon={<Plus size={20}/>} 
+              onClick={() => setModal({open: true})}
             >
-              <Plus size={20}/> إضافة منتج
-            </motion.button>
+              إضافة منتج
+            </MD3Button>
           </div>
         </div>
 
         {/* Smart Filters Bar */}
         <CollapsibleSection
           title="فلاتر وترتيب"
-          icon={<Tag size={20} className="text-accent" />}
+          icon={<Tag size={20} className="text-[var(--md-sys-color-primary)]" />}
           mobileOnly
-          headerClassName="bg-white dark:bg-slate-900 p-4 rounded-[32px] border border-gray-50 dark:border-slate-800 shadow-sm mb-2"
+          headerClassName="bg-[var(--md-sys-color-surface)] p-4 rounded-[32px] border border-gray-50 dark:border-slate-800 shadow-sm mb-2"
         >
         <div className="flex flex-wrap gap-3 items-center justify-center lg:justify-start">
-              <div className="flex items-center gap-2 text-gray-400 dark:text-gray-500 font-bold text-[10px] uppercase tracking-widest px-2">
+              <div className="flex items-center gap-2 text-[var(--md-sys-color-on-surface-variant)] font-bold text-[10px] uppercase tracking-widest px-2">
             <Tag size={14} /> فلاتر وترتيب:
           </div>
 
-          <button 
+          <MD3Button 
+            variant={selectedIds.size === filtered.length && filtered.length > 0 ? 'filled' : 'outlined'}
+            size="small"
+            icon={selectedIds.size === filtered.length && filtered.length > 0 ? <CheckSquare size={16} /> : <Square size={16} />}
             onClick={selectAllFiltered}
-            className={`px-3 py-2 rounded-xl flex items-center gap-2 font-black border text-[11px] transition-all active:scale-95 ${selectedIds.size === filtered.length && filtered.length > 0 ? 'bg-accent text-white border-accent' : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400 border-gray-100 dark:border-slate-800 shadow-sm'}`}
           >
-            {selectedIds.size === filtered.length && filtered.length > 0 ? <CheckSquare size={16} /> : <Square size={16} />}
             تحديد الكل
-          </button>
+          </MD3Button>
 
-          <button 
+          <MD3Button 
+            variant="tonal"
+            size="small"
+            icon={<Download size={16} />}
             onClick={() => setIsExportSettingsOpen(true)}
-            className="px-3 py-2 rounded-xl bg-accent/10 text-accent border border-accent/20 flex items-center gap-2 font-black text-[11px] transition-all hover:bg-accent hover:text-white"
           >
-            <Download size={16} />
             تصدير البيانات
-          </button>
+          </MD3Button>
 
           <div className="relative">
             <select 
-              className="px-8 py-2.5 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl outline-none font-black text-[11px] text-gray-700 dark:text-gray-200 focus:border-accent shadow-sm cursor-pointer appearance-none"
+              className="px-8 py-2.5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none font-black text-[11px] text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] shadow-sm cursor-pointer appearance-none"
               value={selectedSupplierId}
               onChange={(e) => setSelectedSupplierId(e.target.value)}
             >
@@ -1211,23 +1214,23 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 <option key={id} value={id}>{name}</option>
               ))}
             </select>
-            <ChevronDown className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" size={12} />
+            <ChevronDown className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)] pointer-events-none" size={12} />
           </div>
 
           <div className="flex items-center gap-2 mr-auto">
-            <button
+            <MD3IconButton
+              icon={<ImageIcon size={16} />}
               onClick={() => setImageFitContain(!imageFitContain)}
-              className={`p-2 rounded-xl transition-all ${imageFitContain ? 'bg-accent/10 text-accent border-accent/30' : 'bg-white dark:bg-slate-900 text-gray-400 dark:text-gray-500 border-gray-100 dark:border-slate-800'} border shadow-sm`}
+              variant={imageFitContain ? 'tonal' : 'standard'}
               title={imageFitContain ? 'إظهار الصور كاملة (بدون قص)' : 'قص الصور لملء الإطار'}
-            >
-              <ImageIcon size={16} />
-            </button>
+              size={36}
+            />
             <ViewSwitcher current={viewMode} onChange={setViewMode} />
           </div>
           
           <div className="relative">
             <select 
-              className="px-4 py-2.5 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl outline-none font-black text-[11px] text-gray-700 dark:text-gray-200 focus:border-accent shadow-sm cursor-pointer appearance-none"
+              className="px-4 py-2.5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none font-black text-[11px] text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] shadow-sm cursor-pointer appearance-none"
               value={sortField}
               onChange={(e) => setSortField(e.target.value)}
             >
@@ -1238,12 +1241,10 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             </select>
             <ChevronDown className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={12} />
           </div>
-          <button onClick={() => setSortAsc(p => !p)} className={`px-3 py-2.5 rounded-xl flex items-center gap-1.5 font-black text-[11px] transition-all ${sortAsc ? 'bg-accent text-white' : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-800'}`} title={sortAsc ? 'تصاعدي' : 'تنازلي'}>
-            <ArrowUpDown size={14} /> {sortAsc ? '▲' : '▼'}
-          </button>
+          <MD3IconButton icon={<ArrowUpDown size={14} />} onClick={() => setSortAsc(p => !p)} variant={sortAsc ? 'filled' : 'standard'} title={sortAsc ? 'تصاعدي' : 'تنازلي'} />
 
           <select 
-            className="px-4 py-2.5 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl outline-none font-black text-[11px] text-gray-700 dark:text-gray-200 focus:border-accent shadow-sm cursor-pointer"
+            className="px-4 py-2.5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none font-black text-[11px] text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] shadow-sm cursor-pointer"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
@@ -1261,7 +1262,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
           </select>
 
           <select 
-            className="px-4 py-2.5 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl outline-none font-black text-[11px] text-gray-700 dark:text-gray-200 focus:border-accent shadow-sm cursor-pointer"
+            className="px-4 py-2.5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none font-black text-[11px] text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] shadow-sm cursor-pointer"
             value={selectedTag}
             onChange={(e) => setSelectedTag(e.target.value)}
           >
@@ -1269,19 +1270,20 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             {allTags.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
 
-          <button
+          <MD3Button
+            variant={showAdvancedSearch ? 'tonal' : 'text'}
+            size="small"
+            icon={showAdvancedSearch ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
-            className={`text-[10px] font-black px-3 py-2 rounded-xl transition-all flex items-center gap-1 ${
-              showAdvancedSearch
-                ? 'bg-accent/10 text-accent border border-accent/20'
-                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-800'
-            }`}
           >
-            {showAdvancedSearch ? <ChevronUp size={12} /> : <ChevronDown size={12} />} بحث متقدم
-          </button>
+            بحث متقدم
+          </MD3Button>
 
           {(selectedCategory !== 'all' || selectedTag !== 'all' || q !== '' || selectedSupplierId !== 'all' || minPrice !== '' || maxPrice !== '' || minStock !== '' || maxStock !== '' || selectedSize !== 'all' || selectedColor !== 'all') && (
-            <button 
+            <MD3Button 
+              variant="text"
+              size="small"
+              icon={<X size={12} />}
               onClick={() => {
                 setQ('');
                 setSelectedCategory('all');
@@ -1294,10 +1296,9 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 setSelectedSize('all');
                 setSelectedColor('all');
               }}
-              className="text-[10px] font-black text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-xl transition-all flex items-center gap-1"
             >
-              <X size={12} /> رسيت الكل
-            </button>
+              رسيت الكل
+            </MD3Button>
           )}
         </div>
         </CollapsibleSection>
@@ -1311,59 +1312,59 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden"
             >
-              <div className="flex flex-wrap gap-3 items-end bg-white dark:bg-slate-900 p-4 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm">
+              <div className="flex flex-wrap gap-3 items-end bg-[var(--md-sys-color-surface)] p-4 rounded-2xl border border-[var(--md-sys-color-outline-variant)]/20 shadow-sm">
                 {/* Price Range */}
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 tracking-wide">💰 السعر من</label>
+                  <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] tracking-wide">💰 السعر من</label>
                   <input
                     type="number"
                     placeholder="0"
                     value={minPrice}
                     onChange={e => setMinPrice(e.target.value)}
-                    className="w-20 px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-[11px] font-bold text-gray-900 dark:text-white focus:border-accent"
+                    className="w-20 px-3 py-2 bg-[var(--md-sys-color-surface-container)] border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-[11px] font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)]"
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 tracking-wide">السعر إلى</label>
+                  <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] tracking-wide">السعر إلى</label>
                   <input
                     type="number"
                     placeholder="∞"
                     value={maxPrice}
                     onChange={e => setMaxPrice(e.target.value)}
-                    className="w-20 px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-[11px] font-bold text-gray-900 dark:text-white focus:border-accent"
+                    className="w-20 px-3 py-2 bg-[var(--md-sys-color-surface-container)] border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-[11px] font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)]"
                   />
                 </div>
 
                 {/* Stock Range */}
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 tracking-wide">📦 المخزون من</label>
+                  <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] tracking-wide">📦 المخزون من</label>
                   <input
                     type="number"
                     placeholder="0"
                     value={minStock}
                     onChange={e => setMinStock(e.target.value)}
-                    className="w-20 px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-[11px] font-bold text-gray-900 dark:text-white focus:border-accent"
+                    className="w-20 px-3 py-2 bg-[var(--md-sys-color-surface-container)] border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-[11px] font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)]"
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 tracking-wide">المخزون إلى</label>
+                  <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] tracking-wide">المخزون إلى</label>
                   <input
                     type="number"
                     placeholder="∞"
                     value={maxStock}
                     onChange={e => setMaxStock(e.target.value)}
-                    className="w-20 px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-[11px] font-bold text-gray-900 dark:text-white focus:border-accent"
+                    className="w-20 px-3 py-2 bg-[var(--md-sys-color-surface-container)] border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-[11px] font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)]"
                   />
                 </div>
 
                 {/* Size Filter */}
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 tracking-wide">📐 المقاس</label>
+                  <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] tracking-wide">📐 المقاس</label>
                   <div className="relative">
                     <select
                       value={selectedSize}
                       onChange={e => setSelectedSize(e.target.value)}
-                      className="px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-[11px] font-bold text-gray-700 dark:text-gray-200 focus:border-accent cursor-pointer appearance-none min-w-[90px]"
+                      className="px-3 py-2 bg-[var(--md-sys-color-surface-container)] border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-[11px] font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] cursor-pointer appearance-none min-w-[90px]"
                     >
                       <option value="all">الكل</option>
                       {allSizes.map(s => <option key={s} value={s}>{s}</option>)}
@@ -1374,12 +1375,12 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
 
                 {/* Color Filter */}
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 tracking-wide">🎨 اللون</label>
+                  <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] tracking-wide">🎨 اللون</label>
                   <div className="relative">
                     <select
                       value={selectedColor}
                       onChange={e => setSelectedColor(e.target.value)}
-                      className="px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-[11px] font-bold text-gray-700 dark:text-gray-200 focus:border-accent cursor-pointer appearance-none min-w-[90px]"
+                      className="px-3 py-2 bg-[var(--md-sys-color-surface-container)] border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-[11px] font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] cursor-pointer appearance-none min-w-[90px]"
                     >
                       <option value="all">الكل</option>
                       {allColors.map(c => <option key={c} value={c}>{c}</option>)}
@@ -1397,58 +1398,40 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
           title="ملخص المخزون"
           icon={<Package size={20} className="text-amber-600" />}
           mobileOnly
-          headerClassName="bg-white dark:bg-slate-900 p-4 rounded-[32px] border border-gray-50 dark:border-slate-800 shadow-sm mb-2"
+          headerClassName="bg-[var(--md-sys-color-surface)] p-4 rounded-[32px] border border-gray-50 dark:border-slate-800 shadow-sm mb-2"
         >
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-wrap gap-4 md:gap-8 justify-center lg:justify-start items-center bg-white dark:bg-slate-900 p-4 md:px-8 rounded-[32px] border border-gray-50 dark:border-slate-800 shadow-sm"
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-600">
-              <Package size={20} />
-            </div>
-            <div>
-              <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">إجمالي القطع</span>
-              <span className="font-black text-lg text-gray-900 dark:text-white">{inventoryStats.totalQuantity.toLocaleString()}</span>
-            </div>
-          </div>
-          
-          <div className="w-px h-8 bg-gray-100 dark:bg-slate-800 hidden md:block"></div>
-          
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-600">
-              <Coins size={20} />
-            </div>
-            <div>
-              <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">إجمالي التكلفة</span>
-              <span className="font-black text-lg text-emerald-600">{inventoryStats.totalCost.toLocaleString()} <span className="text-[10px]">ج.م</span></span>
-            </div>
-          </div>
-          
-          <div className="w-px h-8 bg-gray-100 dark:bg-slate-800 hidden md:block"></div>
-          
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-accent/10 flex items-center justify-center text-accent">
-              <Sparkles size={20} />
-            </div>
-            <div>
-              <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">قيمة البيع المتوقعة</span>
-              <span className="font-black text-lg text-accent">{inventoryStats.totalSales.toLocaleString()} <span className="text-[10px]">ج.م</span></span>
-            </div>
-          </div>
-
-          <div className="w-px h-8 bg-gray-100 dark:bg-slate-800 hidden md:block"></div>
-
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600">
-              <Check size={20} />
-            </div>
-            <div>
-              <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">الربح المتوقع</span>
-              <span className="font-black text-lg text-blue-600">{(inventoryStats.totalSales - inventoryStats.totalCost).toLocaleString()} <span className="text-[10px]">ج.م</span></span>
-            </div>
-          </div>
+          <MD3StatCard
+            icon={<Package size={20} />}
+            label="إجمالي القطع"
+            value={inventoryStats.totalQuantity.toLocaleString()}
+            iconBg="bg-[var(--md-sys-color-tertiary-container)] text-amber-600"
+          />
+          <MD3StatCard
+            icon={<Coins size={20} />}
+            label="إجمالي التكلفة"
+            value={inventoryStats.totalCost.toLocaleString()}
+            unit="ج.م"
+            iconBg="bg-emerald-100 dark:bg-emerald-900/20 text-[var(--md-sys-color-primary)]"
+          />
+          <MD3StatCard
+            icon={<Sparkles size={20} />}
+            label="قيمة البيع المتوقعة"
+            value={inventoryStats.totalSales.toLocaleString()}
+            unit="ج.م"
+            iconBg="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
+          />
+          <MD3StatCard
+            icon={<Check size={20} />}
+            label="الربح المتوقع"
+            value={(inventoryStats.totalSales - inventoryStats.totalCost).toLocaleString()}
+            unit="ج.م"
+            iconBg="bg-blue-100 dark:bg-blue-900/20 text-blue-600"
+          />
         </motion.div>
         </CollapsibleSection>
 
@@ -1456,99 +1439,91 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
 
       <AnimatePresence>
         {importStep !== 'none' && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          <MD3Dialog
+            isOpen={importStep !== 'none'}
+            onClose={() => setImportStep(importStep === 'url_input' ? 'source' : 'none')}
+            title={importStep === 'source' ? 'استيراد منتجات من المتجر' : 'رابط المنتجات'}
+            maxWidth="lg"
           >
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-slate-900 rounded-[40px] p-8 max-w-lg w-full shadow-2xl space-y-6 relative overflow-hidden"
-            >
-              <div className="text-center space-y-2">
-                <div className="w-16 h-16 bg-blue-50 dark:bg-slate-800 text-accent rounded-3xl flex items-center justify-center mx-auto mb-4">
-                  {importStep === 'url_input' ? <LinkIcon size={32} /> : <RefreshCw size={32} />}
+              <div className="space-y-6">
+                <div className="text-center space-y-2">
+                  <div className="w-16 h-16 bg-blue-50 dark:bg-slate-800 text-[var(--md-sys-color-primary)] rounded-3xl flex items-center justify-center mx-auto mb-4">
+                    {importStep === 'url_input' ? <LinkIcon size={32} /> : <RefreshCw size={32} />}
+                  </div>
+                  <p className="text-[var(--md-sys-color-on-surface-variant)] font-bold">
+                    {importStep === 'source' ? 'اختر مصدر البيانات:' : 'أدخل رابط JSON للمنتجات:'}
+                  </p>
                 </div>
-                <h3 className="text-2xl font-black text-gray-900 dark:text-white">
-                  {importStep === 'source' ? 'استيراد منتجات من المتجر' : 'رابط المنتجات'}
-                </h3>
-                <p className="text-gray-500 dark:text-gray-400 font-bold">
-                  {importStep === 'source' ? 'اختر مصدر البيانات:' : 'أدخل رابط JSON للمنتجات:'}
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-1 gap-4">
-                {importStep === 'source' && (
-                  <motion.div 
-                    initial="hidden"
-                    animate="show"
-                    variants={{ show: { transition: { staggerChildren: 0.1 } } }}
-                    className="space-y-4"
-                  >
-                    <motion.button 
-                      variants={{ hidden: { opacity: 0, x: 20 }, show: { opacity: 1, x: 0 } }}
-                      whileHover={{ scale: 1.02, x: -5 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => handleImportSourceChoice('feed')} 
-                      className="w-full flex items-center gap-4 p-5 bg-indigo-50 dark:bg-slate-800 border border-indigo-100 dark:border-slate-700 rounded-3xl text-right hover:bg-indigo-100 dark:hover:bg-slate-700 transition-all group"
+                
+                <div className="grid grid-cols-1 gap-4">
+                  {importStep === 'source' && (
+                    <motion.div 
+                      initial="hidden"
+                      animate="show"
+                      variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+                      className="space-y-4"
                     >
-                      <div className="w-12 h-12 bg-white dark:bg-slate-900 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform"><Globe size={24} /></div>
-                      <div><h4 className="font-black text-gray-900 dark:text-white text-sm">رابط API</h4><p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold">جلب المنتجات عبر رابط</p></div>
-                    </motion.button>
-                    <motion.button 
-                      variants={{ hidden: { opacity: 0, x: 20 }, show: { opacity: 1, x: 0 } }}
-                      whileHover={{ scale: 1.02, x: -5 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => handleImportSourceChoice('json')} 
-                      className="w-full flex items-center gap-4 p-5 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 rounded-3xl text-right hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-all group"
+                      <motion.button 
+                        variants={{ hidden: { opacity: 0, x: 20 }, show: { opacity: 1, x: 0 } }}
+                        whileHover={{ scale: 1.02, x: -5 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleImportSourceChoice('feed')} 
+                        className="w-full flex items-center gap-4 p-5 bg-indigo-50 dark:bg-slate-800 border border-indigo-100 dark:border-slate-700 rounded-3xl text-right hover:bg-indigo-100 dark:hover:bg-slate-700 transition-colors duration-200 group"
+                      >
+                        <div className="w-12 h-12 bg-[var(--md-sys-color-surface)] rounded-2xl flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform"><Globe size={24} /></div>
+                        <div><h4 className="font-black text-[var(--md-sys-color-on-surface)] text-sm">رابط API</h4><p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-bold">جلب المنتجات عبر رابط</p></div>
+                      </motion.button>
+                      <motion.button 
+                        variants={{ hidden: { opacity: 0, x: 20 }, show: { opacity: 1, x: 0 } }}
+                        whileHover={{ scale: 1.02, x: -5 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleImportSourceChoice('json')} 
+                        className="w-full flex items-center gap-4 p-5 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 rounded-3xl text-right hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors duration-200 group"
+                      >
+                        <div className="w-12 h-12 bg-[var(--md-sys-color-surface)] rounded-2xl flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform"><FileJson size={24} /></div>
+                        <div><h4 className="font-black text-[var(--md-sys-color-on-surface)] text-sm">ملف JSON</h4><p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-bold">رفع ملف من جهازك</p></div>
+                      </motion.button>
+                    </motion.div>
+                  )}
+
+                  {importStep === 'url_input' && (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="space-y-4"
                     >
-                      <div className="w-12 h-12 bg-white dark:bg-slate-900 rounded-2xl flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform"><FileJson size={24} /></div>
-                      <div><h4 className="font-black text-gray-900 dark:text-white text-sm">ملف JSON</h4><p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold">رفع ملف من جهازك</p></div>
-                    </motion.button>
-                  </motion.div>
-                )}
+                       <div className="space-y-2">
+                         <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] px-2 uppercase">رابط API</label>
+                         <input 
+                          type="url" 
+                          className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-2xl outline-none focus:border-[var(--md-sys-color-primary)] focus:bg-[var(--md-sys-color-surface)] transition-colors duration-200 font-bold text-[var(--md-sys-color-on-surface)] text-xs" 
+                          placeholder="https://example.com/products.json"
+                          value={importUrl}
+                          onChange={e => setImportUrl(e.target.value)}
+                         />
+                       </div>
+                       <motion.button 
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleImportUrlSubmit}
+                        className="w-full py-5 bg-[var(--md-sys-color-primary)] text-white rounded-2xl font-black shadow-md hover:opacity-90 transition-all duration-200 text-lg active:scale-95"
+                       >
+                         جلب البيانات
+                       </motion.button>
+                    </motion.div>
+                  )}
+                </div>
 
-                {importStep === 'url_input' && (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="space-y-4"
+                <div className="flex gap-2 pt-4">
+                  <button 
+                    onClick={() => setImportStep(importStep === 'url_input' ? 'source' : 'none')}
+                    className="flex-1 py-4 bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] rounded-2xl font-black hover:bg-[var(--md-sys-color-surface-container)] transition-colors duration-200 border border-[var(--md-sys-color-outline-variant)]/20"
                   >
-                     <div className="space-y-2">
-                       <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-2 uppercase">رابط API</label>
-                       <input 
-                        type="url" 
-                        className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-all font-bold text-gray-800 dark:text-white text-xs" 
-                        placeholder="https://example.com/products.json"
-                        value={importUrl}
-                        onChange={e => setImportUrl(e.target.value)}
-                       />
-                     </div>
-                     <motion.button 
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={handleImportUrlSubmit}
-                      className="w-full py-5 bg-accent text-white rounded-2xl font-black shadow-xl hover:opacity-90 transition-all text-lg active:scale-95"
-                     >
-                       جلب البيانات
-                     </motion.button>
-                  </motion.div>
-                )}
+                    {importStep === 'url_input' ? 'رجوع' : 'إلغاء'}
+                  </button>
+                </div>
               </div>
-
-              <div className="flex gap-2 pt-4">
-                <button 
-                  onClick={() => setImportStep(importStep === 'url_input' ? 'source' : 'none')}
-                  className="flex-1 py-4 bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 rounded-2xl font-black hover:bg-gray-100 dark:hover:bg-slate-700 transition-all border border-gray-100 dark:border-slate-700"
-                >
-                  {importStep === 'url_input' ? 'رجوع' : 'إلغاء'}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
+          </MD3Dialog>
         )}
       </AnimatePresence>
 
@@ -1568,50 +1543,36 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
       {/* Export Settings Modal */}
       <AnimatePresence>
         {isExportSettingsOpen && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 overflow-y-auto overflow-x-hidden">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-md"
-              onClick={() => setIsExportSettingsOpen(false)}
-            />
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-slate-900 rounded-[32px] p-8 max-w-md w-full shadow-2xl relative z-10 text-right my-auto"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-black flex items-center gap-2">
-                  <Download className="text-accent" /> إعدادات التصدير
-                </h3>
-                <button onClick={() => setIsExportSettingsOpen(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors text-gray-400 dark:text-gray-500">
-                  <X size={24} />
-                </button>
-              </div>
-
+          <MD3Dialog
+            isOpen={isExportSettingsOpen}
+            onClose={() => setIsExportSettingsOpen(false)}
+            title="إعدادات التصدير"
+            maxWidth="md"
+            actions={[
+              { label: 'تصدير', onClick: () => handleExport(exportConfig.format), variant: 'filled' }
+            ]}
+          >
               <div className="space-y-6">
                 <div className="space-y-3">
-                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest px-2">صيغة الملف</label>
+                  <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">صيغة الملف</label>
                   <div className="grid grid-cols-3 gap-3">
                     <button 
                       onClick={() => setExportConfig({...exportConfig, format: 'excel'})}
-                      className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 font-bold ${exportConfig.format === 'excel' ? 'border-accent bg-accent/5 text-accent' : 'border-gray-100 dark:border-slate-800 text-gray-500'}`}
+                      className={`p-4 rounded-2xl border-2 transition-colors duration-200 flex flex-col items-center gap-2 font-bold ${exportConfig.format === 'excel' ? 'border-[var(--md-sys-color-primary)] bg-[var(--md-sys-color-primary)]/5 text-[var(--md-sys-color-primary)]' : 'border-[var(--md-sys-color-outline-variant)]/20 text-[var(--md-sys-color-on-surface-variant)]'}`}
                     >
                       <FileSpreadsheet size={24} />
                       Excel
                     </button>
                     <button 
                       onClick={() => setExportConfig({...exportConfig, format: 'pdf'})}
-                      className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 font-bold ${exportConfig.format === 'pdf' ? 'border-accent bg-accent/5 text-accent' : 'border-gray-100 dark:border-slate-800 text-gray-500'}`}
+                      className={`p-4 rounded-2xl border-2 transition-colors duration-200 flex flex-col items-center gap-2 font-bold ${exportConfig.format === 'pdf' ? 'border-[var(--md-sys-color-primary)] bg-[var(--md-sys-color-primary)]/5 text-[var(--md-sys-color-primary)]' : 'border-[var(--md-sys-color-outline-variant)]/20 text-[var(--md-sys-color-on-surface-variant)]'}`}
                     >
                       <FileText size={24} />
                       PDF
                     </button>
                     <button 
                       onClick={() => setExportConfig({...exportConfig, format: 'html'})}
-                      className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 font-bold ${exportConfig.format === 'html' ? 'border-accent bg-accent/5 text-accent' : 'border-gray-100 dark:border-slate-800 text-gray-500'}`}
+                      className={`p-4 rounded-2xl border-2 transition-colors duration-200 flex flex-col items-center gap-2 font-bold ${exportConfig.format === 'html' ? 'border-[var(--md-sys-color-primary)] bg-[var(--md-sys-color-primary)]/5 text-[var(--md-sys-color-primary)]' : 'border-[var(--md-sys-color-outline-variant)]/20 text-[var(--md-sys-color-on-surface-variant)]'}`}
                     >
                       <Globe size={24} />
                       ويب
@@ -1621,7 +1582,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between px-2">
-                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">الأعمدة المراد تصديرها</label>
+                    <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">الأعمدة المراد تصديرها</label>
                     <button 
                       onClick={() => {
                         const allIds = availableColumns.map(c => c.id);
@@ -1631,7 +1592,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                           selectedColumns: isAllSelected ? ['name', 'quantity', 'price'] : allIds
                         }));
                       }}
-                      className="text-[10px] font-black text-accent hover:underline"
+                      className="text-[10px] font-black text-[var(--md-sys-color-primary)] hover:underline"
                     >
                       {exportConfig.selectedColumns.length === availableColumns.length ? 'إلغاء الكل' : 'تحديد الكل'}
                     </button>
@@ -1641,9 +1602,9 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                       <button 
                         key={col.id}
                         onClick={() => toggleColumn(col.id)}
-                        className={`flex items-center gap-2 p-3 rounded-xl border text-[10px] font-black transition-all ${exportConfig.selectedColumns.includes(col.id) ? 'bg-accent/10 border-accent text-accent shadow-sm' : 'border-gray-100 dark:border-slate-800 text-gray-400 dark:text-gray-500 hover:border-gray-200'}`}
+                        className={`flex items-center gap-2 p-3 rounded-xl border text-[10px] font-black transition-colors duration-200 ${exportConfig.selectedColumns.includes(col.id) ? 'bg-[var(--md-sys-color-primary)]/10 border-[var(--md-sys-color-primary)] text-[var(--md-sys-color-primary)] shadow-sm' : 'border-[var(--md-sys-color-outline-variant)]/20 text-[var(--md-sys-color-on-surface-variant)] hover:border-[var(--md-sys-color-outline-variant)]/30'}`}
                       >
-                        <div className={`w-3.5 h-3.5 rounded-md border flex items-center justify-center transition-colors ${exportConfig.selectedColumns.includes(col.id) ? 'bg-accent border-accent' : 'bg-white border-gray-200'}`}>
+                        <div className={`w-3.5 h-3.5 rounded-md border flex items-center justify-center transition-colors ${exportConfig.selectedColumns.includes(col.id) ? 'bg-[var(--md-sys-color-primary)] border-[var(--md-sys-color-primary)]' : 'bg-[var(--md-sys-color-surface)] border-[var(--md-sys-color-outline-variant)]/30'}`}>
                           {exportConfig.selectedColumns.includes(col.id) && <Check size={10} className="text-white" strokeWidth={5} />}
                         </div>
                         {col.label}
@@ -1653,33 +1614,33 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 </div>
 
                 <div className="space-y-4">
-                  <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest px-2">خيارات إضافية</label>
+                  <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">خيارات إضافية</label>
                   
                   <button 
                     onClick={() => setExportConfig({...exportConfig, includeVariants: !exportConfig.includeVariants})}
-                    className="w-full p-4 rounded-2xl border border-gray-100 dark:border-slate-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+                    className="w-full p-4 rounded-2xl border border-[var(--md-sys-color-outline-variant)]/20 flex items-center justify-between hover:bg-[var(--md-sys-color-surface-container)] transition-colors"
                   >
-                    <div className={`w-10 h-6 rounded-full transition-all relative ${exportConfig.includeVariants ? 'bg-accent' : 'bg-gray-200'}`}>
-                      <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${exportConfig.includeVariants ? 'right-5' : 'right-1'}`} />
+                    <div className={`w-10 h-6 rounded-full transition-colors duration-200 relative ${exportConfig.includeVariants ? 'bg-[var(--md-sys-color-primary)]' : 'bg-[var(--md-sys-color-outline-variant)]/30'}`}>
+                      <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200 ${exportConfig.includeVariants ? 'right-5' : 'right-1'}`} />
                     </div>
-                    <span className="font-bold text-gray-700 dark:text-gray-200">تصدير تفاصيل المقاسات والألوان</span>
+                    <span className="font-bold text-[var(--md-sys-color-on-surface)]">تصدير تفاصيل المقاسات والألوان</span>
                   </button>
 
                   <button 
                     onClick={() => setExportConfig({...exportConfig, includeCosts: !exportConfig.includeCosts})}
-                    className="w-full p-4 rounded-2xl border border-gray-100 dark:border-slate-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+                    className="w-full p-4 rounded-2xl border border-[var(--md-sys-color-outline-variant)]/20 flex items-center justify-between hover:bg-[var(--md-sys-color-surface-container)] transition-colors"
                   >
-                    <div className={`w-10 h-6 rounded-full transition-all relative ${exportConfig.includeCosts ? 'bg-accent' : 'bg-gray-200'}`}>
-                      <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${exportConfig.includeCosts ? 'right-5' : 'right-1'}`} />
+                    <div className={`w-10 h-6 rounded-full transition-colors duration-200 relative ${exportConfig.includeCosts ? 'bg-[var(--md-sys-color-primary)]' : 'bg-[var(--md-sys-color-outline-variant)]/30'}`}>
+                      <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200 ${exportConfig.includeCosts ? 'right-5' : 'right-1'}`} />
                     </div>
-                    <span className="font-bold text-gray-700 dark:text-gray-200">تضمين أسعار التكلفة والأرباح</span>
+                    <span className="font-bold text-[var(--md-sys-color-on-surface)]">تضمين أسعار التكلفة والأرباح</span>
                   </button>
                 </div>
 
                 <button 
                   onClick={() => handleProfessionalExport()}
                   disabled={isExporting}
-                  className={`w-full py-5 bg-accent text-white font-black rounded-2xl shadow-lg hover:shadow-accent/40 active:scale-95 transition-all flex items-center justify-center gap-3 text-lg ${isExporting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className={`w-full py-5 bg-[var(--md-sys-color-primary)] text-white font-black rounded-2xl shadow-lg active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 text-lg ${isExporting ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
                   {isExporting ? (
                     <>
@@ -1693,17 +1654,16 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     </>
                   )}
                 </button>
-                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold text-center italic">
+                <p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-bold text-center italic">
                   {selectedIds.size > 0 ? `سيتم تصدير ${selectedIds.size} منتج محدد` : `سيتم تصدير جميع المنتجات الظاهرة حالياً (${filtered.length})`}
                 </p>
 
-                <div className="flex justify-center gap-4 pt-2 border-t border-gray-50 dark:border-slate-800">
-                  <button onClick={() => handleExport('csv')} className="text-[10px] font-bold text-gray-400 dark:text-gray-500 hover:text-accent">CSV (سريع)</button>
-                  <button onClick={() => handleExport('json')} className="text-[10px] font-bold text-gray-400 dark:text-gray-500 hover:text-accent">JSON (بيانات)</button>
+                <div className="flex justify-center gap-4 pt-2 border-t border-[var(--md-sys-color-outline-variant)]/20">
+                  <button onClick={() => handleExport('csv')} className="text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-primary)]">CSV (سريع)</button>
+                  <button onClick={() => handleExport('json')} className="text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-primary)]">JSON (بيانات)</button>
                 </div>
               </div>
-            </motion.div>
-          </div>
+          </MD3Dialog>
         )}
       </AnimatePresence>
 
@@ -1726,9 +1686,9 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 variants={cardVariants}
                 whileHover={hoverVariants}
                 onClick={() => setViewingProductId(p.id)}
-                className={`bg-white dark:bg-slate-900 rounded-[32px] overflow-hidden shadow-sm border group relative flex flex-col cursor-pointer ${isSelected ? 'ring-4 ring-accent/30 border-accent shadow-xl' : isOutOfStock ? 'border-red-400 dark:border-red-500 ring-2 ring-red-100 dark:ring-red-900/30' : isLowStock ? 'border-amber-400 dark:border-amber-500 ring-2 ring-amber-100 dark:ring-amber-900/30' : 'border-gray-50 dark:border-slate-800 hover:shadow-xl dark:hover:shadow-slate-900/50'}`}
+                className={`bg-[var(--md-sys-color-surface)] rounded-[32px] overflow-hidden shadow-sm border group relative flex flex-col cursor-pointer ${isSelected ? 'ring-4 ring-accent/30 border-[var(--md-sys-color-primary)] shadow-md' : isOutOfStock ? 'border-red-400 dark:border-red-500 ring-2 ring-red-100 dark:ring-red-900/30' : isLowStock ? 'border-amber-400 dark:border-amber-500 ring-2 ring-amber-100 dark:ring-amber-900/30' : 'border-gray-50 dark:border-slate-800 hover:shadow-md dark:hover:shadow-slate-900/50'}`}
               >
-                <div className={`relative overflow-hidden bg-gray-50 dark:bg-slate-800 ${imageFitContain ? '' : 'max-h-72'}`}>
+                <div className={`relative overflow-hidden bg-[var(--md-sys-color-surface-container)] ${imageFitContain ? '' : 'max-h-72'}`}>
                   <img src={p.image} className={`w-full ${imageFitContain ? 'h-auto block' : 'h-full object-cover transition-transform duration-500 group-hover:scale-110'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" fill="%23f1f5f9"/><rect x="70" y="60" width="60" height="80" rx="8" stroke="%2394a3b8" stroke-width="2" fill="none"/><circle cx="100" cy="110" r="12" fill="%23cbd5e1"/><rect x="80" y="70" width="40" height="6" rx="3" fill="%23cbd5e1"/></svg>'); (e.target as HTMLImageElement).className = `w-full h-full object-contain p-8 ${imageFitContain ? 'block' : ''}`; }} />
                   
                   {p.images && p.images.length > 1 && (
@@ -1738,17 +1698,17 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   )}
 
                   <div className="absolute top-4 right-4 z-10" onClick={(e) => { e.stopPropagation(); toggleSelect(p.id); }}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-md cursor-pointer ${isSelected ? 'bg-accent text-white scale-110' : 'bg-white/80 dark:bg-slate-800/80 text-gray-300 dark:text-slate-600 hover:text-accent'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 shadow-md cursor-pointer ${isSelected ? 'bg-accent text-white scale-110' : 'bg-white/80 dark:bg-slate-800/80 text-gray-300 dark:text-slate-600 hover:text-[var(--md-sys-color-primary)]'}`}>
                       {isSelected ? <CheckSquare size={20} strokeWidth={3} /> : <Square size={20} />}
                     </div>
                   </div>
 
                   <div className="absolute top-4 left-4 flex flex-col gap-2 items-start pointer-events-none">
                     {p.category && validCategoryStrings.has(p.category) && (
-                      <span className="bg-white/95 dark:bg-slate-900 border border-gray-100 dark:border-slate-800 text-[10px] font-black text-slate-800 dark:text-white px-3 py-1.5 rounded-2xl shadow-sm uppercase tracking-tight flex items-center gap-1">
+                      <span className="bg-white/95 dark:bg-slate-900 border border-[var(--md-sys-color-outline-variant)]/20 text-[10px] font-black text-slate-800 dark:text-white px-3 py-1.5 rounded-2xl shadow-sm uppercase tracking-tight flex items-center gap-1">
                         {p.category.split(' > ').map((part, idx) => (
                           <React.Fragment key={idx}>
-                            {idx > 0 && <span className="text-accent/30">/</span>}
+                            {idx > 0 && <span className="text-[var(--md-sys-color-primary)]/30">/</span>}
                             {part}
                           </React.Fragment>
                         ))}
@@ -1767,26 +1727,26 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   </div>
                 </div>
                 <div className="p-5 flex flex-col flex-1">
-                  <h3 className="font-black text-gray-900 dark:text-white text-xl line-clamp-2 leading-snug mb-1">{p.name}</h3>
+                  <h3 className="font-black text-[var(--md-sys-color-on-surface)] text-xl line-clamp-2 leading-snug mb-1">{p.name}</h3>
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="font-mono text-[11px] font-bold text-gray-400 dark:text-gray-500">{p.sku || ''}</span>
+                    <span className="font-mono text-[11px] font-bold text-[var(--md-sys-color-on-surface-variant)]">{p.sku || ''}</span>
                     <span className="text-[10px] font-bold text-gray-300 dark:text-gray-600">|</span>
-                    <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 font-mono">ID: {p.id}</span>
+                    <span className="text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)] font-mono">ID: {p.id}</span>
                   </div>
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex flex-col gap-1">
-                      <div className="text-accent font-black text-2xl">{p.price?.toLocaleString()} <span className="text-sm">ج.م</span></div>
+                      <div className="text-[var(--md-sys-color-primary)] font-black text-2xl">{p.price?.toLocaleString()} <span className="text-sm">ج.م</span></div>
                       <span className="text-sm text-amber-600 font-black">تكلفة {p.costPrice?.toLocaleString()} ج.م</span>
                     </div>
                     <div className="flex flex-col items-end gap-0.5">
-                      <span className={`text-base font-black ${isOutOfStock ? 'text-red-500' : isLowStock ? 'text-amber-500' : 'text-gray-500 dark:text-gray-400'}`}>
+                      <span className={`text-base font-black ${isOutOfStock ? 'text-[var(--md-sys-color-error)]' : isLowStock ? 'text-[var(--md-sys-color-tertiary)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>
                         {p.variants.reduce((s, v) => s + v.quantity, 0)} قطعة
                       </span>
                       {(p.price || 0) > 0 && (p.costPrice || 0) > 0 && (() => {
                         const profit = (p.price || 0) - (p.costPrice || 0);
                         const margin = ((profit / (p.price || 1)) * 100).toFixed(0);
                         return (
-                          <span className={`text-sm font-black px-3 py-1 rounded-xl ${profit >= 0 ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600' : 'bg-red-50 dark:bg-red-900/20 text-red-500'}`}>
+                          <span className={`text-sm font-black px-3 py-1 rounded-xl ${profit >= 0 ? 'bg-[var(--md-sys-color-primary-container)]/30 text-[var(--md-sys-color-primary)]' : 'bg-[var(--md-sys-color-error)]/10 text-[var(--md-sys-color-error)]'}`}>
                             {profit >= 0 ? '+' : ''}{profit.toLocaleString()} ج.م ({margin}%)
                           </span>
                         );
@@ -1795,16 +1755,16 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   </div>
                   <div className="flex flex-wrap items-center gap-2 text-xs font-black mt-auto pt-3 border-t border-gray-50 dark:border-slate-800">
                     {p.variants.length > 0 && (
-                      <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-1.5 text-[var(--md-sys-color-on-surface-variant)]">
                         <Layers size={16} /> {p.variants.length} متغير
                         {(() => {
                           const lowCount = p.variants.filter(v => v.quantity <= (v.lowStockThreshold || 0)).length;
-                          return lowCount > 0 ? <span className="text-red-500 font-black">({lowCount} منخفض)</span> : null;
+                          return lowCount > 0 ? <span className="text-[var(--md-sys-color-error)] font-black">({lowCount} منخفض)</span> : null;
                         })()}
                       </div>
                     )}
                     {p.tags && p.tags.length > 0 && p.tags.slice(0, 2).map(tag => (
-                      <span key={tag} className="bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 px-2 py-1 rounded-lg border border-gray-100 dark:border-slate-800">{tag}</span>
+                      <span key={tag} className="bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] px-2 py-1 rounded-lg border border-[var(--md-sys-color-outline-variant)]/20">{tag}</span>
                     ))}
                     {p.tags && p.tags.length > 2 && <span className="text-gray-400 text-xs">+{p.tags.length - 2}</span>}
                     {supplierName && (
@@ -1819,15 +1779,15 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             </div>
           </div>
           <div className="flex items-center justify-between gap-2 px-5 pb-4 border-t border-gray-50 dark:border-slate-800 pt-3">
-            <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="flex items-center gap-1.5 text-[10px] font-black text-accent hover:bg-accent/5 py-2 px-3 rounded-xl transition-all">
+            <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="flex items-center gap-1.5 text-[10px] font-black text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 py-2 px-3 rounded-xl transition-colors duration-200">
               <Edit2 size={14} /> تعديل
             </button>
             {p.url && (
-              <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5 text-[10px] font-black text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 py-2 px-3 rounded-xl transition-all">
+              <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5 text-[10px] font-black text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 py-2 px-3 rounded-xl transition-colors duration-200">
                 <ExternalLink size={14} /> رابط
               </a>
             )}
-            <button onClick={(e) => handleDelete(p.id, e)} className="flex items-center gap-1.5 text-[10px] font-black text-red-500 hover:bg-red-50/50 dark:hover:bg-red-900/10 py-2 px-3 rounded-xl transition-all">
+            <button onClick={(e) => handleDelete(p.id, e)} className="flex items-center gap-1.5 text-[10px] font-black text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 py-2 px-3 rounded-xl transition-colors duration-200">
               <Trash2 size={14} /> حذف
             </button>
           </div>
@@ -1838,10 +1798,10 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
       )}
 
       {viewMode === 'list' && (
-        <div className="bg-white dark:bg-slate-900 rounded-[32px] overflow-hidden border border-gray-100 dark:border-slate-800 shadow-sm">
+        <div className="bg-[var(--md-sys-color-surface)] rounded-[32px] overflow-hidden border border-[var(--md-sys-color-outline-variant)]/20 shadow-sm">
           <div className="overflow-x-auto">
           <table className="w-full text-right min-w-[700px]">
-            <thead className="bg-gray-50 dark:bg-slate-800 border-b border-gray-100 dark:border-slate-700">
+            <thead className="bg-[var(--md-sys-color-surface-container)] border-b border-gray-100 dark:border-slate-700">
               <tr>
                 <th className="p-4 font-black text-[11px] text-gray-500 dark:text-gray-300"></th>
                 <th className="p-4 font-black text-[11px] text-gray-500 dark:text-gray-300">المعرف</th>
@@ -1867,56 +1827,56 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 const totalQty = p.variants.reduce((s, v) => s + v.quantity, 0);
                 const profit = (p.price || 0) - (p.costPrice || 0);
                 return (
-                  <tr key={p.id} onClick={() => setViewingProductId(p.id)} className={`cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800/50 ${isSelected ? 'bg-accent/5' : ''} ${isOutOfStock ? 'bg-red-100/80 dark:bg-red-900/20' : isLowStock ? 'bg-amber-50/80 dark:bg-amber-900/10' : ''}`}>
+                  <tr key={p.id} onClick={() => setViewingProductId(p.id)} className={`cursor-pointer hover:bg-[var(--md-sys-color-surface-container)]/50 ${isSelected ? 'bg-[var(--md-sys-color-primary)]/5' : ''} ${isOutOfStock ? 'bg-red-100/80 dark:bg-red-900/20' : isLowStock ? 'bg-amber-50/80 dark:bg-amber-900/10' : ''}`}>
                     <td className="p-4" onClick={(e) => { e.stopPropagation(); toggleSelect(p.id); }}>
-                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all cursor-pointer ${isSelected ? 'bg-accent text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:text-accent'}`}>
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors duration-200 cursor-pointer ${isSelected ? 'bg-accent text-white' : 'bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-primary)]'}`}>
                         {isSelected ? <Check size={16} strokeWidth={3} /> : <Square size={16} />}
                       </div>
                     </td>
                     <td className="p-4">
-                      <span className="font-mono text-[10px] font-bold text-gray-400 dark:text-gray-500">{p.id}</span>
+                      <span className="font-mono text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)]">{p.id}</span>
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <img src={p.image} className={`w-12 h-12 rounded-xl ${imageFitContain ? 'object-contain p-1' : 'object-cover'} bg-gray-50 dark:bg-slate-800`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none"><rect width="48" height="48" rx="12" fill="%23f1f5f9"/><circle cx="24" cy="22" r="8" fill="%23cbd5e1"/><rect x="14" y="34" width="20" height="4" rx="2" fill="%23cbd5e1"/></svg>'); }} />
+                        <img src={p.image} className={`w-12 h-12 rounded-xl ${imageFitContain ? 'object-contain p-1' : 'object-cover'} bg-[var(--md-sys-color-surface-container)]`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none"><rect width="48" height="48" rx="12" fill="%23f1f5f9"/><circle cx="24" cy="22" r="8" fill="%23cbd5e1"/><rect x="14" y="34" width="20" height="4" rx="2" fill="%23cbd5e1"/></svg>'); }} />
                         <div>
-                          <div className="font-black text-sm text-gray-900 dark:text-white">{p.name}</div>
+                          <div className="font-black text-sm text-[var(--md-sys-color-on-surface)]">{p.name}</div>
                           {p.tags && p.tags.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-0.5">
-                              {p.tags.slice(0, 2).map(t => <span key={t} className="text-[9px] font-bold text-gray-400 dark:text-gray-500">{t}</span>)}
+                              {p.tags.slice(0, 2).map(t => <span key={t} className="text-[9px] font-bold text-[var(--md-sys-color-on-surface-variant)]">{t}</span>)}
                             </div>
                           )}
                         </div>
                       </div>
                     </td>
                     <td className="p-4">
-                      <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500">{formatDate(p.createdAt, 'date')}</span>
+                      <span className="text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)]">{formatDate(p.createdAt, 'date')}</span>
                     </td>
                     <td className="p-4">
-                      <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500">{p.updatedAt ? formatDate(p.updatedAt, 'date') : '—'}</span>
+                      <span className="text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)]">{p.updatedAt ? formatDate(p.updatedAt, 'date') : '—'}</span>
                     </td>
                     <td className="p-4">
-                      <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{p.category}</span>
+                      <span className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">{p.category}</span>
                     </td>
                     <td className="p-4">
-                      <span className="font-mono text-[11px] font-bold text-gray-400 dark:text-gray-500">{p.sku || '—'}</span>
+                      <span className="font-mono text-[11px] font-bold text-[var(--md-sys-color-on-surface-variant)]">{p.sku || '—'}</span>
                     </td>
                     <td className="p-4">
-                      <span className={`font-black text-sm ${isOutOfStock ? 'text-red-500' : isLowStock ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300'}`}>{totalQty}</span>
+                      <span className={`font-black text-sm ${isOutOfStock ? 'text-[var(--md-sys-color-error)]' : isLowStock ? 'text-[var(--md-sys-color-tertiary)]' : 'text-gray-700 dark:text-gray-300'}`}>{totalQty}</span>
                     </td>
                     <td className="p-4 font-black text-sm text-amber-600">{(p.costPrice || 0).toLocaleString()} ج.م</td>
-                    <td className="p-4 font-black text-sm text-accent">{(p.price || 0).toLocaleString()} ج.م</td>
+                    <td className="p-4 font-black text-sm text-[var(--md-sys-color-primary)]">{(p.price || 0).toLocaleString()} ج.م</td>
                     <td className="p-4">
-                      <span className={`font-black text-sm ${profit >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>{profit.toLocaleString()} ج.م</span>
+                      <span className={`font-black text-sm ${profit >= 0 ? 'text-[var(--md-sys-color-primary)]' : 'text-[var(--md-sys-color-error)]'}`}>{profit.toLocaleString()} ج.م</span>
                     </td>
                     <td className="p-4">
-                      <span className="font-black text-sm text-gray-500 dark:text-gray-400">{p.variants.length}</span>
+                      <span className="font-black text-sm text-[var(--md-sys-color-on-surface-variant)]">{p.variants.length}</span>
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-1.5">
-                        {p.url && <a href={p.url} target="_blank" onClick={(e) => e.stopPropagation()} className="text-blue-500 hover:text-blue-600 p-1.5 rounded-lg hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all"><ExternalLink size={14} /></a>}
-                        <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="text-accent hover:text-accent/80 p-1.5 rounded-lg hover:bg-accent/5 transition-all" title="تعديل"><Edit2 size={14} /></button>
-                        <button onClick={(e) => handleDelete(p.id, e)} className="text-red-500 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50/50 dark:hover:bg-red-900/10 transition-all" title="حذف"><Trash2 size={14} /></button>
+                        {p.url && <a href={p.url} target="_blank" onClick={(e) => e.stopPropagation()} className="text-blue-500 hover:text-blue-600 p-1.5 rounded-lg hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors duration-200"><ExternalLink size={14} /></a>}
+                        <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="text-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-primary)]/80 p-1.5 rounded-lg hover:bg-[var(--md-sys-color-primary)]/5 transition-colors duration-200" title="تعديل"><Edit2 size={14} /></button>
+                        <button onClick={(e) => handleDelete(p.id, e)} className="text-[var(--md-sys-color-error)] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50/50 dark:hover:bg-red-900/10 transition-colors duration-200" title="حذف"><Trash2 size={14} /></button>
                       </div>
                     </td>
                   </tr>
@@ -1945,27 +1905,27 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 key={p.id}
                 variants={{ hidden: { opacity: 0, scale: 0.9 }, show: { opacity: 1, scale: 1 } }}
                 onClick={() => setViewingProductId(p.id)}
-                className={`bg-white dark:bg-slate-900 rounded-2xl p-3 border transition-all cursor-pointer ${isSelected ? 'ring-2 ring-accent border-accent shadow-md' : isOutOfStock ? 'border-red-400 dark:border-red-500' : isLowStock ? 'border-amber-400 dark:border-amber-500' : 'border-gray-50 dark:border-slate-800 hover:shadow-md'}`}
+                className={`bg-[var(--md-sys-color-surface)] rounded-2xl p-3 border transition-all duration-200 cursor-pointer ${isSelected ? 'ring-2 ring-accent border-[var(--md-sys-color-primary)] shadow-md' : isOutOfStock ? 'border-red-400 dark:border-red-500' : isLowStock ? 'border-amber-400 dark:border-amber-500' : 'border-gray-50 dark:border-slate-800 hover:shadow-md'}`}
               >
-                <div className={`relative rounded-xl overflow-hidden bg-gray-50 dark:bg-slate-800 mb-2 ${imageFitContain ? '' : 'aspect-square'}`}>
+                <div className={`relative rounded-xl overflow-hidden bg-[var(--md-sys-color-surface-container)] mb-2 ${imageFitContain ? '' : 'aspect-square'}`}>
                   <img src={p.image} className={`w-full ${imageFitContain ? 'h-auto block' : 'h-full object-cover'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" rx="20" fill="%23f1f5f9"/><circle cx="100" cy="80" r="24" fill="%23cbd5e1"/><rect x="60" y="120" width="80" height="10" rx="5" fill="%23cbd5e1"/></svg>'); }} />
-                  <div className="absolute top-1 right-1 w-5 h-5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-full flex items-center justify-center shadow-sm cursor-pointer hover:border-accent transition-colors" onClick={(e) => { e.stopPropagation(); toggleSelect(p.id); }}>
-                    {isSelected && <Check size={12} strokeWidth={4} className="text-accent" />}
+                  <div className="absolute top-1 right-1 w-5 h-5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-full flex items-center justify-center shadow-sm cursor-pointer hover:border-[var(--md-sys-color-primary)] transition-colors" onClick={(e) => { e.stopPropagation(); toggleSelect(p.id); }}>
+                    {isSelected && <Check size={12} strokeWidth={4} className="text-[var(--md-sys-color-primary)]" />}
                   </div>
                 </div>
-                  <h4 className="font-black text-[10px] text-gray-900 dark:text-white line-clamp-2 leading-tight mb-1">{p.name}</h4>
+                  <h4 className="font-black text-[10px] text-[var(--md-sys-color-on-surface)] line-clamp-2 leading-tight mb-1">{p.name}</h4>
                   <div className="flex items-center justify-between">
-                    <span className="text-accent font-black text-xs">{(p.price || 0).toLocaleString()}</span>
-                    <span className={`text-[9px] font-bold ${isOutOfStock ? 'text-red-500' : isLowStock ? 'text-amber-500' : 'text-gray-400 dark:text-gray-500'}`}>{totalQty} قطعة</span>
+                    <span className="text-[var(--md-sys-color-primary)] font-black text-xs">{(p.price || 0).toLocaleString()}</span>
+                    <span className={`text-[9px] font-bold ${isOutOfStock ? 'text-[var(--md-sys-color-error)]' : isLowStock ? 'text-[var(--md-sys-color-tertiary)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>{totalQty} قطعة</span>
                   </div>
                   <div className="text-[7px] text-gray-300 dark:text-gray-600 font-bold text-center mt-1">
                     {formatDate(p.createdAt, 'date')}
                     {p.updatedAt && <span className="mr-1">| {formatDate(p.updatedAt, 'date')}</span>}
                   </div>
                   <div className="flex items-center justify-center gap-2 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800">
-                    <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="text-accent hover:bg-accent/5 p-1.5 rounded-lg transition-all" title="تعديل"><Edit2 size={12} /></button>
-                    {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 p-1.5 rounded-lg transition-all"><ExternalLink size={12} /></a>}
-                    <button onClick={(e) => handleDelete(p.id, e)} className="text-red-500 hover:bg-red-50/50 dark:hover:bg-red-900/10 p-1.5 rounded-lg transition-all" title="حذف"><Trash2 size={12} /></button>
+                    <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 p-1.5 rounded-lg transition-colors duration-200" title="تعديل"><Edit2 size={12} /></button>
+                    {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 p-1.5 rounded-lg transition-colors duration-200"><ExternalLink size={12} /></a>}
+                    <button onClick={(e) => handleDelete(p.id, e)} className="text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 p-1.5 rounded-lg transition-colors duration-200" title="حذف"><Trash2 size={12} /></button>
                   </div>
                 </motion.div>
             );
@@ -1991,31 +1951,31 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 key={p.id}
                 variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
                 onClick={() => setViewingProductId(p.id)}
-                className={`bg-white dark:bg-slate-900 rounded-[28px] p-6 border transition-all cursor-pointer ${isSelected ? 'ring-2 ring-accent border-accent shadow-lg' : isOutOfStock ? 'border-red-400 dark:border-red-500' : isLowStock ? 'border-amber-400 dark:border-amber-500' : 'border-gray-100 dark:border-slate-800 hover:shadow-md'}`}
+                className={`bg-[var(--md-sys-color-surface)] rounded-[28px] p-6 border transition-all duration-200 cursor-pointer ${isSelected ? 'ring-2 ring-accent border-[var(--md-sys-color-primary)] shadow-lg' : isOutOfStock ? 'border-red-400 dark:border-red-500' : isLowStock ? 'border-amber-400 dark:border-amber-500' : 'border-[var(--md-sys-color-outline-variant)]/20 hover:shadow-md'}`}
               >
                 <div className="flex gap-6">
-                  <img src={p.image} className={`w-28 ${imageFitContain ? 'h-auto rounded-2xl bg-gray-50 dark:bg-slate-800 shrink-0' : 'h-28 rounded-2xl object-cover bg-gray-50 dark:bg-slate-800 shrink-0'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" fill="none"><rect width="112" height="112" rx="16" fill="%23f1f5f9"/><circle cx="56" cy="44" r="16" fill="%23cbd5e1"/><rect x="32" y="72" width="48" height="8" rx="4" fill="%23cbd5e1"/></svg>'); }} />
+                  <img src={p.image} className={`w-28 ${imageFitContain ? 'h-auto rounded-2xl bg-[var(--md-sys-color-surface-container)] shrink-0' : 'h-28 rounded-2xl object-cover bg-[var(--md-sys-color-surface-container)] shrink-0'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" fill="none"><rect width="112" height="112" rx="16" fill="%23f1f5f9"/><circle cx="56" cy="44" r="16" fill="%23cbd5e1"/><rect x="32" y="72" width="48" height="8" rx="4" fill="%23cbd5e1"/></svg>'); }} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="font-black text-lg text-gray-900 dark:text-white">{p.name}</h3>
-                        {p.category && <span className="text-xs font-bold text-gray-400 dark:text-gray-500">{p.category}</span>}
+                        <h3 className="font-black text-lg text-[var(--md-sys-color-on-surface)]">{p.name}</h3>
+                        {p.category && <span className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">{p.category}</span>}
                       </div>
-                      <div onClick={(e) => { e.stopPropagation(); toggleSelect(p.id); }} className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 cursor-pointer ${isSelected ? 'bg-accent text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:text-accent'}`}>
+                      <div onClick={(e) => { e.stopPropagation(); toggleSelect(p.id); }} className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 cursor-pointer ${isSelected ? 'bg-accent text-white' : 'bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-primary)]'}`}>
                         {isSelected ? <Check size={18} strokeWidth={3} /> : <Square size={18} />}
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-4 mt-3">
-                      <div><span className="text-[9px] font-black text-gray-400 dark:text-gray-500 block">البيع</span><span className="font-black text-accent">{(p.price || 0).toLocaleString()} ج.م</span></div>
-                      <div><span className="text-[9px] font-black text-gray-400 dark:text-gray-500 block">التكلفة</span><span className="font-black text-amber-600">{(p.costPrice || 0).toLocaleString()} ج.م</span></div>
-                      <div><span className="text-[9px] font-black text-gray-400 dark:text-gray-500 block">الربح</span><span className={`font-black ${(p.price||0)-(p.costPrice||0) >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>{((p.price||0)-(p.costPrice||0)).toLocaleString()} ج.م</span></div>
-                      <div><span className="text-[9px] font-black text-gray-400 dark:text-gray-500 block">المخزون</span><span className={`font-black ${isOutOfStock ? 'text-red-500' : isLowStock ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300'}`}>{totalQty} قطعة</span></div>
+                      <div><span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] block">البيع</span><span className="font-black text-[var(--md-sys-color-primary)]">{(p.price || 0).toLocaleString()} ج.م</span></div>
+                      <div><span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] block">التكلفة</span><span className="font-black text-amber-600">{(p.costPrice || 0).toLocaleString()} ج.م</span></div>
+                      <div><span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] block">الربح</span><span className={`font-black ${(p.price||0)-(p.costPrice||0) >= 0 ? 'text-[var(--md-sys-color-primary)]' : 'text-[var(--md-sys-color-error)]'}`}>{((p.price||0)-(p.costPrice||0)).toLocaleString()} ج.م</span></div>
+                      <div><span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] block">المخزون</span><span className={`font-black ${isOutOfStock ? 'text-[var(--md-sys-color-error)]' : isLowStock ? 'text-[var(--md-sys-color-tertiary)]' : 'text-gray-700 dark:text-gray-300'}`}>{totalQty} قطعة</span></div>
                     </div>
                     {p.variants.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-1.5">
                         {p.variants.map(v => (
-                          <span key={v.id} className="text-[10px] bg-gray-50 dark:bg-slate-800 px-2.5 py-1 rounded-lg font-bold text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-slate-700">
-                            {v.size}/{v.color}: <span className="text-accent">{v.quantity}</span>
+                          <span key={v.id} className="text-[10px] bg-[var(--md-sys-color-surface-container)] px-2.5 py-1 rounded-lg font-bold text-[var(--md-sys-color-on-surface-variant)] border border-gray-100 dark:border-slate-700">
+                            {v.size}/{v.color}: <span className="text-[var(--md-sys-color-primary)]">{v.quantity}</span>
                           </span>
                         ))}
                       </div>
@@ -2023,7 +1983,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     {supplierName && <div className="mt-3 text-[11px] font-bold text-indigo-500">المورد: {supplierName}</div>}
                     {p.tags && p.tags.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-1">
-                        {p.tags.map(t => <span key={t} className="text-[9px] bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-gray-500 px-2 py-0.5 rounded-md border border-gray-100 dark:border-slate-800">{t}</span>)}
+                        {p.tags.map(t => <span key={t} className="text-[9px] bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] px-2 py-0.5 rounded-md border border-[var(--md-sys-color-outline-variant)]/20">{t}</span>)}
                       </div>
                     )}
                     <div className="mt-2 text-[10px] font-bold text-gray-300 dark:text-gray-600">
@@ -2033,9 +1993,9 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   </div>
                 </div>
                 <div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-gray-50 dark:border-slate-800">
-                  <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="flex items-center gap-1.5 text-[10px] font-black text-accent hover:bg-accent/5 py-2 px-3 rounded-xl transition-all"><Edit2 size={14} /> تعديل</button>
-                  {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5 text-[10px] font-black text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 py-2 px-3 rounded-xl transition-all"><ExternalLink size={14} /> رابط</a>}
-                  <button onClick={(e) => handleDelete(p.id, e)} className="flex items-center gap-1.5 text-[10px] font-black text-red-500 hover:bg-red-50/50 dark:hover:bg-red-900/10 py-2 px-3 rounded-xl transition-all"><Trash2 size={14} /> حذف</button>
+                  <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="flex items-center gap-1.5 text-[10px] font-black text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 py-2 px-3 rounded-xl transition-colors duration-200"><Edit2 size={14} /> تعديل</button>
+                  {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5 text-[10px] font-black text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 py-2 px-3 rounded-xl transition-colors duration-200"><ExternalLink size={14} /> رابط</a>}
+                  <button onClick={(e) => handleDelete(p.id, e)} className="flex items-center gap-1.5 text-[10px] font-black text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 py-2 px-3 rounded-xl transition-colors duration-200"><Trash2 size={14} /> حذف</button>
                 </div>
               </motion.div>
             );
@@ -2044,10 +2004,10 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
       )}
 
       {filtered.length === 0 && !isLoading && (
-        <div className="py-24 text-center text-gray-300 dark:text-slate-800 bg-white dark:bg-slate-900 rounded-[40px] border border-dashed border-gray-100 dark:border-slate-800">
-          <Package size={64} className="mx-auto mb-4 opacity-10" />
-          <p className="text-xl font-black">لا توجد منتجات مطابقة للبحث</p>
-        </div>
+        <MD3EmptyState
+          icon={<Package size={32} />}
+          title="لا توجد منتجات مطابقة للبحث"
+        />
       )}
 
       {/* Product Details Modal */}
@@ -2080,25 +2040,25 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
         const turnoverRate = totalQty > 0 ? (piecesSold / totalQty) : 0;
         return (
           <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" onClick={() => setViewingProductId(null)}>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 bg-black/60 backdrop-blur-md" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 bg-black/60" />
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-slate-900 rounded-[32px] w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl relative z-10"
+              className="bg-[var(--md-sys-color-surface)] rounded-[32px] w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl relative z-10"
             >
               {/* Image Gallery Header — Natural aspect */}
-              <div className="relative bg-gray-50 dark:bg-slate-800 rounded-t-[32px] overflow-hidden flex items-center justify-center min-h-[200px]">
+              <div className="relative bg-[var(--md-sys-color-surface-container)] rounded-t-[32px] overflow-hidden flex items-center justify-center min-h-[200px]">
                 {allImages.length > 0 ? (
                   <>
                     <img src={allImages[galleryIndex]} className="w-full max-h-[55vh] object-contain p-6 transition-opacity duration-300" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" fill="%23f1f5f9"/><circle cx="100" cy="80" r="24" fill="%23cbd5e1"/><rect x="60" y="120" width="80" height="10" rx="5" fill="%23cbd5e1"/></svg>'); }} />
                     {allImages.length > 1 && (
                       <>
-                        <button onClick={() => setGalleryIndex(prev => (prev - 1 + allImages.length) % allImages.length)} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-gray-700 dark:text-gray-200 rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-slate-900 transition-all shadow-lg"><ChevronRight size={20} /></button>
-                        <button onClick={() => setGalleryIndex(prev => (prev + 1) % allImages.length)} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-gray-700 dark:text-gray-200 rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-slate-900 transition-all shadow-lg"><ChevronLeft size={20} /></button>
+                        <button onClick={() => setGalleryIndex(prev => (prev - 1 + allImages.length) % allImages.length)} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-[var(--md-sys-color-on-surface)] rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-slate-900 transition-colors duration-200 shadow-lg"><ChevronRight size={20} /></button>
+                        <button onClick={() => setGalleryIndex(prev => (prev + 1) % allImages.length)} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-[var(--md-sys-color-on-surface)] rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-slate-900 transition-colors duration-200 shadow-lg"><ChevronLeft size={20} /></button>
                         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                           {allImages.map((_, idx) => (
-                            <button key={idx} onClick={() => setGalleryIndex(idx)} className={`w-2.5 h-2.5 rounded-full transition-all shadow-sm ${idx === galleryIndex ? 'bg-gray-800 dark:bg-white scale-125' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                            <button key={idx} onClick={() => setGalleryIndex(idx)} className={`w-2.5 h-2.5 rounded-full transition-all duration-200 shadow-sm ${idx === galleryIndex ? 'bg-gray-800 dark:bg-white scale-125' : 'bg-gray-300 dark:bg-gray-600'}`} />
                           ))}
                         </div>
                       </>
@@ -2107,7 +2067,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 ) : (
                   <div className="py-16 text-gray-300 dark:text-gray-600"><ImageIcon size={72} /></div>
                 )}
-                <button onClick={() => setViewingProductId(null)} className="absolute top-4 left-4 w-10 h-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-gray-600 dark:text-gray-300 rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-slate-900 transition-all shadow-lg"><X size={20} /></button>
+                <button onClick={() => setViewingProductId(null)} className="absolute top-4 left-4 w-10 h-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-gray-600 dark:text-gray-300 rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-slate-900 transition-colors duration-200 shadow-lg"><X size={20} /></button>
                 {isOutOfStock && (
                   <div className="absolute bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-2xl font-black text-xs flex items-center gap-2 shadow-lg"><XCircle size={16} /> نفذ المخزون</div>
                 )}
@@ -2118,79 +2078,79 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
 
               <div className="p-8 space-y-6">
                 <div>
-                  <h2 className="text-2xl font-black text-gray-900 dark:text-white">{product.name}</h2>
+                  <h2 className="text-2xl font-black text-[var(--md-sys-color-on-surface)]">{product.name}</h2>
                   <div className="flex flex-wrap gap-2 mt-2">
                     <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 px-3 py-1 rounded-xl text-xs font-bold font-mono">{product.sku || '—'}</span>
-                    <span className="bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-400 px-3 py-1 rounded-xl text-xs font-bold font-mono" title={product.id}>ID: {product.id}</span>
-                    <span className="bg-accent/10 text-accent px-3 py-1 rounded-xl text-xs font-bold">{product.category}</span>
+                    <span className="bg-gray-100 dark:bg-slate-700 text-[var(--md-sys-color-on-surface-variant)] px-3 py-1 rounded-xl text-xs font-bold font-mono" title={product.id}>ID: {product.id}</span>
+                    <span className="bg-[var(--md-sys-color-primary)]/10 text-[var(--md-sys-color-primary)] px-3 py-1 rounded-xl text-xs font-bold">{product.category}</span>
                     {supplierName && <span className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-xl text-xs font-bold flex items-center gap-1"><ExternalLink size={12} /> {supplierName}</span>}
-                    {product.createdAt && <span className="bg-gray-50 dark:bg-slate-800 text-gray-400 px-3 py-1 rounded-xl text-[10px] font-bold">{formatDate(product.createdAt, 'full')}</span>}
-                    {product.updatedAt && <span className="bg-gray-50 dark:bg-slate-800 text-gray-400 px-3 py-1 rounded-xl text-[10px] font-bold">آخر تعديل: {formatDate(product.updatedAt, 'full')}</span>}
+                    {product.createdAt && <span className="bg-[var(--md-sys-color-surface-container)] text-gray-400 px-3 py-1 rounded-xl text-[10px] font-bold">{formatDate(product.createdAt, 'full')}</span>}
+                    {product.updatedAt && <span className="bg-[var(--md-sys-color-surface-container)] text-gray-400 px-3 py-1 rounded-xl text-[10px] font-bold">آخر تعديل: {formatDate(product.updatedAt, 'full')}</span>}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="p-4 bg-accent/5 rounded-2xl border border-accent/10">
-                    <span className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">سعر البيع</span>
-                    <div className="font-black text-2xl text-accent mt-1">{(product.price || 0).toLocaleString()} <span className="text-xs">ج.م</span></div>
+                  <div className="p-4 bg-[var(--md-sys-color-primary)]/5 rounded-2xl border border-[var(--md-sys-color-primary)]/10">
+                    <span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">سعر البيع</span>
+                    <div className="font-black text-2xl text-[var(--md-sys-color-primary)] mt-1">{(product.price || 0).toLocaleString()} <span className="text-xs">ج.م</span></div>
                     <span className="text-[8px] text-gray-400">للقطعة</span>
                   </div>
                   <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-100 dark:border-amber-900/30">
-                    <span className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">التكلفة</span>
+                    <span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">التكلفة</span>
                     <div className="font-black text-2xl text-amber-600 mt-1">{(product.costPrice || 0).toLocaleString()} <span className="text-xs">ج.م</span></div>
                     <span className="text-[8px] text-gray-400">للقطعة</span>
                   </div>
-                  <div className={`p-4 rounded-2xl border ${profitPerUnit >= 0 ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-900/30' : 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/30'}`}>
-                    <span className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">ربح القطعة</span>
-                    <div className={`font-black text-2xl mt-1 ${profitPerUnit >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>{profitPerUnit.toLocaleString()} <span className="text-xs">ج.م</span></div>
-                    <span className={`text-[8px] ${profitMargin >= 40 ? 'text-emerald-500' : profitMargin > 0 ? 'text-amber-500' : 'text-red-400'}`}>هامش {profitMargin.toFixed(1)}%</span>
+                  <div className={`p-4 rounded-2xl border ${profitPerUnit >= 0 ? 'bg-[var(--md-sys-color-primary-container)]/30 border-[var(--md-sys-color-primary)]/20' : 'bg-[var(--md-sys-color-error)]/10 border-[var(--md-sys-color-error)]/20'}`}>
+                    <span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">ربح القطعة</span>
+                    <div className={`font-black text-2xl mt-1 ${profitPerUnit >= 0 ? 'text-[var(--md-sys-color-primary)]' : 'text-[var(--md-sys-color-error)]'}`}>{profitPerUnit.toLocaleString()} <span className="text-xs">ج.م</span></div>
+                    <span className={`text-[8px] ${profitMargin >= 40 ? 'text-[var(--md-sys-color-primary)]' : profitMargin > 0 ? 'text-[var(--md-sys-color-tertiary)]' : 'text-red-400'}`}>هامش {profitMargin.toFixed(1)}%</span>
                   </div>
                 </div>
 
                 {/* Statistics Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700">
-                    <span className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">إجمالي المخزون (بيع)</span>
-                    <div className="font-black text-sm text-accent mt-0.5">{totalSales.toLocaleString()} <span className="text-[9px]">ج.م</span></div>
+                  <div className="p-3 bg-[var(--md-sys-color-surface-container)] rounded-2xl border border-gray-100 dark:border-slate-700">
+                    <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">إجمالي المخزون (بيع)</span>
+                    <div className="font-black text-sm text-[var(--md-sys-color-primary)] mt-0.5">{totalSales.toLocaleString()} <span className="text-[9px]">ج.م</span></div>
                   </div>
-                  <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700">
-                    <span className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">إجمالي المخزون (تكلفة)</span>
+                  <div className="p-3 bg-[var(--md-sys-color-surface-container)] rounded-2xl border border-gray-100 dark:border-slate-700">
+                    <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">إجمالي المخزون (تكلفة)</span>
                     <div className="font-black text-sm text-amber-600 mt-0.5">{totalCost.toLocaleString()} <span className="text-[9px]">ج.م</span></div>
                   </div>
-                  <div className={`p-3 rounded-2xl border ${profitMargin >= 40 ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-900/30' : profitMargin > 0 ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-900/30' : 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/30'}`}>
-                    <span className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">هامش الربح</span>
-                    <div className={`font-black text-sm mt-0.5 ${profitMargin >= 40 ? 'text-emerald-600' : profitMargin > 0 ? 'text-amber-600' : 'text-red-500'}`}>{profitMargin.toFixed(1)}%</div>
+                  <div className={`p-3 rounded-2xl border ${profitMargin >= 40 ? 'bg-[var(--md-sys-color-primary-container)]/30 border-[var(--md-sys-color-primary)]/20' : profitMargin > 0 ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-900/30' : 'bg-[var(--md-sys-color-error)]/10 border-[var(--md-sys-color-error)]/20'}`}>
+                    <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">هامش الربح</span>
+                    <div className={`font-black text-sm mt-0.5 ${profitMargin >= 40 ? 'text-[var(--md-sys-color-primary)]' : profitMargin > 0 ? 'text-amber-600' : 'text-[var(--md-sys-color-error)]'}`}>{profitMargin.toFixed(1)}%</div>
                   </div>
-                  <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700">
-                    <span className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">إجمالي القطع</span>
-                    <div className="font-black text-sm text-gray-700 dark:text-gray-200 mt-0.5">{totalQty.toLocaleString()}</div>
+                  <div className="p-3 bg-[var(--md-sys-color-surface-container)] rounded-2xl border border-gray-100 dark:border-slate-700">
+                    <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">إجمالي القطع</span>
+                    <div className="font-black text-sm text-[var(--md-sys-color-on-surface)] mt-0.5">{totalQty.toLocaleString()}</div>
                   </div>
                   <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-900/30">
-                    <span className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">القطع المباعة</span>
+                    <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">القطع المباعة</span>
                     <div className="font-black text-sm text-blue-600 dark:text-blue-400 mt-0.5">{piecesSold.toLocaleString()}</div>
                   </div>
-                  <div className={`p-3 rounded-2xl border ${totalProfit >= 0 ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-900/30' : 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/30'}`}>
-                    <span className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">إجمالي الربح</span>
-                    <div className={`font-black text-sm mt-0.5 ${totalProfit >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>{totalProfit.toLocaleString()} <span className="text-[9px]">ج.م</span></div>
+                  <div className={`p-3 rounded-2xl border ${totalProfit >= 0 ? 'bg-[var(--md-sys-color-primary-container)]/30 border-[var(--md-sys-color-primary)]/20' : 'bg-[var(--md-sys-color-error)]/10 border-[var(--md-sys-color-error)]/20'}`}>
+                    <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">إجمالي الربح</span>
+                    <div className={`font-black text-sm mt-0.5 ${totalProfit >= 0 ? 'text-[var(--md-sys-color-primary)]' : 'text-[var(--md-sys-color-error)]'}`}>{totalProfit.toLocaleString()} <span className="text-[9px]">ج.م</span></div>
                   </div>
-                  <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700">
-                    <span className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">متوسط السعر</span>
-                    <div className="font-black text-sm text-accent mt-0.5">{Math.round(avgPrice).toLocaleString()} <span className="text-[9px]">ج.م</span></div>
+                  <div className="p-3 bg-[var(--md-sys-color-surface-container)] rounded-2xl border border-gray-100 dark:border-slate-700">
+                    <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">متوسط السعر</span>
+                    <div className="font-black text-sm text-[var(--md-sys-color-primary)] mt-0.5">{Math.round(avgPrice).toLocaleString()} <span className="text-[9px]">ج.م</span></div>
                   </div>
-                  <div className={`p-3 rounded-2xl border ${lowStockCount > 0 ? 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/30' : 'bg-gray-50 dark:bg-slate-800 border-gray-100 dark:border-slate-700'}`}>
-                    <span className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">متغيرات منخفضة</span>
-                    <div className={`font-black text-sm mt-0.5 ${lowStockCount > 0 ? 'text-red-500' : 'text-gray-500'}`}>{lowStockCount} من {product.variants.length}</div>
+                  <div className={`p-3 rounded-2xl border ${lowStockCount > 0 ? 'bg-[var(--md-sys-color-error)]/10 border-[var(--md-sys-color-error)]/20' : 'bg-[var(--md-sys-color-surface-container)] border-gray-100 dark:border-slate-700'}`}>
+                    <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">متغيرات منخفضة</span>
+                    <div className={`font-black text-sm mt-0.5 ${lowStockCount > 0 ? 'text-[var(--md-sys-color-error)]' : 'text-gray-500'}`}>{lowStockCount} من {product.variants.length}</div>
                   </div>
                   {highestStock && (
                     <div className="p-3 bg-emerald-50/50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-900/20">
-                      <span className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">الأعلى مخزوناً</span>
-                      <div className="font-black text-[10px] text-emerald-600 mt-0.5 leading-tight line-clamp-1">{highestStock.size} / {highestStock.color} <span className="text-gray-500">({highestStock.quantity})</span></div>
+                      <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">الأعلى مخزوناً</span>
+                      <div className="font-black text-[10px] text-[var(--md-sys-color-primary)] mt-0.5 leading-tight line-clamp-1">{highestStock.size} / {highestStock.color} <span className="text-gray-500">({highestStock.quantity})</span></div>
                     </div>
                   )}
                   {lowestStock && (
-                    <div className={`p-3 rounded-2xl border ${lowestStock.quantity <= (lowestStock.lowStockThreshold || 0) ? 'bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/20' : 'bg-gray-50 dark:bg-slate-800 border-gray-100 dark:border-slate-700'}`}>
-                      <span className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">الأقل مخزوناً</span>
-                      <div className={`font-black text-[10px] mt-0.5 leading-tight line-clamp-1 ${lowestStock.quantity <= (lowestStock.lowStockThreshold || 0) ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'}`}>{lowestStock.size} / {lowestStock.color} <span className="text-gray-400">({lowestStock.quantity})</span></div>
+                    <div className={`p-3 rounded-2xl border ${lowestStock.quantity <= (lowestStock.lowStockThreshold || 0) ? 'bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/20' : 'bg-[var(--md-sys-color-surface-container)] border-gray-100 dark:border-slate-700'}`}>
+                      <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">الأقل مخزوناً</span>
+                      <div className={`font-black text-[10px] mt-0.5 leading-tight line-clamp-1 ${lowestStock.quantity <= (lowestStock.lowStockThreshold || 0) ? 'text-[var(--md-sys-color-error)]' : 'text-[var(--md-sys-color-on-surface)]'}`}>{lowestStock.size} / {lowestStock.color} <span className="text-gray-400">({lowestStock.quantity})</span></div>
                     </div>
                   )}
                 </div>
@@ -2198,23 +2158,23 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 {/* Product Performance */}
                 <div className="bg-gradient-to-br from-gray-50 to-white dark:from-slate-800/50 dark:to-slate-900 rounded-2xl border border-gray-100 dark:border-slate-700 p-5 overflow-hidden relative">
                   <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-500 via-emerald-500 to-amber-500 rounded-r-full" />
-                  <h3 className="text-sm font-black text-gray-900 dark:text-white mb-4 flex items-center gap-2"><TrendingUp size={18} className="text-blue-500" /> أداء المنتج</h3>
+                  <h3 className="text-sm font-black text-[var(--md-sys-color-on-surface)] mb-4 flex items-center gap-2"><TrendingUp size={18} className="text-blue-500" /> أداء المنتج</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
-                      <span className="text-[9px] font-black text-gray-400 dark:text-gray-500">إجمالي المبيعات</span>
+                      <span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)]">إجمالي المبيعات</span>
                       <div className="font-black text-sm text-blue-600 dark:text-blue-400 mt-0.5">{piecesSold} <span className="text-[9px]">قطعة</span></div>
                     </div>
                     <div>
-                      <span className="text-[9px] font-black text-gray-400 dark:text-gray-500">إيراد المبيعات</span>
-                      <div className="font-black text-sm text-accent mt-0.5">{salesRevenue.toLocaleString()} <span className="text-[9px]">ج.م</span></div>
+                      <span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)]">إيراد المبيعات</span>
+                      <div className="font-black text-sm text-[var(--md-sys-color-primary)] mt-0.5">{salesRevenue.toLocaleString()} <span className="text-[9px]">ج.م</span></div>
                     </div>
                     <div>
-                      <span className="text-[9px] font-black text-gray-400 dark:text-gray-500">الربح من المبيعات</span>
-                      <div className={`font-black text-sm mt-0.5 ${salesProfit >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>{salesProfit.toLocaleString()} <span className="text-[9px]">ج.م</span></div>
+                      <span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)]">الربح من المبيعات</span>
+                      <div className={`font-black text-sm mt-0.5 ${salesProfit >= 0 ? 'text-[var(--md-sys-color-primary)]' : 'text-[var(--md-sys-color-error)]'}`}>{salesProfit.toLocaleString()} <span className="text-[9px]">ج.م</span></div>
                     </div>
                     <div>
-                      <span className="text-[9px] font-black text-gray-400 dark:text-gray-500">معدل الدوران</span>
-                      <div className={`font-black text-sm mt-0.5 ${turnoverRate >= 3 ? 'text-emerald-600' : turnoverRate >= 1 ? 'text-amber-600' : 'text-gray-500'}`}>{turnoverRate.toFixed(1)}× <span className="text-[9px]">{turnoverRate >= 3 ? 'ممتاز' : turnoverRate >= 1 ? 'جيد' : 'ضعيف'}</span></div>
+                      <span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)]">معدل الدوران</span>
+                      <div className={`font-black text-sm mt-0.5 ${turnoverRate >= 3 ? 'text-[var(--md-sys-color-primary)]' : turnoverRate >= 1 ? 'text-amber-600' : 'text-gray-500'}`}>{turnoverRate.toFixed(1)}× <span className="text-[9px]">{turnoverRate >= 3 ? 'ممتاز' : turnoverRate >= 1 ? 'جيد' : 'ضعيف'}</span></div>
                     </div>
                   </div>
                   {/* Performance Bar */}
@@ -2230,8 +2190,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     return (
                       <div className="mt-4 pt-3 border-t border-gray-100 dark:border-slate-700">
                         <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-[9px] font-black text-gray-400 dark:text-gray-500">أداء المبيعات</span>
-                          <span className={`text-[9px] font-black ${percentile >= 80 ? 'text-emerald-600' : percentile >= 50 ? 'text-amber-600' : 'text-gray-500'}`}>
+                          <span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)]">أداء المبيعات</span>
+                          <span className={`text-[9px] font-black ${percentile >= 80 ? 'text-[var(--md-sys-color-primary)]' : percentile >= 50 ? 'text-amber-600' : 'text-gray-500'}`}>
                             {percentile}% {rank > 0 ? `(ترتيب ${rank} من ${totalProductsWithSales})` : ''}
                           </span>
                         </div>
@@ -2244,10 +2204,10 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-black text-gray-900 dark:text-white mb-3 flex items-center gap-2"><Layers size={18} className="text-accent" /> المتغيرات = {product.variants.length}</h3>
-                  <div className="overflow-x-auto rounded-2xl border border-gray-100 dark:border-slate-800">
+                  <h3 className="text-sm font-black text-[var(--md-sys-color-on-surface)] mb-3 flex items-center gap-2"><Layers size={18} className="text-[var(--md-sys-color-primary)]" /> المتغيرات = {product.variants.length}</h3>
+                  <div className="overflow-x-auto rounded-2xl border border-[var(--md-sys-color-outline-variant)]/20">
                     <table className="w-full text-right text-xs">
-                      <thead className="bg-gray-50 dark:bg-slate-800">
+                      <thead className="bg-[var(--md-sys-color-surface-container)]">
                         <tr>
                           <th className="p-3 font-black text-gray-500">SKU</th>
                           <th className="p-3 font-black text-gray-500">المقاس</th>
@@ -2259,12 +2219,12 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                       </thead>
                       <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
                         {product.variants.map(v => (
-                          <tr key={v.id} className={`hover:bg-gray-50 dark:hover:bg-slate-800/50 ${v.quantity <= (v.lowStockThreshold || 0) ? 'bg-red-50/50 dark:bg-red-900/10' : ''}`}>
+                          <tr key={v.id} className={`hover:bg-[var(--md-sys-color-surface-container)]/50 ${v.quantity <= (v.lowStockThreshold || 0) ? 'bg-red-50/50 dark:bg-red-900/10' : ''}`}>
                             <td className="p-3 font-mono text-[10px] font-bold text-gray-400">{v.sku || '—'}</td>
                             <td className="p-3 font-bold text-gray-900 dark:text-gray-100">{v.size}</td>
                             <td className="p-3 font-bold text-gray-900 dark:text-gray-100">{v.color}</td>
-                            <td className={`p-3 font-black ${v.quantity <= (v.lowStockThreshold || 0) ? 'text-red-500' : 'text-gray-700 dark:text-gray-300'}`}>{v.quantity}</td>
-                            <td className="p-3 font-black text-accent">{(v.price || product.price).toLocaleString()}</td>
+                            <td className={`p-3 font-black ${v.quantity <= (v.lowStockThreshold || 0) ? 'text-[var(--md-sys-color-error)]' : 'text-gray-700 dark:text-gray-300'}`}>{v.quantity}</td>
+                            <td className="p-3 font-black text-[var(--md-sys-color-primary)]">{(v.price || product.price).toLocaleString()}</td>
                             <td className="p-3 font-bold text-gray-500">{v.lowStockThreshold || 0}</td>
                           </tr>
                         ))}
@@ -2275,10 +2235,10 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
 
                 {product.tags && product.tags.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-black text-gray-900 dark:text-white mb-2">الوسوم</h3>
+                    <h3 className="text-sm font-black text-[var(--md-sys-color-on-surface)] mb-2">الوسوم</h3>
                     <div className="flex flex-wrap gap-2">
                       {product.tags.map(t => (
-                        <span key={t} className="bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 px-3 py-1.5 rounded-xl text-xs font-bold border border-gray-100 dark:border-slate-700">{t}</span>
+                        <span key={t} className="bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] px-3 py-1.5 rounded-xl text-xs font-bold border border-gray-100 dark:border-slate-700">{t}</span>
                       ))}
                     </div>
                   </div>
@@ -2286,14 +2246,14 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
 
                 {product.url && (
                   <div>
-                    <h3 className="text-sm font-black text-gray-900 dark:text-white mb-2">رابط المنتج</h3>
-                    <a href={product.url} target="_blank" rel="noopener noreferrer" className="text-accent text-xs font-bold hover:underline flex items-center gap-1"><ExternalLink size={14} /> {product.url}</a>
+                    <h3 className="text-sm font-black text-[var(--md-sys-color-on-surface)] mb-2">رابط المنتج</h3>
+                    <a href={product.url} target="_blank" rel="noopener noreferrer" className="text-[var(--md-sys-color-primary)] text-xs font-bold hover:underline flex items-center gap-1"><ExternalLink size={14} /> {product.url}</a>
                   </div>
                 )}
 
-                <div className="flex justify-between gap-4 pt-4 border-t border-gray-100 dark:border-slate-800">
-                  <button onClick={() => setViewingProductId(null)} className="px-8 py-3 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 rounded-2xl font-black hover:bg-gray-200 dark:hover:bg-slate-700 transition-all">إغلاق</button>
-                  <button onClick={() => { setViewingProductId(null); setModal({open: true, p: product}); }} className="px-8 py-3 bg-gradient-to-l from-indigo-500 to-indigo-600 text-white rounded-2xl font-black shadow-lg hover:opacity-90 transition-all flex items-center gap-2"><Edit2 size={18} /> تعديل المنتج</button>
+                <div className="flex justify-between gap-4 pt-4 border-t border-[var(--md-sys-color-outline-variant)]/20">
+                  <MD3Button variant="outlined" onClick={() => setViewingProductId(null)}>إغلاق</MD3Button>
+                  <MD3Button variant="filled" icon={<Edit2 size={18} />} onClick={() => { setViewingProductId(null); setModal({open: true, p: product}); }}>تعديل المنتج</MD3Button>
                 </div>
               </div>
             </motion.div>
@@ -2310,54 +2270,45 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             exit={{ y: 100, opacity: 0, x: '-50%' }}
             className="fixed bottom-20 md:bottom-8 left-1/2 z-[60]"
           >
-            <div className="bg-white dark:bg-slate-900 px-8 py-5 rounded-[40px] shadow-2xl border border-accent/20 dark:border-slate-700 flex items-center gap-8 backdrop-blur-md bg-white/90 dark:bg-slate-900/90">
+            <div className="bg-[var(--md-sys-color-surface)] px-8 py-5 rounded-[40px] shadow-lg border border-[var(--md-sys-color-primary)]/20 dark:border-slate-700 flex items-center gap-8 backdrop-blur-md bg-white/90 dark:bg-slate-900/90">
               <div className="flex flex-col">
-                 <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase">تم تحديد</span>
-                 <span className="text-accent font-black text-xl">{selectedIds.size} <span className="text-xs">منتج</span></span>
+                 <span className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase">تم تحديد</span>
+                 <span className="text-[var(--md-sys-color-primary)] font-black text-xl">{selectedIds.size} <span className="text-xs">منتج</span></span>
               </div>
               
               <div className="w-px h-10 bg-gray-100 dark:bg-slate-800"></div>
               
               <div className="flex gap-4 items-center">
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <MD3Button 
+                  variant="filled"
+                  icon={<Download size={20} />}
                   onClick={() => setIsExportSettingsOpen(true)}
-                  className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black hover:bg-indigo-700 transition-all shadow-lg active:scale-95"
                 >
-                  <Download size={20} />
                   تصدير الجرد
-                </motion.button>
+                </MD3Button>
 
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <MD3Button 
+                  variant="tonal"
+                  icon={<Pencil size={20} />}
                   onClick={() => setIsBatchEditOpen(true)}
-                  className="flex items-center gap-2 px-6 py-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-2xl font-black hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all border border-emerald-100 dark:border-emerald-900/30 active:scale-95"
                 >
-                  <Pencil size={20} />
                   تعديل جماعي
-                </motion.button>
+                </MD3Button>
 
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <MD3Button 
+                  variant="outlined"
+                  icon={<Trash2 size={20} />}
                   onClick={handleBulkDelete}
-                  className="flex items-center gap-2 px-6 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl font-black hover:bg-red-100 dark:hover:bg-red-900/40 transition-all border border-red-100 dark:border-red-900/30 active:scale-95"
+                  className="!text-[var(--md-sys-color-error)] !border-[var(--md-sys-color-error)]"
                 >
-                  <Trash2 size={20} />
                   حذف المحدد
-                </motion.button>
+                </MD3Button>
 
-                <motion.button 
-                  whileHover={{ scale: 1.1, rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
+                <MD3IconButton 
+                  icon={<X size={24} />}
                   onClick={() => setSelectedIds(new Set())}
-                  className="p-3 bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-gray-500 rounded-2xl hover:text-red-500 transition-all active:scale-95"
                   title="إلغاء التحديد"
-                >
-                  <X size={24} />
-                </motion.button>
+                />
               </div>
             </div>
         </motion.div>

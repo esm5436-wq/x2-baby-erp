@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUndoRedo } from '../contexts/UndoRedoContext';
 
 import { API_BASE } from '../lib/api';
+import { MD3Button, MD3IconButton, MD3EmptyState, MD3Dialog, MD3Snackbar, useSnackbar } from './md3';
 
 const ENTITY_ICONS: Record<string, React.ReactNode> = {
   product: <Package size={18} />,
@@ -68,12 +69,13 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
   const [loading, setLoading] = useState(true);
   const [offset, setOffset] = useState(0);
   const [limit] = useState(50);
-  const [modalLog, setModalLog] = useState<LogRow | null>(null);
+  const [viewingLog, setViewingLog] = useState<LogRow | null>(null);
   const [undoingId, setUndoingId] = useState<number | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [sortField, setSortField] = useState<string>('created_at');
   const [sortAsc, setSortAsc] = useState(false);
   const [notification, setNotification] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const { messages: snackMessages, show: showSnack, dismiss: dismissSnack } = useSnackbar();
   const [filters, setFilters] = useState<Filters>({
     entity_type: '',
     action: '',
@@ -109,14 +111,6 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
 
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
   useEffect(() => { if (refreshKey > 0) fetchLogs(); }, [refreshKey, fetchLogs]);
-  useEffect(() => { if (!notification) return; const t = setTimeout(() => setNotification(null), 3000); return () => clearTimeout(t); }, [notification]);
-
-  useEffect(() => {
-    if (!modalLog) return;
-    const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') setModalLog(null); };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, [modalLog]);
 
   const totalPages = Math.ceil(total / limit);
   const currentPage = Math.floor(offset / limit) + 1;
@@ -131,12 +125,15 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
         fetchLogs();
         onRefresh?.();
         setNotification({ message: `تم التراجع عن: ${log.description}`, type: 'success' });
+        showSnack(`تم التراجع عن: ${log.description}`, { type: 'success' });
       } else {
         setNotification({ message: data.error || 'فشل التراجع', type: 'error' });
+        showSnack(data.error || 'فشل التراجع', { type: 'error' });
       }
     } catch (err) {
       console.error('Undo failed:', err);
       setNotification({ message: 'فشل التراجع', type: 'error' });
+      showSnack('فشل التراجع', { type: 'error' });
     } finally {
       setUndoingId(null);
     }
@@ -249,14 +246,14 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
 
   const renderField = (label: string, value: any, highlight = false) => (
     <div className={`${highlight ? 'bg-amber-50 dark:bg-amber-900/10 rounded-lg p-2 -mx-2' : ''}`}>
-      <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 block">{label}</span>
-      <span className="text-sm font-bold text-gray-900 dark:text-white">{val(value)}</span>
+      <span className="text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)] block">{label}</span>
+      <span className="text-sm font-bold text-[var(--md-sys-color-on-surface)]">{val(value)}</span>
     </div>
   );
 
   const renderDiffRow = (field: string, oldVal: string, newVal: string) => (
-    <div key={field} className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center py-1.5 border-b border-gray-100 dark:border-slate-700/50 last:border-0">
-      <div className="text-xs font-bold text-gray-500 dark:text-gray-400">{FIELD_LABELS[field] || field}</div>
+    <div key={field} className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center py-1.5 border-b border-[var(--md-sys-color-outline-variant)]/20 last:border-0">
+      <div className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">{FIELD_LABELS[field] || field}</div>
       <div className="flex flex-col gap-1">
         <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1">
           <ArrowLeft size={12} /> {oldVal}
@@ -278,15 +275,15 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
       {renderField('تكلفة التغليف', data?.packagingCost)}
       {data?.variants && (
         <div className="col-span-2">
-          <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 block">المتغيرات ({data.variants.length})</span>
+          <span className="text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)] block">المتغيرات ({data.variants.length})</span>
           <div className="mt-1 space-y-1">
             {data.variants.slice(0, 5).map((v: any, i: number) => (
-              <div key={i} className="text-xs font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 px-2 py-1 rounded-lg">
+              <div key={i} className="text-xs font-bold text-[var(--md-sys-color-on-surface)] bg-[var(--md-sys-color-surface-container)] px-2 py-1 rounded-lg">
                 {v.size} / {v.color} — {v.quantity} قطعة
               </div>
             ))}
             {data.variants.length > 5 && (
-              <div className="text-xs text-gray-400">+{data.variants.length - 5} متغيرات أخرى</div>
+              <div className="text-xs text-[var(--md-sys-color-on-surface-variant)]">+{data.variants.length - 5} متغيرات أخرى</div>
             )}
           </div>
         </div>
@@ -308,16 +305,16 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
       </div>
       {data?.items && data.items.length > 0 && (
         <div>
-          <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 block">المنتجات ({data.items.length})</span>
+          <span className="text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)] block">المنتجات ({data.items.length})</span>
           <div className="mt-1 space-y-1">
             {data.items.slice(0, 8).map((item: any, i: number) => (
-              <div key={i} className="flex items-center justify-between text-xs font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+              <div key={i} className="flex items-center justify-between text-xs font-bold text-[var(--md-sys-color-on-surface)] bg-[var(--md-sys-color-surface-container)] px-3 py-1.5 rounded-lg">
                 <span>{item.productName}</span>
-                <span className="text-gray-400">{item.quantity} × {item.price}</span>
+                <span className="text-[var(--md-sys-color-on-surface-variant)]">{item.quantity} × {item.price}</span>
               </div>
             ))}
             {data.items.length > 8 && (
-              <div className="text-xs text-gray-400">+{data.items.length - 8} منتجات أخرى</div>
+              <div className="text-xs text-[var(--md-sys-color-on-surface-variant)]">+{data.items.length - 8} منتجات أخرى</div>
             )}
           </div>
         </div>
@@ -388,7 +385,7 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
   );
 
   const renderEntityData = (data: any, entityType: string, isDiff: boolean): React.ReactNode => {
-    if (!data) return <span className="text-gray-400 text-xs">لا توجد بيانات</span>;
+    if (!data) return <span className="text-[var(--md-sys-color-on-surface-variant)] text-xs">لا توجد بيانات</span>;
     const entity = data;
     switch (entityType) {
       case 'product': return renderProductDetail(entity);
@@ -415,21 +412,18 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
 
     return (
       <div className="space-y-3">
-        {/* Metadata info bar */}
-        <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-slate-800/50 px-3 py-2 rounded-xl">
+        <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container)] px-3 py-2 rounded-xl">
           {ENTITY_ICONS[entity_type] || null}
           <span>{ENTITY_LABELS[entity_type] || entity_type}</span>
-          <span className="text-gray-300 dark:text-gray-600">|</span>
+          <span className="text-[var(--md-sys-color-outline)]">|</span>
           <span>المعرف: {log.entity_id || '—'}</span>
-          <span className="text-gray-300 dark:text-gray-600">|</span>
+          <span className="text-[var(--md-sys-color-outline)]">|</span>
           <span>رقم: {log.id}</span>
         </div>
 
-        {/* Update — show diff */}
         {action === 'update' && prevState && newState && (() => {
           const isBulk = entity_type === 'order' || entity_type === 'product';
           if (isBulk && typeof Object.values(prevState)[0] === 'object') {
-            // Bulk update with multiple items keyed by id
             const ids = Object.keys(prevState);
             return (
               <div className="space-y-3">
@@ -439,8 +433,8 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
                   const diffs = computeDiff(prev, next);
                   if (diffs.length === 0) return null;
                   return (
-                    <div key={id} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
-                      <div className="px-3 py-2 bg-gray-50 dark:bg-slate-800 border-b border-gray-100 dark:border-slate-700 text-xs font-bold text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                    <div key={id} className="bg-[var(--md-sys-color-surface-container)] rounded-xl border border-[var(--md-sys-color-outline-variant)]/20 overflow-hidden">
+                      <div className="px-3 py-2 bg-[var(--md-sys-color-surface-container)] border-b border-[var(--md-sys-color-outline-variant)]/20 text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] flex items-center gap-2">
                         {ENTITY_ICONS[entity_type]}
                         <span dir="ltr" className="font-mono">{id}</span>
                       </div>
@@ -453,12 +447,11 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
               </div>
             );
           }
-          // Single entity update
           const diffs = computeDiff(prevState, newState);
           if (diffs.length > 0) {
             return (
-              <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
-                <div className="px-3 py-2 bg-amber-50 dark:bg-amber-900/10 border-b border-gray-100 dark:border-slate-700 text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2">
+              <div className="bg-[var(--md-sys-color-surface-container)] rounded-xl border border-[var(--md-sys-color-outline-variant)]/20 overflow-hidden">
+                <div className="px-3 py-2 bg-amber-50 dark:bg-amber-900/10 border-b border-[var(--md-sys-color-outline-variant)]/20 text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2">
                   <Activity size={14} /> تم تغيير {diffs.length} {diffs.length === 1 ? 'حقل' : 'حقول'}
                 </div>
                 <div className="p-3 space-y-1">
@@ -467,20 +460,17 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
               </div>
             );
           }
-          // No diffs found — show current state
           return renderEntityData(newState, entity_type, false);
         })()}
 
-        {/* Create — show entity data */}
         {action === 'create' && entityData && (
-          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-3">
+          <div className="bg-[var(--md-sys-color-surface-container)] rounded-xl border border-[var(--md-sys-color-outline-variant)]/20 p-3">
             {renderEntityData(entityData, entity_type, false)}
           </div>
         )}
 
-        {/* Delete — show what was deleted */}
         {action === 'delete' && entityData && (
-          <div className="bg-white dark:bg-slate-800 rounded-xl border border-red-200 dark:border-red-900/30 p-3">
+          <div className="bg-[var(--md-sys-color-surface-container)] rounded-xl border border-red-200 dark:border-red-900/30 p-3">
             <div className="text-[10px] font-bold text-red-500 mb-2 flex items-center gap-1">
               <Activity size={12} /> البيانات المحذوفة
             </div>
@@ -488,9 +478,8 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
           </div>
         )}
 
-        {/* Fallback: show raw metadata */}
         {!entityData && !prevState && !newState && log.metadata && (
-          <pre className="text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-slate-800 p-3 rounded-xl overflow-auto max-h-48 leading-relaxed whitespace-pre-wrap font-mono">
+          <pre className="text-xs text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container)] p-3 rounded-xl overflow-auto max-h-48 leading-relaxed whitespace-pre-wrap font-mono">
             {JSON.stringify(metadata, null, 2)}
           </pre>
         )}
@@ -498,151 +487,19 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
     );
   };
 
-  const LogDetailModal: React.FC<{ log: LogRow; onClose: () => void; onUndo: (log: LogRow) => void; undoingId: number | null }> = ({ log, onClose, onUndo, undoingId }) => {
-    const isUndoing = undoingId === log.id;
-    let md: any = {};
-    try { md = JSON.parse(log.metadata || '{}'); } catch {}
-    const { action, entity_type } = log;
-    const prevState = md.previousState;
-    const newState = md.newState;
-    const entityData = md.entityData;
-    const ac = ACTION_COLORS[log.action] || { bg: 'bg-gray-100 dark:bg-slate-800', text: 'text-gray-700 dark:text-gray-300', label: log.action };
-
-    return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[1000] flex items-center justify-center p-2 md:p-6"
-        onClick={onClose}>
-        <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" />
-        <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          onClick={e => e.stopPropagation()}
-          className="relative bg-white dark:bg-slate-900 rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200 dark:border-slate-700/50">
-          <button onClick={onClose} className="absolute top-4 left-4 z-10 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-400 transition-all">
-            <X size={20} />
-          </button>
-          <div className="p-6 pb-4 border-b border-gray-100 dark:border-slate-800">
-            <div className="flex items-center gap-2 mb-3">
-              <span className={`px-3 py-1 rounded-lg text-xs font-black ${ac.bg} ${ac.text}`}>{ac.label}</span>
-              <span className="px-3 py-1 rounded-lg text-xs font-black bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400">{ENTITY_LABELS[entity_type] || entity_type}</span>
-              <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500">#{log.id}</span>
-            </div>
-            <p className="text-sm font-bold text-gray-900 dark:text-white">{getDisplayDescription(log)}</p>
-            <p className="text-xs text-gray-400 mt-1 flex items-center gap-1.5">
-              <Activity size={12} /> {formatDate(log.created_at)}
-              <span className="text-gray-300 dark:text-gray-600">|</span> المعرف: {log.entity_id || '—'}
-            </p>
-          </div>
-          {(() => {
-            const identity = getEntityIdentity(log);
-            if (!identity.length) return null;
-            return (
-              <div className="px-6 pt-4 pb-1 border-b border-gray-100 dark:border-slate-800">
-                <div className="flex flex-wrap gap-2">
-                  {identity.map((i, idx) =>
-                    i.value ? (
-                      <div key={idx} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30">
-                        <span className="text-[10px] font-bold text-blue-500 dark:text-blue-400">{i.label}:</span>
-                        <span className="text-xs font-bold text-blue-700 dark:text-blue-300">{i.value}</span>
-                      </div>
-                    ) : null
-                  )}
-                </div>
-              </div>
-            );
-          })()}
-          <div className="p-6 space-y-5">
-            {action === 'update' && prevState && newState && (() => {
-              const isBulk = entity_type === 'order' || entity_type === 'product';
-              if (isBulk && typeof Object.values(prevState)[0] === 'object') {
-                const ids = Object.keys(prevState);
-                return (
-                  <div className="space-y-3">
-                    {ids.map(id => {
-                      const prev = prevState[id];
-                      const next = newState[id];
-                      const diffs = computeDiff(prev, next);
-                      if (diffs.length === 0) return null;
-                      return (
-                        <div key={id} className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
-                          <div className="px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border-b border-gray-100 dark:border-slate-700 text-xs font-bold text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                            {ENTITY_ICONS[entity_type] || null}
-                            <span dir="ltr" className="font-mono">{id}</span>
-                          </div>
-                          <div className="p-4 space-y-1">{diffs.map(d => renderDiffRow(d.field, d.oldVal, d.newVal))}</div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              }
-              const diffs = computeDiff(prevState, newState);
-              if (diffs.length > 0) {
-                return (
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
-                    <div className="px-4 py-2.5 bg-amber-50 dark:bg-amber-900/10 border-b border-gray-100 dark:border-slate-700 text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2">
-                      <Activity size={14} /> تم تغيير {diffs.length} {diffs.length === 1 ? 'حقل' : 'حقول'}
-                    </div>
-                    <div className="p-4 space-y-1">{diffs.map(d => renderDiffRow(d.field, d.oldVal, d.newVal))}</div>
-                  </div>
-                );
-              }
-              return null;
-            })()}
-            {entityData && (
-              <div>
-                <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-3 flex items-center gap-2">
-                  <ExternalLink size={14} /> {action === 'delete' ? 'البيانات المحذوفة' : 'البيانات الكاملة'}
-                </h3>
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
-                  <div className="p-4">{renderEntityData(entityData, entity_type, false)}</div>
-                </div>
-              </div>
-            )}
-            {!entityData && !prevState && !newState && log.metadata && (
-              <pre className="text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-slate-800 p-4 rounded-2xl overflow-auto max-h-48 leading-relaxed whitespace-pre-wrap font-mono">{JSON.stringify(md, null, 2)}</pre>
-            )}
-          </div>
-          <div className="p-4 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between gap-3">
-            <button onClick={() => { const r = getEntityRoute(log); if (r) { onClose(); navigate(r); } }}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all font-bold text-sm">
-              <ExternalLink size={16} />
-              فتح
-            </button>
-            <button onClick={() => { onUndo(log); onClose(); }} disabled={isUndoing}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/30 disabled:opacity-50 transition-all font-bold text-sm">
-              <RotateCcw size={16} className={isUndoing ? 'animate-spin' : ''} />
-              تراجع عن هذا الإجراء
-            </button>
-          </div>
-        </motion.div>
-      </motion.div>
-    );
-  };
-
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      {/* Toast notification */}
-      <AnimatePresence>
-        {notification && (
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-            className={`fixed top-20 left-1/2 -translate-x-1/2 z-[9999] px-6 py-3 rounded-xl shadow-2xl border font-bold text-sm flex items-center gap-2 ${
-              notification.type === 'success'
-                ? 'bg-emerald-500 text-white border-emerald-600'
-                : 'bg-red-500 text-white border-red-600'
-            }`}>
-            {notification.message}
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="w-full space-y-6">
+      {/* MD3 Snackbar */}
+      <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
         className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-lg">
-            <Activity size={24} className="text-white" />
+          <div className="p-3 rounded-2xl shadow-lg" style={{ backgroundColor: 'var(--md-sys-color-tertiary-container)', color: 'var(--md-sys-color-on-tertiary-container)' }}>
+            <Activity size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-slate-900 dark:text-white">سجل النشاطات</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+            <h1 className="text-2xl font-black text-[var(--md-sys-color-on-surface)]">سجل النشاطات</h1>
+            <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] font-medium">
               إجمالي {total} نشاط
             </p>
           </div>
@@ -650,41 +507,32 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
 
         <div className="flex gap-2 items-center">
           <div className="relative">
-            <select value={sortField} onChange={e => { setSortField(e.target.value); setOffset(0); }} className="px-4 py-3 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl outline-none font-black text-xs text-gray-700 dark:text-gray-200 focus:border-accent shadow-sm cursor-pointer appearance-none">
+            <select value={sortField} onChange={e => { setSortField(e.target.value); setOffset(0); }} className="px-4 py-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none font-black text-xs text-[var(--md-sys-color-on-surface)] focus:border-accent shadow-sm cursor-pointer appearance-none">
               <option value="created_at">التاريخ</option>
               <option value="entity_type">نوع الكيان</option>
               <option value="action">الإجراء</option>
             </select>
-            <ChevronDown className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={12} />
+            <ChevronDown className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)] pointer-events-none" size={12} />
           </div>
-          <button onClick={() => { setSortAsc(p => !p); setOffset(0); }} className={`px-3 py-3 rounded-xl flex items-center gap-1.5 font-black text-xs transition-all ${sortAsc ? 'bg-accent text-white' : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-slate-700'}`} title={sortAsc ? 'تصاعدي' : 'تنازلي'}>
-            <ArrowUpDown size={14} /> {sortAsc ? '▲' : '▼'}
-          </button>
-          <button onClick={() => setShowFilters(!showFilters)}
-            className={`p-3 rounded-xl border transition-all ${showFilters ? 'bg-accent text-white border-accent' : 'border-gray-200 dark:border-slate-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-800'}`}>
-            <Filter size={20} />
-          </button>
-          <button onClick={fetchLogs}
-            className="p-3 rounded-xl border border-gray-200 dark:border-slate-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-800 transition-all">
-            <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
-          </button>
+          <MD3IconButton icon={<ArrowUpDown size={14} />} onClick={() => { setSortAsc(p => !p); setOffset(0); }} variant={sortAsc ? 'filled' : 'standard'} title={sortAsc ? 'تصاعدي' : 'تنازلي'} />
+          <MD3IconButton icon={<Filter size={20} />} onClick={() => setShowFilters(!showFilters)} variant={showFilters ? 'filled' : 'standard'} title="الفلاتر" />
+          <MD3IconButton icon={<RefreshCw size={20} className={loading ? 'animate-spin' : ''} />} onClick={fetchLogs} title="تحديث" />
           {hasFilters && (
-            <button onClick={clearFilters}
-              className="flex items-center gap-2 px-4 py-3 rounded-xl border border-red-200 dark:border-red-900 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all font-bold text-sm">
-              <X size={16} /> مسح الفلترة
-            </button>
+            <MD3Button variant="outlined" size="small" icon={<X size={16} />} onClick={clearFilters}>
+              مسح الفلترة
+            </MD3Button>
           )}
         </div>
       </motion.div>
 
       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: showFilters ? 1 : 0, height: showFilters ? 'auto' : 0 }}
         className="overflow-hidden">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-4 md:p-6 space-y-4">
+        <div className="bg-[var(--md-sys-color-surface)] rounded-2xl border border-[var(--md-sys-color-outline-variant)]/20 p-4 md:p-6 space-y-4">
           <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
             <div>
-              <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1.5">نوع الكيان</label>
+              <label className="block text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-1.5">نوع الكيان</label>
               <select value={filters.entity_type} onChange={e => { setFilters(f => ({ ...f, entity_type: e.target.value })); setOffset(0); }}
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-sm font-medium text-gray-900 dark:text-white">
+                className="w-full p-2.5 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 text-sm font-medium text-[var(--md-sys-color-on-surface)]">
                 <option value="">الكل</option>
                 {Object.entries(ENTITY_LABELS).map(([k, v]) => (
                   <option key={k} value={k}>{v}</option>
@@ -692,9 +540,9 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1.5">نوع الإجراء</label>
+              <label className="block text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-1.5">نوع الإجراء</label>
               <select value={filters.action} onChange={e => { setFilters(f => ({ ...f, action: e.target.value })); setOffset(0); }}
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-sm font-medium text-gray-900 dark:text-white">
+                className="w-full p-2.5 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 text-sm font-medium text-[var(--md-sys-color-on-surface)]">
                 <option value="">الكل</option>
                 <option value="create">إنشاء</option>
                 <option value="update">تحديث</option>
@@ -703,29 +551,29 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
               </select>
             </div>
             <div className="lg:col-span-2">
-              <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1.5">بحث في الوصف</label>
+              <label className="block text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-1.5">بحث في الوصف</label>
               <div className="relative">
-                <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)]" />
                 <input type="text" value={filters.search} onChange={e => { setFilters(f => ({ ...f, search: e.target.value })); setOffset(0); }}
                   placeholder="ابحث..."
-                  className="w-full p-2.5 pr-9 rounded-xl bg-slate-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-sm font-medium text-gray-900 dark:text-white" />
+                  className="w-full p-2.5 pr-9 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 text-sm font-medium text-[var(--md-sys-color-on-surface)]" />
               </div>
             </div>
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1.5">من تاريخ</label>
+                <label className="block text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-1.5">من تاريخ</label>
                 <div className="relative">
-                  <Calendar size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Calendar size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)]" />
                   <input type="date" value={filters.startDate} onChange={e => { setFilters(f => ({ ...f, startDate: e.target.value })); setOffset(0); }}
-                    className="w-full p-2.5 pr-9 rounded-xl bg-slate-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-sm font-medium text-gray-900 dark:text-white" />
+                    className="w-full p-2.5 pr-9 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 text-sm font-medium text-[var(--md-sys-color-on-surface)]" />
                 </div>
               </div>
               <div className="flex-1">
-                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1.5">إلى تاريخ</label>
+                <label className="block text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-1.5">إلى تاريخ</label>
                 <div className="relative">
-                  <Calendar size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Calendar size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)]" />
                   <input type="date" value={filters.endDate} onChange={e => { setFilters(f => ({ ...f, endDate: e.target.value })); setOffset(0); }}
-                    className="w-full p-2.5 pr-9 rounded-xl bg-slate-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-sm font-medium text-gray-900 dark:text-white" />
+                    className="w-full p-2.5 pr-9 rounded-xl bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 text-sm font-medium text-[var(--md-sys-color-on-surface)]" />
                 </div>
               </div>
             </div>
@@ -734,49 +582,46 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden">
+        className="bg-[var(--md-sys-color-surface)] rounded-2xl border border-[var(--md-sys-color-outline-variant)]/20 overflow-hidden">
         {loading ? (
           <div className="p-12 text-center">
             <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="mt-4 text-sm font-bold text-gray-400">جاري تحميل السجل...</p>
+            <p className="mt-4 text-sm font-bold text-[var(--md-sys-color-on-surface-variant)]">جاري تحميل السجل...</p>
           </div>
         ) : logs.length === 0 ? (
           <div className="p-12 text-center">
-            <Activity size={40} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
-            <p className="text-lg font-bold text-gray-400 dark:text-gray-500">لا توجد نشاطات</p>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">لم يتم تسجيل أي نشاط بعد</p>
+            <Activity size={40} className="mx-auto text-[var(--md-sys-color-outline)] mb-4" />
+            <p className="text-lg font-bold text-[var(--md-sys-color-on-surface-variant)]">لا توجد نشاطات</p>
+            <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] mt-1">لم يتم تسجيل أي نشاط بعد</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100 dark:divide-slate-800">
+          <div className="divide-y divide-[var(--md-sys-color-outline-variant)]/20">
             {logs.map((log) => {
-              const actionColor = ACTION_COLORS[log.action] || { bg: 'bg-gray-100 dark:bg-slate-800', text: 'text-gray-700 dark:text-gray-300', label: log.action };
+              const actionColor = ACTION_COLORS[log.action] || { bg: 'bg-[var(--md-sys-color-surface-container)]', text: 'text-[var(--md-sys-color-on-surface-variant)]', label: log.action };
               return (
                 <div key={log.id}>
-                  <div onClick={() => setModalLog(log)}
-                    className="flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer">
+                  <div onClick={() => setViewingLog(log)}
+                    className="flex items-center gap-3 p-4 hover:bg-[var(--md-sys-color-surface-container)] transition-colors cursor-pointer">
 
                     <span className={`px-3 py-1 rounded-lg text-xs font-black ${actionColor.bg} ${actionColor.text} min-w-[60px] text-center`}>
                       {actionColor.label}
                     </span>
 
-                    <span className="px-3 py-1 rounded-lg text-xs font-black bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 min-w-[80px] text-center">
+                    <span className="px-3 py-1 rounded-lg text-xs font-black bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] min-w-[80px] text-center">
                       {ENTITY_LABELS[log.entity_type] || log.entity_type}
                     </span>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="shrink-0 text-gray-400">{ENTITY_ICONS[log.entity_type]}</span>
-                        <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{getDisplayDescription(log)}</p>
+                        <span className="shrink-0 text-[var(--md-sys-color-on-surface-variant)]">{ENTITY_ICONS[log.entity_type]}</span>
+                        <p className="text-sm font-bold text-[var(--md-sys-color-on-surface)] truncate">{getDisplayDescription(log)}</p>
                       </div>
-                      <p className="text-xs text-gray-400 mt-0.5">{formatDate(log.created_at)}</p>
+                      <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mt-0.5">{formatDate(log.created_at)}</p>
                     </div>
 
-                    <button onClick={e => { e.stopPropagation(); handleUndo(log); }} disabled={undoingId === log.id}
-                      className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 text-gray-400 hover:text-amber-500 hover:border-amber-300 dark:hover:border-amber-700 disabled:opacity-50 transition-all">
-                      <RotateCcw size={16} className={undoingId === log.id ? 'animate-spin' : ''} />
-                    </button>
+                    <MD3IconButton icon={<RotateCcw size={16} className={undoingId === log.id ? 'animate-spin' : ''} />} onClick={(e) => { e.stopPropagation(); handleUndo(log); }} disabled={undoingId === log.id} title="تراجع" />
 
-                    <ChevronDown size={16} className="text-gray-300 dark:text-gray-600 shrink-0" />
+                    <ChevronDown size={16} className="text-[var(--md-sys-color-outline)] shrink-0" />
                   </div>
                 </div>
               );
@@ -785,30 +630,143 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
         )}
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between p-4 border-t border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900">
-            <p className="text-xs font-bold text-gray-400">
+          <div className="flex items-center justify-between p-4 border-t border-[var(--md-sys-color-outline-variant)]/20 bg-[var(--md-sys-color-surface-container)]">
+            <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">
               صفحة {currentPage} من {totalPages}
             </p>
             <div className="flex gap-2">
-              <button disabled={offset === 0} onClick={() => setOffset(o => Math.max(0, o - limit))}
-                className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 disabled:opacity-30 text-gray-500 hover:bg-white dark:hover:bg-slate-800 transition-all">
-                <ChevronRight size={18} />
-              </button>
-              <button disabled={offset + limit >= total} onClick={() => setOffset(o => o + limit)}
-                className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 disabled:opacity-30 text-gray-500 hover:bg-white dark:hover:bg-slate-800 transition-all">
-                <ChevronLeft size={18} />
-              </button>
+              <MD3IconButton icon={<ChevronRight size={18} />} onClick={() => setOffset(o => Math.max(0, o - limit))} disabled={offset === 0} title="السابق" />
+              <MD3IconButton icon={<ChevronLeft size={18} />} onClick={() => setOffset(o => o + limit)} disabled={offset + limit >= total} title="التالي" />
             </div>
           </div>
         )}
       </motion.div>
 
       {/* Log Detail Modal */}
-      <AnimatePresence>
-        {modalLog && <LogDetailModal log={modalLog} onClose={() => setModalLog(null)} onUndo={handleUndo} undoingId={undoingId} />}
-      </AnimatePresence>
+      <MD3Dialog
+        isOpen={!!viewingLog}
+        onClose={() => setViewingLog(null)}
+        title="تفاصيل النشاط"
+        icon={<span className="material-symbols-rounded" style={{ fontSize: 24 }}>history</span>}
+        maxWidth="lg"
+        actions={viewingLog ? [
+          {
+            label: 'فتح',
+            variant: 'text' as const,
+            icon: <ExternalLink size={16} />,
+            onClick: () => {
+              const r = getEntityRoute(viewingLog);
+              if (r) navigate(r);
+            },
+          },
+          {
+            label: 'تراجع عن هذا الإجراء',
+            variant: 'tonal' as const,
+            icon: <RotateCcw size={16} className={undoingId === viewingLog?.id ? 'animate-spin' : ''} />,
+            onClick: () => { if (viewingLog) handleUndo(viewingLog); },
+          },
+        ] : undefined}
+      >
+        {viewingLog && (() => {
+          const log = viewingLog;
+          let md: any = {};
+          try { md = JSON.parse(log.metadata || '{}'); } catch {}
+          const { action, entity_type } = log;
+          const prevState = md.previousState;
+          const newState = md.newState;
+          const entityData = md.entityData;
+          const ac = ACTION_COLORS[log.action] || { bg: 'bg-[var(--md-sys-color-surface-container)]', text: 'text-[var(--md-sys-color-on-surface-variant)]', label: log.action };
+
+          return (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className={`px-3 py-1 rounded-lg text-xs font-black ${ac.bg} ${ac.text}`}>{ac.label}</span>
+                <span className="px-3 py-1 rounded-lg text-xs font-black bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)]">{ENTITY_LABELS[entity_type] || entity_type}</span>
+                <span className="text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)]">#{log.id}</span>
+              </div>
+
+              <p className="text-sm font-bold text-[var(--md-sys-color-on-surface)]">{getDisplayDescription(log)}</p>
+
+              <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] flex items-center gap-1.5">
+                <Activity size={12} /> {formatDate(log.created_at)}
+                <span className="text-[var(--md-sys-color-outline)]">|</span> المعرف: {log.entity_id || '—'}
+              </p>
+
+              {(() => {
+                const identity = getEntityIdentity(log);
+                if (!identity.length) return null;
+                return (
+                  <div className="flex flex-wrap gap-2 pt-2 border-t border-[var(--md-sys-color-outline-variant)]/20">
+                    {identity.map((i, idx) =>
+                      i.value ? (
+                        <div key={idx} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--md-sys-color-secondary-container)] border border-[var(--md-sys-color-outline-variant)]/20">
+                          <span className="text-[10px] font-bold text-[var(--md-sys-color-on-secondary-container)]">{i.label}:</span>
+                          <span className="text-xs font-bold text-[var(--md-sys-color-on-surface)]">{i.value}</span>
+                        </div>
+                      ) : null
+                    )}
+                  </div>
+                );
+              })()}
+
+              <div className="space-y-5">
+                {action === 'update' && prevState && newState && (() => {
+                  const isBulk = entity_type === 'order' || entity_type === 'product';
+                  if (isBulk && typeof Object.values(prevState)[0] === 'object') {
+                    const ids = Object.keys(prevState);
+                    return (
+                      <div className="space-y-3">
+                        {ids.map(id => {
+                          const prev = prevState[id];
+                          const next = newState[id];
+                          const diffs = computeDiff(prev, next);
+                          if (diffs.length === 0) return null;
+                          return (
+                            <div key={id} className="bg-[var(--md-sys-color-surface-container)] rounded-2xl border border-[var(--md-sys-color-outline-variant)]/20 overflow-hidden">
+                              <div className="px-4 py-2.5 bg-[var(--md-sys-color-surface-container)] border-b border-[var(--md-sys-color-outline-variant)]/20 text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] flex items-center gap-2">
+                                {ENTITY_ICONS[entity_type] || null}
+                                <span dir="ltr" className="font-mono">{id}</span>
+                              </div>
+                              <div className="p-4 space-y-1">{diffs.map(d => renderDiffRow(d.field, d.oldVal, d.newVal))}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  }
+                  const diffs = computeDiff(prevState, newState);
+                  if (diffs.length > 0) {
+                    return (
+                      <div className="bg-[var(--md-sys-color-surface-container)] rounded-2xl border border-[var(--md-sys-color-outline-variant)]/20 overflow-hidden">
+                        <div className="px-4 py-2.5 bg-amber-50 dark:bg-amber-900/10 border-b border-[var(--md-sys-color-outline-variant)]/20 text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2">
+                          <Activity size={14} /> تم تغيير {diffs.length} {diffs.length === 1 ? 'حقل' : 'حقول'}
+                        </div>
+                        <div className="p-4 space-y-1">{diffs.map(d => renderDiffRow(d.field, d.oldVal, d.newVal))}</div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+                {entityData && (
+                  <div>
+                    <h3 className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] mb-3 flex items-center gap-2">
+                      <ExternalLink size={14} /> {action === 'delete' ? 'البيانات المحذوفة' : 'البيانات الكاملة'}
+                    </h3>
+                    <div className="bg-[var(--md-sys-color-surface-container)] rounded-2xl border border-[var(--md-sys-color-outline-variant)]/20 overflow-hidden">
+                      <div className="p-4">{renderEntityData(entityData, entity_type, false)}</div>
+                    </div>
+                  </div>
+                )}
+                {!entityData && !prevState && !newState && log.metadata && (
+                  <pre className="text-xs text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container)] p-4 rounded-2xl overflow-auto max-h-48 leading-relaxed whitespace-pre-wrap font-mono">{JSON.stringify(md, null, 2)}</pre>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+      </MD3Dialog>
     </div>
   );
 };
 
-export default ActivityLogs;
+export default React.memo(ActivityLogs);

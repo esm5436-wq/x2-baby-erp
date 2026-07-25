@@ -12,6 +12,7 @@ import CustomerDetail from './CustomerDetail';
 import { formatDate } from '../lib/formatDate';
 import { API_BASE } from '../lib/api';
 import type { Customer, Order } from '../types';
+import { MD3Button, MD3IconButton, MD3StatCard, MD3EmptyState, MD3Dialog } from './md3';
 
 interface CustomersProps {
   customers: Customer[];
@@ -52,7 +53,7 @@ function parseTags(tags?: string): string[] {
   }
 }
 
-export default function Customers({ customers, orders, branding }: CustomersProps) {
+const Customers: React.FC<CustomersProps> = ({ customers, orders, branding }) => {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [sourceFilter, setSourceFilter] = useState('');
@@ -286,7 +287,9 @@ export default function Customers({ customers, orders, branding }: CustomersProp
       <div className="flex flex-col lg:flex-row justify-between gap-6 items-center">
         <motion.h2 initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="text-2xl font-black flex items-center gap-3 text-gray-900 dark:text-white shrink-0">
           <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.8 }}>
-            <Users className="text-accent" size={32} />
+            <div className="p-2 rounded-2xl" style={{ backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)' }}>
+              <Users size={24} />
+            </div>
           </motion.div>
           العملاء
         </motion.h2>
@@ -295,12 +298,9 @@ export default function Customers({ customers, orders, branding }: CustomersProp
             <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
             <input className="w-full pr-12 pl-4 py-3.5 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl outline-none font-bold text-gray-900 dark:text-white focus:border-accent shadow-sm" placeholder="ابحث عن عميل..." value={search} onChange={e => setSearch(e.target.value)} />
           </motion.div>
-          <motion.button initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-            onClick={() => { setEditCustomer(null); setModalOpen(true); }}
-            className="bg-accent text-white px-6 py-3.5 rounded-2xl flex items-center gap-2 font-black shadow-md hover:bg-accent/90 transition-all active:scale-95 text-xs md:text-sm"
-          >
-            <Plus size={20} /> إضافة عميل
-          </motion.button>
+          <MD3Button variant="filled" icon={<Plus size={20} />} onClick={() => { setEditCustomer(null); setModalOpen(true); }}>
+            إضافة عميل
+          </MD3Button>
         </div>
       </div>
 
@@ -343,35 +343,28 @@ export default function Customers({ customers, orders, branding }: CustomersProp
           </select>
           <ChevronDown className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={12} />
         </div>
-        <button onClick={() => setSortAsc(p => !p)} className={`px-3 py-2.5 rounded-xl flex items-center gap-1.5 font-black text-[11px] transition-all ${sortAsc ? 'bg-accent text-white' : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-800'}`} title={sortAsc ? 'تصاعدي' : 'تنازلي'}>
-          <ArrowUpDown size={14} /> {sortAsc ? '▲' : '▼'}
-        </button>
-        <button onClick={() => setShowAdvancedFilter(!showAdvancedFilter)} className={`px-4 py-2.5 rounded-xl flex items-center gap-2 font-black text-[11px] transition-all ${showAdvancedFilter ? 'bg-accent text-white' : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-800'}`}>
-          <Filter size={14} /> مدة آخر طلب
-        </button>
-        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+        <MD3IconButton icon={<ArrowUpDown size={14} />} onClick={() => setSortAsc(p => !p)} variant={sortAsc ? 'filled' : 'standard'} title={sortAsc ? 'تصاعدي' : 'تنازلي'} />
+        <MD3Button variant={showAdvancedFilter ? 'tonal' : 'outlined'} size="small" icon={<Filter size={14} />} onClick={() => setShowAdvancedFilter(!showAdvancedFilter)}>
+          مدة آخر طلب
+        </MD3Button>
+        <MD3Button
+          variant={selectedIds.size === filtered.length && filtered.length > 0 ? 'filled' : 'outlined'}
+          size="small"
+          icon={selectedIds.size === filtered.length && filtered.length > 0 ? <CheckSquare size={16} /> : <Square size={16} />}
           onClick={toggleSelectAll}
-          className={`px-4 py-2.5 rounded-2xl flex items-center gap-2 font-black text-[11px] border transition-all active:scale-95 ${selectedIds.size === filtered.length && filtered.length > 0 ? 'bg-blue-500 text-white border-blue-500' : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400 border-gray-100 dark:border-slate-800'}`}
-          title="تحديد الكل"
         >
-          {selectedIds.size === filtered.length && filtered.length > 0 ? <CheckSquare size={16} /> : <Square size={16} />}
           <span className="hidden sm:inline">تحديد الكل</span>
-        </motion.button>
+        </MD3Button>
         {selectedIds.size > 0 && (
-          <motion.button initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }}
-            onClick={() => setShowExportSettings(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-2xl font-black text-[11px] shadow-lg hover:shadow-xl transition-all active:scale-95"
-          >
-            <Download size={16} /> تصدير
-          </motion.button>
+          <MD3Button variant="filled" size="small" icon={<Download size={16} />} onClick={() => setShowExportSettings(true)}>
+            تصدير
+          </MD3Button>
         )}
-        <button onClick={fetchCustomers} className="p-2.5 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
-          <RefreshCw size={14} className={`text-gray-400 ${loading ? 'animate-spin' : ''}`} />
-        </button>
+        <MD3IconButton icon={<RefreshCw size={14} className={loading ? 'animate-spin' : ''} />} onClick={fetchCustomers} title="تحديث" />
         {hasActiveFilters && (
-          <button onClick={resetFilters} className="text-[10px] font-black text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-xl transition-all flex items-center gap-1">
-            <X size={12} /> رسيت الفلاتر
-          </button>
+          <MD3Button variant="text" size="small" icon={<X size={12} />} onClick={resetFilters}>
+            رسيت الفلاتر
+          </MD3Button>
         )}
       </div>
 
@@ -408,39 +401,39 @@ export default function Customers({ customers, orders, branding }: CustomersProp
       </AnimatePresence>
 
       {/* Stats */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap gap-4 md:gap-8 justify-center lg:justify-start items-center bg-white dark:bg-slate-900 p-4 md:px-8 rounded-[32px] border border-gray-50 dark:border-slate-800 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-accent/10 flex items-center justify-center text-accent"><Users size={20} /></div>
-          <div>
-            <div className="text-[10px] font-black text-gray-400 dark:text-gray-500">إجمالي العملاء</div>
-            <div className="text-lg font-black text-gray-900 dark:text-white">{stats.total}</div>
-          </div>
-        </div>
-        <div className="w-px h-10 bg-gray-100 dark:bg-slate-800" />
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600"><ShoppingBag size={20} /></div>
-          <div>
-            <div className="text-[10px] font-black text-gray-400 dark:text-gray-500">إجمالي الطلبات</div>
-            <div className="text-lg font-black text-gray-900 dark:text-white">{stats.totalOrders}</div>
-          </div>
-        </div>
-        <div className="w-px h-10 bg-gray-100 dark:bg-slate-800" />
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-600"><DollarSign size={20} /></div>
-          <div>
-            <div className="text-[10px] font-black text-gray-400 dark:text-gray-500">إجمالي الإنفاق</div>
-            <div className="text-lg font-black text-gray-900 dark:text-white">{stats.totalSpent.toLocaleString()} ج.م</div>
-          </div>
-        </div>
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-3 gap-4">
+        <MD3StatCard
+          icon={<Users size={20} />}
+          label="إجمالي العملاء"
+          value={stats.total}
+          iconBg="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
+        />
+        <MD3StatCard
+          icon={<ShoppingBag size={20} />}
+          label="إجمالي الطلبات"
+          value={stats.totalOrders}
+          iconBg="bg-purple-100 dark:bg-purple-900/20 text-purple-600"
+        />
+        <MD3StatCard
+          icon={<DollarSign size={20} />}
+          label="إجمالي الإنفاق"
+          value={stats.totalSpent.toLocaleString()}
+          unit="ج.م"
+          iconBg="bg-amber-100 dark:bg-amber-900/20 text-amber-600"
+        />
       </motion.div>
 
       {/* Customer Grid */}
       {filtered.length === 0 ? (
-        <div className="text-center py-20">
-          <Users size={64} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
-          <p className="text-xl font-black text-gray-400 dark:text-gray-500">لا يوجد عملاء مطابقين</p>
-          <button onClick={() => { setEditCustomer(null); setModalOpen(true); }} className="mt-4 px-6 py-3 bg-accent text-white rounded-2xl font-black hover:bg-accent/90 transition-all">إضافة أول عميل</button>
-        </div>
+        <MD3EmptyState
+          icon={<Users size={32} />}
+          title="لا يوجد عملاء مطابقين"
+          action={
+            <MD3Button variant="filled" onClick={() => { setEditCustomer(null); setModalOpen(true); }}>
+              إضافة أول عميل
+            </MD3Button>
+          }
+        />
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4">
           {filtered.map((customer, idx) => {
@@ -458,13 +451,13 @@ export default function Customers({ customers, orders, branding }: CustomersProp
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.03 }}
               onClick={() => handleViewCustomer(customer)}
-              className={`bg-white dark:bg-slate-900 rounded-[20px] p-3 border transition-all relative ${selectedIds.has(customer.id) ? 'ring-4 ring-blue-500/30 border-blue-500' : 'border-gray-100 dark:border-slate-800 hover:shadow-md'} cursor-pointer`}
+              className={`bg-white dark:bg-slate-900 rounded-[20px] p-3 border transition-colors duration-200 relative ${selectedIds.has(customer.id) ? 'ring-4 ring-blue-500/30 border-blue-500' : 'border-gray-100 dark:border-slate-800 hover:shadow-md'} cursor-pointer`}
             >
               {/* Top row: checkbox + name + badges + rating + actions */}
               <div className="flex items-start gap-3 mb-2">
                 <div onClick={e => e.stopPropagation()} className="mt-1">
                   <button onClick={() => toggleSelect(customer.id)}
-                    className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${selectedIds.has(customer.id) ? 'bg-blue-500 text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-slate-700'}`}
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors duration-200 ${selectedIds.has(customer.id) ? 'bg-blue-500 text-white' : 'bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-slate-700'}`}
                   >
                     {selectedIds.has(customer.id) ? <CheckSquare size={12} /> : <Square size={12} />}
                   </button>
@@ -508,14 +501,14 @@ export default function Customers({ customers, orders, branding }: CustomersProp
                   <div className="flex gap-0.5" onClick={e => e.stopPropagation()}>
                     <button
                       onClick={(e) => { e.stopPropagation(); setEditCustomer(customer); setModalOpen(true); }}
-                      className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-all text-gray-400 hover:text-blue-500"
+                      className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors duration-200 text-gray-400 hover:text-blue-500"
                       title="تعديل"
                     >
                       <Edit2 size={14} />
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); handleDelete(customer); }}
-                      className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-all text-gray-400 hover:text-red-500"
+                      className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors duration-200 text-gray-400 hover:text-red-500"
                       title="حذف"
                     >
                       <Trash2 size={14} />
@@ -528,14 +521,14 @@ export default function Customers({ customers, orders, branding }: CustomersProp
                 <div className="flex items-center gap-1 flex-wrap text-xs text-gray-500 dark:text-gray-400 font-bold">
                   <Phone size={12} className="shrink-0" />
                   <span dir="ltr" className="font-mono">{customer.phone}</span>
-                  <button onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(customer.phone || ''); }} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-blue-500 transition-all"><Copy size={10} /></button>
-                  <a href={`https://wa.me/20${(customer.phone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-emerald-500 transition-all"><FaWhatsapp size={10} /></a>
+                  <button onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(customer.phone || ''); }} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-blue-500 transition-colors duration-200"><Copy size={10} /></button>
+                  <a href={`https://wa.me/20${(customer.phone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-emerald-500 transition-colors duration-200"><FaWhatsapp size={10} /></a>
                   {customer.altPhone && (
                     <>
                       <span className="text-gray-300 dark:text-gray-600 mx-0.5">·</span>
                       <span dir="ltr" className="font-mono">{customer.altPhone}</span>
-                      <button onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(customer.altPhone || ''); }} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-blue-500 transition-all"><Copy size={10} /></button>
-                      <a href={`https://wa.me/20${(customer.altPhone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-emerald-500 transition-all"><FaWhatsapp size={10} /></a>
+                      <button onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(customer.altPhone || ''); }} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-blue-500 transition-colors duration-200"><Copy size={10} /></button>
+                      <a href={`https://wa.me/20${(customer.altPhone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-emerald-500 transition-colors duration-200"><FaWhatsapp size={10} /></a>
                     </>
                   )}
                   {customer.city && (
@@ -611,51 +604,49 @@ export default function Customers({ customers, orders, branding }: CustomersProp
       {/* Floating Bulk Actions Bar */}
       {selectedIds.size > 0 && (
         <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50">
-          <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 p-3 flex items-center gap-3">
-            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 px-2">{selectedIds.size} عميل</span>
-            <button onClick={() => setShowExportSettings(true)} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl font-black text-xs hover:bg-indigo-700 transition-all">
-              <Download size={14} /> تصدير
-            </button>
-            <button onClick={handleBulkDelete} className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-xl font-black text-xs hover:bg-red-600 transition-all">
-              <Trash2 size={14} /> حذف
-            </button>
-            <button onClick={() => setSelectedIds(new Set())} className="p-2 bg-gray-100 dark:bg-slate-800 text-gray-400 rounded-xl hover:bg-gray-200 dark:hover:bg-slate-700 transition-all">
-              <X size={16} />
-            </button>
+          <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-800 p-3 flex items-center gap-3">
+            <span className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] px-2">{selectedIds.size} عميل</span>
+            <MD3Button variant="filled" size="small" icon={<Download size={14} />} onClick={() => setShowExportSettings(true)}>
+              تصدير
+            </MD3Button>
+            <MD3Button variant="filled" size="small" icon={<Trash2 size={14} />} onClick={handleBulkDelete} className="!bg-[var(--md-sys-color-error)] !text-[var(--md-sys-color-on-error)]">
+              حذف
+            </MD3Button>
+            <MD3IconButton icon={<X size={16} />} onClick={() => setSelectedIds(new Set())} />
           </motion.div>
         </div>
       )}
 
       {/* Export Settings Modal */}
-      <AnimatePresence>
-        {showExportSettings && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowExportSettings(false)} />
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white dark:bg-slate-900 rounded-[32px] w-full max-w-lg shadow-2xl border border-gray-100 dark:border-slate-800 p-6 z-10">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-black">تصدير العملاء</h3>
-                <button onClick={() => setShowExportSettings(false)} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-slate-700"><X size={16} /></button>
-              </div>
-              <div className="space-y-3 mb-6">
-                <p className="text-xs font-bold text-gray-400">اختر الحقول المراد تصديرها:</p>
-                <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
-                  {EXPORT_COLUMNS.map(col => (
-                    <label key={col.id} className="flex items-center gap-2 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer text-sm font-bold">
-                      <input type="checkbox" checked={exportColumns.includes(col.id)} onChange={() => {
-                        setExportColumns(prev => prev.includes(col.id) ? prev.filter(c => c !== col.id) : [...prev, col.id]);
-                      }} className="w-4 h-4 rounded accent-accent" />
-                      {col.label}
-                    </label>
-                  ))}
-                </div>
-              </div>
-              <button onClick={handleExport} className="w-full py-3 bg-indigo-600 text-white rounded-2xl font-black hover:bg-indigo-700 transition-all text-sm" disabled={exportColumns.length === 0}>
-                <Download size={16} className="inline ml-2" /> تصدير ({selectedIds.size > 0 ? `${selectedIds.size} محدد` : `${filtered.length} عميل`})
-              </button>
-            </motion.div>
+      <MD3Dialog
+        isOpen={showExportSettings}
+        onClose={() => setShowExportSettings(false)}
+        title="تصدير العملاء"
+        icon={<Download size={20} className="text-[var(--md-sys-color-primary)]" />}
+        maxWidth="sm"
+        actions={[
+          {
+            label: `تصدير (${selectedIds.size > 0 ? `${selectedIds.size} محدد` : `${filtered.length} عميل`})`,
+            onClick: handleExport,
+            variant: 'filled',
+            disabled: exportColumns.length === 0
+          }
+        ]}
+      >
+        <div className="space-y-3">
+          <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">اختر الحقول المراد تصديرها:</p>
+          <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+            {EXPORT_COLUMNS.map(col => (
+              <label key={col.id} className="flex items-center gap-2 p-2 rounded-xl hover:bg-[var(--md-sys-color-surface-container)] cursor-pointer text-sm font-bold">
+                <input type="checkbox" checked={exportColumns.includes(col.id)} onChange={() => {
+                  setExportColumns(prev => prev.includes(col.id) ? prev.filter(c => c !== col.id) : [...prev, col.id]);
+                }} className="w-4 h-4 rounded accent-[var(--md-sys-color-primary)]" />
+                {col.label}
+              </label>
+            ))}
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      </MD3Dialog>
 
       <CustomerModal
         isOpen={modalOpen}
@@ -694,4 +685,6 @@ export default function Customers({ customers, orders, branding }: CustomersProp
       )}
     </motion.div>
   );
-}
+};
+
+export default React.memo(Customers);
