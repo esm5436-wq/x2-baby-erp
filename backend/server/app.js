@@ -64,4 +64,73 @@ app.use(customersRouter);
 
 app.use(errorHandler);
 
+// Auto-polling for EasyOrders (non-Vercel only)
+if (!process.env.VERCEL) {
+  let pollTimer = null;
+
+  async function pollOrders() {
+    try {
+      const { getDb } = await import('./db.js');
+      const configRow = await getDb("SELECT value FROM settings WHERE key = 'easyorders_config'");
+      const config = configRow ? JSON.parse(configRow.value) : {};
+      if (!config.enabled || !config.apiKey || config.autoSyncOrders === false) return;
+
+      const { default: fetch } = await import('node-fetch');
+      const lastPollRow = await getDb("SELECT value FROM settings WHERE key = 'easyorders_last_poll'");
+      const lastPoll = lastPollRow?.value || '';
+
+      let page = 1;
+      let hasMore = true;
+      const allOrders = [];
+
+      while (hasMore) {
+        const filterParam = 'filter=created_at||gt||' + encodeURIComponent(lastPoll || '2020-01-01');
+        const url = `https://api.easy-orders.net/api/v1/external-apps/orders?${filterParam}&page=${page}&limit=50`;
+        const resp = await fetch(url, { headers: { 'Api-Key': config.apiKey } });
+        if (!resp.ok) break;
+        const data = await resp.json();
+        const orders = Array.isArray(data) ? data : (data.orders || data.data || []);
+        allOrders.push(...orders);
+        hasMore = orders.length === 50;
+        page++;
+      }
+
+      const { runDb: runDbFn } = await import('./db.js');
+      await runDbFn("INSERT OR REPLACE INTO settings (key, value) VALUES ('easyorders_last_poll', ?)", [new Date().toISOString()]);
+
+      const { mapEasyOrderToErp } = await import('./utils/easyOrdersClient.js');
+      const { allDb: allDbFn, addSyncLog: addSyncLogFn } = await import('./db.js');
+
+      for (const easyOrder of allOrders) {
+        const existing = await (await import('./db.js')).getDb("SELECT id FROM easyorders_staging WHERE easy_order_id = ?", [easyOrder.id || easyOrder._id]);
+        if (existing) continue;
+        const erpOrder = await mapEasyOrderToErp(easyOrder);
+        const stagingId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        await runDbFn("INSERT OR REPLACE INTO easyorders_staging (id, easy_order_id, data, status, source_order_status) VALUES (?, ?, ?, ?, ?)", [stagingId, easyOrder.id || easyOrder._id, JSON.stringify(erpOrder), 'pending', easyOrder.status]);
+      }
+
+      if (allOrders.length > 0) {
+        await addSyncLogFn('poll', 'inbound', 'order', '', 'success', `Auto-poll: تم جلب ${allOrders.length} طلب`);
+      }
+    } catch (err) {
+      console.error('Auto-poll error:', err.message);
+    }
+  }
+
+  startAutoPoll();
+
+  async function startAutoPoll() {
+    try {
+      const { getDb } = await import('./db.js');
+      const configRow = await getDb("SELECT value FROM settings WHERE key = 'easyorders_config'");
+      const config = configRow ? JSON.parse(configRow.value) : {};
+      if (config.enabled && config.autoSyncOrders !== false) {
+        const interval = Math.max(30, Math.min(300, config.pollInterval || 60)) * 1000;
+        pollTimer = setInterval(pollOrders, interval);
+        console.log(`Auto-poll started: every ${interval / 1000}s`);
+      }
+    } catch (e) {}
+  }
+}
+
 export default app;

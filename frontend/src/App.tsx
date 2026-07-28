@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Download, ShoppingBag } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AppState, Order, Product } from './types';
 import AIAssistant from './components/AIAssistant';
-import InstallGuideModal from './components/InstallGuideModal';
 import AppLayout from './components/layout/AppLayout';
-import AppTopBar from './components/layout/AppTopBar';
+import { updateFavicon } from './lib/faviconUtils';
 
 const Inventory = React.lazy(() => import('./components/Inventory'));
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -89,70 +88,6 @@ const MainLayout: React.FC<{
     if (path === '/settings') return 'إدارة البيانات';
     return 'X2 ERP';
   })();
-
-  const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
-  useEffect(() => {
-    const handler = (e: Event) => { e.preventDefault(); setInstallPrompt(e); };
-    window.addEventListener('beforeinstallprompt', handler);
-    window.addEventListener('appinstalled', () => setInstallPrompt(null));
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
-
-  const [installDismissed, setInstallDismissed] = useState(false);
-  const [showInstallToast, setShowInstallToast] = useState(false);
-  const [toastProgress, setToastProgress] = useState(100);
-  const [showInstallModal, setShowInstallModal] = useState(false);
-
-  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && (window.innerWidth < 900 || 'ontouchstart' in window));
-  useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 900 || 'ontouchstart' in window);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-
-  useEffect(() => {
-    // Show toast on mobile always; on desktop only when beforeinstallprompt fires
-    if (installDismissed || !isMobile) return;
-    setShowInstallToast(true);
-    setToastProgress(100);
-    const start = Date.now();
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - start;
-      const remaining = Math.max(0, 100 - (elapsed / 5000) * 100);
-      setToastProgress(remaining);
-      if (remaining <= 0) { clearInterval(interval); setShowInstallToast(false); setInstallDismissed(true); }
-    }, 16);
-    return () => clearInterval(interval);
-  }, [isMobile]);
-
-  useEffect(() => {
-    if (installDismissed || !installPrompt || showInstallToast) return;
-    setShowInstallToast(true);
-    setToastProgress(100);
-    const start = Date.now();
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - start;
-      const remaining = Math.max(0, 100 - (elapsed / 5000) * 100);
-      setToastProgress(remaining);
-      if (remaining <= 0) { clearInterval(interval); setShowInstallToast(false); setInstallDismissed(true); }
-    }, 16);
-    return () => clearInterval(interval);
-  }, [installPrompt]);
-
-  const handleInstall = () => {
-    if (installPrompt) {
-      (installPrompt as any).prompt();
-      (installPrompt as any).userChoice.then(() => { setInstallPrompt(null); });
-      setInstallDismissed(true);
-      setShowInstallToast(false);
-    } else if (typeof navigator.share === 'function') {
-      navigator.share({ url: window.location.href }).catch(() => {});
-      setInstallDismissed(true);
-      setShowInstallToast(false);
-    } else {
-      setShowInstallModal(true);
-    }
-  };
 
   const { pushUndo: undoPush, setOnRefreshState } = useUndoRedo();
   useEffect(() => { setParentPushUndo(() => undoPush); }, [undoPush, setParentPushUndo]);
@@ -385,40 +320,10 @@ const MainLayout: React.FC<{
         toggleDarkMode={toggleDarkMode}
         logout={() => logout()}
       >
-        <AppTopBar
-          title={pageTitle}
-          subtitle={state.brandName || 'X2 BABY'}
-        />
         <div className="p-4 md:p-8">
           {routesElement}
         </div>
       </AppLayout>
-
-      <AnimatePresence>
-        {showInstallToast && !installDismissed && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, x: '-50%' }}
-            animate={{ opacity: 1, scale: 1, x: 'calc(-50% - 10px)' }}
-            exit={{ opacity: 0, scale: 0.95, x: '-50%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            onClick={handleInstall}
-            className="fixed top-6 left-1/2 z-[100] cursor-pointer bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-accent/20 overflow-hidden w-[90vw] max-w-[400px] active:scale-[0.97] active:opacity-80 transition-all duration-150"
-          >
-            <div className="flex items-center gap-3 p-4">
-              <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Download size={20} className="text-accent" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-gray-900 dark:text-white">إضافة إلى الشاشة الرئيسية</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">للوصول السريع والتشغيل كتطبيق مستقل</p>
-              </div>
-            </div>
-            <div className="h-1 bg-accent transition-none" style={{ width: toastProgress + '%' }} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <InstallGuideModal isOpen={showInstallModal} onClose={() => setShowInstallModal(false)} />
     </>
   );
 };
@@ -517,6 +422,12 @@ const App: React.FC = () => {
       .catch(err => console.error("Failed to fetch state:", err))
       .finally(() => setLoading(false));
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (state.brandLogo) {
+      updateFavicon(state.brandLogo);
+    }
+  }, [state.brandLogo]);
 
   if (isLoading) {
     return (
@@ -621,6 +532,7 @@ const App: React.FC = () => {
       const exists = prev.products.some(p => p.id === product.id);
       return { ...prev, products: exists ? prev.products.map(p => p.id === product.id ? product : p) : [product, ...prev.products] };
     });
+    showNotification('تم الحفظ بنجاح', 'success');
   };
 
   const handleDeleteProduct = async (id: string) => {

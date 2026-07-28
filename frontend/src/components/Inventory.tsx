@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { formatDate } from '../lib/formatDate';
 import { useSearchParams } from 'react-router-dom';
 import CollapsibleSection from './CollapsibleSection';
@@ -18,6 +18,7 @@ import {
   Sparkles,
   Coins,
   Upload,
+  Loader2,
   Trash2,
   Palette,
   AlertCircle,
@@ -51,7 +52,8 @@ import {
   ArrowUpDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Product, Variant, Category, Branding, ViewMode, Order, Supplier } from '../types';
+import { Product, Variant, Category, Branding, ViewMode, Order, Supplier, OptionCategory } from '../types';
+import { API_BASE } from '../lib/api';
 import ProductModal from './ProductModal';
 import BatchEditModal from './BatchEditModal';
 import type { BatchField } from './BatchEditModal';
@@ -76,12 +78,6 @@ interface InventoryProps {
   suppliers: any[];
   contacts: any[];
   orders: Order[];
-}
-
-interface OptionCategory {
-  id: string;
-  name: string;
-  values: string[];
 }
 
 const QUICK_SUGGESTIONS: Record<string, string[]> = {
@@ -111,11 +107,14 @@ const SyncProductEditor: React.FC<{
     return clone;
   });
   const [options, setOptions] = useState<OptionCategory[]>(() => {
+    if (product.options && product.options.length > 0) {
+      return JSON.parse(JSON.stringify(product.options));
+    }
     const sizes = Array.from(new Set(product.variants.map(v => v.size))).filter(v => v !== 'واحد') as string[];
     const colors = Array.from(new Set(product.variants.map(v => v.color))).filter(v => v !== 'متعدد') as string[];
     const opts: OptionCategory[] = [];
-    if (sizes.length > 0) opts.push({ id: 'opt-size', name: 'المقاس', values: sizes });
-    if (colors.length > 0) opts.push({ id: 'opt-color', name: 'اللون', values: colors });
+    if (sizes.length > 0) opts.push({ id: 'opt-size', name: 'المقاس', type: 'dropdown', values: sizes });
+    if (colors.length > 0) opts.push({ id: 'opt-color', name: 'اللون', type: 'dropdown', values: colors });
     return opts;
   });
 
@@ -133,19 +132,21 @@ const SyncProductEditor: React.FC<{
       if (prod.variants.length !== 1 || (prod.variants.length > 0 && prod.variants[0].size !== 'واحد')) {
         setLocalProduct(prev => ({
           ...prev,
-          variants: [{ id: `v-main-${Date.now()}`, size: 'واحد', color: 'متعدد', quantity: prev.variants[0]?.quantity || 0, price: prev.price, lowStockThreshold: 2 }]
+          variants: [{ id: `v-main-${Date.now()}`, sku: prev.sku || '', size: 'واحد', color: 'متعدد', quantity: prev.variants[0]?.quantity || 0, price: prev.price, lowStockThreshold: 2 }]
         }));
       }
       return;
     }
 
-    const optionValues = options.map(opt => opt.values.length > 0 ? opt.values : ['افتراضي']);
-    const productCombos = cartesian(optionValues);
+    const optionArrays = options.map(opt => opt.values.length > 0 ? opt.values : ['افتراضي']);
+    const productCombos = cartesian(optionArrays);
 
     const newVariants: Variant[] = productCombos
       .map((combo: string[]) => {
         const sizeStr = combo[0] || 'واحد';
         const colorStr = combo.slice(1).join(' / ') || 'متعدد';
+        const optVals: Record<string, string> = {};
+        options.forEach((opt, i) => { optVals[opt.name] = combo[i] || ''; });
         const key = `${sizeStr}-${colorStr}`;
         if (deletedKeys.has(key)) return null;
 
@@ -156,7 +157,8 @@ const SyncProductEditor: React.FC<{
           color: colorStr,
           quantity: existing?.quantity || 0,
           price: existing?.price || prod.price,
-          lowStockThreshold: existing?.lowStockThreshold || 2
+          lowStockThreshold: existing?.lowStockThreshold || 2,
+          optionValues: optVals
         };
       })
       .filter(v => v !== null) as Variant[];
@@ -347,7 +349,7 @@ const SyncProductEditor: React.FC<{
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-1">
           <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] px-2 uppercase tracking-widest">التصنيف</label>
-          <select className="w-full px-4 py-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-2xl font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] outline-none transition-colors duration-200" value={localProduct.category || ''} onChange={e => setLocalProduct({...localProduct, category: e.target.value})} disabled={isSaved}>
+          <select className="w-full px-4 py-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-2xl font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] outline-none transition-colors duration-200" value={localProduct.category || ''} onChange={e => setLocalProduct({...localProduct, category: e.target.value, categories: Array.from(new Set([e.target.value, ...(localProduct.categories || [])]))})} disabled={isSaved}>
             <option value="">بدون تصنيف</option>
             {(categories || []).map(cat => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
           </select>
@@ -547,6 +549,43 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
   const [isExporting, setIsExporting] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>(() => (localStorage.getItem('erp_view_inventory') as ViewMode) || 'grid');
   useEffect(() => { localStorage.setItem('erp_view_inventory', viewMode); }, [viewMode]);
+  const [productSyncStatus, setProductSyncStatus] = useState<Record<string, { exported: boolean; lastSyncedAt: string | null; easyProductId: string | null }>>({});
+  const fetchSyncStatus = useCallback(() => {
+    fetch(`${API_BASE}/easy-orders/products-status`).then(r => r.json()).then(d => {
+      if (d.success) {
+        const map: Record<string, { exported: boolean; lastSyncedAt: string | null; easyProductId: string | null }> = {};
+        (d.products || []).forEach((p: any) => {
+          map[p.id] = { exported: !!p.exported, lastSyncedAt: p.lastSyncedAt || null, easyProductId: p.easyProductId || null };
+        });
+        setProductSyncStatus(map);
+      }
+    }).catch(() => {});
+  }, []);
+  useEffect(() => { fetchSyncStatus(); }, [fetchSyncStatus]);
+
+  const hasUnsyncedChanges = useCallback((p: any) => {
+    const sync = productSyncStatus[p.id];
+    if (!sync || !sync.exported) return false;
+    if (!sync.lastSyncedAt) return true;
+    const productUpdated = p.updatedAt || p.createdAt;
+    if (!productUpdated) return false;
+    return new Date(productUpdated).getTime() > new Date(sync.lastSyncedAt).getTime();
+  }, [productSyncStatus]);
+
+  const [syncingProductId, setSyncingProductId] = useState<string | null>(null);
+  const handleSyncProduct = useCallback(async (productId: string) => {
+    setSyncingProductId(productId);
+    try {
+      const r = await fetch(`${API_BASE}/easy-orders/outbound/product-sync/${productId}`, { method: 'POST' });
+      const d = await r.json();
+      if (d.success) {
+        fetchSyncStatus();
+      }
+    } catch {
+    } finally {
+      setSyncingProductId(null);
+    }
+  }, [fetchSyncStatus]);
   const [imageFitContain, setImageFitContain] = useState(() => localStorage.getItem('erp_image_fit') === 'true');
   useEffect(() => { localStorage.setItem('erp_image_fit', String(imageFitContain)); }, [imageFitContain]);
   const [exportConfig, setExportConfig] = useState({
@@ -625,7 +664,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
       const matchSupplier = selectedSupplierId === 'all' || p.supplierId === selectedSupplierId;
       const matchCategory = selectedCategory === 'all' || 
                             p.category === selectedCategory || 
-                            p.category.startsWith(selectedCategory + ' > ');
+                            p.category.startsWith(selectedCategory + ' > ') ||
+                            (p.categories || []).includes(selectedCategory);
       const matchTag = selectedTag === 'all' || p.tags?.includes(selectedTag);
       const matchPrice = (minPrice === '' || p.price >= parseFloat(minPrice)) &&
                          (maxPrice === '' || p.price <= parseFloat(maxPrice));
@@ -1732,6 +1772,35 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     <span className="font-mono text-[11px] font-bold text-[var(--md-sys-color-on-surface-variant)]">{p.sku || ''}</span>
                     <span className="text-[10px] font-bold text-gray-300 dark:text-gray-600">|</span>
                     <span className="text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)] font-mono">ID: {p.id}</span>
+                    {(() => {
+                      const sync = productSyncStatus[p.id];
+                      if (!sync) return null;
+                      if (sync.exported) {
+                        const unsynced = hasUnsyncedChanges(p);
+                        return (
+                          <div className="flex items-center gap-1">
+                            {unsynced ? (
+                              <span className="text-[9px] font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <RefreshCw size={10} /> تعديل غير متزامن
+                              </span>
+                            ) : (
+                              <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <Check size={10} /> مصدّر للمتجر
+                              </span>
+                            )}
+                            <button onClick={e => { e.stopPropagation(); handleSyncProduct(p.id); }} disabled={syncingProductId === p.id}
+                              className="text-[9px] font-black text-accent bg-accent/10 hover:bg-accent/20 px-2 py-0.5 rounded-full transition-colors disabled:opacity-50">
+                              {syncingProductId === p.id ? '...' : 'مزامنة'}
+                            </button>
+                          </div>
+                        );
+                      }
+                      return (
+                        <span className="text-[9px] font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 px-2 py-0.5 rounded-full">
+                          غير مصدّر
+                        </span>
+                      );
+                    })()}
                   </div>
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex flex-col gap-1">
@@ -1840,7 +1909,27 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                       <div className="flex items-center gap-3">
                         <img src={p.image} className={`w-12 h-12 rounded-xl ${imageFitContain ? 'object-contain p-1' : 'object-cover'} bg-[var(--md-sys-color-surface-container)]`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none"><rect width="48" height="48" rx="12" fill="%23f1f5f9"/><circle cx="24" cy="22" r="8" fill="%23cbd5e1"/><rect x="14" y="34" width="20" height="4" rx="2" fill="%23cbd5e1"/></svg>'); }} />
                         <div>
-                          <div className="font-black text-sm text-[var(--md-sys-color-on-surface)]">{p.name}</div>
+                          <div className="font-black text-sm text-[var(--md-sys-color-on-surface)] flex items-center gap-2">
+                            {p.name}
+                            {(() => {
+                              const sync = productSyncStatus[p.id];
+                              if (!sync) return null;
+                              if (sync.exported) {
+                                const unsynced = hasUnsyncedChanges(p);
+                                return (
+                                  <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full flex items-center gap-0.5 ${unsynced ? 'text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400' : 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400'}`}>
+                                    {unsynced ? <RefreshCw size={8} /> : <Check size={8} />}
+                                    {unsynced ? 'غير متزامن' : 'مصدّر'}
+                                  </span>
+                                );
+                              }
+                              return (
+                                <span className="text-[8px] font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 px-1.5 py-0.5 rounded-full">
+                                  غير مصدّر
+                                </span>
+                              );
+                            })()}
+                          </div>
                           {p.tags && p.tags.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-0.5">
                               {p.tags.slice(0, 2).map(t => <span key={t} className="text-[9px] font-bold text-[var(--md-sys-color-on-surface-variant)]">{t}</span>)}
@@ -1874,9 +1963,9 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-1.5">
-                        {p.url && <a href={p.url} target="_blank" onClick={(e) => e.stopPropagation()} className="text-blue-500 hover:text-blue-600 p-1.5 rounded-lg hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors duration-200"><ExternalLink size={14} /></a>}
-                        <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="text-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-primary)]/80 p-1.5 rounded-lg hover:bg-[var(--md-sys-color-primary)]/5 transition-colors duration-200" title="تعديل"><Edit2 size={14} /></button>
-                        <button onClick={(e) => handleDelete(p.id, e)} className="text-[var(--md-sys-color-error)] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50/50 dark:hover:bg-red-900/10 transition-colors duration-200" title="حذف"><Trash2 size={14} /></button>
+                        {p.url && <a href={p.url} target="_blank" onClick={(e) => e.stopPropagation()} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-blue-500 hover:text-blue-600 p-1.5 rounded-lg hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors duration-200"><ExternalLink size={14} /></a>}
+                        <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-primary)]/80 p-1.5 rounded-lg hover:bg-[var(--md-sys-color-primary)]/5 transition-colors duration-200" title="تعديل"><Edit2 size={14} /></button>
+                        <button onClick={(e) => handleDelete(p.id, e)} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-error)] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50/50 dark:hover:bg-red-900/10 transition-colors duration-200" title="حذف"><Trash2 size={14} /></button>
                       </div>
                     </td>
                   </tr>
@@ -1909,11 +1998,28 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
               >
                 <div className={`relative rounded-xl overflow-hidden bg-[var(--md-sys-color-surface-container)] mb-2 ${imageFitContain ? '' : 'aspect-square'}`}>
                   <img src={p.image} className={`w-full ${imageFitContain ? 'h-auto block' : 'h-full object-cover'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" rx="20" fill="%23f1f5f9"/><circle cx="100" cy="80" r="24" fill="%23cbd5e1"/><rect x="60" y="120" width="80" height="10" rx="5" fill="%23cbd5e1"/></svg>'); }} />
-                  <div className="absolute top-1 right-1 w-5 h-5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-full flex items-center justify-center shadow-sm cursor-pointer hover:border-[var(--md-sys-color-primary)] transition-colors" onClick={(e) => { e.stopPropagation(); toggleSelect(p.id); }}>
+                  <div className="absolute top-1 right-1 min-w-[40px] min-h-[40px] bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-full flex items-center justify-center shadow-sm cursor-pointer hover:border-[var(--md-sys-color-primary)] transition-colors" onClick={(e) => { e.stopPropagation(); toggleSelect(p.id); }}>
                     {isSelected && <Check size={12} strokeWidth={4} className="text-[var(--md-sys-color-primary)]" />}
                   </div>
                 </div>
                   <h4 className="font-black text-[10px] text-[var(--md-sys-color-on-surface)] line-clamp-2 leading-tight mb-1">{p.name}</h4>
+                  <div className="flex items-center gap-1 mb-1">
+                    {(() => {
+                      const sync = productSyncStatus[p.id];
+                      if (!sync) return null;
+                      if (sync.exported) {
+                        const unsynced = hasUnsyncedChanges(p);
+                        return (
+                          <span className={`text-[7px] font-black px-1 py-0.5 rounded-full ${unsynced ? 'text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400' : 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400'}`}>
+                            {unsynced ? 'غير متزامن' : 'مصدّر'}
+                          </span>
+                        );
+                      }
+                      return (
+                        <span className="text-[7px] font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 px-1 py-0.5 rounded-full">غير مصدّر</span>
+                      );
+                    })()}
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[var(--md-sys-color-primary)] font-black text-xs">{(p.price || 0).toLocaleString()}</span>
                     <span className={`text-[9px] font-bold ${isOutOfStock ? 'text-[var(--md-sys-color-error)]' : isLowStock ? 'text-[var(--md-sys-color-tertiary)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>{totalQty} قطعة</span>
@@ -1923,9 +2029,14 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     {p.updatedAt && <span className="mr-1">| {formatDate(p.updatedAt, 'date')}</span>}
                   </div>
                   <div className="flex items-center justify-center gap-2 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800">
-                    <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 p-1.5 rounded-lg transition-colors duration-200" title="تعديل"><Edit2 size={12} /></button>
-                    {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 p-1.5 rounded-lg transition-colors duration-200"><ExternalLink size={12} /></a>}
-                    <button onClick={(e) => handleDelete(p.id, e)} className="text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 p-1.5 rounded-lg transition-colors duration-200" title="حذف"><Trash2 size={12} /></button>
+                    <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 p-1.5 rounded-lg transition-colors duration-200" title="تعديل"><Edit2 size={12} /></button>
+                    {productSyncStatus[p.id]?.exported && (
+                      <button onClick={(e) => { e.stopPropagation(); handleSyncProduct(p.id); }} disabled={syncingProductId === p.id} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-accent hover:bg-accent/5 p-1.5 rounded-lg transition-colors duration-200 disabled:opacity-50" title="مزامنة مع Easy Orders">
+                        {syncingProductId === p.id ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                      </button>
+                    )}
+                    {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 p-1.5 rounded-lg transition-colors duration-200"><ExternalLink size={12} /></a>}
+                    <button onClick={(e) => handleDelete(p.id, e)} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 p-1.5 rounded-lg transition-colors duration-200" title="حذف"><Trash2 size={12} /></button>
                   </div>
                 </motion.div>
             );
@@ -2268,17 +2379,17 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             initial={{ y: 100, opacity: 0, x: '-50%' }}
             animate={{ y: 0, opacity: 1, x: '-50%' }}
             exit={{ y: 100, opacity: 0, x: '-50%' }}
-            className="fixed bottom-20 md:bottom-8 left-1/2 z-[60]"
+            className="fixed bottom-20 md:bottom-8 left-1/2 z-[260] w-[95vw] max-w-[600px]"
           >
-            <div className="bg-[var(--md-sys-color-surface)] px-8 py-5 rounded-[40px] shadow-lg border border-[var(--md-sys-color-primary)]/20 dark:border-slate-700 flex items-center gap-8 backdrop-blur-md bg-white/90 dark:bg-slate-900/90">
-              <div className="flex flex-col">
+            <div className="bg-[var(--md-sys-color-surface)] px-4 sm:px-8 py-3 sm:py-5 rounded-[40px] shadow-lg border border-[var(--md-sys-color-primary)]/20 dark:border-slate-700 flex items-center gap-3 sm:gap-8 backdrop-blur-md bg-white/90 dark:bg-slate-900/90 overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
+              <div className="flex flex-col shrink-0">
                  <span className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase">تم تحديد</span>
                  <span className="text-[var(--md-sys-color-primary)] font-black text-xl">{selectedIds.size} <span className="text-xs">منتج</span></span>
               </div>
               
-              <div className="w-px h-10 bg-gray-100 dark:bg-slate-800"></div>
+              <div className="w-px h-10 bg-gray-100 dark:bg-slate-800 shrink-0"></div>
               
-              <div className="flex gap-4 items-center">
+              <div className="flex gap-3 sm:gap-4 items-center shrink-0">
                 <MD3Button 
                   variant="filled"
                   icon={<Download size={20} />}

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Settings, ArrowRightLeft, ShoppingBag, Clock, Check, X, AlertCircle,
   Upload, Download, RefreshCw, Eye, EyeOff, Search, Trash2,
-  Plus, Package, ExternalLink, FileText, Loader2, Zap, Sparkles
+  Plus, Package, ExternalLink, FileText, Loader2, Zap, Sparkles, ClipboardCopy
 } from 'lucide-react';
 import { AppState, Order, Product, EasyOrdersConfig, SyncLogEntry } from '../types';
 
@@ -15,7 +15,84 @@ interface EasyOrdersPanelProps {
   onUpdateState: (update: Partial<AppState>) => void;
 }
 
-type TabKey = 'settings' | 'export' | 'staging' | 'logs';
+type TabKey = 'settings' | 'export' | 'staging' | 'categories' | 'logs';
+
+const CategorySyncTab: React.FC<{ apiBase: string; showNotification: (msg: string, type: 'success' | 'error') => void; onUpdateState: (update: Partial<AppState>) => void }> = ({ apiBase, showNotification, onUpdateState }) => {
+  const [easyCategories, setEasyCategories] = useState<any[]>([]);
+  const [syncing, setSyncing] = useState(false);
+
+  const fetchCategories = async () => {
+    try {
+      const r = await fetch(`${apiBase}/easy-orders/categories`);
+      const d = await r.json();
+      if (d.success) {
+        const cats = Array.isArray(d.categories) ? d.categories : (d.categories?.data || []);
+        setEasyCategories(cats);
+      }
+    } catch {}
+  };
+
+  useEffect(() => { fetchCategories(); }, []);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const r = await fetch(`${apiBase}/easy-orders/categories/sync`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ direction: 'easy-to-erp' })
+      });
+      const d = await r.json();
+      if (d.success) {
+        const successCount = d.results.filter((r: any) => r.status !== 'failed').length;
+        const deletedCount = d.results.filter((r: any) => r.status === 'deleted').length;
+        let msg = `تمت مزامنة ${successCount} تصنيف من المتجر`;
+        if (deletedCount > 0) msg += ` — تم حذف ${deletedCount} قسم غير موجود في المتجر`;
+        showNotification(msg, 'success');
+        const catRes = await fetch(`${apiBase}/categories`);
+        const catData = await catRes.json();
+        if (Array.isArray(catData)) {
+          onUpdateState({ categories: catData });
+        }
+        fetchCategories();
+      } else showNotification(d.error || 'فشلت المزامنة', 'error');
+    } catch { showNotification('خطأ في الاتصال', 'error'); }
+    setSyncing(false);
+  };
+
+  return (
+    <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="space-y-6">
+      <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
+        <h2 className="text-xl font-black flex items-center gap-2"><Package size={20} /> مزامنة التصنيفات</h2>
+
+        <p className="text-xs text-gray-500 font-bold">يتم سحب جميع التصنيفات من المتجر مع الحقول (الاسم، الرابط، الصورة، الهيدر، الأولوية، الإخفاء) وحذف أي قسم في النظام غير موجود في المتجر.</p>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-black text-gray-600">التصنيفات في المتجر ({easyCategories.length})</h3>
+          {easyCategories.length === 0 ? (
+            <p className="text-xs text-gray-400 italic">لا توجد تصنيفات في المتجر بعد</p>
+          ) : (
+            <div className="space-y-1">
+              {easyCategories.map((cat: any) => (
+                <div key={cat.id} className="flex items-center gap-2">
+                  <span className={`px-3 py-1.5 rounded-xl text-xs font-bold ${cat.parent_id ? 'mr-6 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400' : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'}`}>{cat.name}</span>
+                  {cat.show_in_header && <span className="text-[9px] bg-green-100 text-green-600 px-1.5 py-0.5 rounded-full font-bold">هيدر</span>}
+                  {cat.hidden && <span className="text-[9px] bg-red-100 text-red-500 px-1.5 py-0.5 rounded-full font-bold">مخفي</span>}
+                  {cat.children && cat.children.length > 0 && <span className="text-[9px] text-gray-400">{cat.children.length} فرعي</span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <button onClick={handleSync} disabled={syncing}
+          className="w-full py-4 bg-accent text-white font-black rounded-2xl shadow-lg disabled:opacity-50 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
+          {syncing ? <Loader2 size={20} className="animate-spin" /> : <RefreshCw size={20} />}
+          {syncing ? 'جاري المزامنة...' : 'سحب التصنيفات من المتجر'}
+        </button>
+      </div>
+    </motion.div>
+  );
+};
 
 const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState }) => {
   const [activeTab, setActiveTab] = useState<TabKey>('settings');
@@ -25,10 +102,10 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
   const [apiKey, setApiKey] = useState('');
   const [showKey, setShowKey] = useState(false);
   const [enabled, setEnabled] = useState(false);
-  const [pollInterval, setPollInterval] = useState(60);
   const [imgbbKey, setImgbBKey] = useState('');
-  const [serverUrl, setServerUrl] = useState('');
   const [autoConfirm, setAutoConfirm] = useState(false);
+  const [autoSyncProducts, setAutoSyncProducts] = useState(false);
+  const [autoSyncOrders, setAutoSyncOrders] = useState(true);
   const [trackStock, setTrackStock] = useState(true);
   const [salePricePercent, setSalePricePercent] = useState(85);
   const [testingConnection, setTestingConnection] = useState(false);
@@ -38,6 +115,8 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
   const [exportPreview, setExportPreview] = useState<any[] | null>(null);
   const [exporting, setExporting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [productsStatus, setProductsStatus] = useState<any[]>([]);
+  const [exportFilter, setExportFilter] = useState<'all' | 'exported' | 'not_exported'>('all');
 
   // Staging state
   const [stagingOrders, setStagingOrders] = useState<any[]>([]);
@@ -48,7 +127,7 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
   // Polling state
   const [polling, setPolling] = useState(false);
   const [pollResult, setPollResult] = useState<{ imported: number; skipped: number } | null>(null);
-  const pollTimer = useRef<ReturnType<typeof setInterval>>();
+  const pollTimer = useRef<ReturnType<typeof setInterval>>(undefined);
 
   // Logs state
   const [syncLogs, setSyncLogs] = useState<SyncLogEntry[]>([]);
@@ -63,7 +142,8 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
 
   const saveField = useCallback(async (overrides: Record<string, any>) => {
     const config: Record<string, any> = {
-      apiKey, enabled, pollInterval, imgbbApiKey: imgbbKey, serverUrl, autoConfirm,
+      apiKey, enabled, imgbbApiKey: imgbbKey, autoConfirm,
+      autoSyncProducts, autoSyncOrders,
       createdAt: '', updatedAt: new Date().toISOString()
     };
     Object.assign(config, overrides);
@@ -78,7 +158,7 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
       const d = await r.json();
       if (d.success) fetchStats();
     } catch {}
-  }, [apiKey, enabled, pollInterval, imgbbKey, serverUrl, autoConfirm, trackStock, salePricePercent]);
+  }, [apiKey, enabled, imgbbKey, autoConfirm, autoSyncProducts, autoSyncOrders, trackStock, salePricePercent]);
 
   // Load config
   useEffect(() => {
@@ -89,10 +169,10 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
           const c = d.config || {};
           setApiKey(c.apiKey || '');
           setEnabled(!!c.enabled);
-          setPollInterval(c.pollInterval || 60);
           setImgbBKey(c.imgbbApiKey || '');
-          setServerUrl(c.serverUrl || '');
           setAutoConfirm(!!c.autoConfirm);
+          setAutoSyncProducts(!!c.autoSyncProducts);
+          setAutoSyncOrders(c.autoSyncOrders !== false);
           const de = d.defaults || {};
           setTrackStock(de.trackStock !== false);
           setSalePricePercent(de.salePricePercent || 85);
@@ -107,6 +187,14 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
     fetch(`${API_BASE}/easy-orders/stats`).then(r => r.json()).then(d => { if (d.success) setStats(d.stats); }).catch(() => {});
   };
 
+  const fetchProductsStatus = async () => {
+    try {
+      const r = await fetch(`${API_BASE}/easy-orders/products-status`);
+      const d = await r.json();
+      if (d.success) setProductsStatus(d.products || []);
+    } catch {}
+  };
+
   const fetchStaging = async () => {
     setStagingLoading(true);
     try {
@@ -119,6 +207,7 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
 
   useEffect(() => {
     if (activeTab === 'staging') fetchStaging();
+    if (activeTab === 'export') fetchProductsStatus();
     if (activeTab === 'logs') {
       setLogsLoading(true);
       fetch(`${API_BASE}/easy-orders/sync-logs?limit=50`).then(r => r.json()).then(d => { if (d.success) setSyncLogs(d.logs); setLogsLoading(false); }).catch(() => setLogsLoading(false));
@@ -126,7 +215,7 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
   }, [activeTab]);
 
   const handleSaveConfig = async () => {
-    const config = { apiKey, enabled, pollInterval, imgbbApiKey: imgbbKey, serverUrl, autoConfirm, createdAt: '', updatedAt: new Date().toISOString() };
+    const config = { apiKey, enabled, imgbbApiKey: imgbbKey, autoConfirm, createdAt: '', updatedAt: new Date().toISOString() };
     const defaults = { trackStock, disableOrdersNoStock: false, enableReviews: true, salePricePercent };
     try {
       const r = await fetch(`${API_BASE}/easy-orders/config`, {
@@ -154,11 +243,16 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
   };
 
   const handleSearchProducts = () => {
-    const filtered = state.products.filter(p => {
-      if (!searchQuery) return true;
+    let filtered = state.products;
+    if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      return p.name?.toLowerCase().includes(q) || p.id?.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q);
-    });
+      filtered = filtered.filter(p => p.name?.toLowerCase().includes(q) || p.id?.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q) || (p.categories || []).some(c => c.toLowerCase().includes(q)));
+    }
+    if (exportFilter !== 'all') {
+      const exportedIds = new Set(productsStatus.filter(p => p.exported).map(p => p.id));
+      if (exportFilter === 'exported') filtered = filtered.filter(p => exportedIds.has(p.id));
+      if (exportFilter === 'not_exported') filtered = filtered.filter(p => !exportedIds.has(p.id));
+    }
     return filtered;
   };
 
@@ -183,7 +277,13 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
       const d = await r.json();
       if (d.success) {
         const successCount = d.results.filter(r => r.success).length;
-        showNotification(`تم تصدير ${successCount} منتج بنجاح`, 'success');
+        const failCount = d.results.filter(r => !r.success).length;
+        if (failCount > 0) {
+          const errors = d.results.filter(r => !r.success).map(r => `${r.productId}: ${r.error}`).join('\n');
+          showNotification(`تم تصدير ${successCount} منتج بنجاح، فشل ${failCount} منتج.\n${errors}`, 'error');
+        } else {
+          showNotification(`تم تصدير ${successCount} منتج بنجاح`, 'success');
+        }
         setExportPreview(null);
         setSelectedProducts([]);
         fetchStats();
@@ -216,8 +316,8 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
       const d = await r.json();
       if (d.success) {
         showNotification('تم تأكيد الطلب', 'success');
-        if (d.products) onUpdateState({ products: d.products });
         fetchStaging();
+        fetchStats();
       } else showNotification(d.error || 'فشل التأكيد', 'error');
     } catch { showNotification('خطأ', 'error'); }
   };
@@ -229,8 +329,8 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
       const d = await r.json();
       if (d.success) {
         showNotification('تم رفض الطلب وإعادة المخزون', 'success');
-        if (d.products) onUpdateState({ products: d.products });
         fetchStaging();
+        fetchStats();
       } else showNotification(d.error || 'فشل', 'error');
     } catch { showNotification('خطأ', 'error'); }
   };
@@ -245,9 +345,9 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
       const d = await r.json();
       if (d.success) {
         showNotification(`تم تأكيد ${d.confirmed} طلب`, 'success');
-        if (d.products) onUpdateState({ products: d.products });
         setSelectedStaging([]);
         fetchStaging();
+        fetchStats();
       }
     } catch {}
   };
@@ -263,9 +363,9 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
       const d = await r.json();
       if (d.success) {
         showNotification(`تم رفض ${d.rejected} طلب`, 'success');
-        if (d.products) onUpdateState({ products: d.products });
         setSelectedStaging([]);
         fetchStaging();
+        fetchStats();
       }
     } catch {}
   };
@@ -274,6 +374,7 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
     { key: 'settings', label: 'الإعدادات', icon: <Settings size={18} /> },
     { key: 'export', label: 'تصدير المنتجات', icon: <Upload size={18} /> },
     { key: 'staging', label: `الطلبات الواردة${stats.pendingOrders > 0 ? ` (${stats.pendingOrders})` : ''}`, icon: <ShoppingBag size={18} /> },
+    { key: 'categories', label: 'التصنيفات', icon: <Package size={18} /> },
     { key: 'logs', label: 'سجل المزامنة', icon: <Clock size={18} /> },
   ];
 
@@ -285,7 +386,7 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
         <div className="p-2 rounded-2xl" style={{ backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)' }}>
           <ArrowRightLeft size={24} />
         </div>
-        <h1 className="text-3xl font-black">Easy Orders - التكامل</h1>
+        <h1 className="text-3xl font-black">إعدادات المتجر</h1>
       </div>
 
       {/* Status Bar */}
@@ -342,35 +443,32 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400">دورة الجلب (Polling) بالثواني</label>
-              <select value={pollInterval} onChange={e => { const v = Number(e.target.value); setPollInterval(v); saveField({ pollInterval: v }); }}
-                className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl font-bold outline-none focus:border-accent">
-                <option value={30}>كل 30 ثانية (مستمر)</option>
-                <option value={60}>كل دقيقة (موصى به)</option>
-                <option value={120}>كل دقيقتين</option>
-                <option value={300}>كل 5 دقائق (اقتصادي)</option>
-              </select>
-            </div>
-
-            <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400">مفتاح ImgBB API (لرفع الصور - مجاني)</label>
               <input type="text" value={imgbbKey} onChange={e => setImgbBKey(e.target.value)} onBlur={e => saveField({ imgbbApiKey: (e.target as HTMLInputElement).value })}
                 placeholder="أدخل مفتاح ImgBB من https://api.imgbb.com"
                 className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl font-bold outline-none focus:border-accent text-sm" />
               <p className="text-[10px] text-gray-400">مطلوب فقط لرفع الصور للمتجر. يمكنك الحصول على مفتاح مجاني من موقع ImgBB.</p>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400">رابط السيرفر العام (للصور - اختياري)</label>
-              <input type="text" value={serverUrl} onChange={e => setServerUrl(e.target.value)} onBlur={e => saveField({ serverUrl: (e.target as HTMLInputElement).value })}
-                placeholder="https://your-server.com (مطلوب لوضع Tunnel)"
-                className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl font-bold outline-none focus:border-accent text-sm" />
+              <p className="text-[9px] text-amber-600 dark:text-amber-400 font-bold flex items-start gap-1">🖼️ الصور المخزنة في النظام (Data URI) سيتم رفعها تلقائياً لـ ImgBB عند التصدير. Easy Orders يقبل فقط روابط URLs مباشرة — JPEG/PNG مدعومة حتى 32MB.</p>
             </div>
 
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800/50 rounded-2xl">
               <div><h4 className="font-black">تأكيد تلقائي</h4><p className="text-xs text-gray-400">تجاوز مراجعة الطلبات وإدراجها مباشرة (إلغاء تفعيل الـ Staging)</p></div>
               <button onClick={() => { const v = !autoConfirm; setAutoConfirm(v); saveField({ autoConfirm: v }); }} className={`w-14 h-7 rounded-full relative transition-colors duration-200 ${autoConfirm ? 'bg-accent' : 'bg-gray-300'}`}>
                 <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${autoConfirm ? 'left-8' : 'left-1'}`} />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800/50 rounded-2xl">
+              <div><h4 className="font-black">مزامنة تلقائية للمنتجات</h4><p className="text-xs text-gray-400">عند حفظ منتج في ERP يتم تصديره تلقائياً إلى Easy Orders</p></div>
+              <button onClick={() => { const v = !autoSyncProducts; setAutoSyncProducts(v); saveField({ autoSyncProducts: v }); }} className={`w-14 h-7 rounded-full relative transition-colors duration-200 ${autoSyncProducts ? 'bg-emerald-500' : 'bg-gray-300'}`}>
+                <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${autoSyncProducts ? 'left-8' : 'left-1'}`} />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800/50 rounded-2xl">
+              <div><h4 className="font-black">مزامنة تلقائية للطلبات</h4><p className="text-xs text-gray-400">جلب الطلبات الجديدة من Easy Orders تلقائياً كل دقيقة</p></div>
+              <button onClick={() => { const v = !autoSyncOrders; setAutoSyncOrders(v); saveField({ autoSyncOrders: v }); }} className={`w-14 h-7 rounded-full relative transition-colors duration-200 ${autoSyncOrders ? 'bg-emerald-500' : 'bg-gray-300'}`}>
+                <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${autoSyncOrders ? 'left-8' : 'left-1'}`} />
               </button>
             </div>
           </div>
@@ -393,9 +491,24 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
             </div>
           </div>
 
+          <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
+            <h2 className="text-xl font-black flex items-center gap-2"><span className="material-symbols-rounded" style={{ fontSize: 20 }}>webhook</span> إعدادات Webhook</h2>
+            <p className="text-xs text-gray-400">Webhook يسمح للمتجر بإرسال الطلبات الجديدة تلقائياً بدلاً من الجلب الدوري.</p>
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30 rounded-2xl space-y-3">
+              <p className="text-xs text-blue-700 dark:text-blue-400"><strong>ملاحظة:</strong> قم بإنشاء Webhook في لوحة تحكم المتجر مع الرابط التالي:</p>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 bg-blue-100 dark:bg-blue-800/30 px-3 py-2 rounded-xl text-[10px] ltr text-left truncate">https://x2-baby-erp-backend.vercel.app/api/easy-orders/webhook</code>
+                <button onClick={() => { navigator.clipboard.writeText('https://x2-baby-erp-backend.vercel.app/api/easy-orders/webhook'); showNotification('تم نسخ الرابط', 'success'); }}
+                  className="shrink-0 p-2 bg-blue-100 dark:bg-blue-800/30 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-700/40 transition-colors" title="نسخ الرابط">
+                  <ClipboardCopy size={16} className="text-blue-600 dark:text-blue-400" />
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div className="flex gap-4">
             <button onClick={handleSaveConfig} className="flex-1 py-4 bg-accent text-white font-black rounded-2xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all duration-200">
-              💾 حفظ الإعدادات
+              حفظ الإعدادات
             </button>
             <button onClick={handleTestConnection} disabled={testingConnection || !apiKey}
               className="px-8 py-4 bg-emerald-500 text-white font-black rounded-2xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all duration-200 disabled:opacity-50 flex items-center gap-2">
@@ -412,12 +525,27 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
           <div className="bg-white dark:bg-slate-900 p-8 rounded-[32px] shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
             <h2 className="text-xl font-black flex items-center gap-2"><Search size={20} /> اختيار المنتجات</h2>
 
+            <div className="flex flex-wrap gap-2">
+              <button onClick={() => setExportFilter('all')} className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${exportFilter === 'all' ? 'bg-accent text-white' : 'bg-gray-100 dark:bg-slate-800 text-gray-500'}`}>
+                الكل ({state.products.length})
+              </button>
+              <button onClick={() => setExportFilter('not_exported')} className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${exportFilter === 'not_exported' ? 'bg-amber-500 text-white' : 'bg-gray-100 dark:bg-slate-800 text-gray-500'}`}>
+                غير المصدّر ({state.products.length - productsStatus.filter(p => p.exported).length})
+              </button>
+              <button onClick={() => setExportFilter('exported')} className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${exportFilter === 'exported' ? 'bg-emerald-500 text-white' : 'bg-gray-100 dark:bg-slate-800 text-gray-500'}`}>
+                المصدّر ({productsStatus.filter(p => p.exported).length})
+              </button>
+            </div>
+
             <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
               placeholder="ابحث عن منتج بالاسم أو المعرف..."
               className="w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl font-bold outline-none focus:border-accent" />
 
             <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 max-h-[60vh] overflow-y-auto custom-scrollbar p-1">
-              {handleSearchProducts().map(p => (
+              {handleSearchProducts().map(p => {
+                const ps = productsStatus.find(s => s.id === p.id);
+                const isExported = ps?.exported;
+                return (
                 <button key={p.id} onClick={() => setSelectedProducts(prev => prev.includes(p.id) ? prev.filter(id => id !== p.id) : [...prev, p.id])}
                   className={`p-4 rounded-2xl border-2 text-right transition-colors duration-200 ${selectedProducts.includes(p.id) ? 'border-accent bg-accent/5 shadow-md' : 'border-gray-100 dark:border-slate-700 hover:border-gray-300'}`}>
                   <div className="flex items-center gap-3">
@@ -425,13 +553,23 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
                     <div className="flex-1 min-w-0">
                       <p className="font-black text-sm truncate">{p.name}</p>
                       <p className="text-[10px] text-gray-400">{p.category} • {p.price} ج.م</p>
+                      {isExported ? (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full mt-1">
+                          <Check size={8} /> مصدّر
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-black text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full mt-1">
+                          <AlertCircle size={8} /> غير مصدّر
+                        </span>
+                      )}
                     </div>
                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedProducts.includes(p.id) ? 'bg-accent border-accent' : 'border-gray-300'}`}>
                       {selectedProducts.includes(p.id) && <Check size={14} className="text-white" />}
                     </div>
                   </div>
                 </button>
-              ))}
+                );
+              })}
               {handleSearchProducts().length === 0 && (
                 <div className="col-span-full py-16 text-center text-gray-400 font-bold italic">لا توجد منتجات. ابدأ بإضافة منتجات إلى المخزون.</div>
               )}
@@ -485,13 +623,14 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
                   <button onClick={handleConfirmExport} disabled={exporting}
                     className="flex-1 py-4 bg-emerald-500 text-white font-black rounded-2xl shadow-lg disabled:opacity-50 hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2">
                     {exporting ? <Loader2 size={20} className="animate-spin" /> : <Upload size={20} />}
-                    {exporting ? 'جاري التصدير...' : 'تأكيد التصدير إلى Easy Orders'}
+                    {exporting ? 'جاري التصدير...' : 'تأكيد التصدير'}
                   </button>
                   <button onClick={() => setExportPreview(null)}
                     className="px-8 py-4 bg-gray-50 dark:bg-slate-800 text-gray-400 font-black rounded-2xl">
                     إلغاء
                   </button>
                 </div>
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1 justify-center">🖼️ سيتم رفع الصور تلقائياً لخدمة ImgBB. Easy Orders يقبل فقط روابط URLs مباشرة — JPEG/PNG.</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -560,7 +699,7 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
                         </p>
                       </div>
                       <div className="text-left text-[10px] text-gray-400 shrink-0">
-                        {new Date(order.created_at).toLocaleString('ar-EG')}
+                        {new Date((order.created_at || order.createdAt || '').replace(' ', 'T')).toLocaleString('ar-EG')}
                       </div>
                     </div>
 
@@ -606,28 +745,12 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
               })}
             </div>
           )}
-
-          {/* Confirmed/Rejected history */}
-          {stagingOrders.filter(o => o.status !== 'pending').length > 0 && (
-            <details className="bg-white dark:bg-slate-900 rounded-[32px] shadow-sm border border-gray-100 dark:border-slate-800">
-              <summary className="p-6 font-black text-sm cursor-pointer text-gray-500">سجل الطلبات المؤكدة والمرفوضة ({stagingOrders.filter(o => o.status !== 'pending').length})</summary>
-              <div className="px-6 pb-6 space-y-2">
-                {stagingOrders.filter(o => o.status !== 'pending').map(order => (
-                  <div key={order.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800 rounded-2xl text-xs">
-                    <div className="flex items-center gap-3">
-                      <span className={`px-2 py-1 rounded-lg font-bold ${order.status === 'confirmed' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                        {order.status === 'confirmed' ? '✅ مؤكد' : '❌ مرفوض'}
-                      </span>
-                      <span className="font-bold">{order.data?.customerName}</span>
-                      <span className="text-gray-400">{order.data?.totalAmount} ج.م</span>
-                    </div>
-                    <span className="text-gray-400">{new Date(order.created_at).toLocaleString('ar-EG')}</span>
-                  </div>
-                ))}
-              </div>
-            </details>
-          )}
         </motion.div>
+      )}
+
+      {/* ============ TAB: CATEGORIES ============ */}
+      {activeTab === 'categories' && (
+        <CategorySyncTab apiBase={API_BASE} showNotification={showNotification} onUpdateState={onUpdateState} />
       )}
 
       {/* ============ TAB: LOGS ============ */}
@@ -661,7 +784,7 @@ const EasyOrdersPanel: React.FC<EasyOrdersPanelProps> = ({ state, onUpdateState 
                       </span>
                       {log.entityId && <span className="font-bold text-gray-500 font-mono">{log.entityId}</span>}
                       <span className="text-gray-400 flex-1">{log.message}</span>
-                      <span className="text-gray-400 shrink-0">{new Date(log.created_at).toLocaleString('ar-EG')}</span>
+                      <span className="text-gray-400 shrink-0">{new Date((log.createdAt || log.created_at || '').replace(' ', 'T')).toLocaleString('ar-EG')}</span>
                     </div>
                   );
                 })}
