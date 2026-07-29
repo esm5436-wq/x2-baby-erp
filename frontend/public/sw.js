@@ -4,7 +4,7 @@ const CACHE_NAME = `x2-erp-${CACHE_VERSION}`;
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
-  '/icon-brand.png'
+  '/icon.svg'
 ];
 
 self.addEventListener('install', (event) => {

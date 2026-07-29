@@ -59,6 +59,6 @@ export async function updateFavicon(brandLogo: string) {
 }
 
 export function resetFavicon() {
-  setOrCreateLink(FAVICON_ID, 'icon', '/icon-brand.png', 'image/png');
-  setOrCreateLink(APPLE_TOUCH_ID, 'apple-touch-icon', '/icon-brand.png');
+  setOrCreateLink(FAVICON_ID, 'icon', '/icon.svg', 'image/svg+xml');
+  setOrCreateLink(APPLE_TOUCH_ID, 'apple-touch-icon', '/icon.svg');
 }
