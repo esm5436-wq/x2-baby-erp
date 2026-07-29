@@ -7,7 +7,6 @@ const SECTION_BY_PATH = [
   { prefix: '/api/contacts', section: 'contacts' },
   { prefix: '/api/suppliers', section: 'suppliers' },
   { prefix: '/api/purchase-invoices', section: 'purchases' },
-  { prefix: '/api/easy-orders', section: 'purchases' },
   { prefix: '/api/targets', section: 'accounts' },
   { prefix: '/api/expenses', section: 'accounts' },
   { prefix: '/api/financial', section: 'accounts' },

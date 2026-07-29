@@ -1,4 +1,4 @@
-import { Package, ShoppingBag, BarChart3, Settings, Users, UserCheck, Activity, ArrowRightLeft } from 'lucide-react';
+import { Package, ShoppingBag, BarChart3, Settings, Users, UserCheck, Activity } from 'lucide-react';
 import React from 'react';
 
 export interface NavItem {
@@ -18,12 +18,11 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/contacts', icon: React.createElement(Users, { size: 20 }), md3Icon: 'contacts', label: 'جهات الاتصال', shortLabel: 'جهات' },
   { to: '/customers', icon: React.createElement(UserCheck, { size: 20 }), md3Icon: 'people', label: 'العملاء', shortLabel: 'عملاء' },
   { to: '/activity-logs', icon: React.createElement(Activity, { size: 20 }), md3Icon: 'history', label: 'سجل النشاطات', shortLabel: 'نشاطات' },
-  { to: '/easy-orders', icon: React.createElement(ArrowRightLeft, { size: 20 }), md3Icon: 'swap_horiz', label: 'Easy Orders', shortLabel: 'Easy Orders' },
   { to: '/settings', icon: React.createElement(Settings, { size: 20 }), md3Icon: 'settings', label: 'إدارة البيانات', shortLabel: 'البيانات' },
 ];
 
 export const BOTTOM_NAV_PRIMARY_INDICES = [0, 1, 2, 6];
-export const BOTTOM_NAV_MORE_INDICES = [3, 4, 5, 7, 8, 9];
+export const BOTTOM_NAV_MORE_INDICES = [3, 4, 5, 7, 8];
 
 export const NAV_COLORS = [
   'bg-primary text-blue-900',
@@ -34,6 +33,5 @@ export const NAV_COLORS = [
   'bg-pink-50 text-pink-900',
   'bg-amber-50 text-amber-900',
   'bg-indigo-50 text-indigo-900',
-  'bg-gray-200 text-gray-900',
   'bg-gray-200 text-gray-900',
 ];

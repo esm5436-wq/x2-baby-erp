@@ -33,7 +33,8 @@ export const getDb = async (query, params = []) => {
 
 export const runDb = async (query, params = []) => {
   const result = await db.execute({ sql: query, args: params });
-  return { id: result.lastInsertRowid, changes: result.rowsAffected };
+  const id = result.lastInsertRowid;
+  return { id: typeof id === 'bigint' ? Number(id) : id, changes: result.rowsAffected };
 };
 
 export async function logActivity(action, entityType, entityId, description, metadata = {}) {
@@ -110,28 +111,51 @@ export async function initializeSchema() {
     `CREATE TABLE IF NOT EXISTS order_items_cost_tracking (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id TEXT NOT NULL, product_id TEXT NOT NULL, cost_at_sale REAL NOT NULL, quantity INTEGER NOT NULL, price_at_sale REAL NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
     `CREATE TABLE IF NOT EXISTS activity_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, action TEXT NOT NULL, entity_type TEXT NOT NULL, entity_id TEXT, description TEXT, metadata TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
     `CREATE TABLE IF NOT EXISTS checkpoints (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, snapshot TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
-    `CREATE TABLE IF NOT EXISTS easyorders_staging (id TEXT PRIMARY KEY, easy_order_id TEXT UNIQUE, data TEXT NOT NULL, status TEXT DEFAULT 'pending', source_order_status TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, synced_at DATETIME)`,
-    `CREATE TABLE IF NOT EXISTS easyorders_product_map (id TEXT PRIMARY KEY, erp_product_id TEXT NOT NULL, easy_product_id TEXT, easy_product_sku TEXT, variants_map TEXT DEFAULT '{}', last_synced_at DATETIME, status TEXT DEFAULT 'pending')`,
-    `CREATE TABLE IF NOT EXISTS easyorders_sync_log (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT NOT NULL, direction TEXT NOT NULL, entity_type TEXT, entity_id TEXT, status TEXT NOT NULL, message TEXT, metadata TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
     `CREATE INDEX IF NOT EXISTS idx_contacts_specialization ON contacts(specialization)`,
     `CREATE INDEX IF NOT EXISTS idx_contacts_entity_type ON contacts(entity_type)`,
     `CREATE INDEX IF NOT EXISTS idx_order_items_cost_order_id ON order_items_cost_tracking(order_id)`,
     `CREATE INDEX IF NOT EXISTS idx_expenses_created ON expenses(created_at)`,
     `CREATE INDEX IF NOT EXISTS idx_activity_logs_created ON activity_logs(created_at)`,
-    `CREATE INDEX IF NOT EXISTS idx_easyorders_staging_status ON easyorders_staging(status)`,
-    `CREATE INDEX IF NOT EXISTS idx_easyorders_sync_log_type ON easyorders_sync_log(type, created_at)`,
     `INSERT OR IGNORE INTO settings (key, value) VALUES ('categories', '["أطفال", "رضع", "أولاد", "بنات"]')`,
     `INSERT OR IGNORE INTO settings (key, value) VALUES ('isManualMode', 'false')`,
     `INSERT OR IGNORE INTO settings (key, value) VALUES ('taxEnabled', 'false')`,
     `INSERT OR IGNORE INTO settings (key, value) VALUES ('taxRate', '0')`,
     `INSERT OR IGNORE INTO settings (key, value) VALUES ('ai_api_keys', '[]')`,
-    `INSERT OR IGNORE INTO settings (key, value) VALUES ('easyorders_config', '{}')`,
-    `INSERT OR IGNORE INTO settings (key, value) VALUES ('easyorders_export_defaults', '{"trackStock":true,"disableOrdersNoStock":false,"enableReviews":true,"salePricePercent":85}')`,
-    `INSERT OR IGNORE INTO settings (key, value) VALUES ('easyorders_last_poll', '')`,
   ];
 
   for (const sql of statements) {
     try { await db.execute(sql); } catch (e) { console.error('Schema init error:', e.message); }
+  }
+
+  const dropTables = [
+    `DROP TABLE IF EXISTS easyorders_staging`,
+    `DROP TABLE IF EXISTS easyorders_product_map`,
+    `DROP TABLE IF EXISTS easyorders_sync_log`,
+    `DROP TABLE IF EXISTS easyorders_webhook_config`,
+    `DROP TABLE IF EXISTS easyorders_category_map`,
+  ];
+  for (const sql of dropTables) {
+    try { await db.execute(sql); } catch (e) { console.error('Drop table error:', e.message); }
+  }
+
+  const removeSettings = [
+    `DELETE FROM settings WHERE key = 'easyorders_config'`,
+    `DELETE FROM settings WHERE key = 'easyorders_export_defaults'`,
+    `DELETE FROM settings WHERE key = 'easyorders_last_poll'`,
+  ];
+  for (const sql of removeSettings) {
+    try { await db.execute(sql); } catch (e) {}
+  }
+
+  const alterColumns = [
+    `ALTER TABLE categories ADD COLUMN slug TEXT`,
+    `ALTER TABLE categories ADD COLUMN thumb TEXT`,
+    `ALTER TABLE categories ADD COLUMN show_in_header INTEGER DEFAULT 0`,
+    `ALTER TABLE categories ADD COLUMN position INTEGER DEFAULT 0`,
+    `ALTER TABLE categories ADD COLUMN hidden INTEGER DEFAULT 0`,
+  ];
+  for (const sql of alterColumns) {
+    try { await db.execute(sql); } catch (e) { /* column already exists */ }
   }
 
   try {
@@ -308,125 +332,3 @@ export async function adjustStock(items, operation) {
   }
 }
 
-export async function addStagingOrder(easyOrderId, orderData, sourceStatus) {
-  const id = `stg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-  const rows = await allDb("SELECT id FROM easyorders_staging WHERE easy_order_id = ?", [easyOrderId]);
-  if (rows.length > 0) return rows[0].id;
-  await runDb(
-    "INSERT INTO easyorders_staging (id, easy_order_id, data, status, source_order_status, synced_at) VALUES (?, ?, ?, 'pending', ?, datetime('now'))",
-    [id, easyOrderId, JSON.stringify(orderData), sourceStatus || 'pending']
-  );
-  return id;
-}
-
-export async function getStagingOrders(status = null) {
-  let query = "SELECT * FROM easyorders_staging ORDER BY created_at DESC";
-  const params = [];
-  if (status) { query = "SELECT * FROM easyorders_staging WHERE status = ? ORDER BY created_at DESC"; params.push(status); }
-  const rows = await allDb(query, params);
-  return rows.map(r => ({ ...r, data: JSON.parse(r.data) }));
-}
-
-export async function getStagingOrder(id) {
-  const row = await getDb("SELECT * FROM easyorders_staging WHERE id = ?", [id]);
-  if (!row) return null;
-  return { ...row, data: JSON.parse(row.data) };
-}
-
-export async function confirmStagingOrder(id) {
-  const order = await getStagingOrder(id);
-  if (!order) throw new Error('الطلب غير موجود في طلبات المراجعة');
-  const orderData = order.data;
-  orderData.id = await generateOrderId();
-  const skuIssues = [];
-  for (const item of (orderData.items || [])) {
-    if (item.sku && item.sku.startsWith('SKU-')) {
-      const found = await resolveVariantBySku(item.variantSku || item.sku);
-      if (found) {
-        item.productId = found.product.id;
-        item.variantId = found.variant.id;
-        item.skuStatus = 'matched';
-      } else {
-        const prod = await resolveProductBySku(item.sku);
-        if (prod) {
-          item.productId = prod.id;
-          if (prod.variants?.length === 1) item.variantId = prod.variants[0].id;
-          item.skuStatus = 'matched';
-        } else {
-          item.skuStatus = 'unmatched';
-          skuIssues.push({ name: item.productName, sku: item.sku });
-        }
-      }
-    }
-  }
-  if (isActiveStatus(orderData.status)) {
-    await adjustStock(orderData.items || [], 'deduct');
-  }
-  await runDb("INSERT INTO orders (id, data) VALUES (?, ?)", [orderData.id, JSON.stringify(orderData)]);
-  await runDb("UPDATE easyorders_staging SET status = 'confirmed' WHERE id = ?", [id]);
-  if (skuIssues.length > 0) {
-    await logActivity('warning', 'order', orderData.id,
-      `[Easy Orders] تم تأكيد الطلب مع ${skuIssues.length} منتج SKU غير متطابق`,
-      { stagingId: id, sourceId: order.easy_order_id, skuIssues });
-  }
-  await logActivity('create', 'order', orderData.id,
-    `[Easy Orders] تم تأكيد الطلب للعميل ${orderData.customerName}`,
-    { stagingId: id, sourceId: order.easy_order_id, skuIssues: skuIssues.length > 0 ? skuIssues : undefined });
-  return orderData;
-}
-
-export async function rejectStagingOrder(id) {
-  const order = await getStagingOrder(id);
-  if (!order) throw new Error('الطلب غير موجود في طلبات المراجعة');
-  const orderData = order.data;
-  await adjustStock(orderData.items || [], 'return');
-  await runDb("UPDATE easyorders_staging SET status = 'rejected' WHERE id = ?", [id]);
-  await logActivity('delete', 'order', id, `[Easy Orders] تم رفض الطلب رقم ${order.easy_order_id} وإعادة المخزون`, { stagingId: id });
-  return order;
-}
-
-export async function updateStagingOrder(id, updates) {
-  const rows = await allDb("SELECT data FROM easyorders_staging WHERE id = ?", [id]);
-  if (rows.length === 0) throw new Error('الطلب غير موجود');
-  const currentData = JSON.parse(rows[0].data);
-  Object.keys(updates).forEach(k => { currentData[k] = updates[k]; });
-  await runDb("UPDATE easyorders_staging SET data = ? WHERE id = ?", [JSON.stringify(currentData), id]);
-  return { ...rows[0], data: currentData };
-}
-
-export async function saveProductMap(erpProductId, easyProductId, easySku, variantsMap = {}) {
-  const id = `map-${erpProductId}`;
-  await runDb(
-    `INSERT OR REPLACE INTO easyorders_product_map (id, erp_product_id, easy_product_id, easy_product_sku, variants_map, last_synced_at, status)
-     VALUES (?, ?, ?, ?, ?, datetime('now'), 'synced')`,
-    [id, erpProductId, easyProductId, easySku, JSON.stringify(variantsMap)]
-  );
-}
-
-export async function getProductMap(erpProductId) {
-  const row = await getDb("SELECT * FROM easyorders_product_map WHERE erp_product_id = ?", [erpProductId]);
-  if (!row) return null;
-  return { ...row, variants_map: JSON.parse(row.variants_map || '{}') };
-}
-
-export async function getAllProductMaps() {
-  const rows = await allDb("SELECT * FROM easyorders_product_map");
-  return rows.map(r => ({ ...r, variants_map: JSON.parse(r.variants_map || '{}') }));
-}
-
-export async function addSyncLog(type, direction, entityType, entityId, status, message, metadata = {}) {
-  await runDb(
-    `INSERT INTO easyorders_sync_log (type, direction, entity_type, entity_id, status, message, metadata)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [type, direction, entityType, entityId, status, message, JSON.stringify(metadata)]
-  );
-}
-
-export async function getSyncLogs(limit = 50) {
-  const rows = await allDb("SELECT * FROM easyorders_sync_log ORDER BY created_at DESC LIMIT ?", [limit]);
-  return rows.map(r => ({ ...r, metadata: tryParseJson(r.metadata) }));
-}
-
-function tryParseJson(str) {
-  try { return JSON.parse(str); } catch { return str; }
-}

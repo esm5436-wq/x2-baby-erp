@@ -4,6 +4,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { AppState } from '../types';
 import { MD3StatCard } from './md3/MD3Misc';
 import { MD3Button } from './md3/MD3Button';
+import CollapsibleSection from './CollapsibleSection';
 
 interface DashboardProps {
   state: AppState;
@@ -111,33 +112,35 @@ const Dashboard: React.FC<DashboardProps> = ({ state }) => {
         <div className="w-full">
           
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
-            <MD3StatCard
-              icon={<span className="material-symbols-rounded md3-icon-filled">inventory_2</span>}
-              label="المنتجات"
-              value={totalProducts}
-              iconBg="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
-            />
-            <MD3StatCard
-              icon={<span className="material-symbols-rounded md3-icon-filled">shopping_bag</span>}
-              label="الطلبات"
-              value={totalOrders}
-              subtitle={pendingOrders > 0 ? `${pendingOrders} طلب معلق` : undefined}
-              iconBg="bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
-            />
-            <MD3StatCard
-              icon={<span className="material-symbols-rounded md3-icon-filled">people</span>}
-              label="العملاء"
-              value={totalCustomers}
-              iconBg="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]"
-            />
-            <MD3StatCard
-              icon={<span className="material-symbols-rounded md3-icon-filled">payments</span>}
-              label="إجمالي المبيعات"
-              value={formatCurrency(totalSales)}
-              iconBg="bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]"
-            />
-          </div>
+          <CollapsibleSection title="الإحصائيات" icon={<span className="material-symbols-rounded" style={{ fontSize: 18 }}>bar_chart</span>} mobileOnly defaultOpen={false}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
+              <MD3StatCard
+                icon={<span className="material-symbols-rounded md3-icon-filled">inventory_2</span>}
+                label="المنتجات"
+                value={totalProducts}
+                iconBg="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
+              />
+              <MD3StatCard
+                icon={<span className="material-symbols-rounded md3-icon-filled">shopping_bag</span>}
+                label="الطلبات"
+                value={totalOrders}
+                subtitle={pendingOrders > 0 ? `${pendingOrders} طلب معلق` : undefined}
+                iconBg="bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]"
+              />
+              <MD3StatCard
+                icon={<span className="material-symbols-rounded md3-icon-filled">people</span>}
+                label="العملاء"
+                value={totalCustomers}
+                iconBg="bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)]"
+              />
+              <MD3StatCard
+                icon={<span className="material-symbols-rounded md3-icon-filled">payments</span>}
+                label="إجمالي المبيعات"
+                value={formatCurrency(totalSales)}
+                iconBg="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
+              />
+            </div>
+          </CollapsibleSection>
 
           {/* Quick Links */}
           <div className="mb-8">

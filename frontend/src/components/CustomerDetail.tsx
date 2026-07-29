@@ -85,9 +85,9 @@ export default function CustomerDetail({ customer, orders, onClose, onEdit, onDe
             <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">
               <Phone size={13} className="text-[var(--md-sys-color-outline)] shrink-0" />
               <span className="font-mono text-sm text-[var(--md-sys-color-on-surface)]" dir="ltr">{customer.phone}</span>
-              <button onClick={() => navigator.clipboard.writeText(customer.phone || '')} className="p-1.5 rounded-lg hover:bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-outline)] hover:text-[var(--md-sys-color-primary)] transition-all" title="نسخ"><Copy size={14} /></button>
-              <a href={`tel:${customer.phone}`} className="p-1.5 rounded-lg hover:bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-primary)] transition-all" title="اتصال"><Phone size={14} /></a>
-              <a href={`https://wa.me/20${(customer.phone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg hover:bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-success)] hover:text-[var(--md-sys-color-success)] transition-all" title="واتساب"><FaWhatsapp size={15} /></a>
+               <button onClick={() => navigator.clipboard.writeText(customer.phone || '')} className="p-1.5 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-outline)] hover:text-[var(--md-sys-color-primary)] transition-all" title="نسخ"><Copy size={14} /></button>
+               <a href={`tel:${customer.phone}`} className="p-1.5 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-primary)] transition-all" title="اتصال"><Phone size={14} /></a>
+               <a href={`https://wa.me/20${(customer.phone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" className="p-1.5 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-success)] hover:text-[var(--md-sys-color-success)] transition-all" title="واتساب"><FaWhatsapp size={15} /></a>
             </div>
           </div>
           {customer.altPhone && (
@@ -96,9 +96,9 @@ export default function CustomerDetail({ customer, orders, onClose, onEdit, onDe
               <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">
                 <Phone size={13} className="text-[var(--md-sys-color-outline)] shrink-0" />
                 <span className="font-mono text-sm text-[var(--md-sys-color-on-surface)]" dir="ltr">{customer.altPhone}</span>
-                <button onClick={() => navigator.clipboard.writeText(customer.altPhone || '')} className="p-1.5 rounded-lg hover:bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-outline)] hover:text-[var(--md-sys-color-primary)] transition-all" title="نسخ"><Copy size={14} /></button>
-                <a href={`tel:${customer.altPhone}`} className="p-1.5 rounded-lg hover:bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-primary)] transition-all" title="اتصال"><Phone size={14} /></a>
-                <a href={`https://wa.me/20${(customer.altPhone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg hover:bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-success)] hover:text-[var(--md-sys-color-success)] transition-all" title="واتساب"><FaWhatsapp size={15} /></a>
+                 <button onClick={() => navigator.clipboard.writeText(customer.altPhone || '')} className="p-1.5 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-outline)] hover:text-[var(--md-sys-color-primary)] transition-all" title="نسخ"><Copy size={14} /></button>
+                 <a href={`tel:${customer.altPhone}`} className="p-1.5 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-primary)] transition-all" title="اتصال"><Phone size={14} /></a>
+                 <a href={`https://wa.me/20${(customer.altPhone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" className="p-1.5 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-success)] hover:text-[var(--md-sys-color-success)] transition-all" title="واتساب"><FaWhatsapp size={15} /></a>
               </div>
             </div>
           )}

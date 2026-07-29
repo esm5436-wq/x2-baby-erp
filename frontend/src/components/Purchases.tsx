@@ -257,6 +257,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
     return products.filter(p => 
       p.name.toLowerCase().includes(search) ||
       p.category.toLowerCase().includes(search) ||
+      (p.categories || []).some(c => c.toLowerCase().includes(search)) ||
       p.tags?.some(t => t.toLowerCase().includes(search))
     ).slice(0, 5);
   }, [products, productSearch]);

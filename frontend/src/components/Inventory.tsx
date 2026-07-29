@@ -55,6 +55,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Product, Variant, Category, Branding, ViewMode, Order, Supplier, OptionCategory } from '../types';
 import { API_BASE } from '../lib/api';
 import ProductModal from './ProductModal';
+
 import BatchEditModal from './BatchEditModal';
 import type { BatchField } from './BatchEditModal';
 import ViewSwitcher from './ViewSwitcher';
@@ -549,43 +550,6 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
   const [isExporting, setIsExporting] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>(() => (localStorage.getItem('erp_view_inventory') as ViewMode) || 'grid');
   useEffect(() => { localStorage.setItem('erp_view_inventory', viewMode); }, [viewMode]);
-  const [productSyncStatus, setProductSyncStatus] = useState<Record<string, { exported: boolean; lastSyncedAt: string | null; easyProductId: string | null }>>({});
-  const fetchSyncStatus = useCallback(() => {
-    fetch(`${API_BASE}/easy-orders/products-status`).then(r => r.json()).then(d => {
-      if (d.success) {
-        const map: Record<string, { exported: boolean; lastSyncedAt: string | null; easyProductId: string | null }> = {};
-        (d.products || []).forEach((p: any) => {
-          map[p.id] = { exported: !!p.exported, lastSyncedAt: p.lastSyncedAt || null, easyProductId: p.easyProductId || null };
-        });
-        setProductSyncStatus(map);
-      }
-    }).catch(() => {});
-  }, []);
-  useEffect(() => { fetchSyncStatus(); }, [fetchSyncStatus]);
-
-  const hasUnsyncedChanges = useCallback((p: any) => {
-    const sync = productSyncStatus[p.id];
-    if (!sync || !sync.exported) return false;
-    if (!sync.lastSyncedAt) return true;
-    const productUpdated = p.updatedAt || p.createdAt;
-    if (!productUpdated) return false;
-    return new Date(productUpdated).getTime() > new Date(sync.lastSyncedAt).getTime();
-  }, [productSyncStatus]);
-
-  const [syncingProductId, setSyncingProductId] = useState<string | null>(null);
-  const handleSyncProduct = useCallback(async (productId: string) => {
-    setSyncingProductId(productId);
-    try {
-      const r = await fetch(`${API_BASE}/easy-orders/outbound/product-sync/${productId}`, { method: 'POST' });
-      const d = await r.json();
-      if (d.success) {
-        fetchSyncStatus();
-      }
-    } catch {
-    } finally {
-      setSyncingProductId(null);
-    }
-  }, [fetchSyncStatus]);
   const [imageFitContain, setImageFitContain] = useState(() => localStorage.getItem('erp_image_fit') === 'true');
   useEffect(() => { localStorage.setItem('erp_image_fit', String(imageFitContain)); }, [imageFitContain]);
   const [exportConfig, setExportConfig] = useState({
@@ -1157,7 +1121,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
   };
 
   return (
-    <AnimatePresence mode="wait">
+    <><AnimatePresence mode="wait">
       <motion.div 
         key="inventory-list"
         initial={{ opacity: 0, scale: 0.98 }}
@@ -1772,35 +1736,6 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     <span className="font-mono text-[11px] font-bold text-[var(--md-sys-color-on-surface-variant)]">{p.sku || ''}</span>
                     <span className="text-[10px] font-bold text-gray-300 dark:text-gray-600">|</span>
                     <span className="text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)] font-mono">ID: {p.id}</span>
-                    {(() => {
-                      const sync = productSyncStatus[p.id];
-                      if (!sync) return null;
-                      if (sync.exported) {
-                        const unsynced = hasUnsyncedChanges(p);
-                        return (
-                          <div className="flex items-center gap-1">
-                            {unsynced ? (
-                              <span className="text-[9px] font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <RefreshCw size={10} /> تعديل غير متزامن
-                              </span>
-                            ) : (
-                              <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <Check size={10} /> مصدّر للمتجر
-                              </span>
-                            )}
-                            <button onClick={e => { e.stopPropagation(); handleSyncProduct(p.id); }} disabled={syncingProductId === p.id}
-                              className="text-[9px] font-black text-accent bg-accent/10 hover:bg-accent/20 px-2 py-0.5 rounded-full transition-colors disabled:opacity-50">
-                              {syncingProductId === p.id ? '...' : 'مزامنة'}
-                            </button>
-                          </div>
-                        );
-                      }
-                      return (
-                        <span className="text-[9px] font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 px-2 py-0.5 rounded-full">
-                          غير مصدّر
-                        </span>
-                      );
-                    })()}
                   </div>
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex flex-col gap-1">
@@ -1909,26 +1844,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                       <div className="flex items-center gap-3">
                         <img src={p.image} className={`w-12 h-12 rounded-xl ${imageFitContain ? 'object-contain p-1' : 'object-cover'} bg-[var(--md-sys-color-surface-container)]`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none"><rect width="48" height="48" rx="12" fill="%23f1f5f9"/><circle cx="24" cy="22" r="8" fill="%23cbd5e1"/><rect x="14" y="34" width="20" height="4" rx="2" fill="%23cbd5e1"/></svg>'); }} />
                         <div>
-                          <div className="font-black text-sm text-[var(--md-sys-color-on-surface)] flex items-center gap-2">
+                          <div className="font-black text-sm text-[var(--md-sys-color-on-surface)]">
                             {p.name}
-                            {(() => {
-                              const sync = productSyncStatus[p.id];
-                              if (!sync) return null;
-                              if (sync.exported) {
-                                const unsynced = hasUnsyncedChanges(p);
-                                return (
-                                  <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full flex items-center gap-0.5 ${unsynced ? 'text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400' : 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400'}`}>
-                                    {unsynced ? <RefreshCw size={8} /> : <Check size={8} />}
-                                    {unsynced ? 'غير متزامن' : 'مصدّر'}
-                                  </span>
-                                );
-                              }
-                              return (
-                                <span className="text-[8px] font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 px-1.5 py-0.5 rounded-full">
-                                  غير مصدّر
-                                </span>
-                              );
-                            })()}
                           </div>
                           {p.tags && p.tags.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-0.5">
@@ -2003,23 +1920,6 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   </div>
                 </div>
                   <h4 className="font-black text-[10px] text-[var(--md-sys-color-on-surface)] line-clamp-2 leading-tight mb-1">{p.name}</h4>
-                  <div className="flex items-center gap-1 mb-1">
-                    {(() => {
-                      const sync = productSyncStatus[p.id];
-                      if (!sync) return null;
-                      if (sync.exported) {
-                        const unsynced = hasUnsyncedChanges(p);
-                        return (
-                          <span className={`text-[7px] font-black px-1 py-0.5 rounded-full ${unsynced ? 'text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400' : 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400'}`}>
-                            {unsynced ? 'غير متزامن' : 'مصدّر'}
-                          </span>
-                        );
-                      }
-                      return (
-                        <span className="text-[7px] font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 px-1 py-0.5 rounded-full">غير مصدّر</span>
-                      );
-                    })()}
-                  </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[var(--md-sys-color-primary)] font-black text-xs">{(p.price || 0).toLocaleString()}</span>
                     <span className={`text-[9px] font-bold ${isOutOfStock ? 'text-[var(--md-sys-color-error)]' : isLowStock ? 'text-[var(--md-sys-color-tertiary)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>{totalQty} قطعة</span>
@@ -2030,11 +1930,6 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   </div>
                   <div className="flex items-center justify-center gap-2 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800">
                     <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 p-1.5 rounded-lg transition-colors duration-200" title="تعديل"><Edit2 size={12} /></button>
-                    {productSyncStatus[p.id]?.exported && (
-                      <button onClick={(e) => { e.stopPropagation(); handleSyncProduct(p.id); }} disabled={syncingProductId === p.id} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-accent hover:bg-accent/5 p-1.5 rounded-lg transition-colors duration-200 disabled:opacity-50" title="مزامنة مع Easy Orders">
-                        {syncingProductId === p.id ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
-                      </button>
-                    )}
                     {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 p-1.5 rounded-lg transition-colors duration-200"><ExternalLink size={12} /></a>}
                     <button onClick={(e) => handleDelete(p.id, e)} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 p-1.5 rounded-lg transition-colors duration-200" title="حذف"><Trash2 size={12} /></button>
                   </div>
@@ -2443,7 +2338,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
 
     </motion.div>
     </AnimatePresence>
-  );
+    </>);
 });
 
 export default Inventory;

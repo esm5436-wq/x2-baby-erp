@@ -2,7 +2,6 @@ import React from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 import AppSidebar from './AppSidebar';
-import AppTopBar from './AppTopBar';
 import AppBottomNav from './AppBottomNav';
 import AppRail from './AppRail';
 
@@ -57,8 +56,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           <header
             style={{
               height: 'var(--md-sys-top-bar-mobile-height)',
-              backgroundColor: isMD3 ? 'var(--md-sys-color-surface)' : darkMode ? '#0f172a' : '#ffffff',
-              borderBottom: `1px solid ${isMD3 ? 'var(--md-sys-color-outline-variant)' : darkMode ? '#1e293b' : '#e2e8f0'}`,
+              backgroundColor: 'var(--md-sys-color-surface)',
+              borderBottom: '1px solid var(--md-sys-color-outline-variant)',
               display: 'flex',
               alignItems: 'center',
               padding: '0 16px',
@@ -67,8 +66,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
             }}
           >
             <div style={{
-              width: 32,
-              height: 32,
+              width: 36,
+              height: 36,
               borderRadius: 'var(--md-sys-shape-small)',
               display: 'flex',
               alignItems: 'center',
@@ -79,14 +78,47 @@ const AppLayout: React.FC<AppLayoutProps> = ({
               {brandLogo ? (
                 <img src={brandLogo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <span className="material-symbols-rounded text-[var(--md-sys-color-on-primary-container)]" style={{ fontSize: 18 }}>store</span>
+                <span className="material-symbols-rounded text-[var(--md-sys-color-on-primary-container)]" style={{ fontSize: 20 }}>store</span>
               )}
             </div>
-            <span style={{
-              fontSize: 'var(--md-sys-typescale-title-medium-size)',
-              fontWeight: 500,
-              color: 'var(--md-sys-color-on-surface)',
-            }}>{brandName || 'X2 BABY'}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{
+                fontSize: 'var(--md-sys-typescale-title-large-size)',
+                fontWeight: 500,
+                color: 'var(--md-sys-color-on-surface)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}>{title}</div>
+              {subtitle && (
+                <div style={{
+                  fontSize: 'var(--md-sys-typescale-body-small-size)',
+                  color: 'var(--md-sys-color-on-surface-variant)',
+                }}>{subtitle}</div>
+              )}
+            </div>
+            <button
+              onClick={toggleDarkMode}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                border: 'none',
+                cursor: 'pointer',
+                flexShrink: 0,
+                backgroundColor: 'var(--md-sys-color-surface-container-highest)',
+                color: 'var(--md-sys-color-on-surface)',
+                transition: 'all 0.2s ease',
+              }}
+              title={darkMode ? 'الوضع النهاري' : 'الوضع الليلي'}
+            >
+              <span className="material-symbols-rounded" style={{ fontSize: 22 }}>
+                {darkMode ? 'light_mode' : 'dark_mode'}
+              </span>
+            </button>
           </header>
         )}
         <main style={{

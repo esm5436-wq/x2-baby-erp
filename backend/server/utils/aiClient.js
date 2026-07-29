@@ -66,12 +66,8 @@ function buildSystemInstruction() {
 **10. سجل النشاطات (Activity Logs) — جدول activity_logs**
 - الحقول: id, action, entity_type, entity_id, description, metadata JSON, created_at
 
-**11. Easy Orders — جدولين: easyorders_staging + easyorders_product_map + easyorders_sync_log**
-- طلبات المراجعة pending → confirm → تصبح Orders رسمية
-- خرائط المنتجات لربط ERP مع Easy Orders
-
-**12. الإعدادات (Settings) — جدول settings key-value**
-- ai_api_keys, brandLogo, brandName, brandSlogan, categories, isManualMode, taxEnabled, taxRate, invoiceSettings, easyorders_config وغيرها
+**11. الإعدادات (Settings) — جدول settings key-value**
+- ai_api_keys, brandLogo, brandName, brandSlogan, categories, isManualMode, taxEnabled, taxRate, invoiceSettings وغيرها
 
 ### استراتيجية التسعير الذكي (X2 Smart Pricing):
 - تقريب الأسعار لتنتهي بـ 9 أو 49 (مثلاً 149 بدلاً من 150)
@@ -520,29 +516,6 @@ function buildTools() {
           type: "object",
           properties: { name: { type: "string", description: "اسم نقطة الاستعادة" } },
           required: ["name"]
-        }
-      },
-      // ========== Easy Orders ==========
-      {
-        name: "easy_orders_get_staging",
-        description: "عرض طلبات Easy Orders قيد المراجعة"
-      },
-      {
-        name: "easy_orders_confirm_staging",
-        description: "تأكيد طلب Easy Orders وتحويله لطلب رسمي في النظام",
-        parameters: {
-          type: "object",
-          properties: { stagingId: { type: "string" } },
-          required: ["stagingId"]
-        }
-      },
-      {
-        name: "easy_orders_reject_staging",
-        description: "رفض طلب Easy Orders قيد المراجعة",
-        parameters: {
-          type: "object",
-          properties: { stagingId: { type: "string" } },
-          required: ["stagingId"]
         }
       },
       // ========== سجل النشاطات والإعدادات ==========
@@ -1099,35 +1072,6 @@ const toolHandlers = {
     await logActivity('create', 'settings', `checkpoint-${result.id}`,
       `[AI] تم إنشاء نقطة استعادة "${args.name}"`);
     return { success: true, message: `تم إنشاء نقطة استعادة "${args.name}"`, id: result.id };
-  },
-
-  // ====== Easy Orders ======
-
-  async easy_orders_get_staging() {
-    const rows = await allDb("SELECT id, easy_order_id, status, source_order_status, created_at FROM easyorders_staging ORDER BY created_at DESC");
-    return rows;
-  },
-
-  async easy_orders_confirm_staging(args, refreshState) {
-    try {
-      const { confirmStagingOrder } = await import('../db.js');
-      const orderData = await confirmStagingOrder(args.stagingId);
-      refreshState.current = true;
-      return { success: true, message: `تم تأكيد الطلب للعميل ${orderData.customerName}`, orderId: orderData.id };
-    } catch (e) {
-      return { error: e.message };
-    }
-  },
-
-  async easy_orders_reject_staging(args, refreshState) {
-    try {
-      const { rejectStagingOrder } = await import('../db.js');
-      await rejectStagingOrder(args.stagingId);
-      refreshState.current = true;
-      return { success: true, message: "تم رفض الطلب وإعادة المخزون" };
-    } catch (e) {
-      return { error: e.message };
-    }
   },
 
   // ====== System ======

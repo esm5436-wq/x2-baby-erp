@@ -16,7 +16,6 @@ const Settings = React.lazy(() => import('./components/Settings'));
 const Contacts = React.lazy(() => import('./components/Contacts'));
 const Customers = React.lazy(() => import('./components/Customers'));
 const ActivityLogs = React.lazy(() => import('./components/ActivityLogs'));
-const EasyOrdersPanel = React.lazy(() => import('./components/EasyOrdersPanel'));
 import { UndoRedoProvider, useUndoRedo } from './contexts/UndoRedoContext';
 import { useAuth } from './contexts/AuthContext';
 import { useTheme } from './contexts/ThemeContext';
@@ -84,7 +83,6 @@ const MainLayout: React.FC<{
     if (path === '/contacts') return 'جهات الاتصال';
     if (path === '/customers') return 'العملاء';
     if (path === '/activity-logs') return 'سجل النشاطات';
-    if (path === '/easy-orders') return 'Easy Orders';
     if (path === '/settings') return 'إدارة البيانات';
     return 'X2 ERP';
   })();
@@ -264,10 +262,6 @@ const MainLayout: React.FC<{
         <Route 
           path="/settings" 
           element={<Settings state={state} onImport={handleImportState} onUpdateState={(update) => setState(prev => ({ ...prev, ...update }))} />} 
-        />
-        <Route 
-          path="/easy-orders" 
-          element={<EasyOrdersPanel state={state} onUpdateState={(update) => setState(prev => ({ ...prev, ...update }))} />} 
         />
       </Routes>
     </AnimatePresence>

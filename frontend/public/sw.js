@@ -1,11 +1,10 @@
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = `x2-erp-${CACHE_VERSION}`;
 
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
-  '/manifest.json',
-  '/icon.svg'
+  '/icon-brand.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -30,6 +29,11 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
+
+  if (url.pathname === '/manifest.json') {
+    event.respondWith(fetch(event.request));
+    return;
+  }
 
   if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/state')) {
     event.respondWith(

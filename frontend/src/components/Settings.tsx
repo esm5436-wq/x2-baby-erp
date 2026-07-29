@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Download, Upload, Database, AlertCircle, AlertTriangle, Check, Clock, Palette, Image as ImageIcon, Trash2, Save, Tag, Plus, ChevronDown, ChevronRight, Edit2, Sparkles, Key, ArrowUp, ArrowDown, Eye, EyeOff, X, Printer, Percent, RotateCcw, History, Layers, RefreshCw } from 'lucide-react';
 import { AppState, Category } from '../types';
 import { compressImage } from '../lib/imageUtils';
+import { updateFavicon } from '../lib/faviconUtils';
 import { useTheme } from '../contexts/ThemeContext';
 import { MD3Button, MD3IconButton, MD3Dialog, useSnackbar, MD3Snackbar } from './md3';
 
@@ -80,27 +81,58 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
   // Category Management State
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [categoryForm, setCategoryForm] = useState<{name: string, parentId: string | null}>({ name: '', parentId: null });
+  const [categoryForm, setCategoryForm] = useState<{name: string, parentId: string | null, slug: string, thumb: string, show_in_header: boolean, position: number, hidden: boolean}>({ name: '', parentId: null, slug: '', thumb: '', show_in_header: false, position: 0, hidden: false });
+  const [categoryImgUploading, setCategoryImgUploading] = useState(false);
+  const categoryThumbInputRef = useRef<HTMLInputElement>(null);
+
+  const generateSlug = (name: string) => {
+    return name.replace(/\s+/g, '-').toLowerCase().replace(/[^a-z0-9\u0600-\u06ff-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  };
+
+  const handleCategoryThumbUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { showNotification('يجب اختيار ملف صورة', 'error'); return; }
+    setCategoryImgUploading(true);
+    try {
+      const reader = new FileReader();
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      setCategoryForm(prev => ({ ...prev, thumb: dataUrl }));
+      showNotification('تم رفع الصورة بنجاح', 'success');
+    } catch { showNotification('خطأ في رفع الصورة', 'error'); }
+    setCategoryImgUploading(false);
+    if (categoryThumbInputRef.current) categoryThumbInputRef.current.value = '';
+  };
 
   const handleSaveCategory = async () => {
     if (!categoryForm.name.trim()) return;
     
     try {
+      const payload = { ...categoryForm, slug: categoryForm.slug || generateSlug(categoryForm.name) };
       if (editingCategory) {
         await fetch(`${API_BASE}/categories/${editingCategory.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(categoryForm)
+          body: JSON.stringify(payload)
         });
         onUpdateState({
-          categories: state.categories.map(c => c.id === editingCategory.id ? { ...c, ...categoryForm } : c)
+          categories: state.categories.map(c => c.id === editingCategory.id ? { ...c, ...payload } : c)
         });
         showNotification('تم تحديث التصنيف بنجاح', 'success');
       } else {
         const newCat: Category = {
           id: `cat-${Date.now()}`,
           name: categoryForm.name,
-          parentId: categoryForm.parentId
+          parentId: categoryForm.parentId,
+          slug: payload.slug,
+          thumb: payload.thumb,
+          show_in_header: payload.show_in_header,
+          position: payload.position,
+          hidden: payload.hidden
         };
         await fetch(`${API_BASE}/categories`, {
           method: 'POST',
@@ -112,7 +144,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
       }
       setIsCategoryModalOpen(false);
       setEditingCategory(null);
-      setCategoryForm({ name: '', parentId: null });
+      setCategoryForm({ name: '', parentId: null, slug: '', thumb: '', show_in_header: false, position: 0, hidden: false });
     } catch (err) {
       showNotification('خطأ في حفظ التصنيف', 'error');
     }
@@ -140,9 +172,9 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
         categories: state.categories.filter(c => !affectedIds.has(c.id)),
         products: state.products.map(p => {
           if (p.category && (deletedCatNames.has(p.category) || Array.from(deletedCatNames).some(name => p.category.includes(` > ${name}`) || p.category.startsWith(`${name} > `)))) {
-            return { ...p, category: '' };
+            return { ...p, category: '', categories: (p.categories || []).filter(c => !deletedCatNames.has(c)) };
           }
-          return p;
+          return { ...p, categories: (p.categories || []).filter(c => !deletedCatNames.has(c)) };
         })
       });
       showNotification('تم حذف التصنيف بنجاح', 'success');
@@ -294,6 +326,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
         body: JSON.stringify({ key: 'brandLogo', value: base64 })
       });
       onUpdateState({ brandLogo: base64 });
+      updateFavicon(base64);
       showNotification('تم تحديث شعار البراند بنجاح', 'success');
     } catch (err) {
       showNotification('خطأ في حفظ الشعار', 'error');
@@ -571,7 +604,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                         body: JSON.stringify({ key: 'brandSloganDesign', value: '' })
                       });
                     }}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -top-2 -right-2 bg-red-500 text-white min-w-[40px] min-h-[40px] flex items-center justify-center p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <Trash2 size={12} />
                   </button>
@@ -603,7 +636,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                       });
                       if (!res.ok) throw new Error();
                     }}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -top-2 -right-2 bg-red-500 text-white min-w-[40px] min-h-[40px] flex items-center justify-center p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <Trash2 size={12} />
                   </button>
@@ -635,7 +668,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           <MD3Button 
             variant="filled"
             icon={<Plus size={18} />}
-            onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: null }); setIsCategoryModalOpen(true); }}
+            onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: null, slug: '', thumb: '', show_in_header: false, position: 0, hidden: false }); setIsCategoryModalOpen(true); }}
           >
             إضافة تصنيف جديد
           </MD3Button>
@@ -651,10 +684,13 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                   </div>
                   <span className="font-black text-[var(--md-sys-color-on-surface)]">{mainCat.name}</span>
                   <span className="text-[10px] bg-accent/10 text-accent px-2 py-0.5 rounded-full font-bold">قسم أساسي</span>
+                  {mainCat.show_in_header && <span className="text-[9px] bg-green-500/10 text-green-600 px-1.5 py-0.5 rounded-full font-bold">الهيدر</span>}
+                  {mainCat.hidden && <span className="text-[9px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded-full font-bold">مخفي</span>}
+                  {mainCat.position > 0 && <span className="text-[9px] bg-blue-500/10 text-blue-500 px-1.5 py-0.5 rounded-full font-bold">#{mainCat.position}</span>}
                 </div>
                 <div className="flex items-center gap-2">
                   <button 
-                    onClick={() => { setEditingCategory(mainCat); setCategoryForm({ name: mainCat.name, parentId: mainCat.parentId || null }); setIsCategoryModalOpen(true); }}
+                    onClick={() => { setEditingCategory(mainCat); setCategoryForm({ name: mainCat.name, parentId: mainCat.parentId || null, slug: mainCat.slug || '', thumb: mainCat.thumb || '', show_in_header: mainCat.show_in_header || false, position: mainCat.position || 0, hidden: mainCat.hidden || false }); setIsCategoryModalOpen(true); }}
                     className="p-2 text-[var(--md-sys-color-on-surface-variant)] hover:text-accent hover:bg-[var(--md-sys-color-surface-container)] rounded-lg transition-colors duration-200"
                   >
                     <Edit2 size={16} />
@@ -678,7 +714,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                     </div>
                     <div className="flex items-center gap-1">
                       <button 
-                        onClick={() => { setEditingCategory(subCat); setCategoryForm({ name: subCat.name, parentId: subCat.parentId || null }); setIsCategoryModalOpen(true); }}
+                        onClick={() => { setEditingCategory(subCat); setCategoryForm({ name: subCat.name, parentId: subCat.parentId || null, slug: subCat.slug || '', thumb: subCat.thumb || '', show_in_header: subCat.show_in_header || false, position: subCat.position || 0, hidden: subCat.hidden || false }); setIsCategoryModalOpen(true); }}
                         className="p-1.5 text-[var(--md-sys-color-on-surface-variant)] hover:text-accent rounded-md transition-colors duration-200"
                       >
                         <Edit2 size={14} />
@@ -694,7 +730,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                 ))}
                 {(subCategoriesByParent.get(mainCat.id) || []).length === 0 && (
                   <button 
-                    onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: mainCat.id }); setIsCategoryModalOpen(true); }}
+                    onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: mainCat.id, slug: '', thumb: '', show_in_header: false, position: 0, hidden: false }); setIsCategoryModalOpen(true); }}
                     className="w-full text-right p-3 pr-12 text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] hover:text-accent transition-colors duration-200 italic"
                   >
                     + إضافة قسم فرعي لـ "{mainCat.name}"
@@ -702,7 +738,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                 )}
                 {(subCategoriesByParent.get(mainCat.id) || []).length > 0 && (
                   <button 
-                    onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: mainCat.id }); setIsCategoryModalOpen(true); }}
+                    onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: mainCat.id, slug: '', thumb: '', show_in_header: false, position: 0, hidden: false }); setIsCategoryModalOpen(true); }}
                     className="w-full text-right p-2 pr-12 text-[9px] font-black text-accent/50 hover:text-accent transition-colors duration-200"
                   >
                     + إضافة قسم فرعي
@@ -732,15 +768,29 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           { label: 'حفظ', onClick: handleSaveCategory, variant: 'filled' }
         ]}
       >
-        <div className="space-y-6">
+        <div className="space-y-5">
           <div className="space-y-2">
             <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">اسم التصنيف</label>
             <input 
               type="text" 
               value={categoryForm.name}
-              onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
+              onChange={(e) => {
+                const name = e.target.value;
+                setCategoryForm(prev => ({ ...prev, name, slug: prev.slug || generateSlug(name) }));
+              }}
               placeholder="مثال: سالوبيتات مواليد، أطقم خروج..." 
               className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl font-bold outline-none focus:border-[var(--md-sys-color-primary)]"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">الرابط (Slug)</label>
+            <input 
+              type="text" 
+              value={categoryForm.slug}
+              onChange={(e) => setCategoryForm({ ...categoryForm, slug: e.target.value })}
+              placeholder="auto-generated-from-name" 
+              className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl font-bold text-ltr text-sm outline-none focus:border-[var(--md-sys-color-primary)]"
             />
           </div>
 
@@ -757,14 +807,69 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
               ))}
             </select>
           </div>
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">صورة القسم</label>
+            <input ref={categoryThumbInputRef} type="file" accept="image/*" className="hidden" onChange={handleCategoryThumbUpload} />
+            <div className="flex items-center gap-3">
+              {categoryForm.thumb && (
+                <div className="relative group">
+                  <img src={categoryForm.thumb} alt="preview" className="w-16 h-16 object-cover rounded-xl border border-[var(--md-sys-color-outline-variant)]/20" onError={(e) => (e.currentTarget.style.display='none')} />
+                  <button onClick={() => setCategoryForm(prev => ({ ...prev, thumb: '' }))} className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-[var(--md-sys-color-error)] text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"><X size={10} /></button>
+                </div>
+              )}
+              <button
+                type="button"
+                disabled={categoryImgUploading}
+                onClick={() => categoryThumbInputRef.current?.click()}
+                className="flex-1 p-4 bg-[var(--md-sys-color-surface-container)] border border-dashed border-[var(--md-sys-color-outline-variant)]/40 rounded-2xl font-bold text-sm text-[var(--md-sys-color-on-surface-variant)] hover:border-[var(--md-sys-color-primary)] transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {categoryImgUploading ? (
+                  <span className="flex items-center justify-center gap-2"><RefreshCw size={14} className="animate-spin" /> جاري الرفع...</span>
+                ) : categoryForm.thumb ? 'تغيير الصورة' : 'اختر صورة من الجهاز'}
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">الأولوية في الظهور (Position)</label>
+            <input 
+              type="number" 
+              value={categoryForm.position}
+              onChange={(e) => setCategoryForm({ ...categoryForm, position: parseInt(e.target.value) || 0 })}
+              min={0}
+              className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl font-bold outline-none focus:border-[var(--md-sys-color-primary)]"
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl">
+            <div>
+              <p className="font-bold text-sm">إظهار في الهيدر</p>
+              <p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)]">يظهر القسم في القائمة الرئيسية للمتجر</p>
+            </div>
+            <button onClick={() => setCategoryForm({ ...categoryForm, show_in_header: !categoryForm.show_in_header })} className={`w-14 h-7 rounded-full relative transition-colors duration-200 shrink-0 ${categoryForm.show_in_header ? 'bg-[var(--md-sys-color-primary)]' : 'bg-[var(--md-sys-color-surface-container-highest)]'}`}><div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${categoryForm.show_in_header ? 'left-8' : 'left-1'}`} /></button>
+          </div>
+
+          <div className="flex items-center justify-between p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl">
+            <div>
+              <p className="font-bold text-sm">إخفاء القسم</p>
+              <p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)]">لن يظهر القسم في واجهة المتجر</p>
+            </div>
+            <button onClick={() => setCategoryForm({ ...categoryForm, hidden: !categoryForm.hidden })} className={`w-14 h-7 rounded-full relative transition-colors duration-200 shrink-0 ${categoryForm.hidden ? 'bg-[var(--md-sys-color-error)]' : 'bg-[var(--md-sys-color-surface-container-highest)]'}`}><div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${categoryForm.hidden ? 'left-8' : 'left-1'}`} /></button>
+          </div>
         </div>
       </MD3Dialog>
 
       <div className="flex items-center gap-2 mb-2"><AlertTriangle className="text-orange-500" /><h2 className="text-2xl font-bold">الإعدادات المالية</h2></div>
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
-        <div className="flex items-center justify-between p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl mb-4">
-          <div><h4 className="font-black">تفعيل نظام الضريبة</h4><p className="text-xs text-[var(--md-sys-color-on-surface-variant)]">حساب الربح الصافي بعد الضريبة</p></div>
-          <button onClick={handleTaxToggle} className={`w-14 h-7 rounded-full relative transition-colors duration-200 ${state.taxEnabled ? 'bg-[var(--md-sys-color-primary)]' : 'bg-[var(--md-sys-color-surface-container-highest)]'}`}><div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${state.taxEnabled ? 'left-8' : 'left-1'}`} /></button>
+        <div className="p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl">
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h4 style={{ fontSize: 'var(--md-sys-typescale-title-medium-size)', fontWeight: 500, color: 'var(--md-sys-color-on-surface)' }}>تفعيل نظام الضريبة</h4>
+              <p style={{ fontSize: 'var(--md-sys-typescale-body-medium-size)', color: 'var(--md-sys-color-on-surface-variant)', marginTop: 4, overflowWrap: 'break-word', wordBreak: 'break-word' }}>حساب الربح الصافي بعد الضريبة</p>
+            </div>
+            <button onClick={handleTaxToggle} className={`w-14 h-7 rounded-full relative transition-colors duration-200 shrink-0 ${state.taxEnabled ? 'bg-[var(--md-sys-color-primary)]' : 'bg-[var(--md-sys-color-surface-container-highest)]'}`}><div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${state.taxEnabled ? 'left-8' : 'left-1'}`} /></button>
+          </div>
         </div>
         {state.taxEnabled && (
           <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 flex gap-2">
@@ -775,13 +880,13 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
       </motion.div>
 
       <div className="flex items-center gap-2 mb-2"><ImageIcon className="text-accent" /><h2 className="text-2xl font-bold">إعدادات العرض</h2></div>
-      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.12 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
-        <div className="flex items-center justify-between p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl mb-4">
-          <div>
-            <h4 className="font-black">مظهر التطبيق</h4>
-            <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mt-1">اختر بين التصميم الكلاسيكي أو Material Design 3 الحديث.</p>
-          </div>
-          <div className="flex gap-2 shrink-0">
+      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.12 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20 space-y-3">
+        
+        {/* مظهر التطبيق */}
+        <div className="p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl">
+          <h4 style={{ fontSize: 'var(--md-sys-typescale-title-medium-size)', fontWeight: 500, color: 'var(--md-sys-color-on-surface)' }}>مظهر التطبيق</h4>
+          <p style={{ fontSize: 'var(--md-sys-typescale-body-medium-size)', color: 'var(--md-sys-color-on-surface-variant)', marginTop: 4, overflowWrap: 'break-word', wordBreak: 'break-word' }}>اختر بين التصميم الكلاسيكي أو Material Design 3 الحديث.</p>
+          <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
             <button
               onClick={() => setTheme('classic')}
               className={`px-4 py-2 rounded-xl font-bold text-sm transition-colors duration-200 ${uiTheme === 'classic' ? 'bg-accent text-white shadow-md' : 'bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface-variant)] hover:opacity-80'}`}
@@ -797,13 +902,12 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           </div>
         </div>
 
+        {/* ألوان الثيم */}
         {uiTheme === 'material3' && (
-          <div className="flex items-center justify-between p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl mt-3">
-            <div>
-              <h4 className="font-black">ألوان الثيم</h4>
-              <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mt-1">خصص اللون الأساسي والثانوي لتصميم Material 3.</p>
-            </div>
-            <div className="flex items-center gap-3 shrink-0">
+          <div className="p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl">
+            <h4 style={{ fontSize: 'var(--md-sys-typescale-title-medium-size)', fontWeight: 500, color: 'var(--md-sys-color-on-surface)' }}>ألوان الثيم</h4>
+            <p style={{ fontSize: 'var(--md-sys-typescale-body-medium-size)', color: 'var(--md-sys-color-on-surface-variant)', marginTop: 4, overflowWrap: 'break-word', wordBreak: 'break-word' }}>خصص اللون الأساسي والثانوي لتصميم Material 3.</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12, flexWrap: 'wrap' }}>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">أساسي</span>
                 <div className="relative">
@@ -839,33 +943,38 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           </div>
         )}
 
-        <div className="flex items-center justify-between p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl mt-3">
-          <div>
-            <h4 className="font-black">إظهار الصور كاملة بدون قص</h4>
-            <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mt-1">عند التفعيل، تُعرض الصورة كاملة داخل بطاقة المنتج مع خلفية البطاقة حولها بدلاً من قصها لتناسب الإطار (object-fit: contain بدلاً من cover). مفيد عندما تريد رؤية المنتج كاملاً دون فقدان أجزاء من الصورة.</p>
+        {/* إظهار الصور كاملة */}
+        <div className="p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl">
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h4 style={{ fontSize: 'var(--md-sys-typescale-title-medium-size)', fontWeight: 500, color: 'var(--md-sys-color-on-surface)' }}>إظهار الصور كاملة بدون قص</h4>
+              <p style={{ fontSize: 'var(--md-sys-typescale-body-medium-size)', color: 'var(--md-sys-color-on-surface-variant)', marginTop: 4, overflowWrap: 'break-word', wordBreak: 'break-word' }}>عند التفعيل، تُعرض الصورة كاملة داخل بطاقة المنتج مع خلفية البطاقة حولها بدلاً من قصها لتناسب الإطار (object-fit: contain بدلاً من cover).</p>
+            </div>
+            <button
+              onClick={() => { const next = !imageFitContain; setImageFitContain(next); localStorage.setItem('erp_image_fit', String(next)); }}
+              className={`w-14 h-7 rounded-full relative transition-colors duration-200 shrink-0 ${imageFitContain ? 'bg-accent' : 'bg-[var(--md-sys-color-surface-container-highest)]'}`}
+            >
+              <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${imageFitContain ? 'left-8' : 'left-1'}`} />
+            </button>
           </div>
-          <button
-            onClick={() => { const next = !imageFitContain; setImageFitContain(next); localStorage.setItem('erp_image_fit', String(next)); }}
-            className={`w-14 h-7 rounded-full relative transition-colors duration-200 shrink-0 ${imageFitContain ? 'bg-accent' : 'bg-[var(--md-sys-color-surface-container-highest)]'}`}
-          >
-            <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${imageFitContain ? 'left-8' : 'left-1'}`} />
-          </button>
         </div>
       </motion.div>
 
       <div className="flex items-center gap-2 mb-2"><Clock className="text-accent" /><h2 className="text-2xl font-bold">نقاط الاستعادة</h2></div>
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.13 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h3 className="text-xl font-black">نقاط الاستعادة (Checkpoints)</h3>
-            <p className="text-[var(--md-sys-color-on-surface-variant)] text-xs mt-1">التقط لقطة سريعة للبيانات الحالية لاستعادتها لاحقاً عند الحاجة.</p>
+        <div className="p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl mb-4">
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h4 style={{ fontSize: 'var(--md-sys-typescale-title-medium-size)', fontWeight: 500, color: 'var(--md-sys-color-on-surface)' }}>نقاط الاستعادة (Checkpoints)</h4>
+              <p style={{ fontSize: 'var(--md-sys-typescale-body-medium-size)', color: 'var(--md-sys-color-on-surface-variant)', marginTop: 4, overflowWrap: 'break-word', wordBreak: 'break-word' }}>التقط لقطة سريعة للبيانات الحالية لاستعادتها لاحقاً عند الحاجة.</p>
+            </div>
+            <button
+              onClick={() => { setCheckpointName(''); setShowCheckpointModal(true); }}
+              className="flex items-center gap-2 px-5 py-3 bg-accent text-white font-black rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-transform duration-200 shrink-0"
+            >
+              <History size={18} /> إنشاء نقطة استعادة
+            </button>
           </div>
-          <button
-            onClick={() => { setCheckpointName(''); setShowCheckpointModal(true); }}
-            className="flex items-center gap-2 px-5 py-3 bg-accent text-white font-black rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-transform duration-200"
-          >
-            <History size={18} /> إنشاء نقطة استعادة
-          </button>
         </div>
 
         {checkpoints.length === 0 ? (
@@ -1181,7 +1290,7 @@ className="w-full px-4 py-2 bg-[var(--md-sys-color-surface)] border border-accen
                       <button
                         onClick={() => handleReorderAiKey(index, 'up')}
                         disabled={index === 0}
-                        className="p-1.5 text-accent dark:text-accent-light hover:text-accent-dark disabled:opacity-20 disabled:cursor-not-allowed rounded-lg hover:bg-accent/10 dark:hover:bg-accent/20 transition-colors duration-200"
+                        className="min-w-[40px] min-h-[40px] flex items-center justify-center p-1.5 text-accent dark:text-accent-light hover:text-accent-dark disabled:opacity-20 disabled:cursor-not-allowed rounded-lg hover:bg-accent/10 dark:hover:bg-accent/20 transition-colors duration-200"
                         title="تحريك لأعلى"
                       >
                         <ArrowUp size={18} strokeWidth={3} />
@@ -1189,21 +1298,21 @@ className="w-full px-4 py-2 bg-[var(--md-sys-color-surface)] border border-accen
                       <button
                         onClick={() => handleReorderAiKey(index, 'down')}
                         disabled={index === aiKeys.length - 1}
-                        className="p-1.5 text-accent dark:text-accent-light hover:text-accent-dark disabled:opacity-20 disabled:cursor-not-allowed rounded-lg hover:bg-accent/10 dark:hover:bg-accent/20 transition-colors duration-200"
+                        className="min-w-[40px] min-h-[40px] flex items-center justify-center p-1.5 text-accent dark:text-accent-light hover:text-accent-dark disabled:opacity-20 disabled:cursor-not-allowed rounded-lg hover:bg-accent/10 dark:hover:bg-accent/20 transition-colors duration-200"
                         title="تحريك لأسفل"
                       >
                         <ArrowDown size={18} strokeWidth={3} />
                       </button>
                       <button
                         onClick={() => { setEditingAiKeyIndex(index); setAiKeyInput(key); }}
-                        className="p-1.5 text-[var(--md-sys-color-on-surface-variant)] hover:text-blue-500 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200"
+                        className="min-w-[40px] min-h-[40px] flex items-center justify-center p-1.5 text-[var(--md-sys-color-on-surface-variant)] hover:text-blue-500 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200"
                         title="تعديل"
                       >
                         <Edit2 size={16} />
                       </button>
                       <button
                         onClick={() => handleDeleteAiKey(index)}
-                        className="p-1.5 text-[var(--md-sys-color-on-surface-variant)] hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
+                        className="min-w-[40px] min-h-[40px] flex items-center justify-center p-1.5 text-[var(--md-sys-color-on-surface-variant)] hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
                         title="حذف"
                       >
                         <Trash2 size={16} />

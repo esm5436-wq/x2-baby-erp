@@ -4,6 +4,7 @@ import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom';
 import { useUnsavedCheck } from '../hooks/useUnsavedCheck';
 import { formatDate } from '../lib/formatDate';
+import CollapsibleSection from './CollapsibleSection';
 import { 
   ShoppingBag, 
   Plus, 
@@ -1819,8 +1820,8 @@ const Orders: React.FC<OrdersProps> = ({
       className="space-y-6"
     >
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-3">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -1843,7 +1844,7 @@ const Orders: React.FC<OrdersProps> = ({
           </motion.div>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2 justify-end">
             <motion.button 
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -1881,7 +1882,7 @@ const Orders: React.FC<OrdersProps> = ({
                 disabled={isLoading} 
                 className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 text-gray-500 dark:text-gray-400 px-4 py-2.5 rounded-2xl flex items-center gap-2 font-black text-[11px] shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 disabled:opacity-50"
             >
-                <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''}/> استيراد طلبات
+                <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''}/> <span className="hidden sm:inline">استيراد طلبات</span>
             </motion.button>
             <motion.button 
                 whileHover={{ scale: 1.02 }}
@@ -1900,94 +1901,98 @@ const Orders: React.FC<OrdersProps> = ({
       </div>
 
       {isShippingFilter ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          <MD3StatCard
-            icon={<Truck size={20} />}
-            label="إجمالي الشحنات"
-            value={dispatchStats.count.toString()}
-            unit="طلب"
-            iconBg="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
-            tooltip="إجمالي عدد الطلبات التي دخلت مرحلة التجهيز أو الشحن."
-          />
-          <MD3StatCard
-            icon={<PackageCheck size={20} />}
-            label="قيمة التحصيل"
-            value={formatCurrency(dispatchStats.totalCollected)}
-            subtitle={`شحن: محلي (${formatCurrency(dispatchStats.localShipping)}) | خارجي (${formatCurrency(dispatchStats.externalShipping)})`}
-            iconBg="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600"
-            tooltip="إجمالي الأموال التي يجب تحصيلها من العملاء."
-          />
-          <MD3StatCard
-            icon={<MapPin size={20} />}
-            label="تغطية المحافظات"
-            value={dispatchStats.distinctCities.toString()}
-            unit="مدينة"
-            iconBg="bg-orange-100 dark:bg-orange-900/30 text-orange-600"
-            tooltip="عدد المدن المختلفة التي يتم الشحن إليها."
-          />
-          <MD3StatCard
-            icon={<Clock size={20} />}
-            label="متوسط الشحنة"
-            value={formatCurrency(dispatchStats.avgValue)}
-            iconBg="bg-blue-100 dark:bg-blue-900/30 text-blue-600"
-            tooltip="متوسط قيمة المبلغ المطلوب لكل شحنة."
-          />
-          <MD3StatCard
-            icon={<Package size={20} />}
-            label="قطع قيد الشحن"
-            value={dispatchStats.totalItems.toString()}
-            unit="قطعة"
-            iconBg="bg-purple-100 dark:bg-purple-900/30 text-purple-600"
-            tooltip="إجمالي عدد المنتجات داخل الشحنات الحالية."
-          />
-        </div>
+        <CollapsibleSection title="إحصائيات الشحن" icon={<Truck size={18} />} mobileOnly defaultOpen={false}>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <MD3StatCard
+              icon={<Truck size={20} />}
+              label="إجمالي الشحنات"
+              value={dispatchStats.count.toString()}
+              unit="طلب"
+              iconBg="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
+              tooltip="إجمالي عدد الطلبات التي دخلت مرحلة التجهيز أو الشحن."
+            />
+            <MD3StatCard
+              icon={<PackageCheck size={20} />}
+              label="قيمة التحصيل"
+              value={formatCurrency(dispatchStats.totalCollected)}
+              subtitle={`شحن: محلي (${formatCurrency(dispatchStats.localShipping)}) | خارجي (${formatCurrency(dispatchStats.externalShipping)})`}
+              iconBg="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600"
+              tooltip="إجمالي الأموال التي يجب تحصيلها من العملاء."
+            />
+            <MD3StatCard
+              icon={<MapPin size={20} />}
+              label="تغطية المحافظات"
+              value={dispatchStats.distinctCities.toString()}
+              unit="مدينة"
+              iconBg="bg-orange-100 dark:bg-orange-900/30 text-orange-600"
+              tooltip="عدد المدن المختلفة التي يتم الشحن إليها."
+            />
+            <MD3StatCard
+              icon={<Clock size={20} />}
+              label="متوسط الشحنة"
+              value={formatCurrency(dispatchStats.avgValue)}
+              iconBg="bg-blue-100 dark:bg-blue-900/30 text-blue-600"
+              tooltip="متوسط قيمة المبلغ المطلوب لكل شحنة."
+            />
+            <MD3StatCard
+              icon={<Package size={20} />}
+              label="قطع قيد الشحن"
+              value={dispatchStats.totalItems.toString()}
+              unit="قطعة"
+              iconBg="bg-purple-100 dark:bg-purple-900/30 text-purple-600"
+              tooltip="إجمالي عدد المنتجات داخل الشحنات الحالية."
+            />
+          </div>
+        </CollapsibleSection>
       ) : (
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <MD3StatCard 
-          icon={<ShoppingBag size={20} />} 
-          label="إجمالي الطلبات" 
-          value={orderStats.total.toString()} 
-          unit="طلب" 
-          subtitle={`شحن داخلي: ${orderStats.localOrderCount} | شحن خارجي: ${orderStats.externalOrderCount}`}
-          iconBg="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
-          tooltip="العدد الكلي للطلبات المسجلة في النظام لأي حالة. يساعدك في تتبع حجم العمل الإجمالي."
-        />
+        <CollapsibleSection title="إحصائيات الطلبات" icon={<ShoppingBag size={18} />} mobileOnly defaultOpen={false}>
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            <MD3StatCard 
+              icon={<ShoppingBag size={20} />} 
+              label="إجمالي الطلبات" 
+              value={orderStats.total.toString()} 
+              unit="طلب" 
+              subtitle={`شحن داخلي: ${orderStats.localOrderCount} | شحن خارجي: ${orderStats.externalOrderCount}`}
+              iconBg="bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]"
+              tooltip="العدد الكلي للطلبات المسجلة في النظام لأي حالة. يساعدك في تتبع حجم العمل الإجمالي."
+            />
 
-        <MD3StatCard 
-          icon={<TrendingUp size={20} />} 
-          label="إجمالي المبيعات" 
-          value={formatCurrency(orderStats.revenue)} 
-          subtitle={`شحن: محلي (${formatCurrency(orderStats.localShipping)}) | خارجي (${formatCurrency(orderStats.externalShipping)}) | الإجمالي: ${formatCurrency(orderStats.shipping)}`}
-          iconBg="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600" 
-          tooltip="هذا الرقم يمثل القيمة الكلية لكل المبيعات المسجلة. يتم حسابه عن طريق جمع (سعر المنتجات في كل طلب + تكلفة الشحن المحددة). هو المؤشر الأساسي لحجم التدفق المالي الداخل (Gross Revenue) قبل خصم أي تكاليف."
-        />
+            <MD3StatCard 
+              icon={<TrendingUp size={20} />} 
+              label="إجمالي المبيعات" 
+              value={formatCurrency(orderStats.revenue)} 
+              subtitle={`شحن: محلي (${formatCurrency(orderStats.localShipping)}) | خارجي (${formatCurrency(orderStats.externalShipping)}) | الإجمالي: ${formatCurrency(orderStats.shipping)}`}
+              iconBg="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600" 
+              tooltip="هذا الرقم يمثل القيمة الكلية لكل المبيعات المسجلة. يتم حسابه عن طريق جمع (سعر المنتجات في كل طلب + تكلفة الشحن المحددة). هو المؤشر الأساسي لحجم التدفق المالي الداخل (Gross Revenue) قبل خصم أي تكاليف."
+            />
 
-        <MD3StatCard 
-          icon={<Calculator size={20} />} 
-          label="الأرباح التقديرية" 
-          value={formatCurrency(orderStats.profit)} 
-          iconBg="bg-blue-100 dark:bg-blue-900/30 text-blue-600" 
-          tooltip="يمثل صافي الربح المتوقع من هذه الطلبات. يتم احتسابه بدقة من خلال المعادلة: (إجمالي مدفوعات العملاء - (تكلفة المنتجات الأصلية + مصاريف الشحن)). هذا المؤشر يساعدك في معرفة الجدوى الاقتصادية الحقيقية لعملياتك بعد استبعاد التكاليف المباشرة."
-        />
+            <MD3StatCard 
+              icon={<Calculator size={20} />} 
+              label="الأرباح التقديرية" 
+              value={formatCurrency(orderStats.profit)} 
+              iconBg="bg-blue-100 dark:bg-blue-900/30 text-blue-600" 
+              tooltip="يمثل صافي الربح المتوقع من هذه الطلبات. يتم احتسابه بدقة من خلال المعادلة: (إجمالي مدفوعات العملاء - (تكلفة المنتجات الأصلية + مصاريف الشحن)). هذا المؤشر يساعدك في معرفة الجدوى الاقتصادية الحقيقية لعملياتك بعد استبعاد التكاليف المباشرة."
+            />
 
-        <MD3StatCard 
-          icon={<CheckCircle size={20} />} 
-          label="طلبات مكتملة" 
-          value={orderStats.completed.toString()} 
-          unit="طلب" 
-          iconBg="bg-purple-100 dark:bg-purple-900/30 text-purple-600" 
-          tooltip="هي الطلبات التي تمت دورتها بنجاح ووصلت لحالة 'تم التوصيل'. هذا الرقم يعكس نجاح المبيعات المحققة فعلياً والتي تم تحصيل ثمنها، وهو المعيار الحقيقي لنجاح العمل."
-        />
+            <MD3StatCard 
+              icon={<CheckCircle size={20} />} 
+              label="طلبات مكتملة" 
+              value={orderStats.completed.toString()} 
+              unit="طلب" 
+              iconBg="bg-purple-100 dark:bg-purple-900/30 text-purple-600" 
+              tooltip="هي الطلبات التي تمت دورتها بنجاح ووصلت لحالة 'تم التوصيل'. هذا الرقم يعكس نجاح المبيعات المحققة فعلياً والتي تم تحصيل ثمنها، وهو المعيار الحقيقي لنجاح العمل."
+            />
 
-        <MD3StatCard 
-          icon={<Clock size={20} />} 
-          label="طلبات انتظار" 
-          value={orderStats.pending.toString()} 
-          unit="طلب" 
-          iconBg="bg-orange-100 dark:bg-orange-900/30 text-orange-600" 
-          tooltip="تشمل جميع الطلبات التي تم إنشاؤها ولكنها لم تصل بعد لحالة 'تم التوصيل' أو 'ملغى'. هي مؤشر على حجم العمل المتراكم حالياً والذي يتطلب جهداً في المتابعة أو التجهيز أو الشحن."
-        />
-      </div>
+            <MD3StatCard 
+              icon={<Clock size={20} />} 
+              label="طلبات انتظار" 
+              value={orderStats.pending.toString()} 
+              unit="طلب" 
+              iconBg="bg-orange-100 dark:bg-orange-900/30 text-orange-600" 
+              tooltip="تشمل جميع الطلبات التي تم إنشاؤها ولكنها لم تصل بعد لحالة 'تم التوصيل' أو 'ملغى'. هي مؤشر على حجم العمل المتراكم حالياً والذي يتطلب جهداً في المتابعة أو التجهيز أو الشحن."
+            />
+          </div>
+        </CollapsibleSection>
       )}
 
       <input type="file" accept=".json" className="hidden" ref={importJsonInputRef} onChange={handleImportFileChange} />
@@ -2676,15 +2681,15 @@ const Orders: React.FC<OrdersProps> = ({
                             <td className="p-3 text-left flex items-center gap-1 justify-end">
                               {editingItemIndex === idx ? (
                                 <>
-                                  <button type="button" onClick={saveInlineEdit} className="text-green-500 hover:text-green-700 p-1.5 transition-colors hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg" title="حفظ"><Check size={14} /></button>
-                                  <button type="button" onClick={cancelInlineEdit} className="text-gray-400 hover:text-gray-600 p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg" title="إلغاء"><X size={14} /></button>
+                                  <button type="button" onClick={saveInlineEdit} className="text-green-500 hover:text-green-700 p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center transition-colors hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg" title="حفظ"><Check size={14} /></button>
+                                  <button type="button" onClick={cancelInlineEdit} className="text-gray-400 hover:text-gray-600 p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg" title="إلغاء"><X size={14} /></button>
                                 </>
                               ) : (
                                 <>
-                                  <button type="button" onClick={(e) => { e.stopPropagation(); startInlineEditItem(idx); }} className="text-indigo-400 hover:text-indigo-600 p-1.5 transition-colors hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg" title="تعديل المنتج">
+                                  <button type="button" onClick={(e) => { e.stopPropagation(); startInlineEditItem(idx); }} className="text-indigo-400 hover:text-indigo-600 p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center transition-colors hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg" title="تعديل المنتج">
                                     <Edit2 size={14} />
                                   </button>
-                                  <button type="button" onClick={() => removeOrderItem(idx)} className="text-red-400 hover:text-red-600 p-1.5 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+                                  <button type="button" onClick={() => removeOrderItem(idx)} className="text-red-400 hover:text-red-600 p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
                                     <Trash2 size={14} />
                                   </button>
                                 </>
@@ -2838,7 +2843,7 @@ const Orders: React.FC<OrdersProps> = ({
                           </motion.button>
                          <button 
                             onClick={(e) => handleDeleteSingle(order.id, e as any)}
-                            className="p-1.5 rounded-lg text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 transition-colors duration-200"
+                            className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 transition-colors duration-200"
                             title="حذف"
                          >
                             <Trash2 size={14} />
@@ -2853,7 +2858,7 @@ const Orders: React.FC<OrdersProps> = ({
                           <span className="font-mono text-sm" dir="ltr">{order.customerPhone}</span>
                           <button 
                              onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(order.customerPhone); }}
-                             className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 hover:text-blue-500 transition-colors duration-200"
+                             className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 hover:text-blue-500 transition-colors duration-200"
                              title="نسخ"
                           >
                              <Copy size={14} />
@@ -2861,7 +2866,7 @@ const Orders: React.FC<OrdersProps> = ({
                           <a 
                              href={`tel:${order.customerPhone}`} 
                              onClick={e => e.stopPropagation()}
-                             className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-emerald-500 hover:text-emerald-600 transition-colors duration-200"
+                             className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-emerald-500 hover:text-emerald-600 transition-colors duration-200"
                              title="اتصال"
                           >
                              <Phone size={14} />
@@ -2871,7 +2876,7 @@ const Orders: React.FC<OrdersProps> = ({
                              target="_blank"
                              rel="noopener noreferrer"
                              onClick={e => e.stopPropagation()}
-                             className="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200"
+                             className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200"
                              title="واتساب"
                           >
                              <FaWhatsapp size={15} />
@@ -2969,15 +2974,15 @@ const Orders: React.FC<OrdersProps> = ({
                                       href={`https://wa.me/20${waNumber}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="p-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-400 hover:text-emerald-600 transition-colors duration-200 border border-gray-100 dark:border-slate-700"
-                                      title="واتساب"
+                                       className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-gray-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-400 hover:text-emerald-600 transition-colors duration-200 border border-gray-100 dark:border-slate-700"
+                                       title="واتساب"
                                    >
                                       <FaWhatsapp size={16} />
                                    </a>
                                    <a 
                                       href={`tel:${order.customerPhone}`}
-                                      className="p-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200 border border-gray-100 dark:border-slate-700"
-                                      title="اتصال مباشر"
+                                       className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-gray-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200 border border-gray-100 dark:border-slate-700"
+                                       title="اتصال مباشر"
                                    >
                                       <Phone size={15} />
                                    </a>
@@ -3042,8 +3047,8 @@ const Orders: React.FC<OrdersProps> = ({
                              target="_blank"
                              rel="noopener noreferrer"
                              onClick={e => e.stopPropagation()}
-                             className="p-1 rounded hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-400 hover:text-emerald-600 transition-colors duration-200"
-                             title="واتساب"
+                              className="p-1 min-w-[40px] min-h-[40px] flex items-center justify-center rounded hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-400 hover:text-emerald-600 transition-colors duration-200"
+                              title="واتساب"
                           >
                              <FaWhatsapp size={13} />
                           </a>
@@ -3165,13 +3170,13 @@ const Orders: React.FC<OrdersProps> = ({
                   </div>
                 </div>
                 <div className="flex items-center justify-center gap-1.5 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800" onClick={e => e.stopPropagation()}>
-                          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startEditing(order)} className="p-1.5 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm" title="تعديل"><Edit2 size={11} /></motion.button>
-                  <button onClick={(e) => handleDeleteSingle(order.id, e as any)} className="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30" title="حذف"><Trash2 size={11} /></button>
+                          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startEditing(order)} className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm" title="تعديل"><Edit2 size={11} /></motion.button>
+                  <button onClick={(e) => handleDeleteSingle(order.id, e as any)} className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30" title="حذف"><Trash2 size={11} /></button>
                   {order.customerPhone && (() => {
                      const waCompact = order.customerPhone.replace(/^0/, '');
                      return (
                         <a href={`https://wa.me/20${waCompact}`} target="_blank" rel="noopener noreferrer"
-                           className="p-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 text-emerald-400 hover:text-emerald-600 border border-gray-100 dark:border-slate-700 transition-colors duration-200" title="واتساب">
+                           className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-gray-50 dark:bg-slate-800 text-emerald-400 hover:text-emerald-600 border border-gray-100 dark:border-slate-700 transition-colors duration-200" title="واتساب">
                            <FaWhatsapp size={12} />
                         </a>
                      );
@@ -3261,7 +3266,7 @@ const Orders: React.FC<OrdersProps> = ({
                     <div className="flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
                       {order.customerPhone && (
                         <>
-                          <a href={`https://wa.me/20${waNumber}`} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 text-emerald-400 hover:text-emerald-600 border border-gray-100 dark:border-slate-700 transition-colors duration-200"><FaWhatsapp size={14} /></a>
+                           <a href={`https://wa.me/20${waNumber}`} target="_blank" rel="noopener noreferrer" className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-gray-50 dark:bg-slate-800 text-emerald-400 hover:text-emerald-600 border border-gray-100 dark:border-slate-700 transition-colors duration-200"><FaWhatsapp size={14} /></a>
                   <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startEditing(order)} className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm" title="تعديل"><Edit2 size={13} /></motion.button>
                           <button onClick={(e) => handleDeleteSingle(order.id, e as any)} className="p-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200" title="حذف"><Trash2 size={13} /></button>
                         </>
@@ -3572,9 +3577,9 @@ const Orders: React.FC<OrdersProps> = ({
             initial={{ y: 100, x: "-50%", opacity: 0 }}
             animate={{ y: 0, x: "-50%", opacity: 1 }}
             exit={{ y: 100, x: "-50%", opacity: 0 }}
-            className="fixed bottom-20 md:bottom-8 left-1/2 z-[60]"
+            className="fixed bottom-20 md:bottom-8 left-1/2 z-[260] w-[95vw] max-w-[600px]"
           >
-             <div className="bg-white dark:bg-slate-900 px-4 sm:px-6 md:px-8 py-3 md:py-5 rounded-[40px] shadow-lg border border-indigo-500/20 dark:border-slate-700 flex items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 bg-white/90 dark:bg-slate-900/90 overflow-x-auto custom-scrollbar">
+             <div className="bg-white dark:bg-slate-900 px-4 sm:px-6 md:px-8 py-3 md:py-5 rounded-[40px] shadow-lg border border-indigo-500/20 dark:border-slate-700 flex items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 bg-white/90 dark:bg-slate-900/90 overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
               <div className="flex flex-col">
                  <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase">تم تحديد</span>
                  <span className="text-indigo-500 font-black text-xl">{selectedIds.size} <span className="text-xs">طلب</span></span>

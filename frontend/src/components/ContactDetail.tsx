@@ -151,7 +151,7 @@ const CopyBtn: React.FC<{ text: string }> = ({ text }) => {
     setTimeout(() => setCopied(false), 1500);
   }, [text]);
   return (
-    <button onClick={e => { e.stopPropagation(); handleCopy(); }} className="shrink-0 p-1 rounded-lg hover:bg-[var(--md-sys-color-surface-container)] transition-all text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-primary)]" title="نسخ">
+    <button onClick={e => { e.stopPropagation(); handleCopy(); }} className="shrink-0 p-1 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-surface-container)] transition-all text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-primary)]" title="نسخ">
       {copied ? (
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="20 6 9 17 4 12" />

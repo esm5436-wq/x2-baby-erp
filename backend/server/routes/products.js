@@ -1,22 +1,7 @@
 import { Router } from 'express';
-import { allDb, runDb, getDb, logActivity, localizeImageAsFile, generateProductSku, generateVariantSkus, addSyncLog } from '../db.js';
+import { allDb, runDb, getDb, logActivity, localizeImageAsFile, generateProductSku, generateVariantSkus } from '../db.js';
 
 const router = Router();
-
-async function tryAutoSync(productId) {
-  try {
-    const configRow = await getDb("SELECT value FROM settings WHERE key = 'easyorders_config'");
-    if (!configRow) return;
-    const config = JSON.parse(configRow.value);
-    if (!config.enabled || !config.autoSyncProducts) return;
-    const { syncProductToEasy } = await import('../utils/easyOrdersClient.js');
-    await syncProductToEasy(productId);
-  } catch (err) {
-    try {
-      await addSyncLog('export', 'outbound', 'product', productId, 'failed', `Auto-sync فشل: ${err.message}`);
-    } catch {}
-  }
-}
 
 router.post('/api/products', async (req, res) => {
     try {
@@ -51,7 +36,6 @@ router.post('/api/products', async (req, res) => {
             await runDb("UPDATE products SET data = ? WHERE id = ?",
                 [JSON.stringify(product), product.id]);
             const activityLogId = await logActivity('update', 'product', product.id, 'تم تعديل المنتج ' + product.name, { previousState: prevState, newState: product });
-            tryAutoSync(product.id);
             res.json({ success: true, activityLogId });
         } else {
             // Auto-generate SKU for new products
@@ -81,7 +65,6 @@ router.post('/api/products', async (req, res) => {
             await runDb("INSERT INTO products (id, data, sku) VALUES (?, ?, ?)",
                 [product.id, JSON.stringify(product), product.sku]);
             const activityLogId = await logActivity('create', 'product', product.id, 'تم حفظ المنتج ' + product.name + ' (' + product.sku + ')', { entityData: product });
-            tryAutoSync(product.id);
             res.json({ success: true, activityLogId, sku: product.sku });
         }
     } catch (err) {
@@ -146,17 +129,6 @@ router.patch('/api/products/batch', async (req, res) => {
     }
     const activityLogId = await logActivity('update', 'product', ids.join(','), `تم تعديل ${ids.length} منتج`, { previousState, newState });
     res.json({ success: true, activityLogId });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ========== Sync status for all products ==========
-
-router.get('/api/products/easy-sync-status', async (req, res) => {
-  try {
-    const maps = await allDb("SELECT erp_product_id, easy_product_id, easy_product_sku, last_synced_at, status, variants_map FROM easyorders_product_map");
-    res.json({ success: true, maps });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -1,4 +1,38 @@
 
+export type OptionType = 'dropdown' | 'buttons' | 'color';
+
+export interface OptionCategory {
+  id: string;
+  name: string;
+  type: OptionType;
+  values: string[];
+  colorValues?: Record<string, string>;
+}
+
+export interface StoreSettings {
+  sale_price?: number;
+  buy_now_text?: string;
+  is_reviews_enabled?: boolean;
+  is_quantity_hidden?: boolean;
+  is_header_hidden?: boolean;
+  is_free_shipping?: boolean;
+  track_stock?: boolean;
+  disable_orders_for_no_stock?: boolean;
+  fake_visitors_min?: number;
+  fake_visitors_max?: number;
+  fake_timer_hours?: number;
+  slug?: string;
+  description?: string;
+  meta_description?: string;
+  is_buy_on_same_page?: boolean;
+  is_fake_visitors_enabled?: boolean;
+  is_fake_timer_enabled?: boolean;
+  is_hidden?: boolean;
+  hide_related_products?: boolean;
+  is_buy_before_description?: boolean;
+  is_fixed_buy_button?: boolean;
+}
+
 export interface Product {
   id: string;
   sku: string;
@@ -10,14 +44,17 @@ export interface Product {
   wholesalePrice?: number;
   packagingCost?: number;
   category: string;
+  categories?: string[];
   tags?: string[];
   variants: Variant[];
+  options?: OptionCategory[];
   url?: string;
   supplierId?: string;
   createdAt?: string;
   updatedAt?: string;
   description?: string;
   brand?: string;
+  storeSettings?: StoreSettings;
 }
 
 export interface Variant {
@@ -26,14 +63,20 @@ export interface Variant {
   size: string;
   color: string;
   quantity: number;
-  price?: number; // Optional override
-  lowStockThreshold?: number; // حد التنبيه لنقص المخزون
+  price?: number;
+  lowStockThreshold?: number;
+  optionValues?: Record<string, string>;
 }
 
 export interface Category {
   id: string;
   name: string;
   parentId?: string | null;
+  slug?: string;
+  thumb?: string;
+  show_in_header?: boolean;
+  position?: number;
+  hidden?: boolean;
 }
 
 export enum ShippingMethod {
@@ -266,76 +309,4 @@ export interface Checkpoint {
   id: number;
   name: string;
   created_at: string;
-}
-
-// ====== Easy Orders Integration Types ======
-
-export interface EasyOrdersConfig {
-  apiKey: string;
-  enabled: boolean;
-  pollInterval: number;           // seconds (30-300)
-  imageMode: 'imgbb' | 'tunnel' | 'external';
-  imgbbApiKey: string;
-  serverUrl: string;              // for tunnel mode
-  autoConfirm: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface EasyOrdersExportDefaults {
-  trackStock: boolean;
-  disableOrdersNoStock: boolean;
-  enableReviews: boolean;
-  salePricePercent: number;       // default 85 (% of original)
-}
-
-export interface EasyOrdersStagingOrder {
-  id: string;
-  easyOrderId: string;
-  data: Order;                    // mapped order data
-  status: 'pending' | 'confirmed' | 'rejected';
-  sourceOrderStatus: string;
-  createdAt: string;
-  syncedAt: string;
-}
-
-export interface EasyOrdersProductMap {
-  id: string;
-  erpProductId: string;
-  easyProductId: string | null;
-  easyProductSku: string | null;
-  variantsMap: Record<string, string>;  // {erpVariantId: taagerCode}
-  lastSyncedAt: string | null;
-  status: 'pending' | 'synced' | 'failed';
-}
-
-export interface SyncLogEntry {
-  id: number;
-  type: 'poll' | 'export' | 'confirm' | 'reject' | 'image_upload';
-  direction: 'inbound' | 'outbound';
-  entityType: 'product' | 'order' | 'category';
-  entityId: string | null;
-  status: 'success' | 'failed' | 'skipped';
-  message: string;
-  metadata: string;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface ProductExportPreview {
-  product: Product;
-  easyProduct: any;               // mapped product for Easy Orders
-  aiSuggestions?: {
-    description: string;
-    keywords: string[];
-    slug: string;
-  };
-  imageUrls: string[];            // URLs after ImgBB upload
-}
-
-export interface ExportResult {
-  productId: string;
-  success: boolean;
-  easyProductId?: string;
-  error?: string;
 }

@@ -18,6 +18,26 @@ router.get('/api/public/brand', async (req, res) => {
   }
 });
 
+router.get('/api/public/brand-icon', async (req, res) => {
+  try {
+    const rows = await allDb("SELECT value FROM settings WHERE key = 'brandLogo' LIMIT 1");
+    if (rows.length > 0 && rows[0].value) {
+      const dataUrl = rows[0].value;
+      const match = dataUrl.match(/^data:(image\/\w+);base64,(.+)$/);
+      if (match) {
+        const mimeType = match[1];
+        const buffer = Buffer.from(match[2], 'base64');
+        res.setHeader('Content-Type', mimeType);
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        return res.send(buffer);
+      }
+    }
+    res.status(404).json({ error: 'No brand icon' });
+  } catch {
+    res.status(404).json({ error: 'No brand icon' });
+  }
+});
+
 router.post('/api/auth/login', (req, res) => {
   const { username, password } = req.body;
 

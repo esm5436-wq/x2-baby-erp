@@ -13,6 +13,7 @@ interface AIAssistantProps {
   onAddOrder: (order: Order) => void;
   onUpdateProduct: (product: Product) => void;
   onRefreshState?: () => void;
+  hidden?: boolean;
 }
 
 interface Message {
@@ -23,7 +24,7 @@ interface Message {
   attachment?: string; // Base64 string for display
 }
 
-const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, onAddOrder, onUpdateProduct, onRefreshState }) => {
+const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, onAddOrder, onUpdateProduct, onRefreshState, hidden = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [input, setInput] = useState('');
@@ -294,6 +295,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
       handleSend();
     }
   };
+
+  if (hidden) return null;
 
   return (
     <>
