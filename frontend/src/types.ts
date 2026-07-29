@@ -9,30 +9,6 @@ export interface OptionCategory {
   colorValues?: Record<string, string>;
 }
 
-export interface StoreSettings {
-  sale_price?: number;
-  buy_now_text?: string;
-  is_reviews_enabled?: boolean;
-  is_quantity_hidden?: boolean;
-  is_header_hidden?: boolean;
-  is_free_shipping?: boolean;
-  track_stock?: boolean;
-  disable_orders_for_no_stock?: boolean;
-  fake_visitors_min?: number;
-  fake_visitors_max?: number;
-  fake_timer_hours?: number;
-  slug?: string;
-  description?: string;
-  meta_description?: string;
-  is_buy_on_same_page?: boolean;
-  is_fake_visitors_enabled?: boolean;
-  is_fake_timer_enabled?: boolean;
-  is_hidden?: boolean;
-  hide_related_products?: boolean;
-  is_buy_before_description?: boolean;
-  is_fixed_buy_button?: boolean;
-}
-
 export interface Product {
   id: string;
   sku: string;
@@ -54,7 +30,6 @@ export interface Product {
   updatedAt?: string;
   description?: string;
   brand?: string;
-  storeSettings?: StoreSettings;
 }
 
 export interface Variant {
@@ -72,9 +47,6 @@ export interface Category {
   id: string;
   name: string;
   parentId?: string | null;
-  slug?: string;
-  thumb?: string;
-  show_in_header?: boolean;
   position?: number;
   hidden?: boolean;
 }

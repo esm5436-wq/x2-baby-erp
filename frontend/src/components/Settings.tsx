@@ -81,38 +81,13 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
   // Category Management State
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [categoryForm, setCategoryForm] = useState<{name: string, parentId: string | null, slug: string, thumb: string, show_in_header: boolean, position: number, hidden: boolean}>({ name: '', parentId: null, slug: '', thumb: '', show_in_header: false, position: 0, hidden: false });
-  const [categoryImgUploading, setCategoryImgUploading] = useState(false);
-  const categoryThumbInputRef = useRef<HTMLInputElement>(null);
-
-  const generateSlug = (name: string) => {
-    return name.replace(/\s+/g, '-').toLowerCase().replace(/[^a-z0-9\u0600-\u06ff-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '');
-  };
-
-  const handleCategoryThumbUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) { showNotification('يجب اختيار ملف صورة', 'error'); return; }
-    setCategoryImgUploading(true);
-    try {
-      const reader = new FileReader();
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-      setCategoryForm(prev => ({ ...prev, thumb: dataUrl }));
-      showNotification('تم رفع الصورة بنجاح', 'success');
-    } catch { showNotification('خطأ في رفع الصورة', 'error'); }
-    setCategoryImgUploading(false);
-    if (categoryThumbInputRef.current) categoryThumbInputRef.current.value = '';
-  };
+  const [categoryForm, setCategoryForm] = useState<{name: string, parentId: string | null, position: number, hidden: boolean}>({ name: '', parentId: null, position: 0, hidden: false });
 
   const handleSaveCategory = async () => {
     if (!categoryForm.name.trim()) return;
     
     try {
-      const payload = { ...categoryForm, slug: categoryForm.slug || generateSlug(categoryForm.name) };
+      const payload = { ...categoryForm };
       if (editingCategory) {
         await fetch(`${API_BASE}/categories/${editingCategory.id}`, {
           method: 'PUT',
@@ -128,11 +103,8 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           id: `cat-${Date.now()}`,
           name: categoryForm.name,
           parentId: categoryForm.parentId,
-          slug: payload.slug,
-          thumb: payload.thumb,
-          show_in_header: payload.show_in_header,
-          position: payload.position,
-          hidden: payload.hidden
+          position: categoryForm.position,
+          hidden: categoryForm.hidden
         };
         await fetch(`${API_BASE}/categories`, {
           method: 'POST',
@@ -144,7 +116,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
       }
       setIsCategoryModalOpen(false);
       setEditingCategory(null);
-      setCategoryForm({ name: '', parentId: null, slug: '', thumb: '', show_in_header: false, position: 0, hidden: false });
+      setCategoryForm({ name: '', parentId: null, position: 0, hidden: false });
     } catch (err) {
       showNotification('خطأ في حفظ التصنيف', 'error');
     }
@@ -668,7 +640,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           <MD3Button 
             variant="filled"
             icon={<Plus size={18} />}
-            onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: null, slug: '', thumb: '', show_in_header: false, position: 0, hidden: false }); setIsCategoryModalOpen(true); }}
+            onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: null, position: 0, hidden: false }); setIsCategoryModalOpen(true); }}
           >
             إضافة تصنيف جديد
           </MD3Button>
@@ -684,13 +656,13 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                   </div>
                   <span className="font-black text-[var(--md-sys-color-on-surface)]">{mainCat.name}</span>
                   <span className="text-[10px] bg-accent/10 text-accent px-2 py-0.5 rounded-full font-bold">قسم أساسي</span>
-                  {mainCat.show_in_header && <span className="text-[9px] bg-green-500/10 text-green-600 px-1.5 py-0.5 rounded-full font-bold">الهيدر</span>}
+
                   {mainCat.hidden && <span className="text-[9px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded-full font-bold">مخفي</span>}
                   {mainCat.position > 0 && <span className="text-[9px] bg-blue-500/10 text-blue-500 px-1.5 py-0.5 rounded-full font-bold">#{mainCat.position}</span>}
                 </div>
                 <div className="flex items-center gap-2">
                   <button 
-                    onClick={() => { setEditingCategory(mainCat); setCategoryForm({ name: mainCat.name, parentId: mainCat.parentId || null, slug: mainCat.slug || '', thumb: mainCat.thumb || '', show_in_header: mainCat.show_in_header || false, position: mainCat.position || 0, hidden: mainCat.hidden || false }); setIsCategoryModalOpen(true); }}
+                    onClick={() => { setEditingCategory(mainCat); setCategoryForm({ name: mainCat.name, parentId: mainCat.parentId || null, position: mainCat.position || 0, hidden: mainCat.hidden || false }); setIsCategoryModalOpen(true); }}
                     className="p-2 text-[var(--md-sys-color-on-surface-variant)] hover:text-accent hover:bg-[var(--md-sys-color-surface-container)] rounded-lg transition-colors duration-200"
                   >
                     <Edit2 size={16} />
@@ -714,7 +686,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                     </div>
                     <div className="flex items-center gap-1">
                       <button 
-                        onClick={() => { setEditingCategory(subCat); setCategoryForm({ name: subCat.name, parentId: subCat.parentId || null, slug: subCat.slug || '', thumb: subCat.thumb || '', show_in_header: subCat.show_in_header || false, position: subCat.position || 0, hidden: subCat.hidden || false }); setIsCategoryModalOpen(true); }}
+                        onClick={() => { setEditingCategory(subCat); setCategoryForm({ name: subCat.name, parentId: subCat.parentId || null, position: subCat.position || 0, hidden: subCat.hidden || false }); setIsCategoryModalOpen(true); }}
                         className="p-1.5 text-[var(--md-sys-color-on-surface-variant)] hover:text-accent rounded-md transition-colors duration-200"
                       >
                         <Edit2 size={14} />
@@ -730,7 +702,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                 ))}
                 {(subCategoriesByParent.get(mainCat.id) || []).length === 0 && (
                   <button 
-                    onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: mainCat.id, slug: '', thumb: '', show_in_header: false, position: 0, hidden: false }); setIsCategoryModalOpen(true); }}
+                    onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: mainCat.id, position: 0, hidden: false }); setIsCategoryModalOpen(true); }}
                     className="w-full text-right p-3 pr-12 text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] hover:text-accent transition-colors duration-200 italic"
                   >
                     + إضافة قسم فرعي لـ "{mainCat.name}"
@@ -738,7 +710,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                 )}
                 {(subCategoriesByParent.get(mainCat.id) || []).length > 0 && (
                   <button 
-                    onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: mainCat.id, slug: '', thumb: '', show_in_header: false, position: 0, hidden: false }); setIsCategoryModalOpen(true); }}
+                    onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: mainCat.id, position: 0, hidden: false }); setIsCategoryModalOpen(true); }}
                     className="w-full text-right p-2 pr-12 text-[9px] font-black text-accent/50 hover:text-accent transition-colors duration-200"
                   >
                     + إضافة قسم فرعي
@@ -774,23 +746,9 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
             <input 
               type="text" 
               value={categoryForm.name}
-              onChange={(e) => {
-                const name = e.target.value;
-                setCategoryForm(prev => ({ ...prev, name, slug: prev.slug || generateSlug(name) }));
-              }}
+              onChange={(e) => setCategoryForm(prev => ({ ...prev, name: e.target.value }))}
               placeholder="مثال: سالوبيتات مواليد، أطقم خروج..." 
               className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl font-bold outline-none focus:border-[var(--md-sys-color-primary)]"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">الرابط (Slug)</label>
-            <input 
-              type="text" 
-              value={categoryForm.slug}
-              onChange={(e) => setCategoryForm({ ...categoryForm, slug: e.target.value })}
-              placeholder="auto-generated-from-name" 
-              className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl font-bold text-ltr text-sm outline-none focus:border-[var(--md-sys-color-primary)]"
             />
           </div>
 
@@ -809,29 +767,6 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">صورة القسم</label>
-            <input ref={categoryThumbInputRef} type="file" accept="image/*" className="hidden" onChange={handleCategoryThumbUpload} />
-            <div className="flex items-center gap-3">
-              {categoryForm.thumb && (
-                <div className="relative group">
-                  <img src={categoryForm.thumb} alt="preview" className="w-16 h-16 object-cover rounded-xl border border-[var(--md-sys-color-outline-variant)]/20" onError={(e) => (e.currentTarget.style.display='none')} />
-                  <button onClick={() => setCategoryForm(prev => ({ ...prev, thumb: '' }))} className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-[var(--md-sys-color-error)] text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"><X size={10} /></button>
-                </div>
-              )}
-              <button
-                type="button"
-                disabled={categoryImgUploading}
-                onClick={() => categoryThumbInputRef.current?.click()}
-                className="flex-1 p-4 bg-[var(--md-sys-color-surface-container)] border border-dashed border-[var(--md-sys-color-outline-variant)]/40 rounded-2xl font-bold text-sm text-[var(--md-sys-color-on-surface-variant)] hover:border-[var(--md-sys-color-primary)] transition-colors cursor-pointer disabled:opacity-50"
-              >
-                {categoryImgUploading ? (
-                  <span className="flex items-center justify-center gap-2"><RefreshCw size={14} className="animate-spin" /> جاري الرفع...</span>
-                ) : categoryForm.thumb ? 'تغيير الصورة' : 'اختر صورة من الجهاز'}
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-2">
             <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">الأولوية في الظهور (Position)</label>
             <input 
               type="number" 
@@ -840,14 +775,6 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
               min={0}
               className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl font-bold outline-none focus:border-[var(--md-sys-color-primary)]"
             />
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl">
-            <div>
-              <p className="font-bold text-sm">إظهار في الهيدر</p>
-              <p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)]">يظهر القسم في القائمة الرئيسية للمتجر</p>
-            </div>
-            <button onClick={() => setCategoryForm({ ...categoryForm, show_in_header: !categoryForm.show_in_header })} className={`w-14 h-7 rounded-full relative transition-colors duration-200 shrink-0 ${categoryForm.show_in_header ? 'bg-[var(--md-sys-color-primary)]' : 'bg-[var(--md-sys-color-surface-container-highest)]'}`}><div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${categoryForm.show_in_header ? 'left-8' : 'left-1'}`} /></button>
           </div>
 
           <div className="flex items-center justify-between p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl">

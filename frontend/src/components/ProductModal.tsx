@@ -6,7 +6,7 @@ import {
   Target, Trophy, Link as LinkIcon, Check, Zap, X,
   ChevronLeft, ChevronRight
 } from 'lucide-react';
-import { Product, Variant, Category, StoreSettings, OptionCategory, OptionType } from '../types';
+import { Product, Variant, Category, OptionCategory, OptionType } from '../types';
 import { formatDate } from '../lib/formatDate';
 import { MD3Dialog } from './md3';
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -22,7 +22,6 @@ const cartesian = (arrays: string[][]): string[][] => {
 const STEPS = [
   { icon: 'inventory_2', label: 'المعلومات الأساسية', desc: 'الاسم والتصنيف والصور والتسعير' },
   { icon: 'tune', label: 'المتغيرات', desc: 'المقاسات والألوان والكميات' },
-  { icon: 'storefront', label: 'إعدادات المتجر', desc: 'العرض والتسويق والـ SEO' },
 ];
 
 interface ProductModalProps {
@@ -44,7 +43,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
       const clone = JSON.parse(JSON.stringify(product));
       if (clone.wholesalePrice === undefined) clone.wholesalePrice = clone.costPrice || 0;
       if (clone.packagingCost === undefined) clone.packagingCost = 0;
-      if (!clone.storeSettings) clone.storeSettings = {};
       return clone;
     }
     const firstCat = categories.find(c => !c.parentId);
@@ -61,7 +59,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
       supplierId: '',
       createdAt: new Date().toISOString(),
       variants: [{ id: 'v-1', sku: '', size: 'واحد', color: 'متعدد', quantity: 0, price: 0, lowStockThreshold: 2 }],
-      storeSettings: {}
     };
   });
 
@@ -144,10 +141,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
     setP(prev => ({ ...prev, variants: newVariants }));
   }, [options, deletedKeys]);
 
-  const updateStore = (patch: Partial<StoreSettings>) => {
-    setP(prev => ({ ...prev, storeSettings: { ...prev.storeSettings, ...patch } }));
-  };
-
   const handleAddValue = (id: string, val: string) => {
     const trimmed = val.trim();
     if (!trimmed) return;
@@ -226,23 +219,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
 
   const inputCls = "w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-colors duration-200 shadow-sm";
   const labelCls = "text-xs font-black text-gray-600 dark:text-gray-400 pr-1 uppercase tracking-widest";
-
-  const Toggle: React.FC<{ checked: boolean; onChange: (v: boolean) => void; label: string }> = ({ checked, onChange, label }) => (
-    <div className="flex items-center justify-between py-3">
-      <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{label}</span>
-      <button type="button" onClick={() => onChange(!checked)}
-        className={`relative w-12 h-7 rounded-full transition-colors duration-200 ${checked ? 'bg-accent' : 'bg-gray-300 dark:bg-gray-600'}`}>
-        <span className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-200 ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} />
-      </button>
-    </div>
-  );
-
-  const SeoBadge: React.FC = () => (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-black bg-accent/10 text-accent border border-accent/20">
-      <span className="material-symbols-rounded" style={{ fontSize: 10 }}>search</span>
-      SEO
-    </span>
-  );
 
   const renderStep1 = () => (
     <div className="space-y-6">
@@ -608,109 +584,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
     </div>
   );
 
-  const renderStep3 = () => {
-    const ss = p.storeSettings || {};
-    return (
-      <div className="space-y-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="material-symbols-rounded text-accent" style={{ fontSize: 20 }}>sell</span>
-            <h4 className="font-black text-sm text-gray-900 dark:text-white">التسعير والعرض</h4>
-          </div>
-          <div className="space-y-1 divide-y divide-gray-100 dark:divide-slate-700">
-            <div className="flex items-center justify-between py-3">
-              <div className="flex-1 min-w-0 pr-3">
-                <span className="text-sm font-bold text-gray-800 dark:text-gray-200 block">سعر الخصم</span>
-                <span className="text-[10px] text-gray-400 dark:text-gray-500">السعر الظاهر للمشتري بعد الخصم</span>
-              </div>
-              <input type="number" className="w-28 p-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl font-bold text-sm text-gray-900 dark:text-white outline-none focus:border-accent text-left ltr" value={ss.sale_price || ''} onChange={e => updateStore({ sale_price: Number(e.target.value) || undefined })} placeholder={`${p.price} ج.م`} />
-            </div>
-            <div className="space-y-2 py-3">
-              <span className="text-sm font-bold text-gray-800 dark:text-gray-200 block">نص زر الشراء</span>
-              <input className={inputCls} value={ss.buy_now_text || ''} onChange={e => updateStore({ buy_now_text: e.target.value || undefined })} placeholder="اشتر الآن" />
-            </div>
-            <Toggle checked={ss.is_buy_before_description ?? false} onChange={v => updateStore({ is_buy_before_description: v })} label="نموذج الشراء قبل وصف المنتج" />
-            <Toggle checked={ss.is_buy_on_same_page ?? false} onChange={v => updateStore({ is_buy_on_same_page: v })} label="شراء المنتج من نفس الصفحة" />
-            <Toggle checked={ss.is_reviews_enabled ?? true} onChange={v => updateStore({ is_reviews_enabled: v })} label="عرض التقييمات" />
-            <Toggle checked={ss.is_free_shipping ?? false} onChange={v => updateStore({ is_free_shipping: v })} label="شحن مجاني" />
-            <Toggle checked={ss.is_fixed_buy_button ?? false} onChange={v => updateStore({ is_fixed_buy_button: v })} label="تفعيل الزر الثابت أسفل الصفحة للشراء" />
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="material-symbols-rounded text-accent" style={{ fontSize: 20 }}>visibility_off</span>
-            <h4 className="font-black text-sm text-gray-900 dark:text-white">إعدادات الصفحة</h4>
-          </div>
-          <div className="space-y-1 divide-y divide-gray-100 dark:divide-slate-700">
-            <Toggle checked={ss.is_header_hidden ?? false} onChange={v => updateStore({ is_header_hidden: v })} label="إخفاء الهيدر" />
-            <Toggle checked={ss.is_quantity_hidden ?? false} onChange={v => updateStore({ is_quantity_hidden: v })} label="إخفاء عدد المخزون" />
-            <Toggle checked={ss.hide_related_products ?? false} onChange={v => updateStore({ hide_related_products: v })} label="إخفاء المنتجات المشابهة" />
-            <Toggle checked={ss.is_hidden ?? false} onChange={v => updateStore({ is_hidden: v })} label="منتج مخفي (متاح عبر الرابط المباشر فقط)" />
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="material-symbols-rounded text-accent" style={{ fontSize: 20 }}>inventory_2</span>
-            <h4 className="font-black text-sm text-gray-900 dark:text-white">المخزون</h4>
-          </div>
-          <div className="space-y-1 divide-y divide-gray-100 dark:divide-slate-700">
-            <Toggle checked={ss.track_stock ?? true} onChange={v => updateStore({ track_stock: v })} label="تتبع المخزون" />
-            <Toggle checked={ss.disable_orders_for_no_stock ?? false} onChange={v => updateStore({ disable_orders_for_no_stock: v })} label="منع الطلب عند عدم توفر المخزون" />
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="material-symbols-rounded text-accent" style={{ fontSize: 20 }}>marketing</span>
-            <h4 className="font-black text-sm text-gray-900 dark:text-white">التسويق الوهمي</h4>
-          </div>
-          <div className="space-y-1 divide-y divide-gray-100 dark:divide-slate-700">
-            <Toggle checked={ss.is_fake_visitors_enabled ?? false} onChange={v => updateStore({ is_fake_visitors_enabled: v })} label="عرض عدد الزوار الوهميين" />
-            {ss.is_fake_visitors_enabled && (
-              <div className="grid grid-cols-2 gap-3 py-3">
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">الحد الأدنى</span>
-                  <input type="number" className={inputCls} value={ss.fake_visitors_min || ''} onChange={e => updateStore({ fake_visitors_min: Number(e.target.value) || undefined })} placeholder="10" />
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">الحد الأقصى</span>
-                  <input type="number" className={inputCls} value={ss.fake_visitors_max || ''} onChange={e => updateStore({ fake_visitors_max: Number(e.target.value) || undefined })} placeholder="30" />
-                </div>
-              </div>
-            )}
-            <Toggle checked={ss.is_fake_timer_enabled ?? false} onChange={v => updateStore({ is_fake_timer_enabled: v })} label="العداد الوهمي (يظهر 'ينتهي العرض خلال...')" />
-            {ss.is_fake_timer_enabled && (
-              <div className="space-y-1 py-3">
-                <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">عدد الساعات</span>
-                <input type="number" className={inputCls} value={ss.fake_timer_hours || ''} onChange={e => updateStore({ fake_timer_hours: Number(e.target.value) || undefined })} placeholder="24" />
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="material-symbols-rounded text-accent" style={{ fontSize: 20 }}>search</span>
-            <h4 className="font-black text-sm text-gray-900 dark:text-white">تحسين محركات البحث (SEO)</h4>
-          </div>
-          <div className="space-y-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2"><span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">الرابط المختصر (Slug)</span><SeoBadge /></div>
-              <input className={`${inputCls} ltr text-left`} value={ss.slug || ''} onChange={e => updateStore({ slug: e.target.value || undefined })} placeholder="trnj-product-name" />
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2"><span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">وصف المتجر التفصيلي</span><SeoBadge /></div>
-              <textarea className={`${inputCls} min-h-[80px] resize-y`} value={ss.description || ''} onChange={e => updateStore({ description: e.target.value || undefined })} placeholder="وصف تفصيلي للمنتج يظهر في صفحة المتجر..." />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const stepContents = [renderStep1, renderStep2, renderStep3];
+  const stepContents = [renderStep1, renderStep2];
 
   return (
     <MD3Dialog
@@ -722,7 +596,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
       actions={[
         ...(isEdit ? [{ label: 'حذف', onClick: () => { if(window.confirm('هل أنت متأكد من حذف المنتج نهائياً من النظام؟')) { markClean(); onDeleteAction(product!.id); onClose(); } }, variant: 'danger' as const }] : []),
         { label: 'إلغاء', onClick: () => withUnsavedCheck(onClose), variant: 'text' as const },
-        { label: currentStep === 2 ? 'حفظ المنتج' : 'التالي', onClick: () => { if (currentStep < 2) { setCurrentStep(currentStep + 1); } else { markClean(); onSave({...p, options}); } }, variant: 'filled' as const }
+        { label: currentStep === 1 ? 'حفظ المنتج' : 'التالي', onClick: () => { if (currentStep < 1) { setCurrentStep(currentStep + 1); } else { markClean(); onSave({...p, options}); } }, variant: 'filled' as const }
       ]}
     >
       <div dir="rtl" className="text-right">
@@ -765,7 +639,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
                 <ChevronRight size={16} /> السابق
               </button>
             ) : <div />}
-            {currentStep < 2 ? (
+            {currentStep < 1 ? (
               <button onClick={() => setCurrentStep(currentStep + 1)} className="flex items-center gap-1.5 text-xs font-bold text-white bg-accent px-4 py-2 rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-md">
                 التالي <ChevronLeft size={16} />
               </button>

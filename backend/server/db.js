@@ -148,9 +148,6 @@ export async function initializeSchema() {
   }
 
   const alterColumns = [
-    `ALTER TABLE categories ADD COLUMN slug TEXT`,
-    `ALTER TABLE categories ADD COLUMN thumb TEXT`,
-    `ALTER TABLE categories ADD COLUMN show_in_header INTEGER DEFAULT 0`,
     `ALTER TABLE categories ADD COLUMN position INTEGER DEFAULT 0`,
     `ALTER TABLE categories ADD COLUMN hidden INTEGER DEFAULT 0`,
   ];

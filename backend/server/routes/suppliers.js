@@ -46,10 +46,10 @@ router.get('/api/categories', async (req, res) => {
 
 router.post('/api/categories', async (req, res) => {
     try {
-        const { id, name, parentId, slug, thumb, show_in_header, position, hidden } = req.body;
-        await runDb("INSERT INTO categories (id, name, parentId, slug, thumb, show_in_header, position, hidden) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            [id, name, parentId || null, slug || '', thumb || '', show_in_header ? 1 : 0, position || 0, hidden ? 1 : 0]);
-        const activityLogId = await logActivity('create', 'category', id, `تم إضافة القسم ${name}`, { entityData: { id, name, parentId, slug } });
+        const { id, name, parentId, position, hidden } = req.body;
+        await runDb("INSERT INTO categories (id, name, parentId, position, hidden) VALUES (?, ?, ?, ?, ?)",
+            [id, name, parentId || null, position || 0, hidden ? 1 : 0]);
+        const activityLogId = await logActivity('create', 'category', id, `تم إضافة القسم ${name}`, { entityData: { id, name, parentId } });
         res.json({ success: true, activityLogId });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -58,10 +58,10 @@ router.post('/api/categories', async (req, res) => {
 
 router.put('/api/categories/:id', async (req, res) => {
     try {
-        const { name, parentId, slug, thumb, show_in_header, position, hidden } = req.body;
+        const { name, parentId, position, hidden } = req.body;
         const prevRow = await getDb("SELECT * FROM categories WHERE id = ?", [req.params.id]);
-        await runDb("UPDATE categories SET name = ?, parentId = ?, slug = ?, thumb = ?, show_in_header = ?, position = ?, hidden = ? WHERE id = ?",
-            [name, parentId || null, slug || '', thumb || '', show_in_header ? 1 : 0, position || 0, hidden ? 1 : 0, req.params.id]);
+        await runDb("UPDATE categories SET name = ?, parentId = ?, position = ?, hidden = ? WHERE id = ?",
+            [name, parentId || null, position || 0, hidden ? 1 : 0, req.params.id]);
         const newRow = await getDb("SELECT * FROM categories WHERE id = ?", [req.params.id]);
         const activityLogId = await logActivity('update', 'category', req.params.id, `تم تحديث القسم ${name}`, { previousState: prevRow || undefined, newState: newRow || undefined });
         res.json({ success: true, activityLogId });
