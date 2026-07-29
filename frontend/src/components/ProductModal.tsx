@@ -248,8 +248,12 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
           <label className={labelCls}>العلامة التجارية (Brand)</label>
           <input className={inputCls} placeholder="مثال: Baby Comfort..." value={p.brand || ''} onChange={e => setP({...p, brand: e.target.value || undefined})} />
         </div>
+        <div className="col-span-2 md:col-span-1 space-y-2">
+          <label className={labelCls}>رابط المنتج (URL)</label>
+          <input className={inputCls} placeholder="https://..." value={p.url || ''} onChange={e => setP({...p, url: e.target.value || undefined})} />
+        </div>
         <div className="col-span-2 space-y-2">
-          <label className={labelCls}>التصنيفات الفرعية (اختياري — يظهر في المتجر)</label>
+          <label className={labelCls}>التصنيفات الفرعية (اختياري)</label>
           {categories.length > 0 ? (
             <div className="flex flex-wrap gap-2 p-3 bg-gray-50/50 dark:bg-slate-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-slate-700 min-h-[44px]">
               {categories.filter(c => !c.parentId).flatMap(mainCat => [

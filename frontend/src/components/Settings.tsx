@@ -747,13 +747,13 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">القسم التابع له (اختياري)</label>
+            <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">التصنيفات الفرعية (اختياري)</label>
             <select 
               value={categoryForm.parentId || ''}
               onChange={(e) => setCategoryForm({ ...categoryForm, parentId: e.target.value || null })}
               className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl font-bold outline-none focus:border-[var(--md-sys-color-primary)]"
             >
-              <option value="">-- لا يوجد قسم أب --</option>
+              <option value="">-- لا يوجد تصنيف أساسي --</option>
               {availableParentCategories.map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
