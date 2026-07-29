@@ -47,8 +47,6 @@ export interface Category {
   id: string;
   name: string;
   parentId?: string | null;
-  position?: number;
-  hidden?: boolean;
 }
 
 export enum ShippingMethod {

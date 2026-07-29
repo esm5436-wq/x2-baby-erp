@@ -81,7 +81,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
   // Category Management State
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [categoryForm, setCategoryForm] = useState<{name: string, parentId: string | null, position: number, hidden: boolean}>({ name: '', parentId: null, position: 0, hidden: false });
+  const [categoryForm, setCategoryForm] = useState<{name: string, parentId: string | null}>({ name: '', parentId: null });
 
   const handleSaveCategory = async () => {
     if (!categoryForm.name.trim()) return;
@@ -103,8 +103,6 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           id: `cat-${Date.now()}`,
           name: categoryForm.name,
           parentId: categoryForm.parentId,
-          position: categoryForm.position,
-          hidden: categoryForm.hidden
         };
         await fetch(`${API_BASE}/categories`, {
           method: 'POST',
@@ -116,7 +114,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
       }
       setIsCategoryModalOpen(false);
       setEditingCategory(null);
-      setCategoryForm({ name: '', parentId: null, position: 0, hidden: false });
+      setCategoryForm({ name: '', parentId: null });
     } catch (err) {
       showNotification('خطأ في حفظ التصنيف', 'error');
     }
@@ -640,7 +638,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           <MD3Button 
             variant="filled"
             icon={<Plus size={18} />}
-            onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: null, position: 0, hidden: false }); setIsCategoryModalOpen(true); }}
+            onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: null }); setIsCategoryModalOpen(true); }}
           >
             إضافة تصنيف جديد
           </MD3Button>
@@ -656,13 +654,10 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                   </div>
                   <span className="font-black text-[var(--md-sys-color-on-surface)]">{mainCat.name}</span>
                   <span className="text-[10px] bg-accent/10 text-accent px-2 py-0.5 rounded-full font-bold">قسم أساسي</span>
-
-                  {mainCat.hidden && <span className="text-[9px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded-full font-bold">مخفي</span>}
-                  {mainCat.position > 0 && <span className="text-[9px] bg-blue-500/10 text-blue-500 px-1.5 py-0.5 rounded-full font-bold">#{mainCat.position}</span>}
                 </div>
                 <div className="flex items-center gap-2">
                   <button 
-                    onClick={() => { setEditingCategory(mainCat); setCategoryForm({ name: mainCat.name, parentId: mainCat.parentId || null, position: mainCat.position || 0, hidden: mainCat.hidden || false }); setIsCategoryModalOpen(true); }}
+                    onClick={() => { setEditingCategory(mainCat); setCategoryForm({ name: mainCat.name, parentId: mainCat.parentId || null }); setIsCategoryModalOpen(true); }}
                     className="p-2 text-[var(--md-sys-color-on-surface-variant)] hover:text-accent hover:bg-[var(--md-sys-color-surface-container)] rounded-lg transition-colors duration-200"
                   >
                     <Edit2 size={16} />
@@ -686,7 +681,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                     </div>
                     <div className="flex items-center gap-1">
                       <button 
-                        onClick={() => { setEditingCategory(subCat); setCategoryForm({ name: subCat.name, parentId: subCat.parentId || null, position: subCat.position || 0, hidden: subCat.hidden || false }); setIsCategoryModalOpen(true); }}
+                        onClick={() => { setEditingCategory(subCat); setCategoryForm({ name: subCat.name, parentId: subCat.parentId || null }); setIsCategoryModalOpen(true); }}
                         className="p-1.5 text-[var(--md-sys-color-on-surface-variant)] hover:text-accent rounded-md transition-colors duration-200"
                       >
                         <Edit2 size={14} />
@@ -702,7 +697,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                 ))}
                 {(subCategoriesByParent.get(mainCat.id) || []).length === 0 && (
                   <button 
-                    onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: mainCat.id, position: 0, hidden: false }); setIsCategoryModalOpen(true); }}
+                    onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: mainCat.id }); setIsCategoryModalOpen(true); }}
                     className="w-full text-right p-3 pr-12 text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] hover:text-accent transition-colors duration-200 italic"
                   >
                     + إضافة قسم فرعي لـ "{mainCat.name}"
@@ -710,7 +705,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                 )}
                 {(subCategoriesByParent.get(mainCat.id) || []).length > 0 && (
                   <button 
-                    onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: mainCat.id, position: 0, hidden: false }); setIsCategoryModalOpen(true); }}
+                    onClick={() => { setEditingCategory(null); setCategoryForm({ name: '', parentId: mainCat.id }); setIsCategoryModalOpen(true); }}
                     className="w-full text-right p-2 pr-12 text-[9px] font-black text-accent/50 hover:text-accent transition-colors duration-200"
                   >
                     + إضافة قسم فرعي
@@ -766,24 +761,6 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
             </select>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">الأولوية في الظهور (Position)</label>
-            <input 
-              type="number" 
-              value={categoryForm.position}
-              onChange={(e) => setCategoryForm({ ...categoryForm, position: parseInt(e.target.value) || 0 })}
-              min={0}
-              className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl font-bold outline-none focus:border-[var(--md-sys-color-primary)]"
-            />
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl">
-            <div>
-              <p className="font-bold text-sm">إخفاء القسم</p>
-              <p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)]">لن يظهر القسم في واجهة المتجر</p>
-            </div>
-            <button onClick={() => setCategoryForm({ ...categoryForm, hidden: !categoryForm.hidden })} className={`w-14 h-7 rounded-full relative transition-colors duration-200 shrink-0 ${categoryForm.hidden ? 'bg-[var(--md-sys-color-error)]' : 'bg-[var(--md-sys-color-surface-container-highest)]'}`}><div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${categoryForm.hidden ? 'left-8' : 'left-1'}`} /></button>
-          </div>
         </div>
       </MD3Dialog>
 

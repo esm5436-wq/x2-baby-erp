@@ -147,14 +147,7 @@ export async function initializeSchema() {
     try { await db.execute(sql); } catch (e) {}
   }
 
-  const alterColumns = [
-    `ALTER TABLE categories ADD COLUMN position INTEGER DEFAULT 0`,
-    `ALTER TABLE categories ADD COLUMN hidden INTEGER DEFAULT 0`,
-  ];
-  for (const sql of alterColumns) {
-    try { await db.execute(sql); } catch (e) { /* column already exists */ }
-  }
-
+  
   try {
     const rows = await db.execute("SELECT * FROM pragma_table_info('suppliers')");
     if (!rows.rows.some(r => r.name === 'phone2')) {
