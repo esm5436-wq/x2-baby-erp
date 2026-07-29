@@ -69,22 +69,14 @@ export async function generateOrderId() {
 }
 
 export async function localizeImageAsFile(url, entityId) {
-  if (!url || !url.startsWith('http')) return url;
-  if (isVercel) return url;
-  const hash = crypto.createHash('md5').update(url).digest('hex').slice(0, 10);
-  let ext = '.jpg';
-  try { ext = path.extname(new URL(url).pathname) || '.jpg'; } catch (e) {}
-  const filename = entityId + '_' + hash + ext;
-  const uploadsDir = path.join(process.cwd(), 'uploads', 'images');
-  const filepath = path.join(uploadsDir, filename);
-  if (fs.existsSync(filepath)) return '/uploads/images/' + filename;
+  if (!url || url.startsWith('data:')) return url;
   try {
     const resp = await fetch(url, { signal: AbortSignal.timeout(30000) });
     if (!resp.ok) return url;
     const buffer = Buffer.from(await resp.arrayBuffer());
-    if (!fs.existsSync(path.dirname(filepath))) fs.mkdirSync(path.dirname(filepath), { recursive: true });
-    fs.writeFileSync(filepath, buffer);
-    return '/uploads/images/' + filename;
+    const mime = resp.headers.get('content-type') || 'image/jpeg';
+    const base64 = buffer.toString('base64');
+    return `data:${mime};base64,${base64}`;
   } catch (e) {
     console.error('Failed to localize image:', e.message);
     return url;

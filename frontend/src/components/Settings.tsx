@@ -653,7 +653,6 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
                     <Tag size={18} />
                   </div>
                   <span className="font-black text-[var(--md-sys-color-on-surface)]">{mainCat.name}</span>
-                  <span className="text-[10px] bg-accent/10 text-accent px-2 py-0.5 rounded-full font-bold">قسم أساسي</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button 
@@ -718,7 +717,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           {mainCategories.length === 0 && (
             <div className="py-20 text-center border-2 border-dashed border-[var(--md-sys-color-outline-variant)]/20 rounded-[32px]">
               <Tag size={48} className="mx-auto mb-4 text-[var(--md-sys-color-on-surface-variant)]" />
-              <p className="text-[var(--md-sys-color-on-surface-variant)] font-bold italic">لا توجد أقسام مسجلة. ابدأ بإضافة قسم أساسي.</p>
+              <p className="text-[var(--md-sys-color-on-surface-variant)] font-bold italic">لا توجد أقسام مسجلة. ابدأ بإضافة قسم جديد.</p>
             </div>
           )}
         </div>
@@ -748,13 +747,13 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">التصنيف الأساسي (اتركه فارغاً إذا كان تصنيفاً رئيساً)</label>
+            <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">القسم التابع له (اختياري)</label>
             <select 
               value={categoryForm.parentId || ''}
               onChange={(e) => setCategoryForm({ ...categoryForm, parentId: e.target.value || null })}
               className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl font-bold outline-none focus:border-[var(--md-sys-color-primary)]"
             >
-              <option value="">-- تصنيف أساسي --</option>
+              <option value="">-- لا يوجد قسم أب --</option>
               {availableParentCategories.map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
