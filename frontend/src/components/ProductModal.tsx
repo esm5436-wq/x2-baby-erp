@@ -58,7 +58,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
       url: '', 
       supplierId: '',
       createdAt: new Date().toISOString(),
-      variants: [{ id: 'v-1', sku: '', size: 'واحد', color: 'متعدد', quantity: 0, price: 0, lowStockThreshold: 2 }],
+      variants: [],
     };
   });
 
@@ -106,15 +106,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
   
   useEffect(() => {
     const currentP = pRef.current;
-    if (options.length === 0) {
-      if (currentP.variants.length !== 1 || (currentP.variants.length > 0 && currentP.variants[0].size !== 'واحد')) {
-        setP(prev => ({
-          ...prev,
-          variants: [{ id: `v-main-${Date.now()}`, sku: prev.sku || '', size: 'واحد', color: 'متعدد', quantity: prev.variants[0]?.quantity || 0, price: prev.price, lowStockThreshold: prev.variants[0]?.lowStockThreshold || 2 }]
-        }));
-      }
-      return;
-    }
+    if (options.length === 0) return;
 
     const optionArrays = options.map(opt => opt.values.length > 0 ? opt.values : ['افتراضي']);
     const productCombos = cartesian(optionArrays);
@@ -152,7 +144,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
   const applyThresholdToAll = () => { setP({ ...p, variants: p.variants.map(v => ({...v, lowStockThreshold: parseInt(bulkThreshold) || 0})) }); };
 
   const removeVariant = (idx: number) => {
-    if (p.variants.length <= 1) return alert('يجب بقاء متغير واحد');
     const vr = p.variants[idx];
     setDeletedKeys(prev => new Set([...prev, `${vr.size}-${vr.color}`]));
     const newVars = [...p.variants]; newVars.splice(idx, 1);
@@ -531,6 +522,13 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
       </div>
 
       <div className="rounded-[20px] border border-gray-100 dark:border-slate-800 overflow-hidden shadow-sm bg-white dark:bg-slate-800">
+        {p.variants.length === 0 ? (
+          <div className="p-6 text-center">
+            <span className="material-symbols-rounded text-3xl text-gray-300 dark:text-gray-600 mb-2 block">tune</span>
+            <p className="text-[10px] font-black text-gray-400 dark:text-gray-500">لا توجد متغيرات مضافة</p>
+            <p className="text-[9px] text-gray-400 dark:text-gray-500 mt-1">أضف خيارات فوق لتوليد المتغيرات تلقائياً</p>
+          </div>
+        ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-right text-[11px]">
             <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800">
@@ -580,8 +578,9 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
             </tbody>
           </table>
         </div>
-      </div>
+      )}
     </div>
+  </div>
   );
 
   const stepContents = [renderStep1, renderStep2];

@@ -129,15 +129,7 @@ const SyncProductEditor: React.FC<{
   useEffect(() => {
     const prod = localProductRef.current;
     if (isSaved) return;
-    if (options.length === 0) {
-      if (prod.variants.length !== 1 || (prod.variants.length > 0 && prod.variants[0].size !== 'واحد')) {
-        setLocalProduct(prev => ({
-          ...prev,
-          variants: [{ id: `v-main-${Date.now()}`, sku: prev.sku || '', size: 'واحد', color: 'متعدد', quantity: prev.variants[0]?.quantity || 0, price: prev.price, lowStockThreshold: 2 }]
-        }));
-      }
-      return;
-    }
+    if (options.length === 0) return;
 
     const optionArrays = options.map(opt => opt.values.length > 0 ? opt.values : ['افتراضي']);
     const productCombos = cartesian(optionArrays);

@@ -42,19 +42,9 @@ router.post('/api/products', async (req, res) => {
             if (!product.sku) {
                 product.sku = await generateProductSku();
             }
-            // Ensure all variants have SKUs
+            // Assign SKUs for variants
             const variants = product.variants || [];
-            if (variants.length === 0) {
-                product.variants = [{
-                    id: `v-main-${product.id}`,
-                    sku: `${product.sku}-01`,
-                    size: 'واحد',
-                    color: 'متعدد',
-                    quantity: 0,
-                    price: product.price || 0,
-                    lowStockThreshold: 2
-                }];
-            } else {
+            if (variants.length > 0) {
                 const varSkus = await generateVariantSkus(product.sku, variants.length);
                 product.variants = variants.map((v, i) => ({
                     ...v,

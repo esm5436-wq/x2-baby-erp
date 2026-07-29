@@ -9,20 +9,6 @@ const xmlParser = new XMLParser({
   attributeNamePrefix: ''
 });
 
-function ensureDefaultVariant(p) {
-  if (!p.variants || p.variants.length === 0) {
-    p.variants = [{
-      id: `v-main-${p.id || Math.random().toString(36).slice(2, 10)}`,
-      size: 'واحد',
-      color: 'متعدد',
-      quantity: p.quantity || 0,
-      price: p.price || 0,
-      lowStockThreshold: 2
-    }];
-  }
-  return p;
-}
-
 function parseItemsFromXml(xmlText) {
   const parsed = xmlParser.parse(xmlText);
   const rss = parsed.rss || parsed.feed || parsed.root || {};
@@ -72,7 +58,6 @@ router.post('/api/import/products/fetch', async (req, res) => {
     const newProducts = [];
     let existingCount = 0;
     for (const p of allProducts) {
-      ensureDefaultVariant(p);
       const existing = await getDb("SELECT data FROM products WHERE id = ?", [p.id]);
       if (existing) {
         existingCount++;
