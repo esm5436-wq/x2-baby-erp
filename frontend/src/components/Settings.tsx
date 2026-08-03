@@ -6,6 +6,7 @@ import { compressImage } from '../lib/imageUtils';
 import { updateFavicon } from '../lib/faviconUtils';
 import { useTheme } from '../contexts/ThemeContext';
 import { MD3Button, MD3IconButton, MD3Dialog, useSnackbar, MD3Snackbar } from './md3';
+import CollapsibleSection from './CollapsibleSection';
 
 interface SettingsProps {
   state: AppState;
@@ -512,7 +513,12 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
         </div>
       </MD3Dialog>
 
-      <div className="flex items-center gap-2 mb-2"><Palette style={{ color: 'var(--md-sys-color-primary)' }} /><h2 className="text-2xl font-bold">الهوية البصرية</h2></div>
+      <CollapsibleSection
+        title="الهوية البصرية"
+        icon={<Palette style={{ color: 'var(--md-sys-color-primary)' }} />}
+        defaultOpen={false}
+        headerClassName="mb-2"
+      >
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20 flex flex-col md:flex-row items-center gap-8">
         <div className="w-40 h-40 bg-white rounded-[40px] border flex items-center justify-center overflow-hidden shadow-md ring-8 ring-[var(--md-sys-color-surface-container)]">
           {state.brandLogo ? <img src={state.brandLogo} className="w-full h-full object-contain p-4" /> : <ImageIcon size={40} className="text-[var(--md-sys-color-on-surface-variant)]" />}
@@ -627,8 +633,14 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           <MD3Button variant="filled" onClick={() => logoInputRef.current?.click()}>تغيير صورة الشعار</MD3Button>
         </div>
       </motion.div>
+      </CollapsibleSection>
 
-      <div className="flex items-center gap-2 mb-2"><Tag className="text-accent" /><h2 className="text-2xl font-bold">إدارة التصنيفات</h2></div>
+      <CollapsibleSection
+        title="إدارة التصنيفات"
+        icon={<Tag className="text-accent" />}
+        defaultOpen={false}
+        headerClassName="mb-2"
+      >
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.05 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -722,6 +734,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           )}
         </div>
       </motion.div>
+      </CollapsibleSection>
 
       {/* Category Modal */}
       <MD3Dialog
@@ -763,7 +776,12 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
         </div>
       </MD3Dialog>
 
-      <div className="flex items-center gap-2 mb-2"><AlertTriangle className="text-orange-500" /><h2 className="text-2xl font-bold">الإعدادات المالية</h2></div>
+      <CollapsibleSection
+        title="الإعدادات المالية"
+        icon={<AlertTriangle className="text-orange-500" />}
+        defaultOpen={false}
+        headerClassName="mb-2"
+      >
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
         <div className="p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl">
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
@@ -781,8 +799,14 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           </div>
         )}
       </motion.div>
+      </CollapsibleSection>
 
-      <div className="flex items-center gap-2 mb-2"><ImageIcon className="text-accent" /><h2 className="text-2xl font-bold">إعدادات العرض</h2></div>
+      <CollapsibleSection
+        title="إعدادات العرض"
+        icon={<ImageIcon className="text-accent" />}
+        defaultOpen={false}
+        headerClassName="mb-2"
+      >
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.12 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20 space-y-3">
         
         {/* مظهر التطبيق */}
@@ -862,8 +886,14 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           </div>
         </div>
       </motion.div>
+      </CollapsibleSection>
 
-      <div className="flex items-center gap-2 mb-2"><Clock className="text-accent" /><h2 className="text-2xl font-bold">نقاط الاستعادة</h2></div>
+      <CollapsibleSection
+        title="نقاط الاستعادة"
+        icon={<Clock className="text-accent" />}
+        defaultOpen={false}
+        headerClassName="mb-2"
+      >
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.13 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
         <div className="p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl mb-4">
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
@@ -927,34 +957,41 @@ className="p-2 text-[var(--md-sys-color-on-surface-variant)] hover:text-red-500 
           </div>
         )}
 
-        <MD3Dialog
-          isOpen={showCheckpointModal}
-          onClose={() => setShowCheckpointModal(false)}
-          title="إنشاء نقطة استعادة جديدة"
-          maxWidth="sm"
-          actions={[
-            { label: 'إنشاء', onClick: handleCreateCheckpoint, variant: 'filled' },
-            { label: 'إلغاء', onClick: () => setShowCheckpointModal(false), variant: 'text' }
-          ]}
-        >
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">اسم نقطة الاستعادة</label>
-              <input
-                type="text"
-                value={checkpointName}
-                onChange={e => setCheckpointName(e.target.value)}
-                placeholder="مثال: قبل تحديث الأسعار"
-                className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl font-bold outline-none focus:border-[var(--md-sys-color-primary)]"
-                autoFocus
-                onKeyDown={e => { if (e.key === 'Enter' && !checkpointLoading) handleCreateCheckpoint(); }}
-              />
-            </div>
-          </div>
-        </MD3Dialog>
       </motion.div>
+      </CollapsibleSection>
 
-      <div className="flex items-center gap-2 mb-2"><Printer className="text-accent" /><h2 className="text-2xl font-bold">إعدادات الفاتورة</h2></div>
+      <MD3Dialog
+        isOpen={showCheckpointModal}
+        onClose={() => setShowCheckpointModal(false)}
+        title="إنشاء نقطة استعادة جديدة"
+        maxWidth="sm"
+        actions={[
+          { label: 'إنشاء', onClick: handleCreateCheckpoint, variant: 'filled' },
+          { label: 'إلغاء', onClick: () => setShowCheckpointModal(false), variant: 'text' }
+        ]}
+      >
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">اسم نقطة الاستعادة</label>
+            <input
+              type="text"
+              value={checkpointName}
+              onChange={e => setCheckpointName(e.target.value)}
+              placeholder="مثال: قبل تحديث الأسعار"
+              className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl font-bold outline-none focus:border-[var(--md-sys-color-primary)]"
+              autoFocus
+              onKeyDown={e => { if (e.key === 'Enter' && !checkpointLoading) handleCreateCheckpoint(); }}
+            />
+          </div>
+        </div>
+      </MD3Dialog>
+
+      <CollapsibleSection
+        title="إعدادات الفاتورة"
+        icon={<Printer className="text-accent" />}
+        defaultOpen={false}
+        headerClassName="mb-2"
+      >
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.14 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
         <div className="space-y-6">
           <div className="space-y-4">
@@ -1123,8 +1160,14 @@ className="w-full px-4 py-2 bg-[var(--md-sys-color-surface)] border border-accen
             </div>
           </div>
         </motion.div>
+      </CollapsibleSection>
 
-      <div className="flex items-center gap-2 mb-2"><Sparkles className="text-accent" /><h2 className="text-2xl font-bold">إدارة مفاتيح AI API</h2></div>
+      <CollapsibleSection
+        title="إدارة مفاتيح AI API"
+        icon={<Sparkles className="text-accent" />}
+        defaultOpen={false}
+        headerClassName="mb-2"
+      >
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.15 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -1265,8 +1308,14 @@ className="w-full px-4 py-2 bg-[var(--md-sys-color-surface)] border border-accen
           </div>
         )}
       </motion.div>
+      </CollapsibleSection>
 
-      <div className="flex items-center gap-2 mb-2"><Tag className="text-accent" /><h2 className="text-2xl font-bold">الكوبونات</h2></div>
+      <CollapsibleSection
+        title="الكوبونات"
+        icon={<Tag className="text-accent" />}
+        defaultOpen={false}
+        headerClassName="mb-2"
+      >
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.16 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -1384,10 +1433,14 @@ className="w-full px-4 py-2 bg-[var(--md-sys-color-surface)] border border-accen
           </div>
         )}
       </motion.div>
+      </CollapsibleSection>
 
-
-
-      <div className="flex items-center gap-2 mb-2"><Database className="text-accent" /><h2 className="text-2xl font-bold">إدارة البيانات</h2></div>
+      <CollapsibleSection
+        title="إدارة البيانات"
+        icon={<Database className="text-accent" />}
+        defaultOpen={false}
+        headerClassName="mb-2"
+      >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <motion.div whileHover={{ scale: 1.02 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-3xl shadow-sm border flex flex-col items-center text-center gap-4">
           <Download size={32} className="text-blue-600" />
@@ -1401,6 +1454,7 @@ className="w-full px-4 py-2 bg-[var(--md-sys-color-surface)] border border-accen
           <MD3Button variant="outlined" fullWidth onClick={() => fileInputRef.current?.click()}>رفع ملف البيانات</MD3Button>
         </motion.div>
       </div>
+      </CollapsibleSection>
     </motion.div>
   );
 };
