@@ -68,10 +68,11 @@ router.post('/api/products', async (req, res) => {
 router.delete('/api/products/:id', async (req, res) => {
     try {
         const row = await getDb("SELECT data FROM products WHERE id = ?", [req.params.id]);
+        let activityLogId = null;
         if (row) {
             const p = JSON.parse(row.data);
             await runDb("DELETE FROM products WHERE id = ?", [req.params.id]);
-            const activityLogId = await logActivity('delete', 'product', req.params.id, 'تم حذف المنتج ' + p.name, { entityData: p });
+            activityLogId = await logActivity('delete', 'product', req.params.id, 'تم حذف المنتج ' + p.name, { entityData: p });
         } else {
             await runDb("DELETE FROM products WHERE id = ?", [req.params.id]);
         }

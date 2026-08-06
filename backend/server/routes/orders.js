@@ -136,13 +136,14 @@ router.post('/api/orders', async (req, res) => {
 router.delete('/api/orders/:id', async (req, res) => {
   try {
     const row = await getDb("SELECT data FROM orders WHERE id = ?", [req.params.id]);
+    let activityLogId = null;
     if (row) {
       const order = JSON.parse(row.data);
       if (isActiveStatus(order.status)) {
         await adjustStock(order.items || [], 'return');
       }
       await runDb("DELETE FROM orders WHERE id = ?", [req.params.id]);
-      const activityLogId = await logActivity('delete', 'order', req.params.id, `تم حذف الطلب للعميل ${order.customerName}`, { entityData: order });
+      activityLogId = await logActivity('delete', 'order', req.params.id, `تم حذف الطلب للعميل ${order.customerName}`, { entityData: order });
     }
     const products = await getAllProducts();
     res.json({ success: true, activityLogId, products });
