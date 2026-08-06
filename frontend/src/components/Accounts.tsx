@@ -47,6 +47,7 @@ import {
 import { Order, OrderStatus, Product, FinancialTarget, Branding } from '../types';
 import { exportToExcel, exportToPDF, exportToHTML, exportToCSV, exportToJSON } from '../lib/exportService';
 import { MD3Button, MD3IconButton, MD3Dialog } from './md3';
+import PopupSheet from './PopupSheet';
 
 interface AccountsProps {
   orders: Order[];
@@ -511,8 +512,12 @@ const Accounts: React.FC<AccountsProps> = ({
               تصدير
               <ChevronDown size={14} className="mr-1" />
             </MD3Button>
-            {showExportDropdown && (
-              <div className="absolute top-full left-0 mt-1 w-40 z-50">
+            <PopupSheet
+              isOpen={showExportDropdown}
+              onClose={() => setShowExportDropdown(false)}
+              className="absolute top-full left-0 mt-1 w-40 z-50"
+              title="تصدير"
+            >
                 <div className="bg-[var(--md-sys-color-surface)] rounded-2xl shadow-md border border-[var(--md-sys-color-outline-variant)]/20 p-1.5">
                   <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('excel'); setShowExportDropdown(false); }} icon={<BarChart2 size={14} className="text-emerald-500" />}>Excel</MD3Button>
                   <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('pdf'); setShowExportDropdown(false); }} icon={<Printer size={14} className="text-red-500" />}>PDF</MD3Button>
@@ -520,8 +525,7 @@ const Accounts: React.FC<AccountsProps> = ({
                   <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('csv' as any); setShowExportDropdown(false); }} icon={<FileText size={14} className="text-slate-500" />}>CSV</MD3Button>
                   <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('json' as any); setShowExportDropdown(false); }} icon={<Code size={14} className="text-slate-800" />}>JSON</MD3Button>
                 </div>
-              </div>
-            )}
+            </PopupSheet>
           </div>
         </motion.div>
       </div>

@@ -54,6 +54,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, Variant, Category, Branding, ViewMode, Order, Supplier, OptionCategory } from '../types';
 import { API_BASE } from '../lib/api';
+import { useBreakpoint } from '../hooks/useBreakpoint';
 import ProductModal from './ProductModal';
 
 import BatchEditModal from './BatchEditModal';
@@ -517,6 +518,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
   const [modal, setModal] = useState<{open: boolean, p?: Product}>({open: false});
   const [viewingProductId, setViewingProductId] = useState<string | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
+  const breakpoint = useBreakpoint();
+  const isMobile = breakpoint === 'compact';
   useEffect(() => { if (viewingProductId) setGalleryIndex(0); }, [viewingProductId]);
   const [searchParams] = useSearchParams();
   useEffect(() => {
@@ -2037,19 +2040,26 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
         const salesProfit = salesFromOrders.profit;
         const turnoverRate = totalQty > 0 ? (piecesSold / totalQty) : 0;
         return (
-          <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" onClick={() => setViewingProductId(null)}>
+          <div className={`fixed inset-0 z-[80] flex ${isMobile ? 'items-end' : 'items-center justify-center p-4'}`} onClick={() => setViewingProductId(null)}>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 bg-black/60" />
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
+              initial={isMobile ? { y: '100%' } : { scale: 0.9, opacity: 0, y: 20 }}
+              animate={isMobile ? { y: 0 } : { scale: 1, opacity: 1, y: 0 }}
+              transition={isMobile ? { type: 'spring', damping: 30, stiffness: 300 } : undefined}
               onClick={(e) => e.stopPropagation()}
-              className="bg-[var(--md-sys-color-surface)] rounded-[32px] w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl relative z-10"
+              style={isMobile ? { paddingBottom: 'env(safe-area-inset-bottom, 0px)' } : undefined}
+              className={`${isMobile ? 'bg-[var(--md-sys-color-surface-container-low)] rounded-t-[28px] border-t border-[var(--md-sys-color-outline-variant)]/30' : 'bg-[var(--md-sys-color-surface)] rounded-[32px] max-w-2xl'} w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl relative z-10`}
             >
+              {isMobile && (
+                <div className="flex justify-center pt-3 pb-1 shrink-0 cursor-grab active:cursor-grabbing touch-none">
+                  <div className="w-10 h-1 rounded-full bg-[var(--md-sys-color-outline-variant)]" />
+                </div>
+              )}
               {/* Image Gallery Header — Natural aspect */}
-              <div className="relative bg-[var(--md-sys-color-surface-container)] rounded-t-[32px] overflow-hidden flex items-center justify-center min-h-[200px]">
+              <div className="relative bg-[var(--md-sys-color-surface-container)] rounded-t-[32px] overflow-hidden flex items-center justify-center min-h-[200px] shrink-0">
                 {allImages.length > 0 ? (
                   <>
-                    <img src={allImages[galleryIndex]} className="w-full max-h-[55vh] object-contain p-6 transition-opacity duration-300" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" fill="%23f1f5f9"/><circle cx="100" cy="80" r="24" fill="%23cbd5e1"/><rect x="60" y="120" width="80" height="10" rx="5" fill="%23cbd5e1"/></svg>'); }} />
+                    <img src={allImages[galleryIndex]} className="w-full max-h-[35vh] object-contain p-6 transition-opacity duration-300" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" fill="%23f1f5f9"/><circle cx="100" cy="80" r="24" fill="%23cbd5e1"/><rect x="60" y="120" width="80" height="10" rx="5" fill="%23cbd5e1"/></svg>'); }} />
                     {allImages.length > 1 && (
                       <>
                         <button onClick={() => setGalleryIndex(prev => (prev - 1 + allImages.length) % allImages.length)} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-[var(--md-sys-color-on-surface)] rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-slate-900 transition-colors duration-200 shadow-lg"><ChevronRight size={20} /></button>
@@ -2074,7 +2084,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 )}
               </div>
 
-              <div className="p-8 space-y-6">
+              <div className={`${isMobile ? 'p-4' : 'p-8'} space-y-6 flex-1 min-h-0 overflow-y-auto overscroll-behavior-contain custom-scrollbar`}>
                 <div>
                   <h2 className="text-2xl font-black text-[var(--md-sys-color-on-surface)]">{product.name}</h2>
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -2248,11 +2258,11 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     <a href={product.url} target="_blank" rel="noopener noreferrer" className="text-[var(--md-sys-color-primary)] text-xs font-bold hover:underline flex items-center gap-1"><ExternalLink size={14} /> {product.url}</a>
                   </div>
                 )}
+              </div>
 
-                <div className="flex justify-between gap-4 pt-4 border-t border-[var(--md-sys-color-outline-variant)]/20">
-                  <MD3Button variant="outlined" onClick={() => setViewingProductId(null)}>إغلاق</MD3Button>
-                  <MD3Button variant="filled" icon={<Edit2 size={18} />} onClick={() => { setViewingProductId(null); setModal({open: true, p: product}); }}>تعديل المنتج</MD3Button>
-                </div>
+              <div className={`flex justify-between gap-4 ${isMobile ? 'px-4' : 'px-8'} py-5 border-t border-[var(--md-sys-color-outline-variant)]/20 shrink-0`}>
+                <MD3Button variant="outlined" onClick={() => setViewingProductId(null)}>إغلاق</MD3Button>
+                <MD3Button variant="filled" icon={<Edit2 size={18} />} onClick={() => { setViewingProductId(null); setModal({open: true, p: product}); }}>تعديل المنتج</MD3Button>
               </div>
             </motion.div>
           </div>

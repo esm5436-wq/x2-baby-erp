@@ -18,10 +18,10 @@ interface MD3ButtonProps {
 
 const variantClasses: Record<ButtonVariant, string> = {
   filled: 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-sm hover:shadow-md',
-  outlined: 'border border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-primary)] bg-transparent hover:bg-[rgba(var(--md-sys-color-primary-rgb),0.08)]',
-  text: 'text-[var(--md-sys-color-primary)] bg-transparent hover:bg-[rgba(var(--md-sys-color-primary-rgb),0.08)]',
+  outlined: 'border border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-primary-readable,var(--md-sys-color-primary))] bg-transparent hover:bg-[rgba(var(--md-sys-color-on-surface-rgb,27,27,31),0.08)]',
+  text: 'text-[var(--md-sys-color-primary-readable,var(--md-sys-color-primary))] bg-transparent hover:bg-[rgba(var(--md-sys-color-on-surface-rgb,27,27,31),0.08)]',
   tonal: 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] hover:shadow-sm',
-  elevated: 'bg-[var(--md-sys-color-surface-container-low)] text-[var(--md-sys-color-primary)] shadow-sm hover:shadow-md',
+  elevated: 'bg-[var(--md-sys-color-surface-container-low)] text-[var(--md-sys-color-primary-readable,var(--md-sys-color-primary))] shadow-sm hover:shadow-md',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { MessageSquare, Send, X, Bot, Loader2, Sparkles, User, Minimize2, Maximize2, Trash2, Paperclip, Image as ImageIcon, BarChart3, PackageSearch, History, Download } from 'lucide-react';
 import { AppState, Order, Product, OrderStatus } from '../types';
+import { useBreakpoint } from '../hooks/useBreakpoint';
 
 interface AIAssistantProps {
   state: AppState;
@@ -27,6 +28,9 @@ interface Message {
 const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, onAddOrder, onUpdateProduct, onRefreshState, hidden = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const breakpoint = useBreakpoint();
+  const isMobile = breakpoint === 'compact';
+  useEffect(() => { if (isMobile) setIsMinimized(false); }, [isMobile]);
   const [input, setInput] = useState('');
   const [attachment, setAttachment] = useState<{data: string, mimeType: string} | null>(null);
   const [messages, setMessages] = useState<Message[]>([
@@ -321,16 +325,23 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
         {isOpen && (
           <motion.div 
             key="ai-window"
-            initial={isMinimized ? { scale: 0.8, opacity: 0, y: 100 } : { scale: 0.9, opacity: 0, y: 20 }}
-            animate={isMinimized ? { scale: 1, opacity: 1, y: 0, height: 64, width: 288, borderRadius: 24 } : { scale: 1, opacity: 1, y: 0, height: 600, width: 400, borderRadius: 32 }}
-            exit={{ scale: 0.8, opacity: 0, y: 20 }}
+            initial={isMobile ? { y: '100%', opacity: 0 } : (isMinimized ? { scale: 0.8, opacity: 0, y: 100 } : { scale: 0.9, opacity: 0, y: 20 })}
+            animate={isMobile ? { y: 0, opacity: 1 } : (isMinimized ? { scale: 1, opacity: 1, y: 0, height: 64, width: 288, borderRadius: 24 } : { scale: 1, opacity: 1, y: 0, height: 600, width: 400, borderRadius: 32 })}
+            exit={isMobile ? { y: '100%', opacity: 0 } : { scale: 0.8, opacity: 0, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-6 left-6 z-[250] shadow-lg border border-gray-100 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 flex flex-col"
-            style={{ 
-              maxWidth: '90vw',
-              maxHeight: '80vh'
-            }}
+            className={isMobile
+              ? "fixed bottom-0 left-0 right-0 z-[250] shadow-2xl border-t border-gray-100 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 flex flex-col rounded-t-[28px]"
+              : "fixed bottom-6 left-6 z-[250] shadow-lg border border-gray-100 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 flex flex-col"}
+            style={isMobile
+              ? { maxHeight: '92vh', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }
+              : { maxWidth: '90vw', maxHeight: '80vh' }}
           >
+            {/* Grab Handle (mobile) */}
+            {isMobile && (
+              <div className="flex justify-center pt-2 pb-0.5 shrink-0 cursor-grab active:cursor-grabbing touch-none">
+                <div className="w-10 h-1 rounded-full bg-[var(--md-sys-color-outline-variant)]" />
+              </div>
+            )}
             {/* Header */}
             <div 
               className="h-16 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 flex items-center justify-between px-5 border-b border-gray-100 dark:border-slate-700 cursor-pointer shrink-0"
@@ -380,9 +391,11 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
                     </motion.button>
                   )}
                 </AnimatePresence>
-                <button onClick={toggleMinimize} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl transition-colors duration-200">
-                  {isMinimized ? <Maximize2 size={16} /> : <Minimize2 size={16} />}
-                </button>
+                {!isMobile && (
+                  <button onClick={toggleMinimize} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl transition-colors duration-200">
+                    {isMinimized ? <Maximize2 size={16} /> : <Minimize2 size={16} />}
+                  </button>
+                )}
                 <button onClick={toggleOpen} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors duration-200">
                   <X size={20} />
                 </button>

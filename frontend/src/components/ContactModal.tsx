@@ -5,6 +5,7 @@ import { FaWhatsapp, FaTelegram, FaFacebook, FaInstagram, FaTiktok, FaYoutube, F
 import { Contact } from '../types';
 import { formatDate } from '../lib/formatDate';
 import { MD3Dialog } from './md3';
+import PopupSheet from './PopupSheet';
 
 const ENTITY_TYPES = ['مصنع', 'تاجر جملة', 'مقدم خدمة', 'مستورد', 'شركة شحن', 'شركة تسويق', 'شركات الطباعه و التغليف', 'أخرى'];
 
@@ -503,8 +504,12 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
                 className="w-full px-4 py-3 bg-[var(--md-sys-color-surface-container)] border-2 border-[var(--md-sys-color-outline-variant)]/30 rounded-2xl outline-none font-bold text-[var(--md-sys-color-on-surface)] focus:border-accent transition-colors duration-200"
                 placeholder="مثال: مورد قطع غيار، شركة شحن..."
               />
-              {showSpecs && filteredSpecs.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-xl shadow-md z-20 max-h-40 overflow-y-auto">
+              <PopupSheet
+                isOpen={showSpecs && filteredSpecs.length > 0}
+                onClose={() => setShowSpecs(false)}
+                className="absolute top-full left-0 right-0 mt-1 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-xl shadow-md z-20 max-h-40 overflow-y-auto"
+                title="التخصصات"
+              >
                   {filteredSpecs.map(s => (
                     <div key={s} className="flex items-center justify-between px-4 py-2.5 hover:bg-[var(--md-sys-color-surface-container)] group">
                       <button
@@ -530,8 +535,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
                       )}
                     </div>
                   ))}
-                </div>
-              )}
+              </PopupSheet>
             </div>
           </div>
           <div className="space-y-2">

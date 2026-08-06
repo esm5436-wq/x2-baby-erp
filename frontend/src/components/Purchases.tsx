@@ -38,6 +38,7 @@ import { compressImage } from '../lib/imageUtils';
 import { Globe } from 'lucide-react';
 import { MD3Button, MD3IconButton } from './md3';
 import { MD3EmptyState, MD3Badge } from './md3';
+import PopupSheet from './PopupSheet';
 
 interface PurchasesProps {
   products: Product[];
@@ -478,13 +479,16 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                             <button onClick={() => setShowProductModal(true)} className="text-[10px] font-black text-accent hover:underline">إضافة منتج جديد +</button>
                           </div>
                           <input type="text" placeholder="اسم المنتج..." value={productSearch} onChange={(e) => setProductSearch(e.target.value)} className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl font-bold text-sm" />
-                          {filteredProducts.length > 0 && !selectedProduct && (
-                            <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-md rounded-xl z-20 overflow-hidden divide-y divide-gray-50 dark:divide-slate-800/50">
+                          <PopupSheet
+                            isOpen={filteredProducts.length > 0 && !selectedProduct}
+                            onClose={() => setProductSearch('')}
+                            className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-md rounded-xl z-20 overflow-hidden divide-y divide-gray-50 dark:divide-slate-800/50"
+                            title="منتجات مطابقة"
+                          >
                               {filteredProducts.map(p => (
                                 <button key={p.id} onClick={() => { setSelectedProduct(p); setProductSearch(p.name); if (p.variants.length === 1) setSelectedVariantId(p.variants[0].id); setItemForm(prev => ({ ...prev, buyPrice: p.wholesalePrice || p.costPrice || 0 })); }} className="w-full text-right p-3 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-between"><span className="font-black text-sm">{p.name}</span></button>
                               ))}
-                            </div>
-                          )}
+                          </PopupSheet>
                         </div>
                         <div className="md:col-span-2">
                            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 mb-1 block">المتغير</label>

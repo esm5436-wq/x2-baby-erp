@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { User, Phone, Check, Search, Loader2 } from 'lucide-react';
 import { API_BASE } from '../lib/api';
+import PopupSheet from './PopupSheet';
 
 interface CustomerResult {
   id: string;
@@ -97,8 +98,12 @@ export default function CustomerPicker({
             <Phone size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input required type="tel" className="w-full pr-9 pl-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl outline-none text-gray-900 dark:text-white font-mono text-sm font-bold" placeholder="01xxxxxxxxx" value={phone} onChange={e => handlePhoneInput(e.target.value)} />
           </div>
-          {showDropdown && (
-            <div className="absolute top-full right-0 left-0 mt-1 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto">
+          <PopupSheet
+            isOpen={showDropdown}
+            onClose={() => setShowDropdown(false)}
+            className="absolute top-full right-0 left-0 mt-1 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto"
+            title="نتائج البحث"
+          >
               {results.map(c => (
                 <button type="button" key={c.id} onClick={() => selectCustomer(c)} className="w-full text-right px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border-b border-gray-50 dark:border-slate-700 last:border-0 flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
@@ -111,8 +116,7 @@ export default function CustomerPicker({
                   <div className="text-[9px] font-black text-gray-400 dark:text-gray-500 flex-shrink-0">{c.total_orders} طلب</div>
                 </button>
               ))}
-            </div>
-          )}
+          </PopupSheet>
         </div>
       </div>
     </div>

@@ -55,3 +55,10 @@ login-page.txt
 
 # Frontend vercel.json (use root vercel.json only)
 frontend/vercel.json
+
+# Scratch / debug artifacts
+contact-*-fixed
+contact-*-snapshot
+contact-modal-*
+product-modal-fixed
+backend/checkdb.mjs

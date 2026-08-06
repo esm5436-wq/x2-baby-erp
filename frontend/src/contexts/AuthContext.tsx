@@ -5,6 +5,7 @@ import { API_BASE, getAuthToken, setAuthToken, clearAuthToken, getAuthUsername }
 interface AuthContextType {
   token: string | null;
   username: string | null;
+  role: string;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (username: string, password: string) => Promise<boolean>;
@@ -13,9 +14,23 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>(null!);
 
+function getRoleFromToken(token: string | null): string {
+  if (!token) return 'user';
+  try {
+    const b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const binary = atob(b64);
+    const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+    const payload = JSON.parse(new TextDecoder().decode(bytes));
+    return payload.role || 'user';
+  } catch {
+    return 'user';
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(getAuthToken);
   const [username, setUsername] = useState<string | null>(getAuthUsername);
+  const [role, setRole] = useState<string>(() => getRoleFromToken(getAuthToken()));
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -34,12 +49,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           clearAuthToken();
           setToken(null);
           setUsername(null);
+          setRole('user');
         }
       })
       .catch(() => {
         clearAuthToken();
         setToken(null);
         setUsername(null);
+        setRole('user');
       })
       .finally(() => setIsLoading(false));
   }, []);
@@ -56,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setAuthToken(data.token, data.username);
       setToken(data.token);
       setUsername(data.username);
+      setRole(getRoleFromToken(data.token));
       return true;
     } catch {
       return false;
@@ -66,10 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearAuthToken();
     setToken(null);
     setUsername(null);
+    setRole('user');
   };
 
   return (
-    <AuthContext.Provider value={{ token, username, isAuthenticated: !!token, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ token, username, role, isAuthenticated: !!token, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

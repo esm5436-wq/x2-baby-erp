@@ -65,6 +65,7 @@ import BatchEditModal from './BatchEditModal';
 import type { BatchField } from './BatchEditModal';
 import InvoicePrintModal from './InvoicePrintModal';
 import WaybillPrintModal from './WaybillPrintModal';
+import PopupSheet from './PopupSheet';
 import { API_BASE } from '../lib/api';
 import CustomerDetail from './CustomerDetail';
 import { MD3StatCard, MD3Dialog } from './md3';
@@ -212,8 +213,12 @@ const SearchableSelect: React.FC<{
       
       {icon && <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">{icon}</div>}
 
-      {isOpen && (
-        <div className={`absolute ${dropdownUp ? 'bottom-full mb-2' : 'top-full mt-2'} w-full bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl shadow-md z-[200] overflow-hidden animate-in fade-in zoom-in duration-200`}>
+      <PopupSheet
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        className={`absolute ${dropdownUp ? 'bottom-full mb-2' : 'top-full mt-2'} w-full bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl shadow-md z-[200] overflow-hidden animate-in fade-in zoom-in duration-200`}
+        title="اختر من القائمة"
+      >
           <div className="p-2 border-b border-gray-50 dark:border-slate-700">
             <div className="relative">
               <Search size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
@@ -269,8 +274,7 @@ const SearchableSelect: React.FC<{
               <div className="p-4 text-center text-xs text-gray-400 dark:text-gray-500 font-medium">لا توجد نتائج</div>
             )}
           </div>
-        </div>
-      )}
+      </PopupSheet>
 
       {hoveredImage && (
         <div
@@ -2171,8 +2175,12 @@ const Orders: React.FC<OrdersProps> = ({
               )}
               <ChevronDown size={14} className="mr-auto text-gray-400" />
             </button>
-            {filterDropdownOpen && (
-              <div className="absolute top-full right-0 mt-1 w-56 z-50">
+            <PopupSheet
+              isOpen={filterDropdownOpen}
+              onClose={() => setFilterDropdownOpen(false)}
+              className="absolute top-full right-0 mt-1 w-56 z-50"
+              title="فلترة الحالة"
+            >
                 <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-1.5 max-h-64 overflow-y-auto">
                   <button
                     onClick={() => { setStatusFilter('الكل'); setFilterDropdownOpen(false); }}
@@ -2206,8 +2214,7 @@ const Orders: React.FC<OrdersProps> = ({
                     </button>
                   ))}
                 </div>
-              </div>
-            )}
+            </PopupSheet>
           </div>
 
           {(orderSearch || statusFilter !== 'الكل' || dateFilter !== 'all') && (
@@ -2363,11 +2370,11 @@ const Orders: React.FC<OrdersProps> = ({
                            >
                               {status}
                            </button>
-                        ))}
-                     </div>
+                                   ))}
+                                </div>
                   </div>
-               )}
-               <div className="md:col-span-2 p-5 bg-[var(--md-sys-color-surface-container)] rounded-[24px] border border-[var(--md-sys-color-outline-variant)]/20 relative space-y-4">
+                )}
+                <div className="md:col-span-2 p-5 bg-[var(--md-sys-color-surface-container)] rounded-[24px] border border-[var(--md-sys-color-outline-variant)]/20 relative space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-4">
                       <div className="space-y-1 flex-1 min-w-[200px]">
                         <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] block mb-2">نوع التوصيل</label>
@@ -2470,30 +2477,35 @@ const Orders: React.FC<OrdersProps> = ({
                                        }}
                                    />
                                    {showCouponDropdown && filteredCoupons.length > 0 && (
-                                     <div className="absolute top-full left-0 right-0 mt-1 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl shadow-md z-30 max-h-36 overflow-y-auto">
-                                       {filteredCoupons.map(code => {
-                                         const info = allCoupons[code];
-                                         return (
-                                         <div key={code} className="px-3 py-2 hover:bg-[var(--md-sys-color-surface-container)]">
-                                           <button
-                                             type="button"
-                                             className="text-xs font-bold text-[var(--md-sys-color-on-surface)] w-full text-right"
-                                             onClick={() => {
-                                               setFormData(prev => ({
-                                                 ...prev,
-                                                 coupon: code,
-                                                 couponDiscount: info.discount
-                                               }));
-                                               setIsPercentDiscount(info.is_percent);
-                                               setShowCouponDropdown(false);
-                                             }}
-                                           >
-                                              {code} <span className="text-[10px] text-[var(--md-sys-color-on-surface-variant)]">({info.discount} {info.is_percent ? '%' : 'ج.م'})</span>
-                                           </button>
-                                         </div>
-                                         );
-                                       })}
-                                     </div>
+                                     <PopupSheet
+                                       isOpen={showCouponDropdown && filteredCoupons.length > 0}
+                                       onClose={() => setShowCouponDropdown(false)}
+                                       className="absolute top-full left-0 right-0 mt-1 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl shadow-md z-30 max-h-36 overflow-y-auto"
+                                       title="الكوبونات"
+                                     >
+                                        {filteredCoupons.map(code => {
+                                          const info = allCoupons[code];
+                                          return (
+                                          <div key={code} className="px-3 py-2 hover:bg-[var(--md-sys-color-surface-container)]">
+                                            <button
+                                              type="button"
+                                              className="text-xs font-bold text-[var(--md-sys-color-on-surface)] w-full text-right"
+                                              onClick={() => {
+                                                setFormData(prev => ({
+                                                  ...prev,
+                                                  coupon: code,
+                                                  couponDiscount: info.discount
+                                                }));
+                                                setIsPercentDiscount(info.is_percent);
+                                                setShowCouponDropdown(false);
+                                              }}
+                                            >
+                                               {code} <span className="text-[10px] text-[var(--md-sys-color-on-surface-variant)]">({info.discount} {info.is_percent ? '%' : 'ج.م'})</span>
+                                            </button>
+                                          </div>
+                                          );
+                                        })}
+                                     </PopupSheet>
                                    )}
                                 </div>
                                 <div className="space-y-1">
@@ -2938,8 +2950,12 @@ const Orders: React.FC<OrdersProps> = ({
                                    {getStatusIcon(order.status)}
                                    {order.status}
                                 </span>
-                                {activeStatusOrderId === order.id && (
-                                   <div className="absolute bottom-full right-0 mb-2 w-48 pt-1 z-50">
+                                 <PopupSheet
+                                    isOpen={activeStatusOrderId === order.id}
+                                    onClose={() => setActiveStatusOrderId(null)}
+                                    className="absolute bottom-full right-0 mb-2 w-48 pt-1 z-50"
+                                    title="تغيير الحالة"
+                                 >
                                       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-1.5">
                                          <div className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-3 py-1.5">تغيير الحالة</div>
                                          {Object.values(OrderStatus).map(status => (
@@ -2954,10 +2970,9 @@ const Orders: React.FC<OrdersProps> = ({
                                                </span>
                                                {order.status === status && <Check size={10} className="text-blue-500" />}
                                             </button>
-                                         ))}
-                                      </div>
-                                   </div>
-                                )}
+                                        ))}
+                                     </div>
+                               </PopupSheet>
                              </div>
 
                               <span className={`text-xs font-black ${getStatusTextColor(order.status)}`}>{(order.totalAmount || 0).toLocaleString()} ج.م</span>
@@ -3065,9 +3080,13 @@ const Orders: React.FC<OrdersProps> = ({
                                  {getStatusIcon(order.status)}
                                  {order.status}
                               </span>
-                              {activeStatusOrderId === order.id && (
-                                 <div className="absolute bottom-full right-0 mb-2 w-48 pt-1 z-50">
-                                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-1.5">
+                               <PopupSheet
+                                  isOpen={activeStatusOrderId === order.id}
+                                  onClose={() => setActiveStatusOrderId(null)}
+                                  className="absolute bottom-full right-0 mb-2 w-48 pt-1 z-50"
+                                  title="تغيير الحالة"
+                               >
+                                     <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-1.5">
                                        <div className="text-[10px] font-black text-gray-400 dark:text-gray-500 px-3 py-1.5">تغيير الحالة</div>
                                        {Object.values(OrderStatus).map(status => (
                                           <button
@@ -3081,10 +3100,9 @@ const Orders: React.FC<OrdersProps> = ({
                                              </span>
                                              {order.status === status && <Check size={10} className="text-blue-500" />}
                                           </button>
-                                       ))}
-                                    </div>
-                                 </div>
-                              )}
+                                  ))}
+                               </div>
+                         </PopupSheet>
                         </div>
                      </td>
                      <td className="p-4">
@@ -3147,9 +3165,13 @@ const Orders: React.FC<OrdersProps> = ({
                            {getStatusIcon(order.status)}
                            {order.status}
                         </span>
-                        {activeStatusOrderId === order.id && (
-                           <div className="absolute bottom-full right-0 mb-2 w-44 pt-1 z-50">
-                              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-1">
+                         <PopupSheet
+                            isOpen={activeStatusOrderId === order.id}
+                            onClose={() => setActiveStatusOrderId(null)}
+                            className="absolute bottom-full right-0 mb-2 w-44 pt-1 z-50"
+                            title="تغيير الحالة"
+                         >
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-1">
                                  <div className="text-[9px] font-black text-gray-400 dark:text-gray-500 px-3 py-1.5">تغيير الحالة</div>
                                  {Object.values(OrderStatus).map(status => (
                                     <button
@@ -3163,11 +3185,10 @@ const Orders: React.FC<OrdersProps> = ({
                                        </span>
                                        {order.status === status && <Check size={9} className="text-blue-500" />}
                                     </button>
-                                 ))}
-                              </div>
-                           </div>
-                        )}
-                  </div>
+                                  ))}
+                               </div>
+                         </PopupSheet>
+                   </div>
                 </div>
                 <div className="flex items-center justify-center gap-1.5 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800" onClick={e => e.stopPropagation()}>
                           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startEditing(order)} className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm" title="تعديل"><Edit2 size={11} /></motion.button>
@@ -3242,9 +3263,13 @@ const Orders: React.FC<OrdersProps> = ({
                            {getStatusIcon(order.status)}
                            {order.status}
                         </span>
-                        {activeStatusOrderId === order.id && (
-                           <div className="absolute bottom-full right-0 mb-2 w-44 pt-1 z-50">
-                              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-1">
+                         <PopupSheet
+                            isOpen={activeStatusOrderId === order.id}
+                            onClose={() => setActiveStatusOrderId(null)}
+                            className="absolute bottom-full right-0 mb-2 w-44 pt-1 z-50"
+                            title="تغيير الحالة"
+                         >
+                            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-1">
                                  <div className="text-[9px] font-black text-gray-400 dark:text-gray-500 px-3 py-1.5">تغيير الحالة</div>
                                  {Object.values(OrderStatus).map(status => (
                                     <button
@@ -3258,10 +3283,9 @@ const Orders: React.FC<OrdersProps> = ({
                                        </span>
                                        {order.status === status && <Check size={9} className="text-blue-500" />}
                                     </button>
-                                 ))}
-                              </div>
-                           </div>
-                        )}
+                                  ))}
+                               </div>
+                         </PopupSheet>
                      </div>
                     <div className="flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
                       {order.customerPhone && (
@@ -3632,52 +3656,43 @@ const Orders: React.FC<OrdersProps> = ({
                       <ChevronUp size={16} className={`transition-transform duration-300 ${isBulkStatusOpen ? 'rotate-180' : ''}`} />
                     </motion.button>
                     
-                    <AnimatePresence>
-                      {isBulkStatusOpen && (
-                        <>
-                          <div 
-                            className="fixed inset-0 z-[-1]" 
-                            onClick={() => setIsBulkStatusOpen(false)}
-                          />
-                          <motion.div 
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 w-64 bg-white dark:bg-slate-800 rounded-[32px] shadow-lg border border-gray-100 dark:border-slate-700 p-3 z-[70]"
-                          >
-                              <div className="max-h-64 overflow-y-auto custom-scrollbar p-1">
-                                 <div className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-3">اختر الحالة الجديدة</div>
-                                 {Object.values(OrderStatus).map(status => (
-                                     <button 
-                                       key={status}
-                                       onClick={() => {
-                                          if (window.confirm(`هل أنت متأكد من تغيير حالة ${selectedIds.size} طلب إلى "${status}"؟`)) {
-                                              const ids = Array.from(selectedIds);
-                                              if (onUpdateMultipleStatus) {
-                                                  onUpdateMultipleStatus(ids, status);
-                                              } else {
-                                                  ids.forEach(id => onUpdateStatus(id, status));
-                                              }
-                                              setSelectedIds(new Set());
-                                              setIsBulkStatusOpen(false);
-                                          }
-                                       }}
-                                       className="w-full text-right px-4 py-3 rounded-2xl text-[11px] font-black text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors duration-200 flex items-center justify-between group/item"
-                                     >
-                                        <span className="flex items-center gap-2">
-                                          <div className={`w-2 h-2 rounded-full ${getStatusStyle(status).split(' ')[0]}`}></div>
-                                          {status}
-                                        </span>
-                                        <ChevronDown size={12} className="opacity-0 group-hover/item:opacity-100 -rotate-90 transition-opacity duration-200" />
-                                     </button>
-                                 ))}
-                              </div>
-                              {/* Connector Arrow */}
-                              <div className="absolute top-full left-1/2 -translate-x-1/2 w-4 h-4 bg-white dark:bg-slate-800 rotate-45 -mt-2 border-r border-b border-gray-100 dark:border-slate-700"></div>
-                          </motion.div>
-                        </>
-                      )}
-                    </AnimatePresence>
+                    <PopupSheet
+                      isOpen={isBulkStatusOpen}
+                      onClose={() => setIsBulkStatusOpen(false)}
+                      className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 w-64 bg-white dark:bg-slate-800 rounded-[32px] shadow-lg border border-gray-100 dark:border-slate-700 p-3 z-[70]"
+                      title="اختر الحالة الجديدة"
+                    >
+                      <div className="fixed inset-0 z-[-1]" onClick={() => setIsBulkStatusOpen(false)} />
+                      <div className="max-h-64 overflow-y-auto custom-scrollbar p-1">
+                         <div className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-3">اختر الحالة الجديدة</div>
+                         {Object.values(OrderStatus).map(status => (
+                             <button 
+                               key={status}
+                               onClick={() => {
+                                  if (window.confirm(`هل أنت متأكد من تغيير حالة ${selectedIds.size} طلب إلى "${status}"؟`)) {
+                                      const ids = Array.from(selectedIds);
+                                      if (onUpdateMultipleStatus) {
+                                          onUpdateMultipleStatus(ids, status);
+                                      } else {
+                                          ids.forEach(id => onUpdateStatus(id, status));
+                                      }
+                                      setSelectedIds(new Set());
+                                      setIsBulkStatusOpen(false);
+                                  }
+                               }}
+                               className="w-full text-right px-4 py-3 rounded-2xl text-[11px] font-black text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors duration-200 flex items-center justify-between group/item"
+                             >
+                                <span className="flex items-center gap-2">
+                                  <div className={`w-2 h-2 rounded-full ${getStatusStyle(status).split(' ')[0]}`}></div>
+                                  {status}
+                                </span>
+                                <ChevronDown size={12} className="opacity-0 group-hover/item:opacity-100 -rotate-90 transition-opacity duration-200" />
+                             </button>
+                         ))}
+                      </div>
+                      {/* Connector Arrow */}
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-4 h-4 bg-white dark:bg-slate-800 rotate-45 -mt-2 border-r border-b border-gray-100 dark:border-slate-700"></div>
+                    </PopupSheet>
                 </div>
 
                 <motion.button 

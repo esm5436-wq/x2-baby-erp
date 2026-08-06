@@ -52,11 +52,15 @@ function applyCustomColors(primary: string, secondary: string, dark: boolean) {
   const root = document.documentElement;
   const p = generateThemeColors(primary, dark);
   const s = generateThemeColors(secondary, dark);
+  const [pr, pg, pb] = hexToRgb(primary);
+  const primaryLuminance = luminance(pr, pg, pb);
+  const primaryReadable = primaryLuminance < 0.4 ? p.base : p.on;
   root.style.setProperty('--md-sys-color-primary', p.base);
   root.style.setProperty('--md-sys-color-on-primary', p.on);
   root.style.setProperty('--md-sys-color-primary-container', p.container);
   root.style.setProperty('--md-sys-color-on-primary-container', p.onContainer);
   root.style.setProperty('--md-sys-color-primary-rgb', p.rgb);
+  root.style.setProperty('--md-sys-color-primary-readable', primaryReadable);
   root.style.setProperty('--md-sys-color-secondary', s.base);
   root.style.setProperty('--md-sys-color-on-secondary', s.on);
   root.style.setProperty('--md-sys-color-secondary-container', s.container);
@@ -65,7 +69,7 @@ function applyCustomColors(primary: string, secondary: string, dark: boolean) {
 
 function clearCustomColors() {
   const root = document.documentElement;
-  ['--md-sys-color-primary', '--md-sys-color-on-primary', '--md-sys-color-primary-container', '--md-sys-color-on-primary-container', '--md-sys-color-primary-rgb', '--md-sys-color-secondary', '--md-sys-color-on-secondary', '--md-sys-color-secondary-container', '--md-sys-color-on-secondary-container'].forEach(p => root.style.removeProperty(p));
+  ['--md-sys-color-primary', '--md-sys-color-on-primary', '--md-sys-color-primary-container', '--md-sys-color-on-primary-container', '--md-sys-color-primary-rgb', '--md-sys-color-primary-readable', '--md-sys-color-secondary', '--md-sys-color-on-secondary', '--md-sys-color-secondary-container', '--md-sys-color-on-secondary-container'].forEach(p => root.style.removeProperty(p));
 }
 
 const DEFAULT_PRIMARY = '#C1DBFD';

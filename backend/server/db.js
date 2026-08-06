@@ -103,6 +103,8 @@ export async function initializeSchema() {
     `CREATE TABLE IF NOT EXISTS order_items_cost_tracking (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id TEXT NOT NULL, product_id TEXT NOT NULL, cost_at_sale REAL NOT NULL, quantity INTEGER NOT NULL, price_at_sale REAL NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
     `CREATE TABLE IF NOT EXISTS activity_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, action TEXT NOT NULL, entity_type TEXT NOT NULL, entity_id TEXT, description TEXT, metadata TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
     `CREATE TABLE IF NOT EXISTS checkpoints (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, snapshot TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
+    `CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'user', permissions TEXT, can_change_password INTEGER DEFAULT 1, created_by TEXT, last_login DATETIME, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
+    `INSERT OR IGNORE INTO users (id, username, password_hash, role, permissions, can_change_password, created_by) VALUES (1, 'admin', '', 'admin', '{}', 1, 'system')`,
     `CREATE INDEX IF NOT EXISTS idx_contacts_specialization ON contacts(specialization)`,
     `CREATE INDEX IF NOT EXISTS idx_contacts_entity_type ON contacts(entity_type)`,
     `CREATE INDEX IF NOT EXISTS idx_order_items_cost_order_id ON order_items_cost_tracking(order_id)`,

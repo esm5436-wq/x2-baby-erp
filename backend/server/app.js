@@ -18,6 +18,7 @@ import couponsRouter from './routes/coupons.js';
 import importRouter from './routes/import.js';
 import checkpointRouter from './routes/checkpoints.js';
 import customersRouter from './routes/customers.js';
+import usersRouter from './routes/users.js';
 import authRouter from './routes/Auth.js';
 
 const app = express();
@@ -59,6 +60,7 @@ app.use(couponsRouter);
 app.use(importRouter);
 app.use(checkpointRouter);
 app.use(customersRouter);
+app.use(usersRouter);
 
 app.use(errorHandler);
 

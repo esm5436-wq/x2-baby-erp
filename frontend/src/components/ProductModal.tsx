@@ -599,7 +599,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
       actions={[
         ...(isEdit ? [{ label: 'حذف', onClick: () => { if(window.confirm('هل أنت متأكد من حذف المنتج نهائياً من النظام؟')) { markClean(); onDeleteAction(product!.id); onClose(); } }, variant: 'danger' as const }] : []),
         { label: 'إلغاء', onClick: () => withUnsavedCheck(onClose), variant: 'text' as const },
-        { label: currentStep === 1 ? 'حفظ المنتج' : 'التالي', onClick: () => { if (currentStep < 1) { setCurrentStep(currentStep + 1); } else { markClean(); onSave({...p, options}); } }, variant: 'filled' as const }
+        { label: currentStep === 1 ? 'حفظ المنتج' : 'التالي', closeOnAction: currentStep === 1, onClick: () => { if (currentStep < 1) { setCurrentStep(currentStep + 1); } else { markClean(); onSave({...p, options}); } }, variant: 'filled' as const }
       ]}
     >
       <div dir="rtl" className="text-right">

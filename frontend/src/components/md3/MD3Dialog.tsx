@@ -7,6 +7,8 @@ interface MD3DialogAction {
   onClick: () => void;
   variant?: 'filled' | 'tonal' | 'text' | 'danger';
   icon?: React.ReactNode;
+  /** When false, clicking the action does not auto-close the dialog */
+  closeOnAction?: boolean;
 }
 
 interface MD3DialogProps {
@@ -141,7 +143,7 @@ const MD3Dialog: React.FC<MD3DialogProps> = ({
         return 'bg-[var(--md-sys-color-error)] text-[var(--md-sys-color-on-error)] px-6 py-2.5 rounded-[20px] font-medium text-sm hover:shadow-md transition-all';
       case 'text':
       default:
-        return 'text-[var(--md-sys-color-primary)] px-4 py-2.5 rounded-[20px] font-medium text-sm hover:bg-[rgba(var(--md-sys-color-primary-rgb,103,80,164),0.08)] transition-colors';
+        return 'text-[var(--md-sys-color-primary-readable,var(--md-sys-color-primary))] px-4 py-2.5 rounded-[20px] font-medium text-sm hover:bg-[rgba(var(--md-sys-color-on-surface-rgb,27,27,31),0.08)] transition-colors';
     }
   };
 
@@ -225,7 +227,7 @@ const MD3Dialog: React.FC<MD3DialogProps> = ({
                     {actions.map((action, i) => (
                       <button
                         key={i}
-                        onClick={() => { action.onClick(); onClose(); }}
+                        onClick={() => { action.onClick(); if (action.closeOnAction !== false) onClose(); }}
                         className={getActionClasses(action.variant)}
                       >
                         <span className="flex items-center gap-2">
@@ -266,7 +268,7 @@ const MD3Dialog: React.FC<MD3DialogProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.85, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className={`relative w-full ${maxWidthMap[maxWidth]} bg-[var(--md-sys-color-surface-container-high)] rounded-[28px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-hidden outline-none`}
+            className={`relative w-full ${maxWidthMap[maxWidth]} flex flex-col max-h-[calc(100vh-64px)] bg-[var(--md-sys-color-surface-container-high)] rounded-[28px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-hidden outline-none`}
             role="dialog"
             aria-modal="true"
             aria-labelledby={title ? titleId : undefined}
@@ -275,11 +277,11 @@ const MD3Dialog: React.FC<MD3DialogProps> = ({
             <div
               ref={dialogRef}
               tabIndex={-1}
-              className="outline-none"
+              className="outline-none flex flex-col flex-1 min-h-0"
             >
               {/* Header area */}
               {(title || icon || closeButton) && (
-                <div className="px-6 pt-6 pb-2 relative">
+                <div className="px-6 pt-6 pb-2 relative shrink-0">
                   {closeButton && (
                     <button
                       onClick={onClose}
@@ -312,17 +314,17 @@ const MD3Dialog: React.FC<MD3DialogProps> = ({
               )}
 
               {/* Content */}
-              <div className="px-6 py-4">
+              <div className="px-6 py-4 flex-1 min-h-0 overflow-y-auto overscroll-behavior-contain custom-scrollbar">
                 {children}
               </div>
 
               {/* Actions */}
               {actions && actions.length > 0 && (
-                <div className="px-6 pb-6 pt-2 flex items-center justify-end gap-2 flex-wrap">
+                <div className="px-6 pb-6 pt-2 flex items-center justify-end gap-2 flex-wrap shrink-0 border-t border-[var(--md-sys-color-outline-variant)]/30">
                   {actions.map((action, i) => (
                     <button
                       key={i}
-                      onClick={() => { action.onClick(); onClose(); }}
+                      onClick={() => { action.onClick(); if (action.closeOnAction !== false) onClose(); }}
                       className={getActionClasses(action.variant)}
                     >
                       <span className="flex items-center gap-2">

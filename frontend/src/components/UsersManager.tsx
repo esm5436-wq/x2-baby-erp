@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Users, Plus, Trash2, Eye, EyeOff, Shield, UserCog, Save } from 'lucide-react';
+import { Plus, Trash2, Eye, EyeOff, Shield, UserCog, Save } from 'lucide-react';
 import { API_BASE } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { MD3Button, MD3IconButton, MD3Dialog, useSnackbar } from './md3';
@@ -34,7 +34,8 @@ export default function UsersManager() {
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   const showNotif = (message: string, type: 'success' | 'error') => {
-    snackbar(message, type);
+    if (type === 'success') snackbar.success(message);
+    else snackbar.error(message);
   };
 
   const fetchUsers = async () => {

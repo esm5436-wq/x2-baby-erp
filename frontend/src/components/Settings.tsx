@@ -1,12 +1,14 @@
 ﻿import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Download, Upload, Database, AlertCircle, AlertTriangle, Check, Clock, Palette, Image as ImageIcon, Trash2, Save, Tag, Plus, ChevronDown, ChevronRight, Edit2, Sparkles, Key, ArrowUp, ArrowDown, Eye, EyeOff, X, Printer, Percent, RotateCcw, History, Layers, RefreshCw } from 'lucide-react';
+import { Download, Upload, Database, AlertCircle, AlertTriangle, Check, Clock, Palette, Image as ImageIcon, Trash2, Save, Tag, Plus, ChevronDown, ChevronRight, Edit2, Sparkles, Key, ArrowUp, ArrowDown, Eye, EyeOff, X, Printer, Percent, RotateCcw, History, Layers, RefreshCw, Shield } from 'lucide-react';
 import { AppState, Category } from '../types';
 import { compressImage } from '../lib/imageUtils';
 import { updateFavicon } from '../lib/faviconUtils';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import { MD3Button, MD3IconButton, MD3Dialog, useSnackbar, MD3Snackbar } from './md3';
 import CollapsibleSection from './CollapsibleSection';
+import UsersManager from './UsersManager';
 
 interface SettingsProps {
   state: AppState;
@@ -18,6 +20,7 @@ import { API_BASE } from '../lib/api';
 
 const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) => {
   const { uiTheme, setTheme, primaryColor, secondaryColor, setPrimaryColor, setSecondaryColor, resetColors } = useTheme();
+  const { role } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
   const sloganDesignInputRef = useRef<HTMLInputElement>(null);
@@ -512,6 +515,17 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
           </div>
         </div>
       </MD3Dialog>
+
+      {role === 'admin' && (
+        <CollapsibleSection
+          title="إدارة المستخدمين والصلاحيات"
+          icon={<Shield className="text-accent" />}
+          defaultOpen
+          headerClassName="mb-2"
+        >
+          <UsersManager />
+        </CollapsibleSection>
+      )}
 
       <CollapsibleSection
         title="الهوية البصرية"
