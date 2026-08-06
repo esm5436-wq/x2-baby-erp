@@ -961,7 +961,7 @@ const Accounts: React.FC<AccountsProps> = ({
                     color: "blue",
                     icon: <BarChart2 size={24} className="text-blue-500" />
                   })}
-                  className="p-10 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-6 cursor-pointer z-10"
+                  className="p-6 pb-4 sm:p-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 cursor-pointer z-10"
                 >
                   <div>
                     <h5 className="text-2xl font-black text-[var(--md-sys-color-on-surface)] flex items-center gap-3 relative">
@@ -973,12 +973,12 @@ const Accounts: React.FC<AccountsProps> = ({
                     <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] font-bold mt-2 mr-14">تحليل بصري دقيق للمسافات بين المبيعات والمصروفات</p>
                   </div>
                   
-                  <div className="flex items-center gap-6 bg-[var(--md-sys-color-surface-container)]/80 p-3 px-6 rounded-3xl border border-gray-100 dark:border-slate-700/50">
+                  <div className="flex flex-wrap items-center gap-3 px-4 sm:px-6 bg-[var(--md-sys-color-surface-container)]/80 p-3 rounded-3xl border border-gray-100 dark:border-slate-700/50">
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)]" />
                       <span className="text-xs font-black text-gray-600 dark:text-gray-400">منطقة المبيعات</span>
                     </div>
-                    <div className="w-px h-4 bg-gray-200 dark:bg-slate-700" />
+                    <div className="w-px h-4 bg-gray-200 dark:bg-slate-700 hidden sm:block" />
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full bg-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.6)]" />
                       <span className="text-xs font-black text-gray-600 dark:text-gray-400">منطقة التكاليف</span>
@@ -1150,7 +1150,7 @@ const Accounts: React.FC<AccountsProps> = ({
 
               {/* Expenses Display */}
               <div className="bg-[var(--md-sys-color-surface)] rounded-[32px] p-6 shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
                       <TrendingDown size={18} className="text-red-500" />
@@ -1167,7 +1167,7 @@ const Accounts: React.FC<AccountsProps> = ({
                       color: "amber",
                       icon: <Zap size={24} className="text-amber-600" />
                     })}
-                    className="bg-amber-50 dark:bg-amber-900/10 px-4 py-2 rounded-xl border border-amber-100 dark:border-amber-900/30 cursor-pointer group flex items-center gap-2"
+                    className="bg-amber-50 dark:bg-amber-900/10 px-4 py-2 rounded-xl border border-amber-100 dark:border-amber-900/30 cursor-pointer group flex items-center gap-2 self-start sm:self-auto max-w-full"
                   >
                     <span className="text-xs font-black text-amber-600 dark:text-amber-400">إجمالي الصرف</span>
                     <h4 className="text-sm font-black text-[var(--md-sys-color-on-surface)] tabular-nums">{formatCurrency(financialData.totalOPEX)}</h4>
@@ -1233,7 +1233,7 @@ const Accounts: React.FC<AccountsProps> = ({
               className="w-full p-4 bg-[var(--md-sys-color-surface-container)] border-none rounded-2xl focus:ring-2 focus:ring-accent font-bold"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase mb-2 mr-1">المبلغ (ج.م)</label>
               <input 
@@ -1255,7 +1255,7 @@ const Accounts: React.FC<AccountsProps> = ({
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase mb-2 mr-1">تاريخ البدء</label>
               <input 

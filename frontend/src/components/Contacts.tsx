@@ -351,7 +351,7 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-3 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
       >
         <MD3StatCard
           icon={<Building2 size={20} />}

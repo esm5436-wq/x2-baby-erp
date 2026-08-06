@@ -401,7 +401,7 @@ const Customers: React.FC<CustomersProps> = ({ customers, orders, branding }) =>
       </AnimatePresence>
 
       {/* Stats */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-3 gap-4">
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <MD3StatCard
           icon={<Users size={20} />}
           label="إجمالي العملاء"
@@ -604,7 +604,7 @@ const Customers: React.FC<CustomersProps> = ({ customers, orders, branding }) =>
       {/* Floating Bulk Actions Bar */}
       {selectedIds.size > 0 && (
         <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-110">
-          <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-800 p-3 flex items-center gap-3">
+          <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-800 p-3 flex flex-wrap items-center justify-center gap-2 max-w-[calc(100vw-2rem)]">
             <span className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] px-2">{selectedIds.size} عميل</span>
             <MD3Button variant="filled" size="small" icon={<Download size={14} />} onClick={() => setShowExportSettings(true)}>
               تصدير

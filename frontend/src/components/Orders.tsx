@@ -453,7 +453,7 @@ const SyncOrderEditor: React.FC<{
              </div>
            </div>
            
-           <div className="grid grid-cols-2 gap-4 pt-2">
+           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                <div className="space-y-1">
                   <label className="text-xs font-bold text-gray-500">الشحن</label>
                   <input type="number" className="w-full p-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-bold text-gray-900 dark:text-white" value={formData.shippingCost || 0} onChange={e => setFormData({...formData, shippingCost: Number(e.target.value)})} />
@@ -580,12 +580,12 @@ const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => voi
                                       </div>
                                   </div>
                                   <OrderDetails order={order} />
-                                  <div className="flex justify-end gap-3 pt-4 border-t border-[var(--md-sys-color-outline-variant)]/20">
+                                  <div className="flex flex-wrap justify-end gap-2 pt-4 border-t border-[var(--md-sys-color-outline-variant)]/20">
                                       <motion.button 
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => setEditingId(order.id)} 
-                                        className="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-black rounded-2xl border border-blue-100 dark:border-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-200 flex items-center gap-2"
+                                        className="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-black rounded-2xl border border-blue-100 dark:border-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-200 flex items-center justify-center gap-2 flex-1 min-w-[120px]"
                                       >
                                         <Edit2 size={18}/> تعديل
                                       </motion.button>
@@ -593,7 +593,7 @@ const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => voi
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => setLocalOrders(prev => prev.filter(o => o.id !== order.id))} 
-                                        className="px-6 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-black rounded-2xl border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200"
+                                        className="px-6 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-black rounded-2xl border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200 flex items-center justify-center flex-1 min-w-[120px]"
                                       >
                                         استبعاد الطلب
                                       </motion.button>
@@ -601,7 +601,7 @@ const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => voi
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                          onClick={() => handleSaveOrder(order)} 
-                                         className="px-12 py-3 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] font-black rounded-2xl shadow-lg hover:opacity-90 transition-opacity duration-200"
+                                         className="px-6 py-3 bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] font-black rounded-2xl shadow-lg hover:opacity-90 transition-opacity duration-200 flex items-center justify-center flex-1 min-w-[120px]"
                                       >
                                         قبول وحفظ
                                       </motion.button>
@@ -1906,7 +1906,7 @@ const Orders: React.FC<OrdersProps> = ({
 
       {isShippingFilter ? (
         <CollapsibleSection title="إحصائيات الشحن" icon={<Truck size={18} />} mobileOnly defaultOpen={false}>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
             <MD3StatCard
               icon={<Truck size={20} />}
               label="إجمالي الشحنات"
@@ -2568,9 +2568,9 @@ const Orders: React.FC<OrdersProps> = ({
               </h4>
               <div className="flex flex-wrap gap-2.5 items-end">
                 {editingItemIndex >= 0 ? (
-                  <div className="w-full flex items-center justify-between px-3 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800/50">
-                    <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300 flex items-center gap-2"><Edit2 size={14} /> جاري تعديل: <span className="text-indigo-900 dark:text-indigo-200">{orderItems[editingItemIndex]?.productName}</span></span>
-                    <button type="button" onClick={cancelInlineEdit} className="text-xs font-bold text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">إلغاء</button>
+                  <div className="w-full flex flex-wrap items-center justify-between gap-2 px-3 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800/50">
+                    <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300 flex items-center gap-2 min-w-0 flex-1"><Edit2 size={14} /> جاري تعديل: <span className="text-indigo-900 dark:text-indigo-200 truncate">{orderItems[editingItemIndex]?.productName}</span></span>
+                    <button type="button" onClick={cancelInlineEdit} className="text-xs font-bold text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors shrink-0">إلغاء</button>
                   </div>
                   ) : (
                   <>
@@ -3190,7 +3190,7 @@ const Orders: React.FC<OrdersProps> = ({
                          </PopupSheet>
                    </div>
                 </div>
-                <div className="flex items-center justify-center gap-1.5 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800" onClick={e => e.stopPropagation()}>
+                <div className="flex flex-wrap items-center justify-center gap-1.5 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800" onClick={e => e.stopPropagation()}>
                           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startEditing(order)} className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm" title="تعديل"><Edit2 size={11} /></motion.button>
                   <button onClick={(e) => handleDeleteSingle(order.id, e as any)} className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30" title="حذف"><Trash2 size={11} /></button>
                   {order.customerPhone && (() => {
@@ -3363,7 +3363,7 @@ const Orders: React.FC<OrdersProps> = ({
                                         <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">الاسم</span>
                                         <span className="text-sm font-black text-[var(--md-sys-color-on-surface)]">{o.customerName}</span>
                                      </div>
-                                     <div className="grid grid-cols-2 gap-3">
+                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <div>
                                            <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">رقم الهاتف</span>
                                            <div className="flex items-center gap-1.5">
@@ -3434,7 +3434,7 @@ const Orders: React.FC<OrdersProps> = ({
                                    <h4 className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] tracking-wider mb-4 flex items-center gap-1.5">
                                       <Hash size={12} className="text-amber-500" /> بيانات تقنية
                                    </h4>
-                                   <div className="grid grid-cols-2 gap-y-4 gap-x-3">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-3">
                                       {o.sourceId && (
                                          <div className="col-span-2 bg-[var(--md-sys-color-surface)] p-3 rounded-2xl border border-[var(--md-sys-color-outline-variant)]/20">
                                              <span className="block text-[9px] text-[var(--md-sys-color-on-surface-variant)] font-bold mb-0.5">رقم المتجر</span>

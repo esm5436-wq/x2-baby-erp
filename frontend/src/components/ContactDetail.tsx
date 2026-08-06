@@ -343,7 +343,7 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ contact, onClose, onEdit,
             <p className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">جاري تحميل الإحصائيات...</p>
           </div>
         ) : stats && (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {/* Shipping stats - for shipping companies */}
             {(contact.entityType === 'شركة شحن') && stats.orders.totalCount > 0 && (
               <>

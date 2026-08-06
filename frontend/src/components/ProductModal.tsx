@@ -372,7 +372,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
         <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold px-2 italic">أول صورة هي الأساسية. يمكن رفع صور متعددة أو إضافة روابط URLs.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className={labelCls}>سعر البيع الافتراضي</label>
           <input type="number" className={inputCls} value={p.price} onChange={e => setP({...p, price: Number(e.target.value)})} />
@@ -394,7 +394,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
                   <div className="flex items-start gap-2"><Trophy size={14} className="text-emerald-500 mt-0.5" /><div><h4 className="text-[10px] font-black text-gray-900 dark:text-white">تسعير "مميز" (60%)</h4><p className="text-[9px] text-gray-500">للمنتجات الحصرية بهامش ربح مرتفع</p></div></div>
                 </div>
               )}
-              <div className="grid grid-cols-3 gap-2 relative z-10">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 relative z-10">
                 {[{ label: 'سريع 20%', margin: 1.25, color: 'text-blue-500' }, { label: 'متوازن 40%', margin: 1.67, color: 'text-accent' }, { label: 'مميز 60%', margin: 2.5, color: 'text-emerald-500' }].map((tier) => {
                   const cost = (p.wholesalePrice || 0) + (p.packagingCost || 0);
                   let s = Math.ceil((cost * tier.margin) / 5) * 5; if (s > 10) s -= 1;

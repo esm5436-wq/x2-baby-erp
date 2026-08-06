@@ -399,16 +399,16 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
               العودة للسجل
             </motion.button>
             
-            <div className="flex bg-gray-100 dark:bg-slate-800 p-1 rounded-2xl">
+            <div className="flex flex-wrap bg-gray-100 dark:bg-slate-800 p-1 rounded-2xl gap-1">
               <button 
                 onClick={() => setTransactionType('inventory')}
-                className={`px-6 py-2 rounded-xl text-xs font-black transition-colors duration-200 ${transactionType === 'inventory' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
+                className={`px-6 py-2 rounded-xl text-xs font-black transition-colors duration-200 flex-1 min-w-[140px] ${transactionType === 'inventory' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
               >
                 شراء بضاعة (مورد)
               </button>
               <button 
                 onClick={() => setTransactionType('expense')}
-                className={`px-6 py-2 rounded-xl text-xs font-black transition-colors duration-200 ${transactionType === 'expense' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
+                className={`px-6 py-2 rounded-xl text-xs font-black transition-colors duration-200 flex-1 min-w-[140px] ${transactionType === 'expense' ? 'bg-white dark:bg-slate-700 text-accent shadow-sm' : 'text-gray-400 dark:text-gray-500'}`}
               >
                 مصروف عام (نثرية)
               </button>
@@ -596,7 +596,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }} className="p-8 rounded-[32px] shadow-md space-y-6" style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }}>
                 <div className="space-y-1">
                   <span className="text-[10px] font-black opacity-60 uppercase">المبلغ الإجمالي</span>
-                  <h3 className="text-4xl font-black italic">
+                  <h3 className="text-2xl sm:text-4xl font-black italic break-words leading-tight">
                     {formatCurrency(transactionType === 'inventory' ? (newInvoice.totalAmount || 0) : Number(expenseForm.amount || 0))}
                   </h3>
                 </div>
@@ -626,7 +626,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
               <p className="text-sm text-gray-500 dark:text-gray-400 font-bold mt-1 mr-12">إدارة الموردين وتوريدات المنتجات</p>
             </motion.div>
             
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2">
               <MD3IconButton
                 icon={<FileSpreadsheet size={18} />}
                 onClick={() => handleExportPurchases('excel')}

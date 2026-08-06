@@ -247,19 +247,19 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
   const renderField = (label: string, value: any, highlight = false) => (
     <div className={`${highlight ? 'bg-amber-50 dark:bg-amber-900/10 rounded-lg p-2 -mx-2' : ''}`}>
       <span className="text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)] block">{label}</span>
-      <span className="text-sm font-bold text-[var(--md-sys-color-on-surface)]">{val(value)}</span>
+      <span className="text-sm font-bold text-[var(--md-sys-color-on-surface)] block break-words">{val(value)}</span>
     </div>
   );
 
   const renderDiffRow = (field: string, oldVal: string, newVal: string) => (
-    <div key={field} className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center py-1.5 border-b border-[var(--md-sys-color-outline-variant)]/20 last:border-0">
-      <div className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">{FIELD_LABELS[field] || field}</div>
-      <div className="flex flex-col gap-1">
-        <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1">
-          <ArrowLeft size={12} /> {oldVal}
+    <div key={field} className="flex items-center gap-2 py-1.5 border-b border-[var(--md-sys-color-outline-variant)]/20 last:border-0">
+      <div className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] shrink-0">{FIELD_LABELS[field] || field}</div>
+      <div className="flex flex-col gap-1 min-w-0 flex-1">
+        <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 break-words">
+          <ArrowLeft size={12} className="shrink-0" /> <span className="min-w-0 break-words">{oldVal}</span>
         </span>
-        <span className="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1">
-          <ArrowRight size={12} /> {newVal}
+        <span className="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 break-words">
+          <ArrowRight size={12} className="shrink-0" /> <span className="min-w-0 break-words">{newVal}</span>
         </span>
       </div>
     </div>
@@ -412,7 +412,7 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
 
     return (
       <div className="space-y-3">
-        <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container)] px-3 py-2 rounded-xl">
+        <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container)] px-3 py-2 rounded-xl">
           {ENTITY_ICONS[entity_type] || null}
           <span>{ENTITY_LABELS[entity_type] || entity_type}</span>
           <span className="text-[var(--md-sys-color-outline)]">|</span>
@@ -505,7 +505,7 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
           </div>
         </div>
 
-        <div className="flex gap-2 items-center">
+        <div className="flex flex-wrap gap-2 items-center">
           <div className="relative">
             <select value={sortField} onChange={e => { setSortField(e.target.value); setOffset(0); }} className="px-4 py-3 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none font-black text-xs text-[var(--md-sys-color-on-surface)] focus:border-accent shadow-sm cursor-pointer appearance-none">
               <option value="created_at">التاريخ</option>
@@ -603,11 +603,11 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
                   <div onClick={() => setViewingLog(log)}
                     className="flex items-center gap-3 p-4 hover:bg-[var(--md-sys-color-surface-container)] transition-colors cursor-pointer">
 
-                    <span className={`px-3 py-1 rounded-lg text-xs font-black ${actionColor.bg} ${actionColor.text} min-w-[60px] text-center`}>
+                    <span className={`px-3 py-1 rounded-lg text-xs font-black ${actionColor.bg} ${actionColor.text} min-w-[60px] text-center shrink-0`}>
                       {actionColor.label}
                     </span>
 
-                    <span className="px-3 py-1 rounded-lg text-xs font-black bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] min-w-[80px] text-center">
+                    <span className="px-3 py-1 rounded-lg text-xs font-black bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] min-w-[80px] text-center shrink-0 hidden sm:inline-flex">
                       {ENTITY_LABELS[log.entity_type] || log.entity_type}
                     </span>
 

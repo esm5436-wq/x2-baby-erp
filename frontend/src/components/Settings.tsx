@@ -501,7 +501,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
       >
         <div className="space-y-4">
           <p className="text-sm font-bold text-[var(--md-sys-color-on-surface-variant)]">يوجد {pendingImport?.length} منتج مستورد. اختر طريقة الاستيراد:</p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button onClick={() => executeImport('merge')} className="p-4 bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] rounded-2xl font-bold hover:opacity-90 transition-opacity duration-200">
               <Layers size={20} className="mx-auto mb-2" />
               <span className="text-sm">دمج مع الحالي</span>

@@ -145,7 +145,7 @@ const Dashboard: React.FC<DashboardProps> = ({ state }) => {
           {/* Quick Links */}
           <div className="mb-8">
             <h2 className="text-lg font-bold text-[var(--md-sys-color-on-surface)] mb-4">روابط سريعة</h2>
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
               {quickLinks.map(link => (
                 <button
                   key={link.path}
@@ -155,7 +155,7 @@ const Dashboard: React.FC<DashboardProps> = ({ state }) => {
                   <div className="w-12 h-12 rounded-2xl bg-[var(--md-sys-color-primary-container)] flex items-center justify-center group-hover:scale-110 transition-transform">
                     <span className="material-symbols-rounded text-[var(--md-sys-color-on-primary-container)]">{link.icon}</span>
                   </div>
-                  <span className="text-xs font-bold text-[var(--md-sys-color-on-surface)]">{link.label}</span>
+                  <span className="text-[10px] md:text-xs font-bold text-[var(--md-sys-color-on-surface)] text-center leading-tight">{link.label}</span>
                 </button>
               ))}
             </div>
@@ -163,7 +163,7 @@ const Dashboard: React.FC<DashboardProps> = ({ state }) => {
 
           {/* Recent Orders */}
           <div className="bg-[var(--md-sys-color-surface-container-low)] rounded-3xl p-6">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
               <h2 className="text-lg font-bold text-[var(--md-sys-color-on-surface)]">آخر الطلبات</h2>
               <MD3Button
                 variant="text"

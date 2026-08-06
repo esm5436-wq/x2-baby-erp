@@ -1555,7 +1555,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
               <div className="space-y-6">
                 <div className="space-y-3">
                   <label className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest px-2">صيغة الملف</label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <button 
                       onClick={() => setExportConfig({...exportConfig, format: 'excel'})}
                       className={`p-4 rounded-2xl border-2 transition-colors duration-200 flex flex-col items-center gap-2 font-bold ${exportConfig.format === 'excel' ? 'border-[var(--md-sys-color-primary)] bg-[var(--md-sys-color-primary)]/5 text-[var(--md-sys-color-primary)]' : 'border-[var(--md-sys-color-outline-variant)]/20 text-[var(--md-sys-color-on-surface-variant)]'}`}
@@ -1924,7 +1924,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     {formatDate(p.createdAt, 'date')}
                     {p.updatedAt && <span className="mr-1">| {formatDate(p.updatedAt, 'date')}</span>}
                   </div>
-                  <div className="flex items-center justify-center gap-2 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800">
+                  <div className="flex flex-wrap items-center justify-center gap-2 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800">
                     <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 p-1.5 rounded-lg transition-colors duration-200" title="تعديل"><Edit2 size={12} /></button>
                     {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 p-1.5 rounded-lg transition-colors duration-200"><ExternalLink size={12} /></a>}
                     <button onClick={(e) => handleDelete(p.id, e)} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 p-1.5 rounded-lg transition-colors duration-200" title="حذف"><Trash2 size={12} /></button>

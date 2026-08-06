@@ -61,7 +61,7 @@ export const MD3StatCard: React.FC<MD3StatCardProps> = ({ icon, label, value, un
   const tooltipId = `stat-tooltip-${label?.replace(/\s/g, '-')}`;
 
   return (
-    <div className={`bg-[var(--md-sys-color-surface-container-low)] rounded-xl p-4 flex flex-col justify-between group hover:shadow-[var(--md-sys-elevation-1)] transition-all relative ${className}`}>
+    <div className={`bg-[var(--md-sys-color-surface-container-low)] rounded-xl p-4 flex flex-col justify-between group hover:shadow-[var(--md-sys-elevation-1)] transition-all relative min-w-0 ${className}`}>
       <div className="flex items-center justify-between mb-2">
         <div className={`w-10 h-10 rounded-xl ${iconBg || 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]'} flex items-center justify-center`}>
           {icon}
@@ -92,7 +92,7 @@ export const MD3StatCard: React.FC<MD3StatCardProps> = ({ icon, label, value, un
         )}
       </div>
       <div className="text-xs font-medium text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-wide mb-1">{label}</div>
-      <span className="font-bold text-2xl text-[var(--md-sys-color-on-surface)] leading-tight">
+      <span className="font-bold text-xl md:text-2xl text-[var(--md-sys-color-on-surface)] leading-tight break-words">
         {value} {unit && <span className="text-xs font-medium text-[var(--md-sys-color-on-surface-variant)]">{unit}</span>}
       </span>
       {subtitle && (
