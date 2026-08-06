@@ -4,9 +4,10 @@ import { API_BASE } from '../lib/api';
 import * as XLSX from 'xlsx';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { MessageSquare, Send, X, Bot, Loader2, Sparkles, User, Minimize2, Maximize2, Trash2, Paperclip, Image as ImageIcon, BarChart3, PackageSearch, History, Download } from 'lucide-react';
+import { Send, X, Bot, Loader2, Sparkles, User, Minimize2, Maximize2, Trash2, Paperclip, Download } from 'lucide-react';
 import { AppState, Order, Product, OrderStatus } from '../types';
 import { useBreakpoint } from '../hooks/useBreakpoint';
+import MD3BottomSheet from './MD3BottomSheet';
 
 interface AIAssistantProps {
   state: AppState;
@@ -300,6 +301,214 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
     }
   };
 
+  const chatHeader = (
+    <div
+      className="h-16 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 flex items-center justify-between px-5 border-b border-gray-100 dark:border-slate-700 cursor-pointer shrink-0"
+      onClick={isMinimized ? toggleMinimize : undefined}
+    >
+      <div className="flex items-center gap-3">
+        {state.brandLogo ? (
+          <motion.div layout className="w-16 h-16 bg-white rounded-3xl overflow-hidden shadow-md ring-2 ring-accent/10 flex-shrink-0">
+            <img src={state.brandLogo} alt="Logo" className="w-full h-full object-cover p-0" />
+          </motion.div>
+        ) : (
+          <motion.div layout className="w-12 h-12 bg-accent text-white rounded-2xl flex items-center justify-center font-black text-sm shadow-sm ring-2 ring-accent/20">
+            X2
+          </motion.div>
+        )}
+        <motion.div layout className="flex flex-col">
+          <span className="font-black text-gray-800 dark:text-white text-sm">مساعد X2 BABY</span>
+          {!isMinimized && (
+            <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] text-emerald-500 font-bold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> متصل الآن
+            </motion.span>
+          )}
+        </motion.div>
+      </div>
+      <div className="flex items-center gap-1">
+        <AnimatePresence>
+          {!isMinimized && (
+            <motion.button initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }} onClick={clearChat} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors duration-200" title="مسح المحادثة">
+              <Trash2 size={16} />
+            </motion.button>
+          )}
+        </AnimatePresence>
+        {!isMobile && (
+          <button onClick={toggleMinimize} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl transition-colors duration-200">
+            {isMinimized ? <Maximize2 size={16} /> : <Minimize2 size={16} />}
+          </button>
+        )}
+        <button onClick={toggleOpen} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors duration-200">
+          <X size={20} />
+        </button>
+      </div>
+    </div>
+  );
+
+  const messagesArea = (
+    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50 dark:bg-slate-950/50 scroll-smooth">
+      <AnimatePresence initial={false}>
+        {messages.map((msg, idx) => {
+          if (msg.role === 'tool' || msg.role === 'system') return null;
+          
+          return (
+            <motion.div 
+              key={idx} 
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              layout
+              className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+            >
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1 shadow-sm overflow-hidden ${msg.role === 'user' ? 'bg-gray-200 dark:bg-slate-700 text-gray-600' : 'bg-white dark:bg-slate-800'}`}>
+                {msg.role === 'user' ? (
+                  <User size={14} />
+                ) : state.brandLogo ? (
+                  <img src={state.brandLogo} alt="Logo" className="w-full h-full object-cover" />
+                ) : (
+                  <Bot size={16} className="text-accent" />
+                )}
+              </div>
+              <div className={`group relative max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm flex flex-col gap-2 ${
+                msg.role === 'user' 
+                  ? 'bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-200 rounded-tr-none border border-gray-100 dark:border-slate-700' 
+                  : msg.isError 
+                    ? 'bg-red-50 dark:bg-red-900/20 text-red-600 border border-red-100 dark:border-red-900/30 rounded-tl-none'
+                    : 'bg-accent/10 dark:bg-accent/20 text-gray-900 dark:text-white rounded-tl-none'
+              }`}>
+                {msg.attachment && (
+                  <motion.img 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    src={msg.attachment} 
+                    alt="Uploaded content" 
+                    className="max-w-full rounded-lg border border-gray-200 dark:border-slate-600 mb-2 max-h-40 object-cover"
+                  />
+                )}
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm]}
+                  className="prose dark:prose-invert max-w-full overflow-x-auto text-xs md:text-sm"
+                  components={{
+                    table: ({node, ...props}) => <div className="overflow-x-auto my-2 border rounded-xl bg-white/50 dark:bg-slate-900/50"><table className="w-full text-right border-collapse" {...props} /></div>,
+                    thead: ({node, ...props}) => <thead className="bg-gray-100/50 dark:bg-slate-800/50" {...props} />,
+                    th: ({node, ...props}) => <th className="p-2 border-b dark:border-slate-700 font-black text-accent" {...props} />,
+                    td: ({node, ...props}) => <td className="p-2 border-b dark:border-slate-700 font-bold" {...props} />,
+                    p: ({node, ...props}) => <p className="m-0 leading-relaxed" {...props} />,
+                  }}
+                >
+                  {msg.content || ""}
+                </ReactMarkdown>
+
+                {msg.role === 'model' && msg.content?.includes('|') && (
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => exportTableToExcel(msg.content!)}
+                    className="mt-3 flex items-center gap-2 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[10px] font-black hover:bg-emerald-700 transition-colors duration-200 shadow-sm w-fit"
+                  >
+                    <Download size={12} />
+                    تصدير الجدول لـ Excel
+                  </motion.button>
+                )}
+              </div>
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+      {isLoading && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
+          <div className="w-8 h-8 bg-accent text-white rounded-full flex items-center justify-center shrink-0 mt-1">
+            <Bot size={16} />
+          </div>
+          <div className="bg-accent/10 p-4 rounded-2xl rounded-tl-none flex gap-1">
+            <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-2 h-2 bg-accent rounded-full"></motion.div>
+            <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-2 h-2 bg-accent rounded-full"></motion.div>
+            <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} className="w-2 h-2 bg-accent rounded-full"></motion.div>
+          </div>
+        </motion.div>
+      )}
+      <div ref={messagesEndRef} />
+    </div>
+  );
+
+  const inputArea = (
+    <div className="p-3 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-700 space-y-3 shrink-0">
+      <AnimatePresence>
+        {!attachment && !isLoading && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="flex gap-2 overflow-x-auto pb-1 no-scrollbar"
+          >
+            {quickActions.map((action, i) => (
+              <motion.button 
+                key={i} 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleQuickAction(action.prompt)} 
+                className="whitespace-nowrap px-3 py-1.5 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-full text-[10px] font-black text-gray-600 dark:text-gray-300 hover:bg-accent/10 hover:text-accent transition-colors duration-200 flex items-center gap-1.5 shadow-sm"
+              >
+                {action.label}
+              </motion.button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {attachment && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="flex items-center justify-between p-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600">
+                <img src={`data:${attachment.mimeType};base64,${attachment.data}`} className="w-full h-full object-cover" />
+              </div>
+              <span className="text-xs font-bold text-gray-600 dark:text-gray-300">صورة مرفقة</span>
+            </div>
+            <button onClick={removeAttachment} className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full text-gray-500">
+              <X size={16} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <div className="relative flex items-center gap-2">
+        <input
+          ref={inputRef}
+          className="w-full pl-4 pr-24 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl outline-none text-sm font-bold text-gray-900 dark:text-white focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-colors duration-200 shadow-inner"
+          placeholder="اكتب رسالتك هنا..."
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onPaste={handlePaste}
+          disabled={isLoading}
+        />
+        <div className="absolute left-2 flex items-center gap-1.5">
+          <button onClick={() => fileInputRef.current?.click()}
+            className="w-9 h-9 text-gray-400 hover:text-accent hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg flex items-center justify-center transition-colors duration-200"
+            title="إرفاق صورة"
+            disabled={isLoading}
+          >
+            <Paperclip size={18} />
+          </button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            id="ai-send-btn"
+            onClick={handleSend}
+            disabled={(!input.trim() && !attachment) || isLoading}
+            className="w-9 h-9 bg-accent text-white rounded-lg flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-transform shadow-md"
+          >
+            {isLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} className={document.dir === 'rtl' ? 'rotate-180' : ''} />}
+          </motion.button>
+        </div>
+      </div>
+    </div>
+  );
+
   if (hidden) return null;
 
   return (
@@ -322,87 +531,17 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
           </motion.button>
         )}
 
-        {isOpen && (
+        {isOpen && !isMobile && (
           <motion.div 
             key="ai-window"
-            initial={isMobile ? { y: '100%', opacity: 0 } : (isMinimized ? { scale: 0.8, opacity: 0, y: 100 } : { scale: 0.9, opacity: 0, y: 20 })}
-            animate={isMobile ? { y: 0, opacity: 1 } : (isMinimized ? { scale: 1, opacity: 1, y: 0, height: 64, width: 288, borderRadius: 24 } : { scale: 1, opacity: 1, y: 0, height: 600, width: 400, borderRadius: 32 })}
-            exit={isMobile ? { y: '100%', opacity: 0 } : { scale: 0.8, opacity: 0, y: 20 }}
+            initial={isMinimized ? { scale: 0.8, opacity: 0, y: 100 } : { scale: 0.9, opacity: 0, y: 20 }}
+            animate={isMinimized ? { scale: 1, opacity: 1, y: 0, height: 64, width: 288, borderRadius: 24 } : { scale: 1, opacity: 1, y: 0, height: 600, width: 400, borderRadius: 32 }}
+            exit={{ scale: 0.8, opacity: 0, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className={isMobile
-              ? "fixed bottom-0 left-0 right-0 z-[250] shadow-2xl border-t border-gray-100 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 flex flex-col rounded-t-[28px]"
-              : "fixed bottom-6 left-6 z-[250] shadow-lg border border-gray-100 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 flex flex-col"}
-            style={isMobile
-              ? { maxHeight: '92vh', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }
-              : { maxWidth: '90vw', maxHeight: '80vh' }}
+            className="fixed bottom-6 left-6 z-[250] shadow-lg border border-gray-100 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 flex flex-col"
+            style={{ maxWidth: '90vw', maxHeight: '80vh' }}
           >
-            {/* Grab Handle (mobile) */}
-            {isMobile && (
-              <div className="flex justify-center pt-2 pb-0.5 shrink-0 cursor-grab active:cursor-grabbing touch-none">
-                <div className="w-10 h-1 rounded-full bg-[var(--md-sys-color-outline-variant)]" />
-              </div>
-            )}
-            {/* Header */}
-            <div 
-              className="h-16 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 flex items-center justify-between px-5 border-b border-gray-100 dark:border-slate-700 cursor-pointer shrink-0"
-              onClick={isMinimized ? toggleMinimize : undefined}
-            >
-              <div className="flex items-center gap-3">
-                {state.brandLogo ? (
-                  <motion.div 
-                    layout
-                    className="w-16 h-16 bg-white rounded-3xl overflow-hidden shadow-md ring-2 ring-accent/10 flex-shrink-0"
-                  >
-                    <img src={state.brandLogo} alt="Logo" className="w-full h-full object-cover p-0" />
-                  </motion.div>
-                ) : (
-                  <motion.div 
-                    layout
-                    className="w-12 h-12 bg-accent text-white rounded-2xl flex items-center justify-center font-black text-sm shadow-sm ring-2 ring-accent/20"
-                  >
-                    X2
-                  </motion.div>
-                )}
-                <motion.div layout className="flex flex-col">
-                  <span className="font-black text-gray-800 dark:text-white text-sm">مساعد X2 BABY</span>
-                  {!isMinimized && (
-                    <motion.span 
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-[10px] text-emerald-500 font-bold flex items-center gap-1"
-                    >
-                      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> متصل الآن
-                    </motion.span>
-                  )}
-                </motion.div>
-              </div>
-              <div className="flex items-center gap-1">
-                <AnimatePresence>
-                  {!isMinimized && (
-                    <motion.button 
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.5 }}
-                      onClick={clearChat} 
-                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors duration-200" 
-                      title="مسح المحادثة"
-                    >
-                      <Trash2 size={16} />
-                    </motion.button>
-                  )}
-                </AnimatePresence>
-                {!isMobile && (
-                  <button onClick={toggleMinimize} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl transition-colors duration-200">
-                    {isMinimized ? <Maximize2 size={16} /> : <Minimize2 size={16} />}
-                  </button>
-                )}
-                <button onClick={toggleOpen} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors duration-200">
-                  <X size={20} />
-                </button>
-              </div>
-            </div>
-
-            {/* Body */}
+            {chatHeader}
             <AnimatePresence mode="wait">
               {!isMinimized && (
                 <motion.div 
@@ -412,173 +551,25 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
                   exit={{ opacity: 0 }}
                   className="flex-1 flex flex-col overflow-hidden"
                 >
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50 dark:bg-slate-950/50 scroll-smooth">
-                    <AnimatePresence initial={false}>
-                      {messages.map((msg, idx) => {
-                        if (msg.role === 'tool' || msg.role === 'system') return null;
-                        
-                        return (
-                          <motion.div 
-                            key={idx} 
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            layout
-                            className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
-                          >
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1 shadow-sm overflow-hidden ${msg.role === 'user' ? 'bg-gray-200 dark:bg-slate-700 text-gray-600' : 'bg-white dark:bg-slate-800'}`}>
-                              {msg.role === 'user' ? (
-                                <User size={14} />
-                              ) : state.brandLogo ? (
-                                <img src={state.brandLogo} alt="Logo" className="w-full h-full object-cover" />
-                              ) : (
-                                <Bot size={16} className="text-accent" />
-                              )}
-                            </div>
-                            <div className={`group relative max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm flex flex-col gap-2 ${
-                              msg.role === 'user' 
-                                ? 'bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-200 rounded-tr-none border border-gray-100 dark:border-slate-700' 
-                                : msg.isError 
-                                  ? 'bg-red-50 dark:bg-red-900/20 text-red-600 border border-red-100 dark:border-red-900/30 rounded-tl-none'
-                                  : 'bg-accent/10 dark:bg-accent/20 text-gray-900 dark:text-white rounded-tl-none'
-                            }`}>
-                              {msg.attachment && (
-                                <motion.img 
-                                  initial={{ opacity: 0 }}
-                                  animate={{ opacity: 1 }}
-                                  src={msg.attachment} 
-                                  alt="Uploaded content" 
-                                  className="max-w-full rounded-lg border border-gray-200 dark:border-slate-600 mb-2 max-h-40 object-cover"
-                                />
-                              )}
-                              <ReactMarkdown 
-                                remarkPlugins={[remarkGfm]}
-                                className="prose dark:prose-invert max-w-full overflow-x-auto text-xs md:text-sm"
-                                components={{
-                                  table: ({node, ...props}) => <div className="overflow-x-auto my-2 border rounded-xl bg-white/50 dark:bg-slate-900/50"><table className="w-full text-right border-collapse" {...props} /></div>,
-                                  thead: ({node, ...props}) => <thead className="bg-gray-100/50 dark:bg-slate-800/50" {...props} />,
-                                  th: ({node, ...props}) => <th className="p-2 border-b dark:border-slate-700 font-black text-accent" {...props} />,
-                                  td: ({node, ...props}) => <td className="p-2 border-b dark:border-slate-700 font-bold" {...props} />,
-                                  p: ({node, ...props}) => <p className="m-0 leading-relaxed" {...props} />,
-                                }}
-                              >
-                                {msg.content || ""}
-                              </ReactMarkdown>
-
-                              {msg.role === 'model' && msg.content?.includes('|') && (
-                                <motion.button 
-                                  whileHover={{ scale: 1.05 }}
-                                  whileTap={{ scale: 0.95 }}
-                                  onClick={() => exportTableToExcel(msg.content!)}
-                                  className="mt-3 flex items-center gap-2 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[10px] font-black hover:bg-emerald-700 transition-colors duration-200 shadow-sm w-fit"
-                                >
-                                  <Download size={12} />
-                                  تصدير الجدول لـ Excel
-                                </motion.button>
-                              )}
-                            </div>
-                          </motion.div>
-                        );
-                      })}
-                    </AnimatePresence>
-                    {isLoading && (
-                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
-                        <div className="w-8 h-8 bg-accent text-white rounded-full flex items-center justify-center shrink-0 mt-1">
-                          <Bot size={16} />
-                        </div>
-                        <div className="bg-accent/10 p-4 rounded-2xl rounded-tl-none flex gap-1">
-                          <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-2 h-2 bg-accent rounded-full"></motion.div>
-                          <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-2 h-2 bg-accent rounded-full"></motion.div>
-                          <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} className="w-2 h-2 bg-accent rounded-full"></motion.div>
-                        </div>
-                      </motion.div>
-                    )}
-                    <div ref={messagesEndRef} />
-                  </div>
-
-                  {/* Input Area */}
-                  <div className="p-3 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-700 space-y-3 shrink-0">
-                    {/* Quick Suggestions */}
-                    <AnimatePresence>
-                      {!attachment && !isLoading && (
-                        <motion.div 
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 10 }}
-                          className="flex gap-2 overflow-x-auto pb-1 no-scrollbar"
-                        >
-                          {quickActions.map((action, i) => (
-                            <motion.button 
-                              key={i} 
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              onClick={() => handleQuickAction(action.prompt)} 
-                              className="whitespace-nowrap px-3 py-1.5 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-full text-[10px] font-black text-gray-600 dark:text-gray-300 hover:bg-accent/10 hover:text-accent transition-colors duration-200 flex items-center gap-1.5 shadow-sm"
-                            >
-                              {action.label}
-                            </motion.button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    <AnimatePresence>
-                      {attachment && (
-                        <motion.div 
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 20 }}
-                          className="flex items-center justify-between p-2 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl"
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600">
-                              <img src={`data:${attachment.mimeType};base64,${attachment.data}`} className="w-full h-full object-cover" />
-                            </div>
-                            <span className="text-xs font-bold text-gray-600 dark:text-gray-300">صورة مرفقة</span>
-                          </div>
-                          <button onClick={removeAttachment} className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full text-gray-500">
-                            <X size={16} />
-                          </button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                    <div className="relative flex items-center gap-2">
-                      <input
-                        ref={inputRef}
-                        className="w-full pl-4 pr-24 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl outline-none text-sm font-bold text-gray-900 dark:text-white focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-colors duration-200 shadow-inner"
-                        placeholder="اكتب رسالتك هنا..."
-                        value={input}
-                        onChange={e => setInput(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        onPaste={handlePaste}
-                        disabled={isLoading}
-                      />
-                      <div className="absolute left-2 flex items-center gap-1.5">
-                        <button onClick={() => fileInputRef.current?.click()}
-                          className="w-9 h-9 text-gray-400 hover:text-accent hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg flex items-center justify-center transition-colors duration-200"
-                          title="إرفاق صورة"
-                          disabled={isLoading}
-                        >
-                          <Paperclip size={18} />
-                        </button>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          id="ai-send-btn"
-                          onClick={handleSend}
-                          disabled={(!input.trim() && !attachment) || isLoading}
-                          className="w-9 h-9 bg-accent text-white rounded-lg flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-transform shadow-md"
-                        >
-                          {isLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} className={document.dir === 'rtl' ? 'rotate-180' : ''} />}
-                        </motion.button>
-                      </div>
-                    </div>
-                  </div>
+                  {messagesArea}
+                  {inputArea}
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
+      {isMobile && (
+        <MD3BottomSheet
+          isOpen={isOpen}
+          onClose={toggleOpen}
+          initialSnap={60}
+          header={chatHeader}
+          actions={inputArea}
+        >
+          {messagesArea}
+        </MD3BottomSheet>
+      )}
       <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileSelect} />
     </>
   );

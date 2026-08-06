@@ -1,7 +1,8 @@
-import React, { useRef, useEffect, useCallback, useState } from 'react';
+import React, { useRef, useEffect, useCallback, useState, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useDragControls } from 'motion/react';
 
-type SnapPoint = 'fit' | 'half' | 'full';
+type Snap = 'fit' | number;
 
 interface MD3BottomSheetProps {
   isOpen: boolean;
@@ -10,19 +11,18 @@ interface MD3BottomSheetProps {
   title?: string;
   description?: string;
   icon?: React.ReactNode;
-  /** Dynamic snap points: 'fit' = content height, 'half' = 50vh, 'full' = 92vh */
-  snapPoints?: SnapPoint[];
-  initialSnap?: SnapPoint;
-  /** Hide the grab handle bar */
-  noHandle?: boolean;
-  /** Additional className for the sheet content */
-  className?: string;
-  /** Actions footer */
+  /** Custom header rendered below the drag handle (overrides title/description/icon) */
+  header?: React.ReactNode;
+  /** Footer slot, non-scrolling (e.g. chat input, action buttons) */
   actions?: React.ReactNode;
-  /** When true, clicking backdrop does not close */
+  /** Snap heights as viewport percentages. Default [30, 60, 90] */
+  snapPoints?: number[];
+  /** Initial height: 'fit' = content height (capped at 90%), or a percent */
+  initialSnap?: Snap;
+  noHandle?: boolean;
   persistent?: boolean;
-  /** Custom max height override (CSS value) */
-  maxHeight?: string;
+  className?: string;
+  sheetRef?: React.Ref<HTMLDivElement>;
 }
 
 const MD3BottomSheet: React.FC<MD3BottomSheetProps> = ({
@@ -32,43 +32,52 @@ const MD3BottomSheet: React.FC<MD3BottomSheetProps> = ({
   title,
   description,
   icon,
-  snapPoints = ['fit', 'half', 'full'],
-  initialSnap,
-  noHandle = false,
-  className = '',
+  header,
   actions,
+  snapPoints = [30, 60, 90],
+  initialSnap = 'fit',
+  noHandle = false,
   persistent = false,
-  maxHeight,
+  className = '',
+  sheetRef,
 }) => {
   const dragControls = useDragControls();
-  const sheetRef = useRef<HTMLDivElement>(null);
+  const outerRef = useRef<HTMLDivElement>(null);
+  const handleRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [currentSnap, setCurrentSnap] = useState<SnapPoint>(
-    initialSnap || snapPoints[0] || 'fit'
-  );
-  const [contentHeight, setContentHeight] = useState<number>(0);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const [currentSnap, setCurrentSnap] = useState<Snap>(initialSnap);
+  const [fitHeight, setFitHeight] = useState(0);
 
-  // Measure content height for 'fit' snap point
   useEffect(() => {
-    if (!isOpen || !contentRef.current) return;
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setContentHeight(entry.contentRect.height);
-      }
-    });
-    observer.observe(contentRef.current);
-    return () => observer.disconnect();
-  }, [isOpen, children]);
+    if (isOpen) setCurrentSnap(initialSnap);
+  }, [isOpen, initialSnap]);
 
-  const getMaxHeight = (): string => {
-    if (maxHeight) return maxHeight;
-    switch (currentSnap) {
-      case 'half': return '50vh';
-      case 'full': return '92vh';
-      case 'fit': return `${Math.min(contentHeight + 120, window.innerHeight * 0.92)}px`;
-      default: return '92vh';
-    }
-  };
+  // Measure natural content height for the 'fit' snap
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    const measure = () => {
+      const vh = window.innerHeight;
+      const content = measureRef.current ? measureRef.current.offsetHeight : 0;
+      const chrome =
+        (handleRef.current?.offsetHeight ?? 0) +
+        (headerRef.current?.offsetHeight ?? 0) +
+        (actionsRef.current?.offsetHeight ?? 0);
+      setFitHeight(Math.min(content + chrome, vh * 0.9));
+    };
+    measure();
+    const targets = [measureRef.current, handleRef.current, headerRef.current, actionsRef.current].filter(Boolean) as HTMLElement[];
+    const ro = new ResizeObserver(measure);
+    targets.forEach((t) => ro.observe(t));
+    return () => ro.disconnect();
+  }, [isOpen, children, actions, header, title, description]);
+
+  const heightPx =
+    currentSnap === 'fit'
+      ? fitHeight || window.innerHeight * 0.5
+      : (currentSnap / 100) * window.innerHeight;
 
   // Escape key
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -105,78 +114,92 @@ const MD3BottomSheet: React.FC<MD3BottomSheetProps> = ({
   };
 
   const handleDragEnd = (_: any, info: { offset: { y: number }; velocity: { y: number } }) => {
-    const shouldClose = info.offset.y > 100 || info.velocity.y > 400;
-    if (shouldClose) {
+    const { offset, velocity } = info;
+    const vh = window.innerHeight;
+    const currentPct = (heightPx / vh) * 100;
+    const sorted = [...snapPoints].sort((a, b) => a - b);
+
+    if (offset.y > 140 || velocity.y > 500) {
       onClose();
       return;
     }
-
-    // Snap to nearest snap point based on drag direction
-    if (info.velocity.y < -200 || info.offset.y < -50) {
-      // Dragged up
-      const currentIdx = snapPoints.indexOf(currentSnap);
-      if (currentIdx < snapPoints.length - 1) {
-        setCurrentSnap(snapPoints[currentIdx + 1]);
-      }
-    } else if (info.velocity.y > 200 || info.offset.y > 50) {
-      // Dragged down
-      const currentIdx = snapPoints.indexOf(currentSnap);
-      if (currentIdx > 0) {
-        setCurrentSnap(snapPoints[currentIdx - 1]);
+    if (velocity.y < -200 || offset.y < -60) {
+      const target = sorted.find((p) => p > currentPct + 2);
+      setCurrentSnap(target ?? sorted[sorted.length - 1]);
+    } else if (velocity.y > 200 || offset.y > 60) {
+      const below = sorted.filter((p) => p < currentPct - 2);
+      if (below.length > 0) {
+        setCurrentSnap(below[below.length - 1]);
+      } else if (currentPct <= sorted[0] + 2) {
+        onClose();
+      } else {
+        setCurrentSnap(sorted[0]);
       }
     }
   };
 
-  return (
+  const mergedRef = (node: HTMLDivElement | null) => {
+    outerRef.current = node;
+    if (typeof sheetRef === 'function') sheetRef(node);
+    else if (sheetRef) (sheetRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+  };
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Scrim */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/32 z-[400]"
+            className="fixed inset-0 bg-black/40 z-[600]"
             onClick={handleScrimClick}
             aria-hidden="true"
           />
-
-          {/* Sheet */}
           <motion.div
-            ref={sheetRef}
+            ref={mergedRef}
             initial={{ y: '100%' }}
-            animate={{ y: 0 }}
+            animate={{ y: 0, height: heightPx }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
             drag="y"
+            dragListener={false}
             dragControls={dragControls}
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={0.15}
+            dragElastic={0.4}
+            dragMomentum={false}
             onDragEnd={handleDragEnd}
-            className="fixed bottom-0 left-0 right-0 z-[401] overflow-hidden"
+            className="fixed bottom-0 left-0 right-0 z-[601] overflow-hidden"
             style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+            onMouseDownCapture={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
-            aria-label={title}
+            aria-label={typeof title === 'string' ? title : undefined}
           >
-            <div
-              className={`bg-[var(--md-sys-color-surface-container-low)] rounded-t-[28px] flex flex-col transition-[max-height] duration-300 ease-out ${className}`}
-              style={{ maxHeight: getMaxHeight() }}
-            >
-              {/* Grab Handle */}
+            <div className={`flex flex-col h-full bg-[var(--md-sys-color-surface-container-low)] rounded-t-[28px] overflow-hidden shadow-[0_-8px_32px_rgba(0,0,0,0.15)] ${className}`}>
+              {/* Drag handle */}
               {!noHandle && (
                 <div
-                  className="flex justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing shrink-0 touch-none"
+                  ref={handleRef}
+                  className="flex justify-center pt-3 pb-1 shrink-0 cursor-grab active:cursor-grabbing touch-none"
                   onPointerDown={(e) => dragControls.start(e)}
+                  onMouseDown={(e) => e.preventDefault()}
                 >
                   <div className="w-10 h-1 rounded-full bg-[var(--md-sys-color-outline-variant)]" />
                 </div>
               )}
 
-              {/* Header with icon, title, description */}
-              {(title || icon) && (
-                <div className="px-5 pt-2 pb-3 flex items-start gap-3 shrink-0">
+              {/* Header */}
+              {header ? (
+                <div ref={headerRef} className="shrink-0">{header}</div>
+              ) : (title || icon) ? (
+                <div
+                  ref={headerRef}
+                  className="px-5 pt-2 pb-3 flex items-start gap-3 shrink-0 cursor-grab active:cursor-grabbing touch-none"
+                  onPointerDown={(e) => dragControls.start(e)}
+                  onMouseDown={(e) => e.preventDefault()}
+                >
                   {icon && (
                     <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-secondary-container)] flex items-center justify-center text-[var(--md-sys-color-on-secondary-container)] shrink-0 mt-0.5">
                       {icon}
@@ -184,27 +207,23 @@ const MD3BottomSheet: React.FC<MD3BottomSheetProps> = ({
                   )}
                   <div className="flex-1 min-w-0">
                     {title && (
-                      <h2 className="text-lg font-bold text-[var(--md-sys-color-on-surface)]">
-                        {title}
-                      </h2>
+                      <h2 className="text-lg font-bold text-[var(--md-sys-color-on-surface)]">{title}</h2>
                     )}
                     {description && (
-                      <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5 leading-relaxed">
-                        {description}
-                      </p>
+                      <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5 leading-relaxed">{description}</p>
                     )}
                   </div>
                 </div>
-              )}
+              ) : null}
 
               {/* Content */}
-              <div ref={contentRef} className="overflow-y-auto flex-1 overscroll-behavior-contain px-5">
-                {children}
+              <div ref={contentRef} className="flex-1 min-h-0 overflow-y-auto overscroll-behavior-contain custom-scrollbar">
+                <div ref={measureRef}>{children}</div>
               </div>
 
               {/* Actions */}
               {actions && (
-                <div className="px-5 pb-5 pt-3 shrink-0 border-t border-[var(--md-sys-color-outline-variant)]/30">
+                <div ref={actionsRef} className="shrink-0 border-t border-[var(--md-sys-color-outline-variant)]/30">
                   {actions}
                 </div>
               )}
@@ -212,7 +231,8 @@ const MD3BottomSheet: React.FC<MD3BottomSheetProps> = ({
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 

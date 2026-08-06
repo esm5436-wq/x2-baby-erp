@@ -88,7 +88,7 @@ const MD3Snackbar: React.FC<MD3SnackbarProps> = ({
   const visible = messages.slice(0, maxVisible);
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[600] flex flex-col-reverse gap-2 items-center pointer-events-none">
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[700] flex flex-col-reverse gap-2 items-center pointer-events-none">
       <AnimatePresence mode="popLayout">
         {visible.map((msg) => (
           <SingleSnackbar key={msg.id} msg={msg} onDismiss={onDismiss} />

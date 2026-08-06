@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useCallback, useId } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
+import MD3BottomSheet from '../MD3BottomSheet';
 
 interface MD3DialogAction {
   label: string;
@@ -76,10 +77,10 @@ const MD3Dialog: React.FC<MD3DialogProps> = ({
   }, [onClose]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || isMobile) return;
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, handleEscape]);
+  }, [isOpen, handleEscape, isMobile]);
 
   // Focus trap
   useEffect(() => {
@@ -115,19 +116,19 @@ const MD3Dialog: React.FC<MD3DialogProps> = ({
 
   // Body scroll lock
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || isMobile) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = prev; };
-  }, [isOpen]);
+  }, [isOpen, isMobile]);
 
   // Android back button
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || isMobile) return;
     const handlePopState = () => onClose();
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isMobile]);
 
   const handleScrimClick = () => {
     if (!persistent) onClose();
@@ -150,99 +151,35 @@ const MD3Dialog: React.FC<MD3DialogProps> = ({
   // --- MOBILE: Render as Bottom Sheet ---
   if (isMobile) {
     return (
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/32 z-[400]"
-              onClick={handleScrimClick}
-              aria-hidden="true"
-            />
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 z-[401] max-h-[92vh] flex flex-col"
-              style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={title ? titleId : undefined}
-              aria-describedby={description ? descId : undefined}
-            >
-              <div
-                ref={dialogRef}
-                tabIndex={-1}
-                className="bg-[var(--md-sys-color-surface-container-low)] rounded-t-[28px] flex flex-col overflow-hidden outline-none"
-              >
-                {/* Drag handle */}
-                <div className="flex justify-center pt-3 pb-1 shrink-0">
-                  <div className="w-10 h-1 rounded-full bg-[var(--md-sys-color-outline-variant)]" />
-                </div>
-
-                {/* Header */}
-                {(title || icon || closeButton) && (
-                  <div className="px-5 pt-2 pb-3 flex items-start gap-3 shrink-0">
-                    {icon && (
-                      <div className="w-10 h-10 rounded-full bg-[var(--md-sys-color-secondary-container)] flex items-center justify-center text-[var(--md-sys-color-on-secondary-container)] shrink-0 mt-0.5">
-                        {icon}
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      {title && (
-                        <h2 id={titleId} className="text-lg font-bold text-[var(--md-sys-color-on-surface)]">
-                          {title}
-                        </h2>
-                      )}
-                      {description && (
-                        <p id={descId} className="text-sm text-[var(--md-sys-color-on-surface-variant)] mt-0.5 leading-relaxed">
-                          {description}
-                        </p>
-                      )}
-                    </div>
-                    {closeButton && (
-                      <button
-                        onClick={onClose}
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-container-highest)] transition-colors shrink-0"
-                        aria-label="إغلاق"
-                      >
-                        <span className="material-symbols-rounded" style={{ fontSize: 24 }}>close</span>
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                {/* Content */}
-                <div className="px-5 overflow-y-auto flex-1 overscroll-behavior-contain">
-                  {children}
-                </div>
-
-                {/* Actions */}
-                {actions && actions.length > 0 && (
-                  <div className="px-5 pb-5 pt-3 flex items-center justify-end gap-2 flex-wrap shrink-0 border-t border-[var(--md-sys-color-outline-variant)]/30 mt-2">
-                    {actions.map((action, i) => (
-                      <button
-                        key={i}
-                        onClick={() => { action.onClick(); if (action.closeOnAction !== false) onClose(); }}
-                        className={getActionClasses(action.variant)}
-                      >
-                        <span className="flex items-center gap-2">
-                          {action.icon}
-                          {action.label}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <MD3BottomSheet
+        isOpen={isOpen}
+        onClose={onClose}
+        title={title}
+        description={description}
+        icon={icon}
+        persistent={persistent}
+        sheetRef={dialogRef}
+        actions={
+          actions && actions.length > 0 ? (
+            <div className="px-5 py-4 flex items-center justify-end gap-2 flex-wrap">
+              {actions.map((action, i) => (
+                <button
+                  key={i}
+                  onClick={() => { action.onClick(); if (action.closeOnAction !== false) onClose(); }}
+                  className={getActionClasses(action.variant)}
+                >
+                  <span className="flex items-center gap-2">
+                    {action.icon}
+                    {action.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : undefined
+        }
+      >
+        {children}
+      </MD3BottomSheet>
     );
   }
 

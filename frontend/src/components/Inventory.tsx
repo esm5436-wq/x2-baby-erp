@@ -62,6 +62,7 @@ import type { BatchField } from './BatchEditModal';
 import ViewSwitcher from './ViewSwitcher';
 import { exportToExcel, exportToPDF, exportToHTML, exportToCSV, exportToJSON } from '../lib/exportService';
 import { MD3Button, MD3IconButton, MD3StatCard, MD3EmptyState, MD3Dialog } from './md3';
+import MD3BottomSheet from './MD3BottomSheet';
 
 interface InventoryProps {
   products: Product[];
@@ -2039,24 +2040,10 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
         const salesRevenue = salesFromOrders.revenue;
         const salesProfit = salesFromOrders.profit;
         const turnoverRate = totalQty > 0 ? (piecesSold / totalQty) : 0;
-        return (
-          <div className={`fixed inset-0 z-[80] flex ${isMobile ? 'items-end' : 'items-center justify-center p-4'}`} onClick={() => setViewingProductId(null)}>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 bg-black/60" />
-            <motion.div
-              initial={isMobile ? { y: '100%' } : { scale: 0.9, opacity: 0, y: 20 }}
-              animate={isMobile ? { y: 0 } : { scale: 1, opacity: 1, y: 0 }}
-              transition={isMobile ? { type: 'spring', damping: 30, stiffness: 300 } : undefined}
-              onClick={(e) => e.stopPropagation()}
-              style={isMobile ? { paddingBottom: 'env(safe-area-inset-bottom, 0px)' } : undefined}
-              className={`${isMobile ? 'bg-[var(--md-sys-color-surface-container-low)] rounded-t-[28px] border-t border-[var(--md-sys-color-outline-variant)]/30' : 'bg-[var(--md-sys-color-surface)] rounded-[32px] max-w-2xl'} w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl relative z-10`}
-            >
-              {isMobile && (
-                <div className="flex justify-center pt-3 pb-1 shrink-0 cursor-grab active:cursor-grabbing touch-none">
-                  <div className="w-10 h-1 rounded-full bg-[var(--md-sys-color-outline-variant)]" />
-                </div>
-              )}
+        const detailBody = (
+          <>
               {/* Image Gallery Header — Natural aspect */}
-              <div className="relative bg-[var(--md-sys-color-surface-container)] rounded-t-[32px] overflow-hidden flex items-center justify-center min-h-[200px] shrink-0">
+              <div className="relative bg-[var(--md-sys-color-surface-container)] overflow-hidden flex items-center justify-center min-h-[200px] shrink-0">
                 {allImages.length > 0 ? (
                   <>
                     <img src={allImages[galleryIndex]} className="w-full max-h-[35vh] object-contain p-6 transition-opacity duration-300" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" fill="%23f1f5f9"/><circle cx="100" cy="80" r="24" fill="%23cbd5e1"/><rect x="60" y="120" width="80" height="10" rx="5" fill="%23cbd5e1"/></svg>'); }} />
@@ -2084,7 +2071,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 )}
               </div>
 
-              <div className={`${isMobile ? 'p-4' : 'p-8'} space-y-6 flex-1 min-h-0 overflow-y-auto overscroll-behavior-contain custom-scrollbar`}>
+              <div className="p-4 md:p-8 space-y-6 flex-1 min-h-0 overflow-y-auto overscroll-behavior-contain custom-scrollbar">
                 <div>
                   <h2 className="text-2xl font-black text-[var(--md-sys-color-on-surface)]">{product.name}</h2>
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -2260,10 +2247,31 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 )}
               </div>
 
-              <div className={`flex justify-between gap-4 ${isMobile ? 'px-4' : 'px-8'} py-5 border-t border-[var(--md-sys-color-outline-variant)]/20 shrink-0`}>
+              <div className="flex justify-between gap-4 px-4 md:px-8 py-5 border-t border-[var(--md-sys-color-outline-variant)]/20 shrink-0">
                 <MD3Button variant="outlined" onClick={() => setViewingProductId(null)}>إغلاق</MD3Button>
                 <MD3Button variant="filled" icon={<Edit2 size={18} />} onClick={() => { setViewingProductId(null); setModal({open: true, p: product}); }}>تعديل المنتج</MD3Button>
               </div>
+          </>
+        );
+
+        if (isMobile) {
+          return (
+            <MD3BottomSheet isOpen onClose={() => setViewingProductId(null)}>
+              {detailBody}
+            </MD3BottomSheet>
+          );
+        }
+
+        return (
+          <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" onClick={() => setViewingProductId(null)}>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 bg-black/60" />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[var(--md-sys-color-surface)] rounded-[32px] max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl relative z-10"
+            >
+              {detailBody}
             </motion.div>
           </div>
         );
