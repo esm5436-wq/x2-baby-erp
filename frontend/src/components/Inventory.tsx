@@ -426,10 +426,10 @@ const SyncReviewModal: React.FC<{ products: Product[]; onSaveItem: (p: Product) 
             </motion.div>
           ))}
         </div>
-        <div className="p-8 border-t border-[var(--md-sys-color-outline-variant)]/20 flex justify-between items-center bg-[var(--md-sys-color-surface)]">
-          <div className="text-xl font-black text-[var(--md-sys-color-on-surface)]">المتبقي: <span className="text-[var(--md-sys-color-primary)]">{localProducts.length - savedIds.size}</span> منتجات</div>
-          <div className="flex gap-4">
-            <button onClick={() => onSaveAll(localProducts.filter(p => !savedIds.has(p.id)))} className="bg-emerald-600 text-white font-black px-12 py-5 rounded-[24px] shadow-md hover:bg-emerald-700 transition-colors duration-200 flex items-center gap-3 text-lg"><Check size={28} strokeWidth={3}/> تخطى وحفظ المنتجات كما هى</button>
+        <div className="p-5 md:p-8 border-t border-[var(--md-sys-color-outline-variant)]/20 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-[var(--md-sys-color-surface)]">
+          <div className="text-xl font-black text-[var(--md-sys-color-on-surface)] flex items-center justify-center sm:justify-start">المتبقي: <span className="text-[var(--md-sys-color-primary)]">{localProducts.length - savedIds.size}</span> منتجات</div>
+          <div className="flex">
+            <button onClick={() => onSaveAll(localProducts.filter(p => !savedIds.has(p.id)))} className="bg-emerald-600 text-white font-black px-6 py-3 rounded-[20px] shadow-md hover:bg-emerald-700 transition-colors duration-200 flex items-center justify-center gap-2 text-base w-full sm:w-auto"><Check size={20} strokeWidth={3}/> تخطى وحفظ المنتجات كما هي</button>
           </div>
         </div>
     </MD3Dialog>
@@ -2084,7 +2084,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="p-4 bg-[var(--md-sys-color-primary)]/5 rounded-2xl border border-[var(--md-sys-color-primary)]/10">
                     <span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">سعر البيع</span>
                     <div className="font-black text-2xl text-[var(--md-sys-color-primary)] mt-1">{(product.price || 0).toLocaleString()} <span className="text-xs">ج.م</span></div>

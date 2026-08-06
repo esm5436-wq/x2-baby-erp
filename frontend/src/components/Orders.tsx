@@ -3326,7 +3326,6 @@ const Orders: React.FC<OrdersProps> = ({
         icon={<ShoppingBag size={20} />}
         maxWidth="xl"
         actions={[
-          { label: 'إغلاق', onClick: () => setViewingOrderId(null), variant: 'text' as const },
           { label: 'تعديل الطلب', onClick: () => { if(vo) startEditing(vo); setViewingOrderId(null); }, variant: 'tonal' as const, icon: <Edit2 size={15} /> },
           ...(isShippingFilter && trans.length > 0 ? trans.map(t => ({
             label: t.label,

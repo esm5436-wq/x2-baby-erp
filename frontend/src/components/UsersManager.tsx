@@ -128,14 +128,14 @@ export default function UsersManager() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-2">
-          <div className="p-2 rounded-2xl" style={{ backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)' }}>
+          <div className="p-2 rounded-2xl shrink-0" style={{ backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)' }}>
             <Shield size={24} />
           </div>
-          <h3 className="text-2xl font-bold">إدارة المستخدمين</h3>
+          <h3 className="text-xl sm:text-2xl font-bold">إدارة المستخدمين</h3>
         </div>
-        <MD3Button variant="filled" icon={<Plus size={18} />} onClick={openNew}>مستخدم جديد</MD3Button>
+        <MD3Button variant="filled" icon={<Plus size={18} />} onClick={openNew} className="w-full sm:w-auto">مستخدم جديد</MD3Button>
       </div>
 
       <div className="space-y-3">

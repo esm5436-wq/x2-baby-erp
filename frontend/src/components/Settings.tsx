@@ -1011,57 +1011,57 @@ className="p-2 text-[var(--md-sys-color-on-surface-variant)] hover:text-red-500 
           <div className="space-y-4">
             <h4 className="font-black text-sm">روابط QR</h4>
             <div className="p-4 bg-[var(--md-sys-color-surface-container)] rounded-2xl space-y-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex-1 space-y-1">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-2">
                   <label className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">سياسة الاستبدال والاسترجاع</label>
-                  <input
-                    value={state.invoiceSettings?.exchangeReturnUrl || ''}
-                    onChange={async (e) => {
-                      const val = e.target.value;
-                      onUpdateState({ invoiceSettings: { ...state.invoiceSettings, exchangeReturnUrl: val } as any });
-                      await saveInvoiceSettings({ exchangeReturnUrl: val });
+                  <button
+                    onClick={async () => {
+                      const updated = { ...state.invoiceSettings, showExchangeReturnQr: !state.invoiceSettings?.showExchangeReturnQr } as any;
+                      onUpdateState({ invoiceSettings: updated });
+                      await saveInvoiceSettings({ showExchangeReturnQr: !state.invoiceSettings?.showExchangeReturnQr });
                     }}
-                    
-                    className="w-full px-4 py-2.5 rounded-2xl text-xs font-bold border border-[var(--md-sys-color-outline-variant)]/20 bg-[var(--md-sys-color-surface)]"
-                    placeholder="https://..."
-                  />
+                    className={`w-12 h-6 rounded-full relative transition-colors duration-200 shrink-0 ${state.invoiceSettings?.showExchangeReturnQr ? 'bg-accent' : 'bg-[var(--md-sys-color-surface-container-highest)]'}`}
+                  >
+                    <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${state.invoiceSettings?.showExchangeReturnQr ? 'left-6.5' : 'left-0.5'}`} />
+                  </button>
                 </div>
-                <button
-                  onClick={async () => {
-                    const updated = { ...state.invoiceSettings, showExchangeReturnQr: !state.invoiceSettings?.showExchangeReturnQr } as any;
-                    onUpdateState({ invoiceSettings: updated });
-                    await saveInvoiceSettings({ showExchangeReturnQr: !state.invoiceSettings?.showExchangeReturnQr });
+                <input
+                  value={state.invoiceSettings?.exchangeReturnUrl || ''}
+                  onChange={async (e) => {
+                    const val = e.target.value;
+                    onUpdateState({ invoiceSettings: { ...state.invoiceSettings, exchangeReturnUrl: val } as any });
+                    await saveInvoiceSettings({ exchangeReturnUrl: val });
                   }}
-                  className={`w-12 h-6 rounded-full relative transition-colors duration-200 shrink-0 ${state.invoiceSettings?.showExchangeReturnQr ? 'bg-accent' : 'bg-[var(--md-sys-color-surface-container-highest)]'}`}
-                >
-                  <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${state.invoiceSettings?.showExchangeReturnQr ? 'left-6.5' : 'left-0.5'}`} />
-                </button>
+                  
+                  className="w-full px-4 py-2.5 rounded-2xl text-xs font-bold border border-[var(--md-sys-color-outline-variant)]/20 bg-[var(--md-sys-color-surface)]"
+                  placeholder="https://..."
+                />
               </div>
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex-1 space-y-1">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-2">
                   <label className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">سياسة الشحن</label>
-                  <input
-                    value={state.invoiceSettings?.shippingUrl || ''}
-                    onChange={async (e) => {
-                      const val = e.target.value;
-                      onUpdateState({ invoiceSettings: { ...state.invoiceSettings, shippingUrl: val } as any });
-                      await saveInvoiceSettings({ shippingUrl: val });
+                  <button
+                    onClick={async () => {
+                      const updated = { ...state.invoiceSettings, showShippingQr: !state.invoiceSettings?.showShippingQr } as any;
+                      onUpdateState({ invoiceSettings: updated });
+                      await saveInvoiceSettings({ showShippingQr: !state.invoiceSettings?.showShippingQr });
                     }}
-                    
-                    className="w-full px-4 py-2.5 rounded-2xl text-xs font-bold border border-[var(--md-sys-color-outline-variant)]/20 bg-[var(--md-sys-color-surface)]"
-                    placeholder="https://..."
-                  />
+                    className={`w-12 h-6 rounded-full relative transition-colors duration-200 shrink-0 ${state.invoiceSettings?.showShippingQr ? 'bg-accent' : 'bg-[var(--md-sys-color-surface-container-highest)]'}`}
+                  >
+                    <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${state.invoiceSettings?.showShippingQr ? 'left-6.5' : 'left-0.5'}`} />
+                  </button>
                 </div>
-                <button
-                  onClick={async () => {
-                    const updated = { ...state.invoiceSettings, showShippingQr: !state.invoiceSettings?.showShippingQr } as any;
-                    onUpdateState({ invoiceSettings: updated });
-                    await saveInvoiceSettings({ showShippingQr: !state.invoiceSettings?.showShippingQr });
+                <input
+                  value={state.invoiceSettings?.shippingUrl || ''}
+                  onChange={async (e) => {
+                    const val = e.target.value;
+                    onUpdateState({ invoiceSettings: { ...state.invoiceSettings, shippingUrl: val } as any });
+                    await saveInvoiceSettings({ shippingUrl: val });
                   }}
-                  className={`w-12 h-6 rounded-full relative transition-colors duration-200 shrink-0 ${state.invoiceSettings?.showShippingQr ? 'bg-accent' : 'bg-[var(--md-sys-color-surface-container-highest)]'}`}
-                >
-                  <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${state.invoiceSettings?.showShippingQr ? 'left-6.5' : 'left-0.5'}`} />
-                </button>
+                  
+                  className="w-full px-4 py-2.5 rounded-2xl text-xs font-bold border border-[var(--md-sys-color-outline-variant)]/20 bg-[var(--md-sys-color-surface)]"
+                  placeholder="https://..."
+                />
               </div>
 
             </div>

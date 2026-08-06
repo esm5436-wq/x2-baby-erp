@@ -161,12 +161,12 @@ const MD3Dialog: React.FC<MD3DialogProps> = ({
         sheetRef={dialogRef}
         actions={
           actions && actions.length > 0 ? (
-            <div className="px-5 py-4 flex items-center justify-end gap-2 flex-wrap">
+            <div className="px-5 py-4 flex flex-wrap items-stretch gap-2">
               {actions.map((action, i) => (
                 <button
                   key={i}
                   onClick={() => { action.onClick(); if (action.closeOnAction !== false) onClose(); }}
-                  className={getActionClasses(action.variant)}
+                  className={`${getActionClasses(action.variant)} flex-1 min-w-[110px] inline-flex items-center justify-center`}
                 >
                   <span className="flex items-center gap-2">
                     {action.icon}
