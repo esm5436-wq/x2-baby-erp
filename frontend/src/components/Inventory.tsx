@@ -54,7 +54,6 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, Variant, Category, Branding, ViewMode, Order, Supplier, OptionCategory } from '../types';
 import { API_BASE } from '../lib/api';
-import { useBreakpoint } from '../hooks/useBreakpoint';
 import ProductModal from './ProductModal';
 
 import BatchEditModal from './BatchEditModal';
@@ -62,7 +61,6 @@ import type { BatchField } from './BatchEditModal';
 import ViewSwitcher from './ViewSwitcher';
 import { exportToExcel, exportToPDF, exportToHTML, exportToCSV, exportToJSON } from '../lib/exportService';
 import { MD3Button, MD3IconButton, MD3StatCard, MD3EmptyState, MD3Dialog } from './md3';
-import MD3BottomSheet from './MD3BottomSheet';
 
 interface InventoryProps {
   products: Product[];
@@ -92,6 +90,8 @@ const QUICK_SUGGESTIONS: Record<string, string[]> = {
 const cartesian = (arrays: string[][]): string[][] => {
   return arrays.reduce<string[][]>((a, b) => a.flatMap(d => b.map(e => [...d, e])), [[]]);
 };
+
+const PRODUCT_IMG_PLACEHOLDER = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" fill="%23f1f5f9"/><rect x="70" y="60" width="60" height="80" rx="8" stroke="%2394a3b8" stroke-width="2" fill="none"/><circle cx="100" cy="110" r="12" fill="%23cbd5e1"/><rect x="80" y="70" width="40" height="6" rx="3" fill="%23cbd5e1"/></svg>');
 
 const SyncProductEditor: React.FC<{ 
   product: Product; 
@@ -519,8 +519,6 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
   const [modal, setModal] = useState<{open: boolean, p?: Product}>({open: false});
   const [viewingProductId, setViewingProductId] = useState<string | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
-  const breakpoint = useBreakpoint();
-  const isMobile = breakpoint === 'compact';
   useEffect(() => { if (viewingProductId) setGalleryIndex(0); }, [viewingProductId]);
   const [searchParams] = useSearchParams();
   useEffect(() => {
@@ -1689,7 +1687,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 className={`bg-[var(--md-sys-color-surface)] rounded-[32px] overflow-hidden shadow-sm border group relative flex flex-col cursor-pointer ${isSelected ? 'ring-4 ring-accent/30 border-[var(--md-sys-color-primary)] shadow-md' : isOutOfStock ? 'border-red-400 dark:border-red-500 ring-2 ring-red-100 dark:ring-red-900/30' : isLowStock ? 'border-amber-400 dark:border-amber-500 ring-2 ring-amber-100 dark:ring-amber-900/30' : 'border-gray-50 dark:border-slate-800 hover:shadow-md dark:hover:shadow-slate-900/50'}`}
               >
                 <div className={`relative overflow-hidden bg-[var(--md-sys-color-surface-container)] ${imageFitContain ? '' : 'max-h-72'}`}>
-                  <img src={p.image} className={`w-full ${imageFitContain ? 'h-auto block' : 'h-full object-cover transition-transform duration-500 group-hover:scale-110'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" fill="%23f1f5f9"/><rect x="70" y="60" width="60" height="80" rx="8" stroke="%2394a3b8" stroke-width="2" fill="none"/><circle cx="100" cy="110" r="12" fill="%23cbd5e1"/><rect x="80" y="70" width="40" height="6" rx="3" fill="%23cbd5e1"/></svg>'); (e.target as HTMLImageElement).className = `w-full h-full object-contain p-8 ${imageFitContain ? 'block' : ''}`; }} />
+                  <img src={p.image || PRODUCT_IMG_PLACEHOLDER} className={`w-full ${imageFitContain ? 'h-auto block' : 'h-full object-cover transition-transform duration-500 group-hover:scale-110'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" fill="%23f1f5f9"/><rect x="70" y="60" width="60" height="80" rx="8" stroke="%2394a3b8" stroke-width="2" fill="none"/><circle cx="100" cy="110" r="12" fill="%23cbd5e1"/><rect x="80" y="70" width="40" height="6" rx="3" fill="%23cbd5e1"/></svg>'); (e.target as HTMLImageElement).className = `w-full h-full object-contain p-8 ${imageFitContain ? 'block' : ''}`; }} />
                   
                   {p.images && p.images.length > 1 && (
                     <div className="absolute top-4 left-4 z-10 bg-black/60 text-white text-[9px] font-black px-2 py-1 rounded-lg backdrop-blur-sm flex items-center gap-1 pointer-events-none">
@@ -1838,7 +1836,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <img src={p.image} className={`w-12 h-12 rounded-xl ${imageFitContain ? 'object-contain p-1' : 'object-cover'} bg-[var(--md-sys-color-surface-container)]`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none"><rect width="48" height="48" rx="12" fill="%23f1f5f9"/><circle cx="24" cy="22" r="8" fill="%23cbd5e1"/><rect x="14" y="34" width="20" height="4" rx="2" fill="%23cbd5e1"/></svg>'); }} />
+                        <img src={p.image || PRODUCT_IMG_PLACEHOLDER} className={`w-12 h-12 rounded-xl ${imageFitContain ? 'object-contain p-1' : 'object-cover'} bg-[var(--md-sys-color-surface-container)]`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none"><rect width="48" height="48" rx="12" fill="%23f1f5f9"/><circle cx="24" cy="22" r="8" fill="%23cbd5e1"/><rect x="14" y="34" width="20" height="4" rx="2" fill="%23cbd5e1"/></svg>'); }} />
                         <div>
                           <div className="font-black text-sm text-[var(--md-sys-color-on-surface)]">
                             {p.name}
@@ -1910,7 +1908,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 className={`bg-[var(--md-sys-color-surface)] rounded-2xl p-3 border transition-all duration-200 cursor-pointer ${isSelected ? 'ring-2 ring-accent border-[var(--md-sys-color-primary)] shadow-md' : isOutOfStock ? 'border-red-400 dark:border-red-500' : isLowStock ? 'border-amber-400 dark:border-amber-500' : 'border-gray-50 dark:border-slate-800 hover:shadow-md'}`}
               >
                 <div className={`relative rounded-xl overflow-hidden bg-[var(--md-sys-color-surface-container)] mb-2 ${imageFitContain ? '' : 'aspect-square'}`}>
-                  <img src={p.image} className={`w-full ${imageFitContain ? 'h-auto block' : 'h-full object-cover'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" rx="20" fill="%23f1f5f9"/><circle cx="100" cy="80" r="24" fill="%23cbd5e1"/><rect x="60" y="120" width="80" height="10" rx="5" fill="%23cbd5e1"/></svg>'); }} />
+                  <img src={p.image || PRODUCT_IMG_PLACEHOLDER} className={`w-full ${imageFitContain ? 'h-auto block' : 'h-full object-cover'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" rx="20" fill="%23f1f5f9"/><circle cx="100" cy="80" r="24" fill="%23cbd5e1"/><rect x="60" y="120" width="80" height="10" rx="5" fill="%23cbd5e1"/></svg>'); }} />
                   <div className="absolute top-1 right-1 min-w-[40px] min-h-[40px] bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/30 rounded-full flex items-center justify-center shadow-sm cursor-pointer hover:border-[var(--md-sys-color-primary)] transition-colors" onClick={(e) => { e.stopPropagation(); toggleSelect(p.id); }}>
                     {isSelected && <Check size={12} strokeWidth={4} className="text-[var(--md-sys-color-primary)]" />}
                   </div>
@@ -1956,7 +1954,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 className={`bg-[var(--md-sys-color-surface)] rounded-[28px] p-6 border transition-all duration-200 cursor-pointer ${isSelected ? 'ring-2 ring-accent border-[var(--md-sys-color-primary)] shadow-lg' : isOutOfStock ? 'border-red-400 dark:border-red-500' : isLowStock ? 'border-amber-400 dark:border-amber-500' : 'border-[var(--md-sys-color-outline-variant)]/20 hover:shadow-md'}`}
               >
                 <div className="flex gap-6">
-                  <img src={p.image} className={`w-28 ${imageFitContain ? 'h-auto rounded-2xl bg-[var(--md-sys-color-surface-container)] shrink-0' : 'h-28 rounded-2xl object-cover bg-[var(--md-sys-color-surface-container)] shrink-0'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" fill="none"><rect width="112" height="112" rx="16" fill="%23f1f5f9"/><circle cx="56" cy="44" r="16" fill="%23cbd5e1"/><rect x="32" y="72" width="48" height="8" rx="4" fill="%23cbd5e1"/></svg>'); }} />
+                  <img src={p.image || PRODUCT_IMG_PLACEHOLDER} className={`w-28 ${imageFitContain ? 'h-auto rounded-2xl bg-[var(--md-sys-color-surface-container)] shrink-0' : 'h-28 rounded-2xl object-cover bg-[var(--md-sys-color-surface-container)] shrink-0'}`} onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" fill="none"><rect width="112" height="112" rx="16" fill="%23f1f5f9"/><circle cx="56" cy="44" r="16" fill="%23cbd5e1"/><rect x="32" y="72" width="48" height="8" rx="4" fill="%23cbd5e1"/></svg>'); }} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-4">
                       <div>
@@ -2046,7 +2044,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
               <div className="relative bg-[var(--md-sys-color-surface-container)] overflow-hidden flex items-center justify-center min-h-[200px] shrink-0">
                 {allImages.length > 0 ? (
                   <>
-                    <img src={allImages[galleryIndex]} className="w-full max-h-[35vh] object-contain p-6 transition-opacity duration-300" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" fill="%23f1f5f9"/><circle cx="100" cy="80" r="24" fill="%23cbd5e1"/><rect x="60" y="120" width="80" height="10" rx="5" fill="%23cbd5e1"/></svg>'); }} />
+                    <img src={allImages[galleryIndex] || PRODUCT_IMG_PLACEHOLDER} className="w-full max-h-[35vh] object-contain p-6 transition-opacity duration-300" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="none"><rect width="200" height="200" fill="%23f1f5f9"/><circle cx="100" cy="80" r="24" fill="%23cbd5e1"/><rect x="60" y="120" width="80" height="10" rx="5" fill="%23cbd5e1"/></svg>'); }} />
                     {allImages.length > 1 && (
                       <>
                         <button onClick={() => setGalleryIndex(prev => (prev - 1 + allImages.length) % allImages.length)} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-[var(--md-sys-color-on-surface)] rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-slate-900 transition-colors duration-200 shadow-lg"><ChevronRight size={20} /></button>
@@ -2062,7 +2060,6 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 ) : (
                   <div className="py-16 text-gray-300 dark:text-gray-600"><ImageIcon size={72} /></div>
                 )}
-                <button onClick={() => setViewingProductId(null)} className="absolute top-4 left-4 w-10 h-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-gray-600 dark:text-gray-300 rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-slate-900 transition-colors duration-200 shadow-lg"><X size={20} /></button>
                 {isOutOfStock && (
                   <div className="absolute bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-2xl font-black text-xs flex items-center gap-2 shadow-lg"><XCircle size={16} /> نفذ المخزون</div>
                 )}
@@ -2246,34 +2243,25 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   </div>
                 )}
               </div>
-
-              <div className="flex justify-between gap-4 px-4 md:px-8 py-5 border-t border-[var(--md-sys-color-outline-variant)]/20 shrink-0">
-                <MD3Button variant="outlined" onClick={() => setViewingProductId(null)}>إغلاق</MD3Button>
-                <MD3Button variant="filled" icon={<Edit2 size={18} />} onClick={() => { setViewingProductId(null); setModal({open: true, p: product}); }}>تعديل المنتج</MD3Button>
-              </div>
           </>
         );
 
-        if (isMobile) {
-          return (
-            <MD3BottomSheet isOpen onClose={() => setViewingProductId(null)}>
-              {detailBody}
-            </MD3BottomSheet>
-          );
-        }
-
         return (
-          <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" onClick={() => setViewingProductId(null)}>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 bg-black/60" />
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-[var(--md-sys-color-surface)] rounded-[32px] max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl relative z-10"
-            >
-              {detailBody}
-            </motion.div>
-          </div>
+          <MD3Dialog
+            isOpen={!!viewingProductId}
+            onClose={() => setViewingProductId(null)}
+            title="تفاصيل المنتج"
+            description={`${product.sku || '—'} • ${product.category}${product.createdAt ? ` • ${formatDate(product.createdAt, 'date')}` : ''}`}
+            icon={<Package size={20} />}
+            maxWidth="xl"
+            actions={[
+              ...(product.url ? [{ label: 'الرابط على الموقع', onClick: () => window.open(product.url, '_blank', 'noopener,noreferrer'), variant: 'tonal' as const, icon: <ExternalLink size={15} /> }] : []),
+              { label: 'حذف', onClick: () => { if (window.confirm('هل أنت متأكد من حذف المنتج نهائياً من النظام؟')) { onDeleteProduct(product.id); setViewingProductId(null); } }, variant: 'danger' as const, icon: <Trash2 size={15} /> },
+              { label: 'تعديل المنتج', onClick: () => { setViewingProductId(null); setModal({ open: true, p: product }); }, variant: 'filled' as const, icon: <Edit2 size={15} /> },
+            ]}
+          >
+            {detailBody}
+          </MD3Dialog>
         );
       })()}
 

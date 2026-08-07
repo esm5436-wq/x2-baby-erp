@@ -160,17 +160,18 @@ const MD3BottomSheet: React.FC<MD3BottomSheetProps> = ({
           <motion.div
             ref={mergedRef}
             initial={{ y: '100%' }}
-            animate={{ y: 0, height: heightPx }}
+            animate={{ y: 0 }}
             exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            transition={{ type: 'spring', damping: 32, stiffness: 320 }}
             drag="y"
             dragListener={false}
             dragControls={dragControls}
             dragElastic={0.4}
             dragMomentum={false}
+            dragSnapToOrigin
             onDragEnd={handleDragEnd}
             className="fixed bottom-0 left-0 right-0 z-[601] overflow-hidden"
-            style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+            style={{ height: heightPx, paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
             onMouseDownCapture={(e) => e.stopPropagation()}
             onClick={(e) => e.stopPropagation()}
             role="dialog"

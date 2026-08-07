@@ -1,11 +1,11 @@
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useUnsavedCheck } from '../hooks/useUnsavedCheck';
 import { 
   Upload, Plus, Trash2, Sparkles, HelpCircle, TrendingUp, AlertCircle,
-  Target, Trophy, Link as LinkIcon, Check, Zap, X,
-  ChevronLeft, ChevronRight
+  Target, Trophy, Link as LinkIcon, Check, Zap, X
 } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Product, Variant, Category, OptionCategory, OptionType } from '../types';
 import { formatDate } from '../lib/formatDate';
 import { MD3Dialog } from './md3';
@@ -20,7 +20,8 @@ const cartesian = (arrays: string[][]): string[][] => {
 };
 
 const STEPS = [
-  { icon: 'inventory_2', label: 'المعلومات الأساسية', desc: 'الاسم والتصنيف والصور والتسعير' },
+  { icon: 'inventory_2', label: 'الأساسية', desc: 'الاسم والتصنيف والمورد' },
+  { icon: 'description', label: 'الوصف والتسعير', desc: 'الوصف والصور والأسعار' },
   { icon: 'tune', label: 'المتغيرات', desc: 'المقاسات والألوان والكميات' },
 ];
 
@@ -36,7 +37,9 @@ interface ProductModalProps {
 
 const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppliers, contacts, onClose, onSave, onDeleteAction }) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [stepDirection, setStepDirection] = useState(0);
   const [showPriceHelp, setShowPriceHelp] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   const [p, setP] = useState<Product>(() => {
     if (product) {
@@ -89,7 +92,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
 
   const tipTapEditor = useEditor({
     extensions: [
-      StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
+      StarterKit.configure({ heading: { levels: [1, 2, 3] }, link: false }),
       LinkExt.configure({ openOnClick: false, autolink: true }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Placeholder.configure({ placeholder: 'اكتب وصف المنتج التفصيلي هنا...' }),
@@ -206,12 +209,36 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
     setP({ ...p, images: newImages, image: newImages[0] });
   };
 
-  const isEdit = product && !product.id.toString().startsWith('p-');
+  const isEdit = Boolean(product);
 
   const inputCls = "w-full p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-900 dark:text-white outline-none focus:border-accent focus:bg-white dark:focus:bg-slate-900 transition-colors duration-200 shadow-sm";
   const labelCls = "text-xs font-black text-gray-600 dark:text-gray-400 pr-1 uppercase tracking-widest";
 
-  const renderStep1 = () => (
+  const goToStep = (idx: number) => {
+    if (idx === currentStep) return;
+    setStepDirection(idx > currentStep ? 1 : -1);
+    setCurrentStep(idx);
+  };
+
+  const nextStep = () => {
+    if (currentStep >= STEPS.length - 1) return;
+    setStepDirection(1);
+    setCurrentStep(currentStep + 1);
+  };
+
+  const prevStep = () => {
+    if (currentStep <= 0) return;
+    setStepDirection(-1);
+    setCurrentStep(currentStep - 1);
+  };
+
+  const stepVariants = {
+    enter: (dir: number) => reduceMotion ? { opacity: 0, x: 0 } : { opacity: 0, x: dir >= 0 ? -40 : 40 },
+    center: { opacity: 1, x: 0 },
+    exit: (dir: number) => reduceMotion ? { opacity: 0, x: 0 } : { opacity: 0, x: dir >= 0 ? 40 : -40 },
+  };
+
+  const renderStep0 = () => (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2 md:col-span-1 space-y-2">
@@ -290,7 +317,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
           </select>
         </div>
       </div>
+    </div>
+  );
 
+  const renderStep1 = () => (
+    <div className="space-y-6">
       <div className="space-y-3">
         <label className={labelCls}>وصف المنتج التفصيلي</label>
         <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl overflow-hidden">
@@ -587,76 +618,68 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
   </div>
   );
 
-  const stepContents = [renderStep1, renderStep2];
+  const stepContents = [renderStep0, renderStep1, renderStep2];
+  const isLastStep = currentStep === STEPS.length - 1;
 
   return (
     <MD3Dialog
       isOpen={true}
       onClose={() => withUnsavedCheck(onClose)}
       title={isEdit ? 'تعديل المنتج' : 'إضافة منتج جديد'}
+      description={isEdit
+        ? `أُضيف: ${formatDate(product!.createdAt, 'full')}${product!.updatedAt ? `  •  آخر تعديل: ${formatDate(product!.updatedAt, 'full')}` : ''}`
+        : `الخطوة ${currentStep + 1} من ${STEPS.length} — ${STEPS[currentStep].desc}`}
       icon={<span className="material-symbols-rounded" style={{ fontSize: 24 }}>inventory_2</span>}
       maxWidth="xl"
       actions={[
         ...(isEdit ? [{ label: 'حذف', onClick: () => { if(window.confirm('هل أنت متأكد من حذف المنتج نهائياً من النظام؟')) { markClean(); onDeleteAction(product!.id); onClose(); } }, variant: 'danger' as const }] : []),
         { label: 'إلغاء', onClick: () => withUnsavedCheck(onClose), variant: 'text' as const },
-        { label: currentStep === 1 ? 'حفظ المنتج' : 'التالي', closeOnAction: currentStep === 1, onClick: () => { if (currentStep < 1) { setCurrentStep(currentStep + 1); } else { markClean(); onSave({...p, options}); } }, variant: 'filled' as const }
+        ...(currentStep > 0 ? [{ label: 'السابق', closeOnAction: false, onClick: prevStep, variant: 'text' as const }] : []),
+        { label: isLastStep ? 'حفظ المنتج' : 'التالي', closeOnAction: isLastStep, onClick: () => { if (isLastStep) { markClean(); onSave({...p, options}); } else { nextStep(); } }, variant: 'filled' as const }
       ]}
     >
       <div dir="rtl" className="text-right">
-        {isEdit && (
-          <div className="px-6 pt-2 pb-0">
-            <div className="flex items-center gap-3 text-[10px] font-bold text-gray-400 dark:text-gray-500">
-              <span>تاريخ الإضافة: {formatDate(product!.createdAt, 'full')}</span>
-              {product!.updatedAt && <><span className="opacity-40">|</span><span>آخر تعديل: {formatDate(product!.updatedAt, 'full')}</span></>}
+        <div className="px-6 pt-1 pb-3">
+          <div className="flex items-start relative">
+            <div className="absolute top-[15px] left-2 right-2 h-1 rounded-full bg-[var(--md-sys-color-surface-container-highest)] overflow-hidden">
+              <div className="absolute top-0 bottom-0 right-0 h-full bg-[var(--md-sys-color-primary)] rounded-full transition-all duration-500" style={{ width: `${(currentStep / (STEPS.length - 1)) * 100}%` }} />
             </div>
-          </div>
-        )}
-
-        <div className="px-6 pt-4 pb-2">
-          <div className="flex items-center justify-between relative">
-            <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-200 dark:bg-slate-700" />
-            <div className="absolute top-4 right-0 h-0.5 bg-accent transition-all duration-300" style={{ width: `${(currentStep / (STEPS.length - 1)) * 100}%` }} />
-            {STEPS.map((step, idx) => (
-              <button key={idx} onClick={() => idx <= currentStep && setCurrentStep(idx)}
-                className={`relative z-10 flex flex-col items-center gap-1.5 group/step ${idx <= currentStep ? 'cursor-pointer' : 'cursor-default'}`}>
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-200 border-2
-                  ${idx < currentStep ? 'bg-accent border-accent text-white' : idx === currentStep ? 'bg-accent/10 border-accent text-accent' : 'bg-gray-100 dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-400 dark:text-gray-500'}`}>
-                  {idx < currentStep ? <Check size={16} /> : <span className="material-symbols-rounded" style={{ fontSize: 18 }}>{step.icon}</span>}
-                </div>
-                <div className="text-center hidden sm:block">
-                  <div className={`text-[10px] font-black ${idx === currentStep ? 'text-accent' : idx < currentStep ? 'text-accent/70' : 'text-gray-400 dark:text-gray-500'}`}>{step.label}</div>
-                  <div className="text-[8px] text-gray-400 dark:text-gray-500">{step.desc}</div>
-                </div>
-                <div className="sm:hidden text-center">
-                  <div className={`text-[9px] font-black ${idx === currentStep ? 'text-accent' : idx < currentStep ? 'text-accent/70' : 'text-gray-400 dark:text-gray-500'}`}>{step.label}</div>
-                </div>
-              </button>
-            ))}
+            {STEPS.map((step, idx) => {
+              const done = idx < currentStep;
+              const active = idx === currentStep;
+              const clickable = idx <= currentStep;
+              return (
+                <button key={idx} type="button" onClick={() => clickable && goToStep(idx)} disabled={!clickable}
+                  className={`relative z-10 flex-1 flex flex-col items-center gap-1 outline-none ${clickable ? 'cursor-pointer' : 'cursor-default'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 border-2 shrink-0
+                    ${done ? 'bg-[var(--md-sys-color-primary)] border-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]'
+                      : active ? 'bg-[var(--md-sys-color-primary-container)] border-[var(--md-sys-color-primary)] text-[var(--md-sys-color-primary)] shadow-[0_0_0_4px_rgba(var(--md-sys-color-primary-rgb,103,80,164),0.16)]'
+                      : 'bg-[var(--md-sys-color-surface-container)] border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)]'}`}>
+                    {done ? <Check size={14} /> : <span className="material-symbols-rounded" style={{ fontSize: 16 }}>{step.icon}</span>}
+                  </div>
+                  <span className={`text-[9px] font-bold leading-none transition-colors ${active ? 'text-[var(--md-sys-color-primary)]' : done ? 'text-[var(--md-sys-color-on-surface-variant)]' : 'text-[var(--md-sys-color-on-surface-variant)] opacity-60'}`}>
+                    {step.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <div className="px-6 pb-2 pt-2">
-          <div className="flex items-center justify-between">
-            {currentStep > 0 ? (
-              <button onClick={() => setCurrentStep(currentStep - 1)} className="flex items-center gap-1.5 text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-accent transition-colors px-3 py-2 rounded-xl hover:bg-accent/5">
-                <ChevronRight size={16} /> السابق
-              </button>
-            ) : <div />}
-            {currentStep < 1 ? (
-              <button onClick={() => setCurrentStep(currentStep + 1)} className="flex items-center gap-1.5 text-xs font-bold text-white bg-accent px-4 py-2 rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-md">
-                التالي <ChevronLeft size={16} />
-              </button>
-            ) : (
-              <div className="flex items-center gap-2 text-[10px] text-gray-400 dark:text-gray-500">
-                <span className="material-symbols-rounded" style={{ fontSize: 14 }}>info</span>
-                اضغط "حفظ المنتج" لإتمام العملية
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="px-6 pb-4 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 280px)' }}>
-          {stepContents[currentStep]()}
+        <div className="px-6 pb-4 overflow-y-auto overscroll-behavior-contain custom-scrollbar max-h-[calc(100dvh-200px)] md:max-h-[calc(100dvh-315px)]">
+          <AnimatePresence mode="wait" initial={false} custom={stepDirection}>
+            <motion.div
+              key={currentStep}
+              custom={stepDirection}
+              variants={stepVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={reduceMotion ? { duration: 0.1 } : { duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+            >
+              {stepContents[currentStep]()}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </MD3Dialog>
