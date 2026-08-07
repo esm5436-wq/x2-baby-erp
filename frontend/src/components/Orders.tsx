@@ -19,6 +19,7 @@ import {
   XCircle, 
   PackageCheck, 
   AlertTriangle, 
+  AlertCircle, 
   RefreshCw, 
 
   Globe, 
@@ -771,6 +772,8 @@ const Orders: React.FC<OrdersProps> = ({
     customerSource: ''
   });
 
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
   const autoFillTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -1400,6 +1403,7 @@ const Orders: React.FC<OrdersProps> = ({
         longitude: '',
         customerSource: ''
     });
+    setFormErrors({});
     setOrderItems([]);
     setEditingItemIndex(-1);
     setEditVariantId('');
@@ -1634,6 +1638,15 @@ const Orders: React.FC<OrdersProps> = ({
 
   const handleSaveOrder = (e: React.FormEvent) => {
     e.preventDefault();
+    const errors: Record<string, string> = {};
+    if (!(formData.customerName || '').trim()) errors.customerName = 'يرجى إدخال اسم العميل';
+    if (!(formData.customerPhone || '').trim()) errors.customerPhone = 'يرجى إدخال رقم الهاتف';
+    if (!(formData.address || '').trim()) errors.address = 'يرجى إدخال العنوان التفصيلي';
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
     if (orderItems.length === 0) {
       alert("يجب إضافة منتج واحد على الأقل");
       return;
@@ -2261,22 +2274,28 @@ const Orders: React.FC<OrdersProps> = ({
             );
           })()}
 
-          <form onSubmit={handleSaveOrder} className="space-y-8">
+          <form onSubmit={handleSaveOrder} noValidate className="space-y-8">
             {/* Form Fields... */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] pr-1">اسم العميل</label>
+                <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] pr-1">اسم العميل <span className="text-red-500">*</span></label>
                 <div className="relative">
                   <User size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)]" />
-                  <input required className="w-full pr-9 pl-4 py-2.5 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none text-[var(--md-sys-color-on-surface)] focus:bg-[var(--md-sys-color-surface)] transition-colors duration-200 text-sm font-bold" placeholder="الاسم الثلاثي" value={formData.customerName} onChange={e => setFormData({...formData, customerName: e.target.value})} />
+                  <input required className={`w-full pr-9 pl-4 py-2.5 bg-[var(--md-sys-color-surface-container)] border rounded-xl outline-none text-[var(--md-sys-color-on-surface)] focus:bg-[var(--md-sys-color-surface)] transition-colors duration-200 text-sm font-bold ${formErrors.customerName ? 'border-red-400 dark:border-red-500' : 'border-[var(--md-sys-color-outline-variant)]/20'}`} placeholder="الاسم الثلاثي" value={formData.customerName} onChange={e => { setFormData({...formData, customerName: e.target.value}); if (formErrors.customerName) setFormErrors(prev => ({ ...prev, customerName: '' })); }} />
                 </div>
+                {formErrors.customerName && (
+                  <p className="text-[11px] font-bold text-red-500 pr-1 flex items-center gap-1"><AlertCircle size={12} /> {formErrors.customerName}</p>
+                )}
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] pr-1">رقم الهاتف</label>
+                <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] pr-1">رقم الهاتف <span className="text-red-500">*</span></label>
                 <div className="relative">
                   <Phone size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)]" />
-                  <input required type="tel" className="w-full pr-9 pl-4 py-2.5 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none text-[var(--md-sys-color-on-surface)] font-mono text-sm font-bold" placeholder="01xxxxxxxxx" value={formData.customerPhone} onChange={e => setFormData({...formData, customerPhone: e.target.value})} />
+                  <input required type="tel" className={`w-full pr-9 pl-4 py-2.5 bg-[var(--md-sys-color-surface-container)] border rounded-xl outline-none text-[var(--md-sys-color-on-surface)] font-mono text-sm font-bold ${formErrors.customerPhone ? 'border-red-400 dark:border-red-500' : 'border-[var(--md-sys-color-outline-variant)]/20'}`} placeholder="01xxxxxxxxx" value={formData.customerPhone} onChange={e => { setFormData({...formData, customerPhone: e.target.value}); if (formErrors.customerPhone) setFormErrors(prev => ({ ...prev, customerPhone: '' })); }} />
                 </div>
+                {formErrors.customerPhone && (
+                  <p className="text-[11px] font-bold text-red-500 pr-1 flex items-center gap-1"><AlertCircle size={12} /> {formErrors.customerPhone}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] pr-1">هاتف بديل</label>
@@ -2290,8 +2309,11 @@ const Orders: React.FC<OrdersProps> = ({
                 <SearchableSelect options={governorateOptions} value={formData.city} onChange={handleCityChange} placeholder="اختر المحافظة..." icon={<MapPin size={16} />} />
               </div>
               <div className="md:col-span-2 space-y-2">
-                <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] pr-1">العنوان التفصيلي</label>
-                <input required className="w-full px-4 py-2.5 bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-xl outline-none text-[var(--md-sys-color-on-surface)] focus:bg-[var(--md-sys-color-surface)] transition-colors duration-200 text-sm font-bold" placeholder="رقم العمارة - اسم الشارع - علامة مميزة" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
+                <label className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)] pr-1">العنوان التفصيلي <span className="text-red-500">*</span></label>
+                <input required className={`w-full px-4 py-2.5 bg-[var(--md-sys-color-surface-container)] border rounded-xl outline-none text-[var(--md-sys-color-on-surface)] focus:bg-[var(--md-sys-color-surface)] transition-colors duration-200 text-sm font-bold ${formErrors.address ? 'border-red-400 dark:border-red-500' : 'border-[var(--md-sys-color-outline-variant)]/20'}`} placeholder="رقم العمارة - اسم الشارع - علامة مميزة" value={formData.address} onChange={e => { setFormData({...formData, address: e.target.value}); if (formErrors.address) setFormErrors(prev => ({ ...prev, address: '' })); }} />
+                {formErrors.address && (
+                  <p className="text-[11px] font-bold text-red-500 pr-1 flex items-center gap-1"><AlertCircle size={12} /> {formErrors.address}</p>
+                )}
               </div>
               
                {/* Google Maps URL + Map Preview */}
@@ -2741,6 +2763,14 @@ const Orders: React.FC<OrdersProps> = ({
                 </div>
               )}
             </div>
+            {Object.values(formErrors).some(Boolean) && (
+              <div className="flex items-center gap-2.5 p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900">
+                <AlertCircle size={18} className="text-red-500 shrink-0" />
+                <p className="text-sm font-bold text-red-600 dark:text-red-300">
+                  أكمل الحقول الإلزامية المميزة بعلامة <span className="text-red-500 font-black">*</span> ثم اضغط الحفظ مرة أخرى
+                </p>
+              </div>
+            )}
             <button type="submit" className="w-full text-white font-black py-4 rounded-2xl shadow-lg hover:opacity-90 transition-opacity duration-200 text-base flex justify-center items-center gap-2" style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }}>
                 <CheckCircle size={20} />
                 {editingOrderId && editingOrderId !== 'new' ? 'حفظ التعديلات' : 'حفظ وتأكيد الطلب'} 
