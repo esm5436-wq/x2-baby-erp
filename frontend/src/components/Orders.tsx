@@ -766,6 +766,7 @@ const Orders: React.FC<OrdersProps> = ({
     utmCampaign: '',
     shippingMethod: ShippingMethod.EXTERNAL,
     shippingCompany: '',
+    status: OrderStatus.UNDER_REVIEW,
     mapUrl: '',
     latitude: '',
     longitude: '',
@@ -2258,7 +2259,6 @@ const Orders: React.FC<OrdersProps> = ({
         description="أدخل بيانات الطلب كاملة"
         icon={editingOrderId && editingOrderId !== 'new' ? <Edit2 size={20} /> : <Plus size={20} />}
         maxWidth="xl"
-        persistent
       >
 
           {editingOrderId && editingOrderId !== 'new' && (() => {
