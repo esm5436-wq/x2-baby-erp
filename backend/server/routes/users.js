@@ -78,6 +78,12 @@ router.put('/api/users/:id', requireAdmin, async (req, res) => {
       params.push(hash);
     }
     if (role && role !== user.role) {
+      if (user.role === 'admin' && role !== 'admin') {
+        const adminRows = await allDb("SELECT COUNT(*) as cnt FROM users WHERE role = 'admin'");
+        if (Number(adminRows[0].cnt) <= 1) {
+          return res.status(400).json({ error: 'لا يمكن تغيير دور آخر مدير في النظام' });
+        }
+      }
       updates.push("role = ?");
       params.push(role);
     }
@@ -105,9 +111,14 @@ router.put('/api/users/:id', requireAdmin, async (req, res) => {
 router.delete('/api/users/:id', requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await getDb("SELECT username FROM users WHERE id = ?", [id]);
+    const user = await getDb("SELECT username, role FROM users WHERE id = ?", [id]);
     if (!user) return res.status(404).json({ error: 'المستخدم غير موجود' });
-    if (String(id) === '1') return res.status(400).json({ error: 'لا يمكن حذف المستخدم الأساسي' });
+    if (user.role === 'admin') {
+      const adminRows = await allDb("SELECT COUNT(*) as cnt FROM users WHERE role = 'admin'");
+      if (Number(adminRows[0].cnt) <= 1) {
+        return res.status(400).json({ error: 'لا يمكن حذف آخر مدير في النظام' });
+      }
+    }
     await runDb("DELETE FROM users WHERE id = ?", [id]);
     logActivity('delete', 'user', id, `تم حذف المستخدم ${user.username}`);
     res.json({ message: 'تم الحذف' });

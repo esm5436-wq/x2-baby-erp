@@ -23,8 +23,8 @@ interface CustomerDetailProps {
 }
 
 export default function CustomerDetail({ customer, orders, onClose, onEdit, onDelete, onViewOrder }: CustomerDetailProps) {
-  const totalOrders = customer.totalOrders || orders.length;
-  const totalSpent = customer.totalSpent || orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+  const totalOrders = customer.total_orders || orders.length;
+  const totalSpent = customer.total_spent || orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
   const avgOrder = totalOrders > 0 ? totalSpent / totalOrders : 0;
   let tags: string[] = [];
   try { tags = JSON.parse(customer.tags || '[]'); } catch { tags = (customer.tags || '').split(',').map(t => t.trim()).filter(Boolean); }
@@ -90,15 +90,15 @@ export default function CustomerDetail({ customer, orders, onClose, onEdit, onDe
                <a href={`https://wa.me/20${(customer.phone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" className="p-1.5 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-success)] hover:text-[var(--md-sys-color-success)] transition-all" title="واتساب"><FaWhatsapp size={15} /></a>
             </div>
           </div>
-          {customer.altPhone && (
+          {customer.alt_phone && (
             <div className="p-3 bg-[var(--md-sys-color-surface-container-low)] rounded-2xl">
               <div className="text-[10px] font-black text-[var(--md-sys-color-outline)] mb-1.5">هاتف بديل</div>
               <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">
                 <Phone size={13} className="text-[var(--md-sys-color-outline)] shrink-0" />
-                <span className="font-mono text-sm text-[var(--md-sys-color-on-surface)]" dir="ltr">{customer.altPhone}</span>
-                 <button onClick={() => navigator.clipboard.writeText(customer.altPhone || '')} className="p-1.5 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-outline)] hover:text-[var(--md-sys-color-primary)] transition-all" title="نسخ"><Copy size={14} /></button>
-                 <a href={`tel:${customer.altPhone}`} className="p-1.5 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-primary)] transition-all" title="اتصال"><Phone size={14} /></a>
-                 <a href={`https://wa.me/20${(customer.altPhone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" className="p-1.5 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-success)] hover:text-[var(--md-sys-color-success)] transition-all" title="واتساب"><FaWhatsapp size={15} /></a>
+                <span className="font-mono text-sm text-[var(--md-sys-color-on-surface)]" dir="ltr">{customer.alt_phone}</span>
+                 <button onClick={() => navigator.clipboard.writeText(customer.alt_phone || '')} className="p-1.5 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-outline)] hover:text-[var(--md-sys-color-primary)] transition-all" title="نسخ"><Copy size={14} /></button>
+                 <a href={`tel:${customer.alt_phone}`} className="p-1.5 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-primary)] transition-all" title="اتصال"><Phone size={14} /></a>
+                 <a href={`https://wa.me/20${(customer.alt_phone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" className="p-1.5 min-w-[40px] min-h-[40px] rounded-lg hover:bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-success)] hover:text-[var(--md-sys-color-success)] transition-all" title="واتساب"><FaWhatsapp size={15} /></a>
               </div>
             </div>
           )}

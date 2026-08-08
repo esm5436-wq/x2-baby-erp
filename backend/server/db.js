@@ -2,6 +2,7 @@ import { createClient } from '@libsql/client';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 
 const isVercel = process.env.VERCEL === '1' || !!process.env.TURSO_DATABASE_URL;
 
@@ -104,7 +105,6 @@ export async function initializeSchema() {
     `CREATE TABLE IF NOT EXISTS activity_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, action TEXT NOT NULL, entity_type TEXT NOT NULL, entity_id TEXT, description TEXT, metadata TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
     `CREATE TABLE IF NOT EXISTS checkpoints (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, snapshot TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
     `CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'user', permissions TEXT, can_change_password INTEGER DEFAULT 1, created_by TEXT, last_login DATETIME, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
-    `INSERT OR IGNORE INTO users (id, username, password_hash, role, permissions, can_change_password, created_by) VALUES (1, 'admin', '', 'admin', '{}', 1, 'system')`,
     `CREATE INDEX IF NOT EXISTS idx_contacts_specialization ON contacts(specialization)`,
     `CREATE INDEX IF NOT EXISTS idx_contacts_entity_type ON contacts(entity_type)`,
     `CREATE INDEX IF NOT EXISTS idx_order_items_cost_order_id ON order_items_cost_tracking(order_id)`,
@@ -196,6 +196,33 @@ export async function initializeSchema() {
     await db.execute("UPDATE orders SET data = json_set(data, '$.status', 'مخاطر عالية') WHERE json_extract(data, '$.status') = 'High Risk'");
     await db.execute("UPDATE orders SET data = json_set(data, '$.status', 'مخاطر متوسطة') WHERE json_extract(data, '$.status') = 'Moderate Risk'");
   } catch (e) {}
+
+  await bootstrapAdminUser();
+}
+
+export async function bootstrapAdminUser() {
+  try {
+    const username = process.env.ADMIN_USERNAME || 'admin';
+    const password = process.env.ADMIN_PASSWORD || 'admin123';
+    const hash = await bcrypt.hash(password, 10);
+    const existing = await getDb("SELECT * FROM users WHERE username = ?", [username]);
+    if (existing) {
+      if (!existing.password_hash) {
+        await runDb("UPDATE users SET role = 'admin', password_hash = ? WHERE id = ?", [hash, existing.id]);
+      } else {
+        await runDb("UPDATE users SET role = 'admin' WHERE id = ?", [existing.id]);
+      }
+    } else {
+      await runDb(
+        "INSERT INTO users (username, password_hash, role, permissions, can_change_password, created_by) VALUES (?, ?, 'admin', '{}', 1, 'system')",
+        [username, hash]
+      );
+    }
+    // إزالة أي حسابات متبقية بدون كلمة مرور (حسابات غير آمنة من إصدارات قديمة)
+    await runDb("DELETE FROM users WHERE password_hash = '' OR password_hash IS NULL");
+  } catch (e) {
+    console.error('Admin bootstrap error:', e.message);
+  }
 }
 
 const ACTIVE_STATUSES = [

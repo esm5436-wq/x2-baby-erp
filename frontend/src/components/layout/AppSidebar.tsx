@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { LogOut, Sun, Moon, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
-import { NAV_ITEMS, NAV_COLORS } from './navConfig';
+import { NAV_COLORS, useVisibleNavItems } from './navConfig';
 
 const SIDEBAR_WIDTH_KEY = 'erp_layout_sidebar_width';
 const SIDEBAR_COLLAPSED_KEY = 'erp_layout_sidebar_collapsed';
@@ -75,6 +75,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 }) => {
   const { uiTheme } = useTheme();
   const isMD3 = uiTheme === 'material3';
+  const visibleNavItems = useVisibleNavItems();
 
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
@@ -282,7 +283,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         overflowX: 'hidden',
         padding: isCollapsed ? '12px 8px' : '12px 12px',
       }}>
-        {NAV_ITEMS.map((item, i) => {
+        {visibleNavItems.map((item, i) => {
           const navLink = (
             <NavLink
               key={item.to}

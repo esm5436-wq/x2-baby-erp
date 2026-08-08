@@ -1,13 +1,23 @@
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { API_BASE, getAuthToken, setAuthToken, clearAuthToken, getAuthUsername } from '../lib/api';
+
+export interface SectionPermissions {
+  view: boolean;
+  edit: boolean;
+}
+
+export type PermissionsMap = Record<string, SectionPermissions>;
 
 interface AuthContextType {
   token: string | null;
   username: string | null;
   role: string;
+  permissions: PermissionsMap | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  canView: (section: string) => boolean;
+  canEdit: (section: string) => boolean;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
@@ -31,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(getAuthToken);
   const [username, setUsername] = useState<string | null>(getAuthUsername);
   const [role, setRole] = useState<string>(() => getRoleFromToken(getAuthToken()));
+  const [permissions, setPermissions] = useState<PermissionsMap | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -50,6 +61,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setToken(null);
           setUsername(null);
           setRole('user');
+          setPermissions(null);
+        } else {
+          setPermissions(data.user?.permissions || null);
         }
       })
       .catch(() => {
@@ -57,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(null);
         setUsername(null);
         setRole('user');
+        setPermissions(null);
       })
       .finally(() => setIsLoading(false));
   }, []);
@@ -74,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(data.token);
       setUsername(data.username);
       setRole(getRoleFromToken(data.token));
+      setPermissions(data.permissions || null);
       return true;
     } catch {
       return false;
@@ -85,10 +101,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
     setUsername(null);
     setRole('user');
+    setPermissions(null);
   };
 
+  const canView = useCallback((section: string): boolean => {
+    if (role === 'admin') return true;
+    return permissions?.[section]?.view === true;
+  }, [role, permissions]);
+
+  const canEdit = useCallback((section: string): boolean => {
+    if (role === 'admin') return true;
+    return permissions?.[section]?.edit === true;
+  }, [role, permissions]);
+
   return (
-    <AuthContext.Provider value={{ token, username, role, isAuthenticated: !!token, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ token, username, role, permissions, isAuthenticated: !!token, isLoading, canView, canEdit, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

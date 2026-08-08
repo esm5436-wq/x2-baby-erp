@@ -1,7 +1,23 @@
 ﻿import { Router } from 'express';
 import { allDb, getDb, runDb, logActivity, generateOrderId, adjustStock, isActiveStatus, getAllProducts } from '../db.js';
+import { ADMIN_PERMISSIONS, parsePermissions } from '../middleware/Permission.js';
 
 const router = Router();
+
+function requireAdmin(req, res, next) {
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'هذه الخاصية متاحة للمدير فقط' });
+  }
+  next();
+}
+
+async function getViewPermissions(req) {
+  if (req.user?.role === 'admin') return ADMIN_PERMISSIONS;
+  const user = req.user?.userId
+    ? await getDb("SELECT permissions FROM users WHERE id = ?", [req.user.userId])
+    : null;
+  return user ? parsePermissions(user.permissions) : {};
+}
 
 router.get('/api/state', async (req, res) => {
     try {
@@ -71,8 +87,17 @@ router.get('/api/state', async (req, res) => {
             "SELECT id, title, amount, start_date as startDate, deadline, category, created_at as createdAt FROM financial_targets");
         const customers = await allDb("SELECT * FROM customers ORDER BY name ASC");
 
+        const perms = await getViewPermissions(req);
+        const canView = (s) => perms[s]?.view === true;
+
         res.json({
-            products, orders, customers, categories, suppliers, contacts, targets,
+            products: canView('products') ? products : [],
+            orders: canView('orders') ? orders : [],
+            customers: canView('customers') ? customers : [],
+            categories: canView('products') ? categories : [],
+            suppliers: canView('suppliers') ? suppliers : [],
+            contacts: canView('contacts') ? contacts : [],
+            targets: canView('accounts') ? targets : [],
             brandName: 'X2 BABY ERP',
             brandSlogan: 'الجودة، الثقة، والأمان',
             brandSloganDesign: '',
@@ -83,7 +108,7 @@ router.get('/api/state', async (req, res) => {
     }
 });
 
-router.post('/api/import', async (req, res) => {
+router.post('/api/import', requireAdmin, async (req, res) => {
     try {
         const { products, orders, categories, isManualMode } = req.body;
         await runDb("BEGIN TRANSACTION");
@@ -310,7 +335,7 @@ router.post('/api/activity-logs/:id/undo', async (req, res) => {
     }
 });
 
-router.get('/api/backup', async (req, res) => {
+router.get('/api/backup', requireAdmin, async (req, res) => {
     try {
         const products = await allDb("SELECT * FROM products");
         const orders = await allDb("SELECT * FROM orders");

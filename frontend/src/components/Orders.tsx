@@ -68,6 +68,7 @@ import InvoicePrintModal from './InvoicePrintModal';
 import WaybillPrintModal from './WaybillPrintModal';
 import PopupSheet from './PopupSheet';
 import { API_BASE } from '../lib/api';
+import { useAuth } from '../contexts/AuthContext';
 import CustomerDetail from './CustomerDetail';
 import { MD3StatCard, MD3Dialog } from './md3';
 import { Product, Order, OrderItem, OrderStatus, Variant, ShippingMethod, Branding, ViewMode, InvoiceSettings, Customer } from '../types';
@@ -139,7 +140,7 @@ const SearchableSelect: React.FC<{
   const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
   const [dropdownUp, setDropdownUp] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const hoverTimeoutRef = useRef<any>();
+  const hoverTimeoutRef = useRef<any>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -476,7 +477,7 @@ const SyncOrderEditor: React.FC<{
      );
 };
 
-const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => void; onSaveAll: (os: Order[]) => void; onClose: () => void; }> = ({ orders, onSaveItem, onSaveAll, onClose }) => {
+const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => void; onSaveAll: (os: Order[]) => void; onClose: () => void; onViewCustomer?: (customerId: string, order: Order) => void; }> = ({ orders, onSaveItem, onSaveAll, onClose, onViewCustomer }) => {
     const [localOrders, setLocalOrders] = useState<Order[]>(() => JSON.parse(JSON.stringify(orders)));
     const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
     const [expandedId, setExpandedId] = useState<string | null>(orders[0]?.id || null);
@@ -525,7 +526,7 @@ const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => voi
                     <div className="flex-1">
                       <h4 className="font-black text-xl text-[var(--md-sys-color-on-surface)]">
                       {order.customerId ? (
-                        <button onClick={e => { e.stopPropagation(); handleViewCustomerFromOrder(order.customerId!, order); }} className="text-[var(--md-sys-color-primary)] hover:underline text-right">{order.customerName}</button>
+                                              <button onClick={e => { e.stopPropagation(); onViewCustomer?.(order.customerId!, order); }} className="text-[var(--md-sys-color-primary)] hover:underline text-right">{order.customerName}</button>
                       ) : order.customerName}
                     </h4>
                       <div className="flex gap-4 mt-1 text-xs font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">
@@ -555,7 +556,7 @@ const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => voi
                                           <h5 className="font-bold text-[var(--md-sys-color-on-surface-variant)] text-xs mb-1">تفاصيل العميل</h5>
                                           <p className="font-bold text-[var(--md-sys-color-on-surface)]">
                                             {order.customerId ? (
-                                              <button onClick={e => { e.stopPropagation(); handleViewCustomerFromOrder(order.customerId!, order); }} className="text-[var(--md-sys-color-primary)] hover:underline text-right">{order.customerName}</button>
+                        <button onClick={e => { e.stopPropagation(); onViewCustomer?.(order.customerId!, order); }} className="text-[var(--md-sys-color-primary)] hover:underline text-right">{order.customerName}</button>
                                             ) : order.customerName}
                                           </p>
                                           <p className="text-sm text-gray-500">{order.customerPhone}</p>
@@ -675,6 +676,8 @@ const Orders: React.FC<OrdersProps> = ({
   onImportOrdersClose,
   invoiceSettings
 }) => {
+  const { canEdit } = useAuth();
+  const canManageOrders = canEdit('orders');
   const uniqueCities = useMemo(() => {
     const cities = new Set<string>();
     (orders || []).forEach((o: Order) => { if (o.city) cities.add(o.city); });
@@ -859,7 +862,7 @@ const Orders: React.FC<OrdersProps> = ({
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [tableHoveredImage, setTableHoveredImage] = useState<string | null>(null);
   const [tableTooltipPos, setTableTooltipPos] = useState({ top: 0, left: 0 });
-  const tableHoverTimeoutRef = useRef<any>();
+  const tableHoverTimeoutRef = useRef<any>(null);
   const [importStep, setImportStep] = useState<'none' | 'source' | 'url_input'>('none');
   const [importUrl, setImportUrl] = useState('');
 
@@ -1893,16 +1896,19 @@ const Orders: React.FC<OrdersProps> = ({
             </motion.button>
             )}
 
-            <motion.button 
+            {canManageOrders && (
+              <motion.button 
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setImportStep('source')} 
                 disabled={isLoading} 
                 className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 text-gray-500 dark:text-gray-400 px-4 py-2.5 rounded-2xl flex items-center gap-2 font-black text-[11px] shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 disabled:opacity-50"
-            >
+              >
                 <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''}/> <span className="hidden sm:inline">استيراد طلبات</span>
-            </motion.button>
-            <motion.button 
+              </motion.button>
+            )}
+            {canManageOrders && (
+              <motion.button 
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => { resetForm(); setIsAdding(true); setEditingOrderId('new'); }}
@@ -1911,10 +1917,11 @@ const Orders: React.FC<OrdersProps> = ({
                   backgroundColor: 'var(--md-sys-color-primary)',
                   color: 'var(--md-sys-color-on-primary)',
                 }}
-            >
+              >
                 <Plus size={18} />
                 <span>طلب جديد</span>
-            </motion.button>
+              </motion.button>
+            )}
         </div>
       </div>
 
@@ -2087,7 +2094,7 @@ const Orders: React.FC<OrdersProps> = ({
               </div>
       </MD3Dialog>
 
-      {importOrdersPreview && <SyncReviewModal orders={importOrdersPreview} onSaveItem={onAddOrder} onSaveAll={onImportOrdersConfirm} onClose={onImportOrdersClose} />}
+      {importOrdersPreview && <SyncReviewModal orders={importOrdersPreview} onSaveItem={onAddOrder} onSaveAll={onImportOrdersConfirm} onClose={onImportOrdersClose} onViewCustomer={handleViewCustomerFromOrder} />}
 
       {!isAdding && (
         <motion.div 
@@ -2872,7 +2879,7 @@ const Orders: React.FC<OrdersProps> = ({
                       </div>
 
                       <div className="flex items-center gap-1 shrink-0" onClick={e => e.stopPropagation()}>
-                          <motion.button 
+                          {canManageOrders && <motion.button 
                              whileHover={{ scale: 1.05 }}
                              whileTap={{ scale: 0.95 }}
                              onClick={() => startEditing(order)}
@@ -2882,14 +2889,14 @@ const Orders: React.FC<OrdersProps> = ({
                           >
                              <Edit2 size={12} />
                              تعديل
-                          </motion.button>
-                         <button 
+                          </motion.button>}
+                         {canManageOrders && <button 
                             onClick={(e) => handleDeleteSingle(order.id, e as any)}
                             className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 transition-colors duration-200"
                             title="حذف"
                          >
                             <Trash2 size={14} />
-                         </button>
+                         </button>}
                       </div>
                    </div>
 
@@ -2975,7 +2982,7 @@ const Orders: React.FC<OrdersProps> = ({
                        <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="flex flex-wrap items-center gap-2">
                              {/* Status with click dropdown */}
-                             <div className="relative" onClick={e => { e.stopPropagation(); setActiveStatusOrderId(prev => prev === order.id ? null : order.id); }}>
+                             {canManageOrders && <div className="relative" onClick={e => { e.stopPropagation(); setActiveStatusOrderId(prev => prev === order.id ? null : order.id); }}>
                                 <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[10px] font-black cursor-pointer ${getStatusStyle(order.status)}`}>
                                    {getStatusIcon(order.status)}
                                    {order.status}
@@ -3003,7 +3010,7 @@ const Orders: React.FC<OrdersProps> = ({
                                         ))}
                                      </div>
                                </PopupSheet>
-                             </div>
+                             </div>}
 
                               <span className={`text-xs font-black ${getStatusTextColor(order.status)}`}>{(order.totalAmount || 0).toLocaleString()} ج.م</span>
 
@@ -3105,7 +3112,7 @@ const Orders: React.FC<OrdersProps> = ({
                       <td className="p-4 text-sm font-bold text-gray-600 dark:text-gray-400">{order.items.length}</td>
                        <td className={`p-4 font-black text-sm ${getStatusTextColor(order.status)}`}>{(order.totalAmount || 0).toLocaleString()} ج.م</td>
                      <td className="p-4">
-                        <div className="relative" onClick={e => { e.stopPropagation(); setActiveStatusOrderId(prev => prev === order.id ? null : order.id); }}>
+                        {canManageOrders && <div className="relative" onClick={e => { e.stopPropagation(); setActiveStatusOrderId(prev => prev === order.id ? null : order.id); }}>
                               <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[9px] font-black cursor-pointer ${getStatusStyle(order.status)}`}>
                                  {getStatusIcon(order.status)}
                                  {order.status}
@@ -3133,12 +3140,12 @@ const Orders: React.FC<OrdersProps> = ({
                                   ))}
                                </div>
                          </PopupSheet>
-                        </div>
+                        </div>}
                      </td>
                      <td className="p-4">
                         <div className="flex items-center gap-1.5">
-                            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={(e) => { e.stopPropagation(); startEditing(order); }} className="p-2.5 rounded-xl shadow-md transition-colors duration-200" style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }} title="تعديل"><Edit2 size={15} /></motion.button>
-                          <button onClick={(e) => { e.stopPropagation(); handleDeleteSingle(order.id, e as any); }} className="p-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200" title="حذف"><Trash2 size={15} /></button>
+                            {canManageOrders && <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={(e) => { e.stopPropagation(); startEditing(order); }} className="p-2.5 rounded-xl shadow-md transition-colors duration-200" style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }} title="تعديل"><Edit2 size={15} /></motion.button>}
+                          {canManageOrders && <button onClick={(e) => { e.stopPropagation(); handleDeleteSingle(order.id, e as any); }} className="p-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200" title="حذف"><Trash2 size={15} /></button>}
                         </div>
                      </td>
                    </tr>
@@ -3190,7 +3197,7 @@ const Orders: React.FC<OrdersProps> = ({
                 </div>
                 <div className="flex items-center justify-between gap-1">
                     <span className={`font-black text-[11px] ${getStatusTextColor(order.status)}`}>{(order.totalAmount || 0).toLocaleString()} <span className="text-[8px]">ج.م</span></span>
-                  <div className="relative" onClick={e => { e.stopPropagation(); setActiveStatusOrderId(prev => prev === order.id ? null : order.id); }}>
+                  {canManageOrders && <div className="relative" onClick={e => { e.stopPropagation(); setActiveStatusOrderId(prev => prev === order.id ? null : order.id); }}>
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[7px] font-black cursor-pointer leading-none ${getStatusStyle(order.status)}`}>
                            {getStatusIcon(order.status)}
                            {order.status}
@@ -3218,11 +3225,11 @@ const Orders: React.FC<OrdersProps> = ({
                                   ))}
                                </div>
                          </PopupSheet>
-                   </div>
+                   </div>}
                 </div>
                 <div className="flex flex-wrap items-center justify-center gap-1.5 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800" onClick={e => e.stopPropagation()}>
-                          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startEditing(order)} className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm" title="تعديل"><Edit2 size={11} /></motion.button>
-                  <button onClick={(e) => handleDeleteSingle(order.id, e as any)} className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30" title="حذف"><Trash2 size={11} /></button>
+                          {canManageOrders && <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startEditing(order)} className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm" title="تعديل"><Edit2 size={11} /></motion.button>}
+                  {canManageOrders && <button onClick={(e) => handleDeleteSingle(order.id, e as any)} className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30" title="حذف"><Trash2 size={11} /></button>}
                   {order.customerPhone && (() => {
                      const waCompact = order.customerPhone.replace(/^0/, '');
                      return (
@@ -3288,7 +3295,7 @@ const Orders: React.FC<OrdersProps> = ({
                   </div>
                   <div className="text-left shrink-0 flex flex-col items-end gap-1.5">
                      <div className={`font-black text-sm ${getStatusTextColor(order.status)}`}>{(order.totalAmount || 0).toLocaleString()} ج.م</div>
-                     <div className="relative" onClick={e => { e.stopPropagation(); setActiveStatusOrderId(prev => prev === order.id ? null : order.id); }}>
+                     {canManageOrders && <div className="relative" onClick={e => { e.stopPropagation(); setActiveStatusOrderId(prev => prev === order.id ? null : order.id); }}>
                         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[8px] font-black cursor-pointer ${getStatusStyle(order.status)}`}>
                            {getStatusIcon(order.status)}
                            {order.status}
@@ -3316,13 +3323,13 @@ const Orders: React.FC<OrdersProps> = ({
                                   ))}
                                </div>
                          </PopupSheet>
-                     </div>
+                     </div>}
                     <div className="flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
                       {order.customerPhone && (
                         <>
                            <a href={`https://wa.me/20${waNumber}`} target="_blank" rel="noopener noreferrer" className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-gray-50 dark:bg-slate-800 text-emerald-400 hover:text-emerald-600 border border-gray-100 dark:border-slate-700 transition-colors duration-200"><FaWhatsapp size={14} /></a>
-                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startEditing(order)} className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm" title="تعديل"><Edit2 size={13} /></motion.button>
-                          <button onClick={(e) => handleDeleteSingle(order.id, e as any)} className="p-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200" title="حذف"><Trash2 size={13} /></button>
+                  {canManageOrders && <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startEditing(order)} className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm" title="تعديل"><Edit2 size={13} /></motion.button>}
+                          {canManageOrders && <button onClick={(e) => handleDeleteSingle(order.id, e as any)} className="p-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200" title="حذف"><Trash2 size={13} /></button>}
                         </>
                       )}
                     </div>
@@ -3724,6 +3731,7 @@ const Orders: React.FC<OrdersProps> = ({
                     </PopupSheet>
                 </div>
 
+                {canManageOrders && (
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -3733,6 +3741,7 @@ const Orders: React.FC<OrdersProps> = ({
                   <Pencil size={20} />
                   تعديل جماعي
                 </motion.button>
+                )}
 
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
@@ -3744,6 +3753,7 @@ const Orders: React.FC<OrdersProps> = ({
                   تصدير
                 </motion.button>
 
+                {canManageOrders && (
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -3753,6 +3763,7 @@ const Orders: React.FC<OrdersProps> = ({
                   <Trash2 size={20} />
                   حذف
                 </motion.button>
+                )}
 
                 <motion.button 
                   whileHover={{ scale: 1.05, rotate: 90 }}
@@ -3796,10 +3807,8 @@ const Orders: React.FC<OrdersProps> = ({
         isOpen={waybillModalOpen}
         onClose={() => setWaybillModalOpen(false)}
         orders={waybillOrders}
-        products={products}
         branding={branding}
         invoiceSettings={invoiceSettings}
-        onUpdateStatus={onUpdateStatus}
       />
 
       {viewingCustomerFromOrder && (

@@ -92,24 +92,24 @@ export interface Customer {
   id: string;
   name: string;
   phone: string;
-  altPhone?: string;
+  alt_phone?: string;
   email?: string;
   address?: string;
   city?: string;
   source?: string;
   tags?: string;
   notes?: string;
-  adminNotes?: string;
-  totalOrders: number;
-  totalSpent: number;
-  lastOrderDate?: string;
-  mapUrl?: string;
+  admin_notes?: string;
+  total_orders: number;
+  total_spent: number;
+  last_order_date?: string;
+  map_url?: string;
   latitude?: string;
   longitude?: string;
   rating?: number;
   classification?: string;
-  createdAt: string;
-  updatedAt?: string;
+  created_at: string;
+  updated_at?: string;
 }
 
 export interface Order {
@@ -151,6 +151,7 @@ export interface Order {
   mapUrl?: string;
   latitude?: string;
   longitude?: string;
+  customerSource?: string;
 }
 
 export interface FinancialTarget {

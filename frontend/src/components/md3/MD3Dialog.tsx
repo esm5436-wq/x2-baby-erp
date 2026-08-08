@@ -6,8 +6,9 @@ import MD3BottomSheet from '../MD3BottomSheet';
 interface MD3DialogAction {
   label: string;
   onClick: () => void;
-  variant?: 'filled' | 'tonal' | 'text' | 'danger';
+  variant?: 'filled' | 'tonal' | 'text' | 'danger' | 'outlined';
   icon?: React.ReactNode;
+  disabled?: boolean;
   /** When false, clicking the action does not auto-close the dialog */
   closeOnAction?: boolean;
 }
@@ -142,6 +143,8 @@ const MD3Dialog: React.FC<MD3DialogProps> = ({
         return 'bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] px-6 py-2.5 rounded-[20px] font-medium text-sm hover:shadow-sm transition-all';
       case 'danger':
         return 'bg-[var(--md-sys-color-error)] text-[var(--md-sys-color-on-error)] px-6 py-2.5 rounded-[20px] font-medium text-sm hover:shadow-md transition-all';
+      case 'outlined':
+        return 'border border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-primary-readable,var(--md-sys-color-primary))] bg-transparent px-6 py-2.5 rounded-[20px] font-medium text-sm hover:bg-[rgba(var(--md-sys-color-on-surface-rgb,27,27,31),0.08)] transition-all';
       case 'text':
       default:
         return 'text-[var(--md-sys-color-primary-readable,var(--md-sys-color-primary))] px-4 py-2.5 rounded-[20px] font-medium text-sm hover:bg-[rgba(var(--md-sys-color-on-surface-rgb,27,27,31),0.08)] transition-colors';
@@ -165,8 +168,9 @@ const MD3Dialog: React.FC<MD3DialogProps> = ({
               {actions.map((action, i) => (
                 <button
                   key={i}
-                  onClick={() => { action.onClick(); if (action.closeOnAction !== false) onClose(); }}
-                  className={`${getActionClasses(action.variant)} flex-1 min-w-[110px] inline-flex items-center justify-center`}
+                  disabled={action.disabled}
+                  onClick={() => { if (action.disabled) return; action.onClick(); if (action.closeOnAction !== false) onClose(); }}
+                  className={`${getActionClasses(action.variant)} flex-1 min-w-[110px] inline-flex items-center justify-center disabled:opacity-38 disabled:pointer-events-none`}
                 >
                   <span className="flex items-center gap-2">
                     {action.icon}
@@ -261,8 +265,9 @@ const MD3Dialog: React.FC<MD3DialogProps> = ({
                   {actions.map((action, i) => (
                     <button
                       key={i}
-                      onClick={() => { action.onClick(); if (action.closeOnAction !== false) onClose(); }}
-                      className={getActionClasses(action.variant)}
+                      disabled={action.disabled}
+                      onClick={() => { if (action.disabled) return; action.onClick(); if (action.closeOnAction !== false) onClose(); }}
+                      className={`${getActionClasses(action.variant)} disabled:opacity-38 disabled:pointer-events-none`}
                     >
                       <span className="flex items-center gap-2">
                         {action.icon}

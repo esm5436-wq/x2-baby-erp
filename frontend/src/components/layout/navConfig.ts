@@ -1,5 +1,6 @@
 import { Package, ShoppingBag, BarChart3, Settings, Users, UserCheck, Activity } from 'lucide-react';
 import React from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 
 export interface NavItem {
   to: string;
@@ -7,22 +8,28 @@ export interface NavItem {
   md3Icon: string;
   label: string;
   shortLabel: string;
+  section?: string;
 }
 
 export const NAV_ITEMS: NavItem[] = [
   { to: '/', icon: React.createElement(BarChart3, { size: 20 }), md3Icon: 'home', label: 'الرئيسية', shortLabel: 'الرئيسية' },
-  { to: '/inventory', icon: React.createElement(Package, { size: 20 }), md3Icon: 'inventory_2', label: 'المخزون', shortLabel: 'المخزون' },
-  { to: '/orders', icon: React.createElement(ShoppingBag, { size: 20 }), md3Icon: 'shopping_bag', label: 'الطلبات', shortLabel: 'الطلبات' },
-  { to: '/purchases', icon: React.createElement(ShoppingBag, { size: 20 }), md3Icon: 'shopping_cart', label: 'المشتريات', shortLabel: 'مشتريات' },
-  { to: '/accounts', icon: React.createElement(BarChart3, { size: 20 }), md3Icon: 'account_balance', label: 'الحسابات والمالية', shortLabel: 'الحسابات' },
-  { to: '/contacts', icon: React.createElement(Users, { size: 20 }), md3Icon: 'contacts', label: 'جهات الاتصال', shortLabel: 'جهات' },
-  { to: '/customers', icon: React.createElement(UserCheck, { size: 20 }), md3Icon: 'people', label: 'العملاء', shortLabel: 'عملاء' },
-  { to: '/activity-logs', icon: React.createElement(Activity, { size: 20 }), md3Icon: 'history', label: 'سجل النشاطات', shortLabel: 'نشاطات' },
-  { to: '/settings', icon: React.createElement(Settings, { size: 20 }), md3Icon: 'settings', label: 'إدارة البيانات', shortLabel: 'البيانات' },
+  { to: '/inventory', icon: React.createElement(Package, { size: 20 }), md3Icon: 'inventory_2', label: 'المخزون', shortLabel: 'المخزون', section: 'products' },
+  { to: '/orders', icon: React.createElement(ShoppingBag, { size: 20 }), md3Icon: 'shopping_bag', label: 'الطلبات', shortLabel: 'الطلبات', section: 'orders' },
+  { to: '/purchases', icon: React.createElement(ShoppingBag, { size: 20 }), md3Icon: 'shopping_cart', label: 'المشتريات', shortLabel: 'مشتريات', section: 'purchases' },
+  { to: '/accounts', icon: React.createElement(BarChart3, { size: 20 }), md3Icon: 'account_balance', label: 'الحسابات والمالية', shortLabel: 'الحسابات', section: 'accounts' },
+  { to: '/contacts', icon: React.createElement(Users, { size: 20 }), md3Icon: 'contacts', label: 'جهات الاتصال', shortLabel: 'جهات', section: 'contacts' },
+  { to: '/customers', icon: React.createElement(UserCheck, { size: 20 }), md3Icon: 'people', label: 'العملاء', shortLabel: 'عملاء', section: 'customers' },
+  { to: '/activity-logs', icon: React.createElement(Activity, { size: 20 }), md3Icon: 'history', label: 'سجل النشاطات', shortLabel: 'نشاطات', section: 'activity-logs' },
+  { to: '/settings', icon: React.createElement(Settings, { size: 20 }), md3Icon: 'settings', label: 'إدارة البيانات', shortLabel: 'البيانات', section: 'settings' },
 ];
 
-export const BOTTOM_NAV_PRIMARY_INDICES = [0, 1, 2, 6];
-export const BOTTOM_NAV_MORE_INDICES = [3, 4, 5, 7, 8];
+export const BOTTOM_NAV_PRIMARY_ROUTES = ['/', '/inventory', '/orders', '/customers'];
+export const BOTTOM_NAV_MORE_ROUTES = ['/purchases', '/accounts', '/contacts', '/activity-logs', '/settings'];
+
+export function useVisibleNavItems(): NavItem[] {
+  const { canView } = useAuth();
+  return NAV_ITEMS.filter(item => !item.section || canView(item.section));
+}
 
 export const NAV_COLORS = [
   'bg-primary text-blue-900',

@@ -9,7 +9,7 @@ interface MD3ButtonProps {
   size?: ButtonSize;
   icon?: ReactNode;
   iconPosition?: 'start' | 'end';
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
   fullWidth?: boolean;
   className?: string;
@@ -67,7 +67,7 @@ export const MD3Button: React.FC<MD3ButtonProps> = ({
 
 interface MD3IconButtonProps {
   icon: ReactNode;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
   variant?: 'standard' | 'filled' | 'tonal' | 'outlined';
   size?: number;

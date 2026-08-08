@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
-import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { ShoppingBag } from 'lucide-react';
+import { HashRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
+import { ShoppingBag, ShieldOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AppState, Order, Product } from './types';
 import AIAssistant from './components/AIAssistant';
@@ -22,6 +22,23 @@ import { useTheme } from './contexts/ThemeContext';
 import LoginPage from './components/LoginPage';
 import { API_BASE } from './lib/api';
 import { MD3Dialog, MD3Snackbar, useSnackbar } from './components/md3';
+
+const ProtectedRoute: React.FC<{ section: string; children: React.ReactNode }> = ({ section, children }) => {
+  const { canView } = useAuth();
+  if (!canView(section)) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 px-4 text-center">
+        <div className="w-16 h-16 bg-[var(--md-sys-color-error-container,#F9DEDC)] rounded-3xl flex items-center justify-center mb-4 text-[var(--md-sys-color-error,#B3261E)]">
+          <ShieldOff size={32} />
+        </div>
+        <h2 className="text-xl font-black text-[var(--md-sys-color-on-surface)] mb-2">غير مصرح بالوصول</h2>
+        <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] mb-6">ليس لديك صلاحية لعرض هذه الصفحة.</p>
+        <Link to="/" className="px-6 py-2.5 rounded-xl bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] font-bold">العودة للرئيسية</Link>
+      </div>
+    );
+  }
+  return <>{children}</>;
+};
 
 const MainLayout: React.FC<{
   state: AppState;
@@ -120,6 +137,7 @@ const MainLayout: React.FC<{
         <Route 
           path="/inventory" 
           element={
+            <ProtectedRoute section="products">
             <Inventory 
               products={state.products} 
               categories={state.categories}
@@ -143,11 +161,13 @@ const MainLayout: React.FC<{
               contacts={state.contacts || []}
               orders={state.orders}
             />
+            </ProtectedRoute>
           } 
         />
         <Route 
           path="/orders" 
           element={
+            <ProtectedRoute section="orders">
             <Orders 
               orders={state.orders} 
               products={state.products} 
@@ -171,12 +191,14 @@ const MainLayout: React.FC<{
               onImportOrdersConfirm={onImportOrdersConfirm}
               onImportOrdersClose={() => setImportOrdersPreview(null)}
             />
+            </ProtectedRoute>
           } 
         />
         <Route path="/dispatch" element={<Navigate to="/orders" replace />} />
         <Route 
           path="/purchases" 
           element={
+            <ProtectedRoute section="purchases">
             <Purchases 
               products={state.products} 
               categories={state.categories}
@@ -195,11 +217,13 @@ const MainLayout: React.FC<{
                   .then(data => setState(data));
               }} 
             />
+            </ProtectedRoute>
           } 
         />
         <Route 
           path="/accounts" 
           element={
+            <ProtectedRoute section="accounts">
             <Accounts 
               orders={state.orders} 
               products={state.products}
@@ -216,11 +240,13 @@ const MainLayout: React.FC<{
               onSaveTarget={handleSaveTarget}
               onDeleteTarget={handleDeleteTarget}
             />
+            </ProtectedRoute>
           } 
         />
         <Route 
           path="/activity-logs" 
           element={
+            <ProtectedRoute section="activity-logs">
             <ActivityLogs 
               onRefresh={() => {
                 fetch(`${API_BASE}/state`)
@@ -228,11 +254,13 @@ const MainLayout: React.FC<{
                   .then(data => setState(data));
               }} 
             />
+            </ProtectedRoute>
           } 
         />
         <Route 
           path="/contacts" 
           element={
+            <ProtectedRoute section="contacts">
             <Contacts 
               contacts={state.contacts}
               branding={{ 
@@ -242,11 +270,13 @@ const MainLayout: React.FC<{
                 sloganDesign: state.brandSloganDesign
               }}
             />
+            </ProtectedRoute>
           } 
         />
         <Route 
           path="/customers" 
           element={
+            <ProtectedRoute section="customers">
             <Customers 
               customers={state.customers}
               orders={state.orders}
@@ -257,11 +287,16 @@ const MainLayout: React.FC<{
                 sloganDesign: state.brandSloganDesign
               }}
             />
+            </ProtectedRoute>
           } 
         />
         <Route 
           path="/settings" 
-          element={<Settings state={state} onImport={handleImportState} onUpdateState={(update) => setState(prev => ({ ...prev, ...update }))} />} 
+          element={
+            <ProtectedRoute section="settings">
+            <Settings state={state} onImport={handleImportState} onUpdateState={(update) => setState(prev => ({ ...prev, ...update }))} />
+            </ProtectedRoute>
+          } 
         />
       </Routes>
     </AnimatePresence>

@@ -40,7 +40,7 @@ export default function CustomerPicker({
   const [results, setResults] = useState<CustomerResult[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searching, setSearching] = useState(false);
-  const timerRef = useRef<any>();
+  const timerRef = useRef<any>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

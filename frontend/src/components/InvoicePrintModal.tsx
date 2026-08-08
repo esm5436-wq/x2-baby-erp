@@ -154,7 +154,7 @@ const InvoiceCard: React.FC<{ order: Order; branding?: Branding; invoiceSettings
   </div>
 ));
 
-const generatePrintHtml = (orders: Order[], branding?: Branding, invoiceSettings?: InvoiceSettings, layout: number, qrSvgs?: { exchangeReturn?: string; shipping?: string }, socialQrSvgs?: { svg: string; platform: string }[], title?: string, perPageOverride?: number) => {
+const generatePrintHtml = (orders: Order[], branding?: Branding, invoiceSettings?: InvoiceSettings, layout = 1, qrSvgs?: { exchangeReturn?: string; shipping?: string }, socialQrSvgs?: { svg: string; platform: string }[], title?: string, perPageOverride?: number) => {
   const cols = layout === 6 ? 3 : layout === 4 ? 2 : layout === 2 ? 1 : 1;
   const perPage = perPageOverride || layout;
   const allInvoices = orders.map(order => InvoiceCardHtml({ order, branding, invoiceSettings, qrSvgs, socialQrSvgs })).join('');

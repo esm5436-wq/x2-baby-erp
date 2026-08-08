@@ -54,6 +54,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, Variant, Category, Branding, ViewMode, Order, Supplier, OptionCategory } from '../types';
 import { API_BASE } from '../lib/api';
+import { useAuth } from '../contexts/AuthContext';
 import ProductModal from './ProductModal';
 
 import BatchEditModal from './BatchEditModal';
@@ -454,6 +455,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
   contacts,
   orders
 }) => {
+  const { canEdit } = useAuth();
+  const canManageProducts = canEdit('products');
   const categoryOptions = useMemo(() => {
     if (!categories) return [];
     const opts: { label: string; value: string }[] = [];
@@ -1153,21 +1156,25 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
               <input className="w-full pr-12 pl-4 py-3.5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl outline-none font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] shadow-sm" placeholder="ابحث عن منتج..." value={q} onChange={e => setQ(e.target.value)} />
             </motion.div>
   
-            <MD3Button 
-              variant="tonal"
-              icon={<RefreshCw size={20} className={isLoading ? 'animate-spin' : ''}/>} 
-              onClick={() => setImportStep('source')} 
-              disabled={isLoading}
-            >
-              استيراد منتجات
-            </MD3Button>
-            <MD3Button 
-              variant="filled"
-              icon={<Plus size={20}/>} 
-              onClick={() => setModal({open: true})}
-            >
-              إضافة منتج
-            </MD3Button>
+            {canManageProducts && (
+              <MD3Button 
+                variant="tonal"
+                icon={<RefreshCw size={20} className={isLoading ? 'animate-spin' : ''}/>} 
+                onClick={() => setImportStep('source')} 
+                disabled={isLoading}
+              >
+                استيراد منتجات
+              </MD3Button>
+            )}
+            {canManageProducts && (
+              <MD3Button 
+                variant="filled"
+                icon={<Plus size={20}/>} 
+                onClick={() => setModal({open: true})}
+              >
+                إضافة منتج
+              </MD3Button>
+            )}
           </div>
         </div>
 
@@ -1438,7 +1445,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
       <AnimatePresence>
         {importStep !== 'none' && (
           <MD3Dialog
-            isOpen={importStep !== 'none'}
+            isOpen={true}
             onClose={() => setImportStep(importStep === 'url_input' ? 'source' : 'none')}
             title={importStep === 'source' ? 'استيراد منتجات من المتجر' : 'رابط المنتجات'}
             maxWidth="lg"
@@ -1547,7 +1554,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             title="إعدادات التصدير"
             maxWidth="md"
             actions={[
-              { label: 'تصدير', onClick: () => handleExport(exportConfig.format), variant: 'filled' }
+              { label: 'تصدير', onClick: handleProfessionalExport, variant: 'filled' }
             ]}
           >
               <div className="space-y-6">
@@ -1777,17 +1784,21 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             </div>
           </div>
           <div className="flex items-center justify-between gap-2 px-5 pb-4 border-t border-gray-50 dark:border-slate-800 pt-3">
-            <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="flex items-center gap-1.5 text-[10px] font-black text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 py-2 px-3 rounded-xl transition-colors duration-200">
-              <Edit2 size={14} /> تعديل
-            </button>
+            {canManageProducts && (
+              <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="flex items-center gap-1.5 text-[10px] font-black text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 py-2 px-3 rounded-xl transition-colors duration-200">
+                <Edit2 size={14} /> تعديل
+              </button>
+            )}
             {p.url && (
               <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5 text-[10px] font-black text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 py-2 px-3 rounded-xl transition-colors duration-200">
                 <ExternalLink size={14} /> رابط
               </a>
             )}
-            <button onClick={(e) => handleDelete(p.id, e)} className="flex items-center gap-1.5 text-[10px] font-black text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 py-2 px-3 rounded-xl transition-colors duration-200">
-              <Trash2 size={14} /> حذف
-            </button>
+            {canManageProducts && (
+              <button onClick={(e) => handleDelete(p.id, e)} className="flex items-center gap-1.5 text-[10px] font-black text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 py-2 px-3 rounded-xl transition-colors duration-200">
+                <Trash2 size={14} /> حذف
+              </button>
+            )}
           </div>
         </motion.div>
             );
@@ -1875,8 +1886,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     <td className="p-4">
                       <div className="flex items-center gap-1.5">
                         {p.url && <a href={p.url} target="_blank" onClick={(e) => e.stopPropagation()} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-blue-500 hover:text-blue-600 p-1.5 rounded-lg hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors duration-200"><ExternalLink size={14} /></a>}
-                        <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-primary)]/80 p-1.5 rounded-lg hover:bg-[var(--md-sys-color-primary)]/5 transition-colors duration-200" title="تعديل"><Edit2 size={14} /></button>
-                        <button onClick={(e) => handleDelete(p.id, e)} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-error)] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50/50 dark:hover:bg-red-900/10 transition-colors duration-200" title="حذف"><Trash2 size={14} /></button>
+                        {canManageProducts && <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-primary)] hover:text-[var(--md-sys-color-primary)]/80 p-1.5 rounded-lg hover:bg-[var(--md-sys-color-primary)]/5 transition-colors duration-200" title="تعديل"><Edit2 size={14} /></button>}
+                        {canManageProducts && <button onClick={(e) => handleDelete(p.id, e)} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-error)] hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50/50 dark:hover:bg-red-900/10 transition-colors duration-200" title="حذف"><Trash2 size={14} /></button>}
                       </div>
                     </td>
                   </tr>
@@ -1923,9 +1934,9 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     {p.updatedAt && <span className="mr-1">| {formatDate(p.updatedAt, 'date')}</span>}
                   </div>
                   <div className="flex flex-wrap items-center justify-center gap-2 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800">
-                    <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 p-1.5 rounded-lg transition-colors duration-200" title="تعديل"><Edit2 size={12} /></button>
+                    {canManageProducts && <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 p-1.5 rounded-lg transition-colors duration-200" title="تعديل"><Edit2 size={12} /></button>}
                     {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 p-1.5 rounded-lg transition-colors duration-200"><ExternalLink size={12} /></a>}
-                    <button onClick={(e) => handleDelete(p.id, e)} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 p-1.5 rounded-lg transition-colors duration-200" title="حذف"><Trash2 size={12} /></button>
+                    {canManageProducts && <button onClick={(e) => handleDelete(p.id, e)} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 p-1.5 rounded-lg transition-colors duration-200" title="حذف"><Trash2 size={12} /></button>}
                   </div>
                 </motion.div>
             );
@@ -1993,9 +2004,9 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   </div>
                 </div>
                 <div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-gray-50 dark:border-slate-800">
-                  <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="flex items-center gap-1.5 text-[10px] font-black text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 py-2 px-3 rounded-xl transition-colors duration-200"><Edit2 size={14} /> تعديل</button>
+                  {canManageProducts && <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="flex items-center gap-1.5 text-[10px] font-black text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 py-2 px-3 rounded-xl transition-colors duration-200"><Edit2 size={14} /> تعديل</button>}
                   {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5 text-[10px] font-black text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 py-2 px-3 rounded-xl transition-colors duration-200"><ExternalLink size={14} /> رابط</a>}
-                  <button onClick={(e) => handleDelete(p.id, e)} className="flex items-center gap-1.5 text-[10px] font-black text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 py-2 px-3 rounded-xl transition-colors duration-200"><Trash2 size={14} /> حذف</button>
+                  {canManageProducts && <button onClick={(e) => handleDelete(p.id, e)} className="flex items-center gap-1.5 text-[10px] font-black text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 py-2 px-3 rounded-xl transition-colors duration-200"><Trash2 size={14} /> حذف</button>}
                 </div>
               </motion.div>
             );
@@ -2256,8 +2267,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             maxWidth="xl"
             actions={[
               ...(product.url ? [{ label: 'الرابط على الموقع', onClick: () => window.open(product.url, '_blank', 'noopener,noreferrer'), variant: 'tonal' as const, icon: <ExternalLink size={15} /> }] : []),
-              { label: 'حذف', onClick: () => { if (window.confirm('هل أنت متأكد من حذف المنتج نهائياً من النظام؟')) { onDeleteProduct(product.id); setViewingProductId(null); } }, variant: 'danger' as const, icon: <Trash2 size={15} /> },
-              { label: 'تعديل المنتج', onClick: () => { setViewingProductId(null); setModal({ open: true, p: product }); }, variant: 'filled' as const, icon: <Edit2 size={15} /> },
+              ...(canManageProducts ? [{ label: 'حذف', onClick: () => { if (window.confirm('هل أنت متأكد من حذف المنتج نهائياً من النظام؟')) { onDeleteProduct(product.id); setViewingProductId(null); } }, variant: 'danger' as const, icon: <Trash2 size={15} /> }] : []),
+              ...(canManageProducts ? [{ label: 'تعديل المنتج', onClick: () => { setViewingProductId(null); setModal({ open: true, p: product }); }, variant: 'filled' as const, icon: <Edit2 size={15} /> }] : []),
             ]}
           >
             {detailBody}
@@ -2291,22 +2302,26 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   تصدير الجرد
                 </MD3Button>
 
-                <MD3Button 
-                  variant="tonal"
-                  icon={<Pencil size={20} />}
-                  onClick={() => setIsBatchEditOpen(true)}
-                >
-                  تعديل جماعي
-                </MD3Button>
+                {canManageProducts && (
+                  <MD3Button 
+                    variant="tonal"
+                    icon={<Pencil size={20} />}
+                    onClick={() => setIsBatchEditOpen(true)}
+                  >
+                    تعديل جماعي
+                  </MD3Button>
+                )}
 
-                <MD3Button 
-                  variant="outlined"
-                  icon={<Trash2 size={20} />}
-                  onClick={handleBulkDelete}
-                  className="!text-[var(--md-sys-color-error)] !border-[var(--md-sys-color-error)]"
-                >
-                  حذف المحدد
-                </MD3Button>
+                {canManageProducts && (
+                  <MD3Button 
+                    variant="outlined"
+                    icon={<Trash2 size={20} />}
+                    onClick={handleBulkDelete}
+                    className="!text-[var(--md-sys-color-error)] !border-[var(--md-sys-color-error)]"
+                  >
+                    حذف المحدد
+                  </MD3Button>
+                )}
 
                 <MD3IconButton 
                   icon={<X size={24} />}

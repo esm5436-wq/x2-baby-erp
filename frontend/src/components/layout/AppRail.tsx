@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
-import { NAV_ITEMS } from './navConfig';
+import { useVisibleNavItems } from './navConfig';
 import { RAIL_WIDTH } from './AppSidebar';
 
 const MD3Icon: React.FC<{
@@ -26,6 +26,7 @@ interface AppRailProps {
 const AppRail: React.FC<AppRailProps> = ({ darkMode, toggleDarkMode, logout }) => {
   const { uiTheme } = useTheme();
   const isMD3 = uiTheme === 'material3';
+  const visibleNavItems = useVisibleNavItems();
 
   const bgColor = isMD3
     ? 'var(--md-sys-color-surface-container-low)'
@@ -54,16 +55,16 @@ const AppRail: React.FC<AppRailProps> = ({ darkMode, toggleDarkMode, logout }) =
           {({ isActive }) => (
             <div className={`md3-nav-rail-item ${isActive ? 'md3-nav-rail-item-active' : ''}`}>
               <div className="md3-nav-rail-indicator">
-                <MD3Icon name={NAV_ITEMS[0].md3Icon} size={24} />
+                <MD3Icon name={visibleNavItems[0].md3Icon} size={24} />
               </div>
             </div>
           )}
         </NavLink>
-        <span className="md3-nav-rail-label">{NAV_ITEMS[0].shortLabel}</span>
+        <span className="md3-nav-rail-label">{visibleNavItems[0].shortLabel}</span>
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '0 12px' }}>
-        {NAV_ITEMS.slice(1).map((item) => (
+        {visibleNavItems.slice(1).map((item) => (
           <NavLink
             key={item.to}
             to={item.to}

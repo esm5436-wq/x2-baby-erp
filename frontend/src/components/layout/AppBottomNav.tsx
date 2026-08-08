@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
-import { NAV_ITEMS, BOTTOM_NAV_PRIMARY_INDICES, BOTTOM_NAV_MORE_INDICES } from './navConfig';
+import { useVisibleNavItems, BOTTOM_NAV_PRIMARY_ROUTES, BOTTOM_NAV_MORE_ROUTES } from './navConfig';
 import MD3BottomSheet from '../MD3BottomSheet';
 
 const MD3Icon: React.FC<{
@@ -21,7 +21,9 @@ const AppBottomNav: React.FC = () => {
   const { uiTheme, darkMode } = useTheme();
   const isMD3 = uiTheme === 'material3';
   const [showMoreSheet, setShowMoreSheet] = useState(false);
-  const navigate = useNavigate();
+  const visibleNavItems = useVisibleNavItems();
+  const primaryItems = visibleNavItems.filter(item => BOTTOM_NAV_PRIMARY_ROUTES.includes(item.to));
+  const moreItems = visibleNavItems.filter(item => BOTTOM_NAV_MORE_ROUTES.includes(item.to));
 
   if (isMD3) {
     return (
@@ -43,8 +45,7 @@ const AppBottomNav: React.FC = () => {
             zIndex: 100,
           }}
         >
-          {BOTTOM_NAV_PRIMARY_INDICES.map((idx) => {
-            const item = NAV_ITEMS[idx];
+          {primaryItems.map((item) => {
             return (
               <NavLink
                 key={item.to}
@@ -105,8 +106,7 @@ const AppBottomNav: React.FC = () => {
 
         <MD3BottomSheet isOpen={showMoreSheet} onClose={() => setShowMoreSheet(false)}>
           <div style={{ padding: '16px' }}>
-            {BOTTOM_NAV_MORE_INDICES.map((idx) => {
-              const item = NAV_ITEMS[idx];
+            {moreItems.map((item) => {
               return (
                 <NavLink
                   key={item.to}
@@ -156,7 +156,7 @@ const AppBottomNav: React.FC = () => {
         zIndex: 100,
       }}
     >
-      {NAV_ITEMS.map((item) => (
+      {visibleNavItems.map((item) => (
         <NavLink
           key={item.to}
           to={item.to}

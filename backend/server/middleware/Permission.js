@@ -1,5 +1,22 @@
 import { getDb } from '../db.js';
 
+export const PERMISSION_SECTIONS = [
+  'products', 'orders', 'customers', 'contacts', 'suppliers',
+  'purchases', 'accounts', 'settings', 'ai', 'activity-logs',
+];
+
+export const DEFAULT_PERMISSIONS = Object.fromEntries(
+  PERMISSION_SECTIONS.map(s => [s, { view: false, edit: false }])
+);
+
+export const ADMIN_PERMISSIONS = Object.fromEntries(
+  PERMISSION_SECTIONS.map(s => [s, { view: true, edit: true }])
+);
+
+export function parsePermissions(raw) {
+  try { return JSON.parse(raw || '{}'); } catch { return {}; }
+}
+
 const SECTION_BY_PATH = [
   { prefix: '/api/products', section: 'products' },
   { prefix: '/api/orders', section: 'orders' },
@@ -25,7 +42,6 @@ const BYPASS_PATHS = [
   '/api/auth', '/api/public',
   '/api/brand-logo', '/api/manifest',
   '/api/users', '/api/state',
-  '/api/backup',
 ];
 
 export async function requireRoutePermission(req, res, next) {
@@ -47,7 +63,7 @@ export async function requireRoutePermission(req, res, next) {
     if (!user) {
       return res.status(401).json({ error: 'المستخدم غير موجود' });
     }
-    const perms = (() => { try { return JSON.parse(user.permissions || '{}'); } catch { return {}; } })();
+    const perms = parsePermissions(user.permissions);
     const action = ['GET', 'HEAD'].includes(req.method) ? 'view' : 'edit';
     const sectionPerms = perms[match.section];
     if (!sectionPerms || !sectionPerms[action]) {

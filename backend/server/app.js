@@ -4,6 +4,7 @@ import path from 'path';
 import { initializeSchema } from './db.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { authMiddleware } from './middleware/Auth.js';
+import { requireRoutePermission } from './middleware/Permission.js';
 
 import settingsRouter from './routes/settings.js';
 import productsRouter from './routes/products.js';
@@ -46,6 +47,9 @@ app.use(authRouter);
 
 // Auth middleware protects all API routes except /api/auth
 app.use(authMiddleware);
+
+// Permission middleware enforces view/edit per section (admins always pass)
+app.use(requireRoutePermission);
 
 app.use(settingsRouter);
 app.use(productsRouter);

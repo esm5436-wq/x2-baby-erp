@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-import { allDb } from '../db.js';
+import bcrypt from 'bcryptjs';
+import { getDb, allDb, runDb } from '../db.js';
+import { ADMIN_PERMISSIONS, parsePermissions } from '../middleware/Permission.js';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-dev-secret';
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
 router.get('/api/public/brand', async (req, res) => {
   try {
@@ -38,30 +38,68 @@ router.get('/api/public/brand-icon', async (req, res) => {
   }
 });
 
-router.post('/api/auth/login', (req, res) => {
+router.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ error: 'Username and password are required' });
+    return res.status(400).json({ error: 'اسم المستخدم وكلمة المرور مطلوبان' });
   }
 
-  if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Invalid username or password' });
-  }
+  try {
+    const user = await getDb("SELECT * FROM users WHERE username = ?", [username]);
+    if (!user) {
+      return res.status(401).json({ error: 'بيانات الدخول غير صحيحة' });
+    }
+    const valid = await bcrypt.compare(password, user.password_hash || '');
+    if (!valid) {
+      return res.status(401).json({ error: 'بيانات الدخول غير صحيحة' });
+    }
 
-  const token = jwt.sign({ username, role: 'admin' }, JWT_SECRET, { expiresIn: '30d' });
-  res.json({ token, username });
+    const permissions = user.role === 'admin' ? ADMIN_PERMISSIONS : parsePermissions(user.permissions);
+    const token = jwt.sign(
+      { userId: Number(user.id), username: user.username, role: user.role, permissions },
+      JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    try {
+      await runDb("UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?", [user.id]);
+    } catch (e) {
+      console.error('Failed to update last_login:', e.message);
+    }
+
+    res.json({ token, username: user.username, role: user.role, permissions });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-router.get('/api/auth/verify', (req, res) => {
+router.get('/api/auth/verify', async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer ')) {
     return res.json({ valid: false });
   }
 
   try {
-    jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
-    res.json({ valid: true });
+    const payload = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
+    // دعم الرموز القديمة التي لا تحمل userId
+    const user = payload.userId
+      ? await getDb("SELECT id, username, role, permissions, can_change_password FROM users WHERE id = ?", [payload.userId])
+      : await getDb("SELECT id, username, role, permissions, can_change_password FROM users WHERE username = ?", [payload.username]);
+    if (!user) {
+      return res.json({ valid: false });
+    }
+    const permissions = user.role === 'admin' ? ADMIN_PERMISSIONS : parsePermissions(user.permissions);
+    res.json({
+      valid: true,
+      user: {
+        id: Number(user.id),
+        username: user.username,
+        role: user.role,
+        permissions,
+        can_change_password: !!user.can_change_password,
+      },
+    });
   } catch {
     res.json({ valid: false });
   }

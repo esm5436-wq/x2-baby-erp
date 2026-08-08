@@ -164,7 +164,7 @@ const Customers: React.FC<CustomersProps> = ({ customers, orders, branding }) =>
           break;
         case 'last_order_date': va = a.last_order_date || ''; vb = b.last_order_date || ''; break;
         case 'rating': va = a.rating ?? 0; vb = b.rating ?? 0; break;
-        default: va = a.createdAt || ''; vb = b.createdAt || '';
+        default: va = a.created_at || ''; vb = b.created_at || '';
       }
       if (typeof va === 'number' && typeof vb === 'number') return sortAsc ? va - vb : vb - va;
       return sortAsc ? (va || '').localeCompare(vb || '') : (vb || '').localeCompare(va || '');
@@ -232,7 +232,7 @@ const Customers: React.FC<CustomersProps> = ({ customers, orders, branding }) =>
           case 'tags': row['الوسوم'] = c.tags || ''; break;
           case 'notes': row['ملاحظات'] = c.notes || ''; break;
           case 'admin_notes': row['ملاحظات الإدارة'] = c.admin_notes || ''; break;
-          case 'createdAt': row['تاريخ الإنشاء'] = c.createdAt || ''; break;
+          case 'createdAt': row['تاريخ الإنشاء'] = c.created_at || ''; break;
         }
       });
       return row;
@@ -523,12 +523,12 @@ const Customers: React.FC<CustomersProps> = ({ customers, orders, branding }) =>
                   <span dir="ltr" className="font-mono">{customer.phone}</span>
                   <button onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(customer.phone || ''); }} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-blue-500 transition-colors duration-200"><Copy size={10} /></button>
                   <a href={`https://wa.me/20${(customer.phone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-emerald-500 transition-colors duration-200"><FaWhatsapp size={10} /></a>
-                  {customer.altPhone && (
+                  {customer.alt_phone && (
                     <>
                       <span className="text-gray-300 dark:text-gray-600 mx-0.5">·</span>
-                      <span dir="ltr" className="font-mono">{customer.altPhone}</span>
-                      <button onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(customer.altPhone || ''); }} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-blue-500 transition-colors duration-200"><Copy size={10} /></button>
-                      <a href={`https://wa.me/20${(customer.altPhone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-emerald-500 transition-colors duration-200"><FaWhatsapp size={10} /></a>
+                      <span dir="ltr" className="font-mono">{customer.alt_phone}</span>
+                      <button onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(customer.alt_phone || ''); }} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-blue-500 transition-colors duration-200"><Copy size={10} /></button>
+                      <a href={`https://wa.me/20${(customer.alt_phone || '').replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-300 hover:text-emerald-500 transition-colors duration-200"><FaWhatsapp size={10} /></a>
                     </>
                   )}
                   {customer.city && (
