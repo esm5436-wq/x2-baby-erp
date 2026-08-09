@@ -263,15 +263,15 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
 
   const LINK_ICONS: Record<string, React.ReactNode> = {
     whatsapp: <FaWhatsapp size={16} className="text-emerald-500" />,
-    telegram: <FaTelegram size={16} className="text-sky-500" />,
-    website: <FaGlobe size={16} className="text-purple-500" />,
-    facebook: <FaFacebook size={16} className="text-blue-600" />,
-    instagram: <FaInstagram size={16} className="text-pink-500" />,
+    telegram: <FaTelegram size={16} className="text-sky-500 dark:text-sky-400" />,
+    website: <FaGlobe size={16} className="text-purple-500 dark:text-purple-400" />,
+    facebook: <FaFacebook size={16} className="text-blue-600 dark:text-blue-400" />,
+    instagram: <FaInstagram size={16} className="text-pink-500 dark:text-pink-400" />,
     tiktok: <FaTiktok size={16} className="text-[var(--md-sys-color-on-surface)]" />,
-    youtube: <FaYoutube size={16} className="text-red-500" />,
-    twitter: <FaTwitter size={16} className="text-blue-400" />,
-    linkedin: <FaLinkedin size={16} className="text-blue-700" />,
-    snapchat: <FaSnapchat size={16} className="text-yellow-500" />,
+    youtube: <FaYoutube size={16} className="text-red-500 dark:text-red-400" />,
+    twitter: <FaTwitter size={16} className="text-blue-400 dark:text-blue-400" />,
+    linkedin: <FaLinkedin size={16} className="text-blue-700 dark:text-blue-400" />,
+    snapchat: <FaSnapchat size={16} className="text-yellow-500 dark:text-yellow-400" />,
     other: <FaLink size={16} className="text-[var(--md-sys-color-on-surface-variant)]" />,
   };
 

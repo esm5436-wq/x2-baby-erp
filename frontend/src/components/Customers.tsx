@@ -401,7 +401,7 @@ const Customers: React.FC<CustomersProps> = ({ customers, orders, branding }) =>
       </AnimatePresence>
 
       {/* Stats */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-3 gap-2 md:gap-4">
         <MD3StatCard
           icon={<Users size={20} />}
           label="إجمالي العملاء"
@@ -412,14 +412,14 @@ const Customers: React.FC<CustomersProps> = ({ customers, orders, branding }) =>
           icon={<ShoppingBag size={20} />}
           label="إجمالي الطلبات"
           value={stats.totalOrders}
-          iconBg="bg-purple-100 dark:bg-purple-900/20 text-purple-600"
+          iconBg="bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400"
         />
         <MD3StatCard
           icon={<DollarSign size={20} />}
           label="إجمالي الإنفاق"
           value={stats.totalSpent.toLocaleString()}
           unit="ج.م"
-          iconBg="bg-amber-100 dark:bg-amber-900/20 text-amber-600"
+          iconBg="bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400"
         />
       </motion.div>
 

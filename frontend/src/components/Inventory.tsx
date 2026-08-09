@@ -60,6 +60,7 @@ import ProductModal from './ProductModal';
 import BatchEditModal from './BatchEditModal';
 import type { BatchField } from './BatchEditModal';
 import ViewSwitcher from './ViewSwitcher';
+import { useBreakpoint } from '../hooks/useBreakpoint';
 import { exportToExcel, exportToPDF, exportToHTML, exportToCSV, exportToJSON } from '../lib/exportService';
 import { MD3Button, MD3IconButton, MD3StatCard, MD3EmptyState, MD3Dialog } from './md3';
 
@@ -515,6 +516,15 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
     }).format(value);
   };
   const [q, setQ] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const mobileSearchInputRef = useRef<HTMLInputElement>(null);
+  const breakpoint = useBreakpoint();
+  const isMobile = breakpoint === 'compact';
+  useEffect(() => {
+    if (!isMobile || !searchOpen) return;
+    const t = window.setTimeout(() => mobileSearchInputRef.current?.focus(), 200);
+    return () => window.clearTimeout(t);
+  }, [isMobile, searchOpen]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [sortField, setSortField] = useState<string>('created_at');
@@ -1146,15 +1156,62 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
              المخزون المتوفر
           </motion.h2>
           <div className="flex flex-wrap gap-4 w-full lg:w-auto items-center justify-center lg:justify-end">
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              whileHover={{ scale: 1.02 }}
-              className="relative flex-1 md:min-w-80 md:w-80"
-            >
-              <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)]" size={20}/>
-              <input className="w-full pr-12 pl-4 py-3.5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl outline-none font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] shadow-sm" placeholder="ابحث عن منتج..." value={q} onChange={e => setQ(e.target.value)} />
-            </motion.div>
+            {isMobile ? (
+              <motion.div
+                layout
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className={searchOpen ? "relative w-full min-w-0 overflow-hidden" : "relative"}
+              >
+                {searchOpen ? (
+                  <div className="relative flex items-center gap-1 min-w-0">
+                    <div className="relative flex-1 min-w-0">
+                      <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)] pointer-events-none" size={20}/>
+                      <input
+                        ref={mobileSearchInputRef}
+                        className="w-full pr-12 pl-4 py-3.5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl outline-none font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] shadow-sm"
+                        placeholder="ابحث عن منتج..."
+                        value={q}
+                        onChange={e => setQ(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Escape') setSearchOpen(false); }}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSearchOpen(false)}
+                      className="shrink-0 w-11 h-11 flex items-center justify-center rounded-full text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-container-highest)] active:scale-95 transition-all"
+                      title="إغلاق البحث"
+                      aria-label="إغلاق البحث"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setSearchOpen(true)}
+                    className="relative w-11 h-11 flex items-center justify-center rounded-full bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 text-[var(--md-sys-color-on-surface)] shadow-sm hover:bg-[var(--md-sys-color-surface-container-highest)] active:scale-95 transition-all"
+                    title="بحث"
+                    aria-label="بحث"
+                  >
+                    <Search size={20} />
+                    {q.trim() !== '' && (
+                      <span className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-[var(--md-sys-color-primary)] ring-2 ring-[var(--md-sys-color-surface)]" />
+                    )}
+                  </button>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                whileHover={{ scale: 1.02 }}
+                className="relative flex-1 md:min-w-80 md:w-80"
+              >
+                <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--md-sys-color-on-surface-variant)]" size={20}/>
+                <input className="w-full pr-12 pl-4 py-3.5 bg-[var(--md-sys-color-surface)] border border-[var(--md-sys-color-outline-variant)]/20 rounded-2xl outline-none font-bold text-[var(--md-sys-color-on-surface)] focus:border-[var(--md-sys-color-primary)] shadow-sm" placeholder="ابحث عن منتج..." value={q} onChange={e => setQ(e.target.value)} />
+              </motion.div>
+            )}
   
             {canManageProducts && (
               <MD3Button 
@@ -1401,7 +1458,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
         {/* Inventory Stats Summary */}
         <CollapsibleSection
           title="ملخص المخزون"
-          icon={<Package size={20} className="text-amber-600" />}
+          icon={<Package size={20} className="text-amber-600 dark:text-amber-400" />}
           mobileOnly
           headerClassName="bg-[var(--md-sys-color-surface)] p-4 rounded-[32px] border border-gray-50 dark:border-slate-800 shadow-sm mb-2"
         >
@@ -1414,7 +1471,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             icon={<Package size={20} />}
             label="إجمالي القطع"
             value={inventoryStats.totalQuantity.toLocaleString()}
-            iconBg="bg-[var(--md-sys-color-tertiary-container)] text-amber-600"
+            iconBg="bg-[var(--md-sys-color-tertiary-container)] text-amber-600 dark:text-amber-400"
           />
           <MD3StatCard
             icon={<Coins size={20} />}
@@ -1435,7 +1492,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             label="الربح المتوقع"
             value={(inventoryStats.totalSales - inventoryStats.totalCost).toLocaleString()}
             unit="ج.م"
-            iconBg="bg-blue-100 dark:bg-blue-900/20 text-blue-600"
+            iconBg="bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
           />
         </motion.div>
         </CollapsibleSection>
@@ -1475,7 +1532,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                         onClick={() => handleImportSourceChoice('feed')} 
                         className="w-full flex items-center gap-4 p-5 bg-indigo-50 dark:bg-slate-800 border border-indigo-100 dark:border-slate-700 rounded-3xl text-right hover:bg-indigo-100 dark:hover:bg-slate-700 transition-colors duration-200 group"
                       >
-                        <div className="w-12 h-12 bg-[var(--md-sys-color-surface)] rounded-2xl flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform"><Globe size={24} /></div>
+                        <div className="w-12 h-12 bg-[var(--md-sys-color-surface)] rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform"><Globe size={24} /></div>
                         <div><h4 className="font-black text-[var(--md-sys-color-on-surface)] text-sm">رابط API</h4><p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-bold">جلب المنتجات عبر رابط</p></div>
                       </motion.button>
                       <motion.button 
@@ -1485,7 +1542,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                         onClick={() => handleImportSourceChoice('json')} 
                         className="w-full flex items-center gap-4 p-5 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 rounded-3xl text-right hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors duration-200 group"
                       >
-                        <div className="w-12 h-12 bg-[var(--md-sys-color-surface)] rounded-2xl flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform"><FileJson size={24} /></div>
+                        <div className="w-12 h-12 bg-[var(--md-sys-color-surface)] rounded-2xl flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform"><FileJson size={24} /></div>
                         <div><h4 className="font-black text-[var(--md-sys-color-on-surface)] text-sm">ملف JSON</h4><p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] font-bold">رفع ملف من جهازك</p></div>
                       </motion.button>
                     </motion.div>
@@ -1741,7 +1798,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex flex-col gap-1">
                       <div className="text-[var(--md-sys-color-primary)] font-black text-2xl">{p.price?.toLocaleString()} <span className="text-sm">ج.م</span></div>
-                      <span className="text-sm text-amber-600 font-black">تكلفة {p.costPrice?.toLocaleString()} ج.م</span>
+                      <span className="text-sm text-amber-600 dark:text-amber-400 font-black">تكلفة {p.costPrice?.toLocaleString()} ج.م</span>
                     </div>
                     <div className="flex flex-col items-end gap-0.5">
                       <span className={`text-base font-black ${isOutOfStock ? 'text-[var(--md-sys-color-error)]' : isLowStock ? 'text-[var(--md-sys-color-tertiary)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>
@@ -1875,7 +1932,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     <td className="p-4">
                       <span className={`font-black text-sm ${isOutOfStock ? 'text-[var(--md-sys-color-error)]' : isLowStock ? 'text-[var(--md-sys-color-tertiary)]' : 'text-gray-700 dark:text-gray-300'}`}>{totalQty}</span>
                     </td>
-                    <td className="p-4 font-black text-sm text-amber-600">{(p.costPrice || 0).toLocaleString()} ج.م</td>
+                    <td className="p-4 font-black text-sm text-amber-600 dark:text-amber-400">{(p.costPrice || 0).toLocaleString()} ج.م</td>
                     <td className="p-4 font-black text-sm text-[var(--md-sys-color-primary)]">{(p.price || 0).toLocaleString()} ج.م</td>
                     <td className="p-4">
                       <span className={`font-black text-sm ${profit >= 0 ? 'text-[var(--md-sys-color-primary)]' : 'text-[var(--md-sys-color-error)]'}`}>{profit.toLocaleString()} ج.م</span>
@@ -1978,7 +2035,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     </div>
                     <div className="flex flex-wrap gap-4 mt-3">
                       <div><span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] block">البيع</span><span className="font-black text-[var(--md-sys-color-primary)]">{(p.price || 0).toLocaleString()} ج.م</span></div>
-                      <div><span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] block">التكلفة</span><span className="font-black text-amber-600">{(p.costPrice || 0).toLocaleString()} ج.م</span></div>
+                      <div><span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] block">التكلفة</span><span className="font-black text-amber-600 dark:text-amber-400">{(p.costPrice || 0).toLocaleString()} ج.م</span></div>
                       <div><span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] block">الربح</span><span className={`font-black ${(p.price||0)-(p.costPrice||0) >= 0 ? 'text-[var(--md-sys-color-primary)]' : 'text-[var(--md-sys-color-error)]'}`}>{((p.price||0)-(p.costPrice||0)).toLocaleString()} ج.م</span></div>
                       <div><span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] block">المخزون</span><span className={`font-black ${isOutOfStock ? 'text-[var(--md-sys-color-error)]' : isLowStock ? 'text-[var(--md-sys-color-tertiary)]' : 'text-gray-700 dark:text-gray-300'}`}>{totalQty} قطعة</span></div>
                     </div>
@@ -2100,7 +2157,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   </div>
                   <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-100 dark:border-amber-900/30">
                     <span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">التكلفة</span>
-                    <div className="font-black text-2xl text-amber-600 mt-1">{(product.costPrice || 0).toLocaleString()} <span className="text-xs">ج.م</span></div>
+                    <div className="font-black text-2xl text-amber-600 dark:text-amber-400 mt-1">{(product.costPrice || 0).toLocaleString()} <span className="text-xs">ج.م</span></div>
                     <span className="text-[8px] text-gray-400">للقطعة</span>
                   </div>
                   <div className={`p-4 rounded-2xl border ${profitPerUnit >= 0 ? 'bg-[var(--md-sys-color-primary-container)]/30 border-[var(--md-sys-color-primary)]/20' : 'bg-[var(--md-sys-color-error)]/10 border-[var(--md-sys-color-error)]/20'}`}>
@@ -2118,11 +2175,11 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   </div>
                   <div className="p-3 bg-[var(--md-sys-color-surface-container)] rounded-2xl border border-gray-100 dark:border-slate-700">
                     <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">إجمالي المخزون (تكلفة)</span>
-                    <div className="font-black text-sm text-amber-600 mt-0.5">{totalCost.toLocaleString()} <span className="text-[9px]">ج.م</span></div>
+                    <div className="font-black text-sm text-amber-600 dark:text-amber-400 mt-0.5">{totalCost.toLocaleString()} <span className="text-[9px]">ج.م</span></div>
                   </div>
                   <div className={`p-3 rounded-2xl border ${profitMargin >= 40 ? 'bg-[var(--md-sys-color-primary-container)]/30 border-[var(--md-sys-color-primary)]/20' : profitMargin > 0 ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-900/30' : 'bg-[var(--md-sys-color-error)]/10 border-[var(--md-sys-color-error)]/20'}`}>
                     <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">هامش الربح</span>
-                    <div className={`font-black text-sm mt-0.5 ${profitMargin >= 40 ? 'text-[var(--md-sys-color-primary)]' : profitMargin > 0 ? 'text-amber-600' : 'text-[var(--md-sys-color-error)]'}`}>{profitMargin.toFixed(1)}%</div>
+                    <div className={`font-black text-sm mt-0.5 ${profitMargin >= 40 ? 'text-[var(--md-sys-color-primary)]' : profitMargin > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-[var(--md-sys-color-error)]'}`}>{profitMargin.toFixed(1)}%</div>
                   </div>
                   <div className="p-3 bg-[var(--md-sys-color-surface-container)] rounded-2xl border border-gray-100 dark:border-slate-700">
                     <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">إجمالي القطع</span>
@@ -2177,7 +2234,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     </div>
                     <div>
                       <span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)]">معدل الدوران</span>
-                      <div className={`font-black text-sm mt-0.5 ${turnoverRate >= 3 ? 'text-[var(--md-sys-color-primary)]' : turnoverRate >= 1 ? 'text-amber-600' : 'text-gray-500'}`}>{turnoverRate.toFixed(1)}× <span className="text-[9px]">{turnoverRate >= 3 ? 'ممتاز' : turnoverRate >= 1 ? 'جيد' : 'ضعيف'}</span></div>
+                      <div className={`font-black text-sm mt-0.5 ${turnoverRate >= 3 ? 'text-[var(--md-sys-color-primary)]' : turnoverRate >= 1 ? 'text-amber-600 dark:text-amber-400' : 'text-gray-500'}`}>{turnoverRate.toFixed(1)}× <span className="text-[9px]">{turnoverRate >= 3 ? 'ممتاز' : turnoverRate >= 1 ? 'جيد' : 'ضعيف'}</span></div>
                     </div>
                   </div>
                   {/* Performance Bar */}
@@ -2194,7 +2251,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                       <div className="mt-4 pt-3 border-t border-gray-100 dark:border-slate-700">
                         <div className="flex items-center justify-between mb-1.5">
                           <span className="text-[9px] font-black text-[var(--md-sys-color-on-surface-variant)]">أداء المبيعات</span>
-                          <span className={`text-[9px] font-black ${percentile >= 80 ? 'text-[var(--md-sys-color-primary)]' : percentile >= 50 ? 'text-amber-600' : 'text-gray-500'}`}>
+                          <span className={`text-[9px] font-black ${percentile >= 80 ? 'text-[var(--md-sys-color-primary)]' : percentile >= 50 ? 'text-amber-600 dark:text-amber-400' : 'text-gray-500'}`}>
                             {percentile}% {rank > 0 ? `(ترتيب ${rank} من ${totalProductsWithSales})` : ''}
                           </span>
                         </div>

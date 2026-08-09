@@ -725,7 +725,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                     <th className="p-5 text-center font-black">الإضافة</th>
                     <th className="p-5 text-center font-black">آخر تعديل</th>
                     <th className="p-5 text-center font-black">التصنيف</th>
-                    <th className="p-5 text-center font-black text-red-600">المبلغ</th>
+                    <th className="p-5 text-center font-black text-red-600 dark:text-red-400">المبلغ</th>
                     <th className="p-5"></th>
                   </tr>
                 </thead>
@@ -765,7 +765,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                           {item.type === 'inventory' ? 'مشتريات مخزن' : 'مصروفات تشغيل'}
                         </span>
                       </td>
-                      <td className="p-5 text-center font-black text-sm text-red-600">
+                      <td className="p-5 text-center font-black text-sm text-red-600 dark:text-red-400">
                         {formatCurrency(item.totalAmount || item.amount)}
                       </td>
                       <td className="p-5 text-center">

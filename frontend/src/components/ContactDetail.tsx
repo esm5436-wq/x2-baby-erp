@@ -266,15 +266,15 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ contact, onClose, onEdit,
             if (links.length === 0) return null;
             const LINK_MAP: Record<string, {icon:React.ReactNode;label:string}> = {
               whatsapp: {icon: <FaWhatsapp size={18} className="text-emerald-500 shrink-0" />, label: 'واتساب'},
-              telegram: {icon: <FaTelegram size={18} className="text-sky-500 shrink-0" />, label: 'تيليجرام'},
-              website: {icon: <FaGlobe size={18} className="text-purple-500 shrink-0" />, label: 'موقع'},
-              facebook: {icon: <FaFacebook size={18} className="text-blue-600 shrink-0" />, label: 'فيسبوك'},
-              instagram: {icon: <FaInstagram size={18} className="text-pink-500 shrink-0" />, label: 'إنستغرام'},
+              telegram: {icon: <FaTelegram size={18} className="text-sky-500 dark:text-sky-400 shrink-0" />, label: 'تيليجرام'},
+              website: {icon: <FaGlobe size={18} className="text-purple-500 dark:text-purple-400 shrink-0" />, label: 'موقع'},
+              facebook: {icon: <FaFacebook size={18} className="text-blue-600 dark:text-blue-400 shrink-0" />, label: 'فيسبوك'},
+              instagram: {icon: <FaInstagram size={18} className="text-pink-500 dark:text-pink-400 shrink-0" />, label: 'إنستغرام'},
               tiktok: {icon: <FaTiktok size={18} className="text-[var(--md-sys-color-on-surface)] shrink-0" />, label: 'تيك توك'},
-              youtube: {icon: <FaYoutube size={18} className="text-red-500 shrink-0" />, label: 'يوتيوب'},
-              twitter: {icon: <FaTwitter size={18} className="text-blue-400 shrink-0" />, label: 'تويتر / X'},
-              linkedin: {icon: <FaLinkedin size={18} className="text-blue-700 shrink-0" />, label: 'لينكدإن'},
-              snapchat: {icon: <FaSnapchat size={18} className="text-yellow-500 shrink-0" />, label: 'سناب شات'},
+              youtube: {icon: <FaYoutube size={18} className="text-red-500 dark:text-red-400 shrink-0" />, label: 'يوتيوب'},
+              twitter: {icon: <FaTwitter size={18} className="text-blue-400 dark:text-blue-400 shrink-0" />, label: 'تويتر / X'},
+              linkedin: {icon: <FaLinkedin size={18} className="text-blue-700 dark:text-blue-400 shrink-0" />, label: 'لينكدإن'},
+              snapchat: {icon: <FaSnapchat size={18} className="text-yellow-500 dark:text-yellow-400 shrink-0" />, label: 'سناب شات'},
               other: {icon: <FaLink size={18} className="text-[var(--md-sys-color-on-surface-variant)] shrink-0" />, label: 'رابط'},
             };
             return links.map((link, i) => {

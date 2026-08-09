@@ -576,7 +576,7 @@ const SyncReviewModal: React.FC<{ orders: Order[]; onSaveItem: (o: Order) => voi
                                           </ul>
                                           <div className="mt-2 pt-2 border-t border-[var(--md-sys-color-outline-variant)]/20 text-xs text-[var(--md-sys-color-on-surface-variant)] space-y-1">
                                               <div className="flex justify-between"><span>الشحن:</span> <span>{order.shippingCost || 0} ج.م</span></div>
-                                              {order.coupon && <div className="flex justify-between text-amber-600"><span>كوبون ({order.coupon}):</span> <span>-{order.couponDiscount} ج.م</span></div>}
+                                              {order.coupon && <div className="flex justify-between text-amber-600 dark:text-amber-400"><span>كوبون ({order.coupon}):</span> <span>-{order.couponDiscount} ج.م</span></div>}
                                                 <div className="flex justify-between font-bold text-[var(--md-sys-color-on-surface)] mt-1 pt-1 border-t border-[var(--md-sys-color-outline-variant)]/20"><span>الإجمالي:</span> <span className="text-green-500 dark:text-green-400">{order.totalAmount} ج.م</span></div>
                                           </div>
                                       </div>
@@ -1767,15 +1767,15 @@ const Orders: React.FC<OrdersProps> = ({
       case OrderStatus.PROCESSING_SHIPPING: return 'text-sky-500';
       case OrderStatus.WAITING_SHIPPING: return 'text-orange-400';
       case OrderStatus.ON_DELIVERY: return 'text-indigo-500';
-      case OrderStatus.DELIVERED: return 'text-emerald-600';
+      case OrderStatus.DELIVERED: return 'text-emerald-600 dark:text-emerald-400';
       case OrderStatus.RETURNED_FROM_SHIPPING: return 'text-red-500';
-      case OrderStatus.RETURNED: return 'text-red-700';
+      case OrderStatus.RETURNED: return 'text-red-700 dark:text-red-400';
       case OrderStatus.CANCELED: return 'text-rose-500';
       case OrderStatus.PAYMENT_FAILED: return 'text-pink-500';
       case OrderStatus.CLIENT_RETURN_REQUEST: return 'text-fuchsia-500';
-      case OrderStatus.RETURN_IN_PROGRESS: return 'text-cyan-600';
-      case OrderStatus.INCOMPLETE: return 'text-yellow-600';
-      case OrderStatus.HIGH_RISK: return 'text-rose-700';
+      case OrderStatus.RETURN_IN_PROGRESS: return 'text-cyan-600 dark:text-cyan-400';
+      case OrderStatus.INCOMPLETE: return 'text-yellow-600 dark:text-yellow-400';
+      case OrderStatus.HIGH_RISK: return 'text-rose-700 dark:text-rose-400';
       case OrderStatus.MODERATE_RISK: return 'text-orange-500';
       default: return 'text-gray-500';
     }
@@ -2749,10 +2749,10 @@ const Orders: React.FC<OrdersProps> = ({
                                 </div>
                                 <div className="flex justify-between items-center px-3 max-w-[250px] mr-auto">
                                    <span className="text-[var(--md-sys-color-on-surface-variant)] font-bold">الشحن:</span>
-                                   <span className="font-black text-[var(--md-sys-color-on-surface)]">{isFreeShipping ? <span className="text-emerald-600">مجاني</span> : `${formData.shippingCost} ج.م`}</span>
+                                   <span className="font-black text-[var(--md-sys-color-on-surface)]">{isFreeShipping ? <span className="text-emerald-600 dark:text-emerald-400">مجاني</span> : `${formData.shippingCost} ج.م`}</span>
                                 </div>
                                 {useCoupon && formData.couponDiscount > 0 && (
-                                   <div className="flex justify-between items-center px-3 max-w-[250px] mr-auto text-emerald-600">
+                                   <div className="flex justify-between items-center px-3 max-w-[250px] mr-auto text-emerald-600 dark:text-emerald-400">
                                       <span className="font-bold">خصم ({formData.coupon}):</span>
                                       <span className="font-black">-{calculatedDiscount} ج.م</span>
                                    </div>

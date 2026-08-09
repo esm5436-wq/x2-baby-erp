@@ -351,25 +351,25 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+        className="grid grid-cols-3 gap-2 md:gap-4"
       >
         <MD3StatCard
           icon={<Building2 size={20} />}
           label="إجمالي الجهات"
           value={contacts.length}
-          iconBg="bg-teal-100 dark:bg-teal-900/20 text-teal-600"
+          iconBg="bg-teal-100 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400"
         />
         <MD3StatCard
           icon={<CheckCircle size={20} />}
           label="نشط"
           value={contacts.filter(c => c.status === 'نشط').length}
-          iconBg="bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600"
+          iconBg="bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400"
         />
         <MD3StatCard
           icon={<XCircle size={20} />}
           label="غير نشط"
           value={contacts.filter(c => c.status === 'غير نشط').length}
-          iconBg="bg-red-100 dark:bg-red-900/20 text-red-600"
+          iconBg="bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400"
         />
       </motion.div>
 
@@ -557,16 +557,16 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
                     if (links.length === 0) return null;
                     const LINK_ICONS: Record<string, {icon:React.ReactNode;color:string}> = {
                       whatsapp: {icon: <FaWhatsapp size={14} />, color: 'text-emerald-500 hover:text-emerald-600'},
-                      telegram: {icon: <FaTelegram size={14} />, color: 'text-sky-500 hover:text-sky-600'},
-                      website: {icon: <FaGlobe size={14} />, color: 'text-purple-500 hover:text-purple-600'},
-                      facebook: {icon: <FaFacebook size={14} />, color: 'text-blue-600 hover:text-blue-700'},
-                      instagram: {icon: <FaInstagram size={14} />, color: 'text-pink-500 hover:text-pink-600'},
-                      tiktok: {icon: <FaTiktok size={14} />, color: 'text-gray-900 dark:text-gray-100 hover:text-gray-600'},
-                      youtube: {icon: <FaYoutube size={14} />, color: 'text-red-500 hover:text-red-600'},
-                      twitter: {icon: <FaTwitter size={14} />, color: 'text-blue-400 hover:text-blue-500'},
-                      linkedin: {icon: <FaLinkedin size={14} />, color: 'text-blue-700 hover:text-blue-800'},
-                      snapchat: {icon: <FaSnapchat size={14} />, color: 'text-yellow-500 hover:text-yellow-600'},
-                      other: {icon: <FaLink size={14} />, color: 'text-gray-400 hover:text-gray-600'},
+                      telegram: {icon: <FaTelegram size={14} />, color: 'text-sky-500 dark:text-sky-400 hover:text-sky-600 dark:hover:text-sky-300'},
+                      website: {icon: <FaGlobe size={14} />, color: 'text-purple-500 dark:text-purple-400 hover:text-purple-600 dark:hover:text-purple-300'},
+                      facebook: {icon: <FaFacebook size={14} />, color: 'text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'},
+                      instagram: {icon: <FaInstagram size={14} />, color: 'text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300'},
+                      tiktok: {icon: <FaTiktok size={14} />, color: 'text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300'},
+                      youtube: {icon: <FaYoutube size={14} />, color: 'text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300'},
+                      twitter: {icon: <FaTwitter size={14} />, color: 'text-blue-400 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300'},
+                      linkedin: {icon: <FaLinkedin size={14} />, color: 'text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300'},
+                      snapchat: {icon: <FaSnapchat size={14} />, color: 'text-yellow-500 dark:text-yellow-400 hover:text-yellow-600 dark:hover:text-yellow-300'},
+                      other: {icon: <FaLink size={14} />, color: 'text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'},
                     };
                     return (
                       <>

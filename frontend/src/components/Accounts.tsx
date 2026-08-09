@@ -523,7 +523,7 @@ const Accounts: React.FC<AccountsProps> = ({
                   <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('pdf'); setShowExportDropdown(false); }} icon={<Printer size={14} className="text-red-500" />}>PDF</MD3Button>
                   <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('html'); setShowExportDropdown(false); }} icon={<Globe size={14} className="text-accent" />}>ويب تفاعلي</MD3Button>
                   <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('csv' as any); setShowExportDropdown(false); }} icon={<FileText size={14} className="text-slate-500" />}>CSV</MD3Button>
-                  <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('json' as any); setShowExportDropdown(false); }} icon={<Code size={14} className="text-slate-800" />}>JSON</MD3Button>
+                  <MD3Button variant="text" fullWidth onClick={() => { handleExportStats('json' as any); setShowExportDropdown(false); }} icon={<Code size={14} className="text-slate-800 dark:text-slate-300" />}>JSON</MD3Button>
                 </div>
             </PopupSheet>
           </div>

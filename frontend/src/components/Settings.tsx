@@ -1457,12 +1457,12 @@ className="w-full px-4 py-2 bg-[var(--md-sys-color-surface)] border border-accen
       >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <motion.div whileHover={{ scale: 1.02 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-3xl shadow-sm border flex flex-col items-center text-center gap-4">
-          <Download size={32} className="text-blue-600" />
+          <Download size={32} className="text-blue-600 dark:text-blue-400" />
           <h3 className="text-xl font-black">تصدير نسخة احتياطية</h3>
           <MD3Button variant="filled" fullWidth onClick={handleExport}>تحميل ملف البيانات</MD3Button>
         </motion.div>
         <motion.div whileHover={{ scale: 1.02 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-3xl shadow-sm border flex flex-col items-center text-center gap-4">
-          <Upload size={32} className="text-amber-600" />
+          <Upload size={32} className="text-amber-600 dark:text-amber-400" />
           <h3 className="text-xl font-black">استعادة البيانات</h3>
           <input type="file" accept=".json" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
           <MD3Button variant="outlined" fullWidth onClick={() => fileInputRef.current?.click()}>رفع ملف البيانات</MD3Button>

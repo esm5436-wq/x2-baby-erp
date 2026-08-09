@@ -54,7 +54,9 @@ function applyCustomColors(primary: string, secondary: string, dark: boolean) {
   const s = generateThemeColors(secondary, dark);
   const [pr, pg, pb] = hexToRgb(primary);
   const primaryLuminance = luminance(pr, pg, pb);
-  const primaryReadable = primaryLuminance < 0.4 ? p.base : p.on;
+  const primaryReadable = dark
+    ? (primaryLuminance < 0.4 ? '#FFFFFF' : p.base)
+    : (primaryLuminance < 0.4 ? p.base : p.on);
   root.style.setProperty('--md-sys-color-primary', p.base);
   root.style.setProperty('--md-sys-color-on-primary', p.on);
   root.style.setProperty('--md-sys-color-primary-container', p.container);

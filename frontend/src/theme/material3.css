@@ -2175,6 +2175,10 @@
 [data-theme="material3"] button[class*="bg-accent"]:active {
   transform: scale(0.97);
 }
+[data-theme="material3"] button#ai-send-btn {
+  padding: 0 !important;
+  border-radius: 8px !important;
+}
 
 /* Danger buttons */
 [data-theme="material3"] button.bg-red-500,
