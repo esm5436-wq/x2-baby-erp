@@ -59,11 +59,34 @@ export async function updateFavicon(brandLogo: string) {
   }
 }
 
-export async function updateManifest(apiBase: string) {
+export async function updateManifest(brandLogo: string) {
   try {
-    const res = await fetch(`${apiBase}/public/manifest`);
-    if (!res.ok) return;
-    const manifest = await res.json();
+    let iconSrc = '/icon.svg';
+    let iconType = 'image/svg+xml';
+
+    if (brandLogo) {
+      const png192 = await generatePngAtSize(brandLogo, 192);
+      iconSrc = png192;
+      iconType = 'image/png';
+    }
+
+    const manifest = {
+      name: 'X2 ERP',
+      short_name: 'X2 ERP',
+      description: 'نظام إدارة المخزون والمبيعات',
+      start_url: '/',
+      display: 'standalone',
+      orientation: 'any',
+      background_color: '#f8fafc',
+      theme_color: '#006B5E',
+      dir: 'rtl',
+      lang: 'ar',
+      categories: ['business', 'productivity'],
+      icons: [
+        { src: iconSrc, sizes: 'any', type: iconType, purpose: 'any' }
+      ]
+    };
+
     const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     setOrCreateLink(MANIFEST_ID, 'manifest', url);

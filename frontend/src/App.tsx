@@ -455,7 +455,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (state.brandLogo) {
       updateFavicon(state.brandLogo);
-      updateManifest(API_BASE);
+      updateManifest(state.brandLogo);
     }
   }, [state.brandLogo]);
 
