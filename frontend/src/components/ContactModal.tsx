@@ -25,16 +25,17 @@ const RATING_CATEGORIES: Record<string, string[]> = {
   'امكانية استلام مصاريف الشحن فقط': ['نعم', 'لا'],
   'الاستبدال': ['نعم', 'لا'],
   'رأي العملاء السابقين': ['إيجابي', 'محايد', 'سلبي'],
+  'هل هناك انتجريشن او تكامل API': ['نعم', 'لا'],
 };
 
-const RATING_SPECIAL = ['التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'رسوم التحصيل', 'حد أدنى للشحنات', 'عدد الشحنات', 'سعر الشحن قاهره وجيزه'];
+const RATING_SPECIAL = ['التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'رسوم التحصيل', 'حد أدنى للشحنات', 'عدد الشحنات', 'سعر الشحن قاهره وجيزه', 'التغامل مع الكوارث'];
 
 const ENTITY_RATING_MAP: Record<string, string[]> = {
   'مصنع': ['السعر', 'الجوده', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'تنوع المنتجات'],
   'تاجر جملة': ['السعر', 'الجوده', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'تنوع المنتجات'],
   'مقدم خدمة': ['المرونه', 'الالتزام بالمواعيد', 'سرعة الرد'],
   'مستورد': ['السعر', 'الجوده', 'الالتزام بالمواعيد'],
-  'شركة شحن': ['السعر', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'سرعة التوصيل', 'تغطية المحافظات', 'الحفاظ على المنتج', 'سهولة التتبع و التواصل', 'التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'حد أدنى للشحنات', 'سعر الشحن قاهره وجيزه', 'تسليم جزئي', 'امكانية استلام مصاريف الشحن فقط', 'الاستبدال', 'رأي العملاء السابقين'],
+  'شركة شحن': ['السعر', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'سرعة التوصيل', 'تغطية المحافظات', 'الحفاظ على المنتج', 'سهولة التتبع و التواصل', 'التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'حد أدنى للشحنات', 'سعر الشحن قاهره وجيزه', 'تسليم جزئي', 'امكانية استلام مصاريف الشحن فقط', 'الاستبدال', 'رأي العملاء السابقين', 'التغامل مع الكوارث', 'هل هناك انتجريشن او تكامل API'],
   'شركة تسويق': ['السعر', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'الاداء'],
   'شركات الطباعه و التغليف': ['السعر', 'الجوده', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'تنوع المنتجات'],
   'أخرى': ['السعر', 'الجوده', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'تنوع المنتجات'],
@@ -988,6 +989,60 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
                           placeholder="0"
                         />
                         <span className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)]">ج.م</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* التغامل مع الكوارث special field */}
+              {visibleCategories.includes('التغامل مع الكوارث') && (
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div
+                      onClick={() => {
+                        setRatingsDataObj(prev => {
+                          if (prev['التغامل مع الكوارث'] !== undefined) {
+                            const n = { ...prev };
+                            delete n['التغامل مع الكوارث'];
+                            return n;
+                          }
+                          return { ...prev, 'التغامل مع الكوارث': '' };
+                        });
+                      }}
+                      className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors duration-200 cursor-pointer shrink-0 ${
+                        ratingsDataObj['التغامل مع الكوارث'] !== undefined
+                          ? 'bg-teal-600 border-teal-600 text-white'
+                          : 'border-[var(--md-sys-color-outline-variant)]/50 bg-[var(--md-sys-color-surface)]'
+                      }`}
+                    >
+                      {ratingsDataObj['التغامل مع الكوارث'] !== undefined && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)]">التغامل مع الكوارث</span>
+                  </div>
+                  {ratingsDataObj['التغامل مع الكوارث'] !== undefined && (
+                    <div className="pr-7 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          min="1"
+                          max="10"
+                          dir="ltr"
+                          value={ratingsDataObj['التغامل مع الكوارث'] || ''}
+                          onChange={e => {
+                            const val = e.target.value;
+                            if (val === '' || (parseInt(val) >= 1 && parseInt(val) <= 10)) {
+                              setRatingsDataObj(prev => ({ ...prev, 'التغامل مع الكوارث': val }));
+                            }
+                          }}
+                          className="w-24 px-3 py-1.5 bg-[var(--md-sys-color-surface)] border-2 border-[var(--md-sys-color-outline-variant)]/30 rounded-xl outline-none font-bold text-sm text-[var(--md-sys-color-on-surface)] focus:border-teal-500 transition-colors duration-200"
+                          placeholder="1-10"
+                        />
+                        <span className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)]">من 1 لـ 10</span>
                       </div>
                     </div>
                   )}

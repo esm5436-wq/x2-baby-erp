@@ -1,5 +1,6 @@
 const FAVICON_ID = 'dynamic-favicon';
 const APPLE_TOUCH_ID = 'dynamic-apple-touch-icon';
+const MANIFEST_ID = 'dynamic-manifest';
 
 function setOrCreateLink(id: string, rel: string, href: string, type?: string) {
   let link = document.getElementById(id) as HTMLLinkElement | null;
@@ -55,6 +56,19 @@ export async function updateFavicon(brandLogo: string) {
     setOrCreateLink(APPLE_TOUCH_ID, 'apple-touch-icon', png192, 'image/png');
   } catch (err) {
     console.error('Failed to update favicon:', err);
+  }
+}
+
+export async function updateManifest(apiBase: string) {
+  try {
+    const res = await fetch(`${apiBase}/public/manifest`);
+    if (!res.ok) return;
+    const manifest = await res.json();
+    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    setOrCreateLink(MANIFEST_ID, 'manifest', url);
+  } catch {
+    // fallback to static manifest
   }
 }
 

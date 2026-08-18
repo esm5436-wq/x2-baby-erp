@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { AppState, Order, Product } from './types';
 import AIAssistant from './components/AIAssistant';
 import AppLayout from './components/layout/AppLayout';
-import { updateFavicon } from './lib/faviconUtils';
+import { updateFavicon, updateManifest } from './lib/faviconUtils';
 
 const Inventory = React.lazy(() => import('./components/Inventory'));
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -455,6 +455,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (state.brandLogo) {
       updateFavicon(state.brandLogo);
+      updateManifest(API_BASE);
     }
   }, [state.brandLogo]);
 

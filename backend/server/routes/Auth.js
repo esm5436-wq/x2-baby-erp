@@ -7,6 +7,51 @@ import { ADMIN_PERMISSIONS, parsePermissions } from '../middleware/Permission.js
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-dev-secret';
 
+router.get('/api/public/manifest', async (req, res) => {
+  try {
+    let iconSrc = '/icon.svg';
+    let iconType = 'image/svg+xml';
+    const rows = await allDb("SELECT value FROM settings WHERE key = 'brandLogo' LIMIT 1");
+    if (rows.length > 0 && rows[0].value) {
+      iconSrc = '/api/public/brand-icon';
+      iconType = 'image/png';
+    }
+    const brandRows = await allDb("SELECT key, value FROM settings WHERE key IN ('brandName')");
+    let name = 'X2 ERP';
+    let shortName = 'X2 ERP';
+    brandRows.forEach(r => {
+      if (r.key === 'brandName' && r.value) { name = r.value; shortName = r.value; }
+    });
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.json({
+      name,
+      short_name: shortName,
+      description: 'نظام إدارة المخزون والمبيعات',
+      start_url: '/',
+      display: 'standalone',
+      orientation: 'any',
+      background_color: '#f8fafc',
+      theme_color: '#006B5E',
+      dir: 'rtl',
+      lang: 'ar',
+      categories: ['business', 'productivity'],
+      icons: [
+        { src: iconSrc, sizes: 'any', type: iconType, purpose: 'any' }
+      ]
+    });
+  } catch {
+    res.json({
+      name: 'X2 ERP', short_name: 'X2 ERP',
+      description: 'نظام إدارة المخزون والمبيعات',
+      start_url: '/', display: 'standalone', orientation: 'any',
+      background_color: '#f8fafc', theme_color: '#006B5E',
+      dir: 'rtl', lang: 'ar', categories: ['business', 'productivity'],
+      icons: [{ src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }]
+    });
+  }
+});
+
 router.get('/api/public/brand', async (req, res) => {
   try {
     const rows = await allDb("SELECT key, value FROM settings WHERE key IN ('brandLogo', 'brandName', 'brandSlogan', 'brandSloganDesign')");

@@ -159,9 +159,10 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
     'امكانية استلام مصاريف الشحن فقط': ['نعم', 'لا'],
     'الاستبدال': ['نعم', 'لا'],
     'رأي العملاء السابقين': ['إيجابي', 'محايد', 'سلبي'],
+    'هل هناك انتجريشن او تكامل API': ['نعم', 'لا'],
   };
 
-  const RATING_SPECIAL = ['التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'رسوم التحصيل', 'حد أدنى للشحنات', 'عدد الشحنات', 'سعر الشحن قاهره وجيزه'];
+  const RATING_SPECIAL = ['التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'رسوم التحصيل', 'حد أدنى للشحنات', 'عدد الشحنات', 'سعر الشحن قاهره وجيزه', 'التغامل مع الكوارث'];
 
   function getScore(category: string, level: string, allData?: Record<string, string>): number {
     if (category === 'اقل عدد بيك اب' || category === 'رسوم البيك اب' || category === 'رسوم التحصيل' || category === 'عدد الشحنات' || category === 'سعر الشحن قاهره وجيزه') {
@@ -171,6 +172,12 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
       if (n <= 10) return 66;
       if (n <= 20) return 33;
       return 0;
+    }
+    if (category === 'التغامل مع الكوارث') {
+      const n = parseFloat(level);
+      if (isNaN(n) || n < 1) return 0;
+      if (n > 10) return 100;
+      return Math.round((n / 10) * 100);
     }
     if (category === 'حد أدنى للشحنات') {
       if (level === 'لا') return 100;
@@ -185,14 +192,6 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
       if (level === 'بدون رسوم') return 100;
       const fee = parseFloat(allData?.['رسوم التحصيل'] || '999');
       if (isNaN(fee) || fee <= 0) return 80;
-      if (fee <= 5) return 80;
-      if (fee <= 10) return 50;
-      return 20;
-    }
-    if (category === 'التحصيل') {
-      if (level === 'بدون رسوم') return 100;
-      const fee = parseFloat(allData?.['رسوم التحصيل'] || '999');
-      if (isNaN(fee) || fee <= 0) return 100;
       if (fee <= 5) return 80;
       if (fee <= 10) return 50;
       return 20;

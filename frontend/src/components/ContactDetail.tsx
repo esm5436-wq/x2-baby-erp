@@ -22,9 +22,10 @@ const RATING_CATEGORIES: Record<string, string[]> = {
   'امكانية استلام مصاريف الشحن فقط': ['نعم', 'لا'],
   'الاستبدال': ['نعم', 'لا'],
   'رأي العملاء السابقين': ['إيجابي', 'محايد', 'سلبي'],
+  'هل هناك انتجريشن او تكامل API': ['نعم', 'لا'],
 };
 
-const RATING_SPECIAL = ['التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'رسوم التحصيل', 'حد أدنى للشحنات', 'عدد الشحنات', 'سعر الشحن قاهره وجيزه'];
+const RATING_SPECIAL = ['التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'رسوم التحصيل', 'حد أدنى للشحنات', 'عدد الشحنات', 'سعر الشحن قاهره وجيزه', 'التغامل مع الكوارث'];
 
 const RATING_COLORS: Record<string, string> = {
   'رخيص': 'text-[var(--md-sys-color-on-success-container)] bg-[var(--md-sys-color-success-container)]',
@@ -61,6 +62,12 @@ function getScore(category: string, level: string, allData?: Record<string, stri
     if (n <= 10) return 66;
     if (n <= 20) return 33;
     return 0;
+  }
+  if (category === 'التغامل مع الكوارث') {
+    const n = parseFloat(level);
+    if (isNaN(n) || n < 1) return 0;
+    if (n > 10) return 100;
+    return Math.round((n / 10) * 100);
   }
   if (category === 'حد أدنى للشحنات') {
     if (level === 'لا') return 100;
