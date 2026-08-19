@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { MD3Dialog } from './md3';
+import { useSnackbar, MD3Snackbar } from './md3/MD3Snackbar';
 import { API_BASE } from '../lib/api';
 import { useUnsavedCheck } from '../hooks/useUnsavedCheck';
 import { Phone, Mail, MapPin, Hash, FileText, Navigation, Star, DollarSign, Package, Clock, Copy, Truck, Activity, ReceiptText } from 'lucide-react';
@@ -177,7 +178,18 @@ interface ContactStats {
 
 const ContactDetail: React.FC<ContactDetailProps> = ({ contact, onClose, onEdit, onDelete }) => {  const [stats, setStats] = useState<ContactStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(false);
-  const { withUnsavedCheck } = useUnsavedCheck(contact);
+  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
+
+  const onDirtyConfirm = useMemo(() => {
+    return (message: string): Promise<boolean> => {
+      return new Promise(resolve => {
+        snackSuccess(message);
+        resolve(true);
+      });
+    };
+  }, [snackSuccess]);
+
+  const { withUnsavedCheck } = useUnsavedCheck(contact, onDirtyConfirm);
 
   useEffect(() => {
     setStats(null);
@@ -526,6 +538,7 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ contact, onClose, onEdit,
           </div>
         )}
       </div>
+      <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
     </MD3Dialog>
   );
 };

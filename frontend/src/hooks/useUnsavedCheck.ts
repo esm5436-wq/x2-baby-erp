@@ -1,6 +1,6 @@
 import { useRef, useCallback } from 'react';
 
-export function useUnsavedCheck<T>(formData: T) {
+export function useUnsavedCheck<T>(formData: T, onDirtyConfirm?: (message: string) => Promise<boolean>) {
   const formDataRef = useRef(formData);
   formDataRef.current = formData;
 
@@ -9,17 +9,25 @@ export function useUnsavedCheck<T>(formData: T) {
   const withUnsavedCheck = useCallback((action: () => void) => {
     const dirty = JSON.stringify(formDataRef.current) !== initialSnapshot.current;
     if (dirty) {
-      if (window.confirm('لديك تغييرات غير محفوظة. هل تريد الخروج؟')) {
-        action();
+      if (onDirtyConfirm) {
+        onDirtyConfirm('لديك تغييرات غير محفوظة. هل تريد الخروج؟').then(ok => { if (ok) action(); });
+      } else {
+        if (window.confirm('لديك تغييرات غير محفوظة. هل تريد الخروج؟')) {
+          action();
+        }
       }
     } else {
       action();
     }
-  }, []);
+  }, [onDirtyConfirm]);
 
   const markClean = useCallback(() => {
     initialSnapshot.current = JSON.stringify(formDataRef.current);
   }, []);
 
-  return { withUnsavedCheck, markClean };
+  const isDirty = useCallback(() => {
+    return JSON.stringify(formDataRef.current) !== initialSnapshot.current;
+  }, []);
+
+  return { withUnsavedCheck, markClean, isDirty };
 }

@@ -71,6 +71,7 @@ import { API_BASE } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import CustomerDetail from './CustomerDetail';
 import { MD3StatCard, MD3Dialog } from './md3';
+import { useSnackbar, MD3Snackbar } from './md3/MD3Snackbar';
 import { Product, Order, OrderItem, OrderStatus, Variant, ShippingMethod, Branding, ViewMode, InvoiceSettings, Customer } from '../types';
 import ViewSwitcher from './ViewSwitcher';
 import { exportToExcel, exportToPDF, exportToHTML, exportToCSV, exportToJSON } from '../lib/exportService';
@@ -812,7 +813,18 @@ const Orders: React.FC<OrdersProps> = ({
     return () => { if (autoFillTimer.current) clearTimeout(autoFillTimer.current); };
   }, [formData.customerPhone]);
 
-  const { withUnsavedCheck, markClean } = useUnsavedCheck(formData);
+  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
+
+  const onDirtyConfirm = useMemo(() => {
+    return (message: string): Promise<boolean> => {
+      return new Promise(resolve => {
+        snackSuccess(message);
+        resolve(true);
+      });
+    };
+  }, [snackSuccess]);
+
+  const { withUnsavedCheck, markClean } = useUnsavedCheck(formData, onDirtyConfirm);
 
   const [contactCompanies, setContactCompanies] = useState<string[]>([]);
 
@@ -3821,6 +3833,7 @@ const Orders: React.FC<OrdersProps> = ({
         />
       )}
 
+      <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
     </motion.div>
   );
 };

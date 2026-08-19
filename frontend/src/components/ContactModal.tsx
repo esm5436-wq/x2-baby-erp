@@ -5,6 +5,7 @@ import { FaWhatsapp, FaTelegram, FaFacebook, FaInstagram, FaTiktok, FaYoutube, F
 import { Contact } from '../types';
 import { formatDate } from '../lib/formatDate';
 import { MD3Dialog } from './md3';
+import { useSnackbar, MD3Snackbar } from './md3/MD3Snackbar';
 import PopupSheet from './PopupSheet';
 
 const ENTITY_TYPES = ['مصنع', 'تاجر جملة', 'مقدم خدمة', 'مستورد', 'شركة شحن', 'شركة تسويق', 'شركات الطباعه و التغليف', 'أخرى'];
@@ -225,6 +226,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
 
   const doSave = () => {
     if (!validate()) return;
+    markClean();
     const cleanRatings = Object.fromEntries(
       Object.entries(ratingsDataObj).filter(([_, v]) => v !== '')
     );
@@ -307,7 +309,18 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
     other: <FaLink size={16} className="text-[var(--md-sys-color-on-surface-variant)]" />,
   };
 
-  const { withUnsavedCheck } = useUnsavedCheck(form);
+  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
+
+  const onDirtyConfirm = useMemo(() => {
+    return (message: string): Promise<boolean> => {
+      return new Promise(resolve => {
+        snackSuccess(message);
+        resolve(true);
+      });
+    };
+  }, [snackSuccess]);
+
+  const { withUnsavedCheck, markClean } = useUnsavedCheck(form, onDirtyConfirm);
 
   const hasCoords = form.latitude && form.longitude;
 
@@ -1083,6 +1096,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
           )}
         </div>
       </form>
+      <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
     </MD3Dialog>
   );
 };

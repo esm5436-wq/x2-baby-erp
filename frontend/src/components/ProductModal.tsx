@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useUnsavedCheck } from '../hooks/useUnsavedCheck';
 import { 
   Upload, Plus, Trash2, Sparkles, HelpCircle, TrendingUp, AlertCircle,
@@ -9,6 +9,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Product, Variant, Category, OptionCategory, OptionType } from '../types';
 import { formatDate } from '../lib/formatDate';
 import { MD3Dialog } from './md3';
+import { useSnackbar, MD3Snackbar } from './md3/MD3Snackbar';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import LinkExt from '@tiptap/extension-link';
@@ -88,7 +89,18 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
   const galleryFileInputRef = useRef<HTMLInputElement>(null);
   const pRef = useRef(p);
   pRef.current = p;
-  const { withUnsavedCheck, markClean } = useUnsavedCheck(p);
+  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
+
+  const onDirtyConfirm = useMemo(() => {
+    return (message: string): Promise<boolean> => {
+      return new Promise(resolve => {
+        snackSuccess(message);
+        resolve(true);
+      });
+    };
+  }, [snackSuccess]);
+
+  const { withUnsavedCheck, markClean } = useUnsavedCheck(p, onDirtyConfirm);
 
   const tipTapEditor = useEditor({
     extensions: [
@@ -682,6 +694,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
           </AnimatePresence>
         </div>
       </div>
+      <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
     </MD3Dialog>
   );
 };
