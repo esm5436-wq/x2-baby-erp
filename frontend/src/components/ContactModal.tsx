@@ -178,6 +178,37 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
     }
   }, [form.entityType]);
 
+  useEffect(() => {
+    if (form.ratingsEnabled) {
+      setRatingsDataObj(prev => {
+        const next = { ...prev };
+        let changed = false;
+        visibleCategories.filter(c => !RATING_SPECIAL.includes(c)).forEach(cat => {
+          if (next[cat] === undefined) {
+            next[cat] = '';
+            changed = true;
+          }
+        });
+        if (visibleCategories.includes('التحصيل') && next['التحصيل'] === undefined) {
+          next['التحصيل'] = ''; next['رسوم التحصيل'] = ''; changed = true;
+        }
+        if (visibleCategories.includes('اقل عدد بيك اب') && next['اقل عدد بيك اب'] === undefined) {
+          next['اقل عدد بيك اب'] = ''; next['رسوم البيك اب'] = ''; changed = true;
+        }
+        if (visibleCategories.includes('حد أدنى للشحنات') && next['حد أدنى للشحنات'] === undefined) {
+          next['حد أدنى للشحنات'] = ''; next['عدد الشحنات'] = ''; changed = true;
+        }
+        if (visibleCategories.includes('سعر الشحن قاهره وجيزه') && next['سعر الشحن قاهره وجيزه'] === undefined) {
+          next['سعر الشحن قاهره وجيزه'] = ''; changed = true;
+        }
+        if (visibleCategories.includes('التغامل مع الكوارث') && next['التغامل مع الكوارث'] === undefined) {
+          next['التغامل مع الكوارث'] = ''; changed = true;
+        }
+        return changed ? next : prev;
+      });
+    }
+  }, [form.ratingsEnabled, visibleCategories]);
+
   const validate = () => {
     const errs: Record<string, string> = {};
     if (!form.companyName.trim()) errs.companyName = 'اسم الشركة مطلوب';
