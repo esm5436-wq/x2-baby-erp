@@ -1986,11 +1986,11 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     <span className="text-[var(--md-sys-color-primary)] font-black text-xs">{(p.price || 0).toLocaleString()}</span>
                     <span className={`text-[9px] font-bold ${isOutOfStock ? 'text-[var(--md-sys-color-error)]' : isLowStock ? 'text-[var(--md-sys-color-tertiary)]' : 'text-[var(--md-sys-color-on-surface-variant)]'}`}>{totalQty} قطعة</span>
                   </div>
-                   <div className="flex items-center gap-1.5 text-[8px] text-gray-300 dark:text-gray-600 font-bold text-center mt-1">
-                     <span>تاريخ الإضافة: {formatDate(p.createdAt, 'date')}</span>
-                     {p.updatedAt && <><span className="opacity-40">|</span><span>آخر تعديل: {formatDate(p.updatedAt, 'date')}</span></>}
-                   </div>
-                  <div className="flex flex-wrap items-center justify-center gap-2 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800">
+                    <div className="flex items-center gap-2 text-[10px] text-gray-300 dark:text-gray-600 font-bold mt-2 pt-2 border-t border-gray-50 dark:border-slate-800">
+                      <span>تاريخ الإضافة: {formatDate(p.createdAt, 'date')}</span>
+                      {p.updatedAt && <><span className="opacity-40">|</span><span>آخر تعديل: {formatDate(p.updatedAt, 'date')}</span></>}
+                    </div>
+                  <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
                     {canManageProducts && <button onClick={(e) => { e.stopPropagation(); setModal({open: true, p}); }} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary)]/5 p-1.5 rounded-lg transition-colors duration-200" title="تعديل"><Edit2 size={12} /></button>}
                     {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 p-1.5 rounded-lg transition-colors duration-200"><ExternalLink size={12} /></a>}
                     {canManageProducts && <button onClick={(e) => handleDelete(p.id, e)} className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[var(--md-sys-color-error)] hover:bg-red-50/50 dark:hover:bg-red-900/10 p-1.5 rounded-lg transition-colors duration-200" title="حذف"><Trash2 size={12} /></button>}
@@ -2054,9 +2054,9 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                         {p.tags.map(t => <span key={t} className="text-[9px] bg-[var(--md-sys-color-surface-container)] text-[var(--md-sys-color-on-surface-variant)] px-2 py-0.5 rounded-md border border-[var(--md-sys-color-outline-variant)]/20">{t}</span>)}
                       </div>
                     )}
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-gray-300 dark:text-gray-600 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800">
-                      <span>تاريخ الإضافة: {formatDate(p.createdAt, 'full')}</span>
-                      {p.updatedAt && <><span className="opacity-40">|</span><span>آخر تعديل: {formatDate(p.updatedAt, 'full')}</span></>}
+                    <div className="flex items-center gap-2 text-[10px] text-gray-300 dark:text-gray-600 font-bold mt-2 pt-2 border-t border-gray-50 dark:border-slate-800">
+                      <span>تاريخ الإضافة: {formatDate(p.createdAt, 'date')}</span>
+                      {p.updatedAt && <><span className="opacity-40">|</span><span>آخر تعديل: {formatDate(p.updatedAt, 'date')}</span></>}
                     </div>
                   </div>
                 </div>

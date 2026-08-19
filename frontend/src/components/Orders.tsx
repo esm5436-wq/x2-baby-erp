@@ -3215,10 +3215,10 @@ const Orders: React.FC<OrdersProps> = ({
                       <div className="flex items-center gap-1 text-[8px] text-gray-400 dark:text-gray-500 font-bold">
                          <span className="font-mono" dir="ltr">{order.customerPhone}</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-[8px] text-gray-300 dark:text-gray-600 font-bold mt-0.5">
-                         <span>تاريخ الإضافة: {formatDate(order.createdAt, 'date')}</span>
-                         {order.updatedAt && <><span className="opacity-40">|</span><span>آخر تعديل: {formatDate(order.updatedAt, 'date')}</span></>}
-                      </div>
+                       <div className="flex items-center gap-2 text-[10px] text-gray-300 dark:text-gray-600 font-bold mt-2 pt-2 border-t border-gray-50 dark:border-slate-800">
+                          <span>تاريخ الإضافة: {formatDate(order.createdAt, 'date')}</span>
+                          {order.updatedAt && <><span className="opacity-40">|</span><span>آخر تعديل: {formatDate(order.updatedAt, 'date')}</span></>}
+                       </div>
                     </div>
                 </div>
                 <div className="flex items-center justify-between gap-1">
@@ -3253,7 +3253,7 @@ const Orders: React.FC<OrdersProps> = ({
                          </PopupSheet>
                    </div>}
                 </div>
-                <div className="flex flex-wrap items-center justify-center gap-1.5 mt-2 pt-2 border-t border-gray-50 dark:border-slate-800" onClick={e => e.stopPropagation()}>
+                <div className="flex flex-wrap items-center justify-center gap-1.5 mt-2" onClick={e => e.stopPropagation()}>
                           {canManageOrders && <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startEditing(order)} className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm" title="تعديل"><Edit2 size={11} /></motion.button>}
                   {canManageOrders && <button onClick={(e) => handleDeleteSingle(order.id, e as any)} className="p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 border border-red-100 dark:border-red-900/30" title="حذف"><Trash2 size={11} /></button>}
                   {order.customerPhone && (() => {
@@ -3313,9 +3313,6 @@ const Orders: React.FC<OrdersProps> = ({
                            <FaWhatsapp size={13} />
                         </a>
                         {order.city && <><span className="opacity-30">-</span><span>{order.city}</span></>}
-                        <span className="opacity-30">-</span>
-                         <span>تاريخ الإضافة: {formatDate(order.createdAt, 'date')}</span>
-                        {order.updatedAt && <><span className="opacity-30">-</span><span className="text-gray-300 dark:text-gray-600">آخر تعديل: {formatDate(order.updatedAt, 'date')}</span></>}
                       </div>
                     </div>
                   </div>
@@ -3369,6 +3366,10 @@ const Orders: React.FC<OrdersProps> = ({
                     </span>
                   ))}
                   {order.items.length > 3 && <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold self-center">+{order.items.length - 3}</span>}
+                </div>
+                <div className="flex items-center gap-2 text-[10px] text-gray-300 dark:text-gray-600 font-bold mt-2 pt-2 border-t border-gray-50 dark:border-slate-800">
+                  <span>تاريخ الإضافة: {formatDate(order.createdAt, 'date')}</span>
+                  {order.updatedAt && <><span className="opacity-40">|</span><span>آخر تعديل: {formatDate(order.updatedAt, 'date')}</span></>}
                 </div>
               </motion.div>
             );
