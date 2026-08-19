@@ -2293,6 +2293,15 @@ const Orders: React.FC<OrdersProps> = ({
         description="أدخل بيانات الطلب كاملة"
         icon={editingOrderId && editingOrderId !== 'new' ? <Edit2 size={20} /> : <Plus size={20} />}
         maxWidth="xl"
+        actions={[
+          { label: 'إلغاء', onClick: () => withUnsavedCheck(resetForm), closeOnAction: false, variant: 'text' as const },
+          {
+            label: editingOrderId && editingOrderId !== 'new' ? 'حفظ التعديلات' : 'حفظ وتأكيد الطلب',
+            onClick: () => { handleSaveOrder({ preventDefault: () => {} } as React.FormEvent); },
+            variant: 'filled' as const,
+            closeOnAction: false,
+          }
+        ]}
       >
 
           {editingOrderId && editingOrderId !== 'new' && (() => {
@@ -2805,11 +2814,6 @@ const Orders: React.FC<OrdersProps> = ({
                 </p>
               </div>
             )}
-            <button type="submit" className="w-full text-white font-black py-4 rounded-2xl shadow-lg hover:opacity-90 transition-opacity duration-200 text-base flex justify-center items-center gap-2" style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }}>
-                <CheckCircle size={20} />
-                {editingOrderId && editingOrderId !== 'new' ? 'حفظ التعديلات' : 'حفظ وتأكيد الطلب'} 
-                <span className="text-xs opacity-80 text-green-200">({Math.max(0, finalTotal).toLocaleString()} ج.م)</span>
-            </button>
           </form>
       </MD3Dialog>
 
