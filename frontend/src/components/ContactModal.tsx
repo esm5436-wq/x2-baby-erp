@@ -103,6 +103,8 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
   });
   const [extraPhonesList, setExtraPhonesList] = useState<{ phone: string; name: string }[]>([]);
   const [linksList, setLinksList] = useState<{ type: string; url: string; label?: string }[]>([]);
+  const [showDiscardDialog, setShowDiscardDialog] = useState(false);
+  const [pendingResolve, setPendingResolve] = useState<((v: boolean) => void) | null>(null);
   const [newLinkType, setNewLinkType] = useState('whatsapp');
   const [newLinkUrl, setNewLinkUrl] = useState('');
   const [ratingsDataObj, setRatingsDataObj] = useState<Record<string, string>>({});
@@ -140,8 +142,9 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
         setLinksList(linksParsed);
       } catch { setLinksList([]); }
       try { setRatingsDataObj(JSON.parse(contact.ratingsData || '{}')); } catch { setRatingsDataObj({}); }
+      setTimeout(() => markClean(), 0);
     }
-  }, [contact]);
+  }, [contact, markClean]);
 
   const visibleCategories = useMemo(() => {
     return ENTITY_RATING_MAP[form.entityType] || ENTITY_RATING_MAP['أخرى'];
@@ -227,6 +230,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
   const doSave = () => {
     if (!validate()) return;
     markClean();
+    snackSuccess('تم حفظ التغييرات بنجاح');
     const cleanRatings = Object.fromEntries(
       Object.entries(ratingsDataObj).filter(([_, v]) => v !== '')
     );
@@ -309,16 +313,28 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
     other: <FaLink size={16} className="text-[var(--md-sys-color-on-surface-variant)]" />,
   };
 
-  const { messages: snackMessages, dismiss: dismissSnack, error: snackError } = useSnackbar();
+  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
+
+  const handleDiscardConfirm = useCallback(() => {
+    setShowDiscardDialog(false);
+    pendingResolve?.(true);
+    setPendingResolve(null);
+  }, [pendingResolve]);
+
+  const handleDiscardCancel = useCallback(() => {
+    setShowDiscardDialog(false);
+    pendingResolve?.(false);
+    setPendingResolve(null);
+  }, [pendingResolve]);
 
   const onDirtyConfirm = useMemo(() => {
-    return (message: string): Promise<boolean> => {
+    return (_message: string): Promise<boolean> => {
       return new Promise(resolve => {
-        snackError(message);
-        resolve(false);
+        setPendingResolve(() => resolve);
+        setShowDiscardDialog(true);
       });
     };
-  }, [snackError]);
+  }, []);
 
   const { withUnsavedCheck, markClean } = useUnsavedCheck(form, onDirtyConfirm);
 
@@ -1097,6 +1113,19 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
         </div>
       </form>
       <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
+      {showDiscardDialog && (
+        <MD3Dialog
+          isOpen={true}
+          onClose={handleDiscardCancel}
+          title="لديك تغييرات غير محفوظة"
+          description="هل تريد الخروج وتجاهل التعديلات؟"
+          maxWidth="sm"
+          actions={[
+            { label: 'لا، كمّل التعديل', onClick: handleDiscardCancel, variant: 'text' },
+            { label: 'نعم، تجاهل', onClick: handleDiscardConfirm, variant: 'danger' },
+          ]}
+        />
+      )}
     </MD3Dialog>
   );
 };

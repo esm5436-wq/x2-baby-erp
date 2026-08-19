@@ -178,16 +178,31 @@ interface ContactStats {
 
 const ContactDetail: React.FC<ContactDetailProps> = ({ contact, onClose, onEdit, onDelete }) => {  const [stats, setStats] = useState<ContactStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(false);
-  const { messages: snackMessages, dismiss: dismissSnack, error: snackError } = useSnackbar();
+  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
+
+  const [showDiscardDialog, setShowDiscardDialog] = useState(false);
+  const [pendingResolve, setPendingResolve] = useState<((v: boolean) => void) | null>(null);
+
+  const handleDiscardConfirm = useCallback(() => {
+    setShowDiscardDialog(false);
+    pendingResolve?.(true);
+    setPendingResolve(null);
+  }, [pendingResolve]);
+
+  const handleDiscardCancel = useCallback(() => {
+    setShowDiscardDialog(false);
+    pendingResolve?.(false);
+    setPendingResolve(null);
+  }, [pendingResolve]);
 
   const onDirtyConfirm = useMemo(() => {
-    return (message: string): Promise<boolean> => {
+    return (_message: string): Promise<boolean> => {
       return new Promise(resolve => {
-        snackError(message);
-        resolve(false);
+        setPendingResolve(() => resolve);
+        setShowDiscardDialog(true);
       });
     };
-  }, [snackError]);
+  }, []);
 
   const { withUnsavedCheck } = useUnsavedCheck(contact, onDirtyConfirm);
 
@@ -539,6 +554,19 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ contact, onClose, onEdit,
         )}
       </div>
       <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
+      {showDiscardDialog && (
+        <MD3Dialog
+          isOpen={true}
+          onClose={handleDiscardCancel}
+          title="لديك تغييرات غير محفوظة"
+          description="هل تريد الخروج وتجاهل التعديلات؟"
+          maxWidth="sm"
+          actions={[
+            { label: 'لا، كمّل التعديل', onClick: handleDiscardCancel, variant: 'text' },
+            { label: 'نعم، تجاهل', onClick: handleDiscardConfirm, variant: 'danger' },
+          ]}
+        />
+      )}
     </MD3Dialog>
   );
 };

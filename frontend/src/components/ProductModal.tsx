@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useUnsavedCheck } from '../hooks/useUnsavedCheck';
 import { 
   Upload, Plus, Trash2, Sparkles, HelpCircle, TrendingUp, AlertCircle,
@@ -89,16 +89,31 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
   const galleryFileInputRef = useRef<HTMLInputElement>(null);
   const pRef = useRef(p);
   pRef.current = p;
-  const { messages: snackMessages, dismiss: dismissSnack, error: snackError } = useSnackbar();
+  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
+
+  const [showDiscardDialog, setShowDiscardDialog] = useState(false);
+  const [pendingResolve, setPendingResolve] = useState<((v: boolean) => void) | null>(null);
+
+  const handleDiscardConfirm = useCallback(() => {
+    setShowDiscardDialog(false);
+    pendingResolve?.(true);
+    setPendingResolve(null);
+  }, [pendingResolve]);
+
+  const handleDiscardCancel = useCallback(() => {
+    setShowDiscardDialog(false);
+    pendingResolve?.(false);
+    setPendingResolve(null);
+  }, [pendingResolve]);
 
   const onDirtyConfirm = useMemo(() => {
-    return (message: string): Promise<boolean> => {
+    return (_message: string): Promise<boolean> => {
       return new Promise(resolve => {
-        snackError(message);
-        resolve(false);
+        setPendingResolve(() => resolve);
+        setShowDiscardDialog(true);
       });
     };
-  }, [snackError]);
+  }, []);
 
   const { withUnsavedCheck, markClean } = useUnsavedCheck(p, onDirtyConfirm);
 
@@ -647,7 +662,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
         ...(isEdit ? [{ label: 'حذف', onClick: () => { if(window.confirm('هل أنت متأكد من حذف المنتج نهائياً من النظام؟')) { markClean(); onDeleteAction(product!.id); onClose(); } }, variant: 'danger' as const }] : []),
         { label: 'إلغاء', onClick: () => withUnsavedCheck(onClose), closeOnAction: false, variant: 'text' as const },
         ...(currentStep > 0 ? [{ label: 'السابق', closeOnAction: false, onClick: prevStep, variant: 'text' as const }] : []),
-        { label: isLastStep ? 'حفظ المنتج' : 'التالي', closeOnAction: isLastStep, onClick: () => { if (isLastStep) { markClean(); onSave({...p, options}); } else { nextStep(); } }, variant: 'filled' as const }
+        { label: isLastStep ? 'حفظ المنتج' : 'التالي', closeOnAction: isLastStep, onClick: () => { if (isLastStep) { markClean(); snackSuccess('تم حفظ التغييرات بنجاح'); onSave({...p, options}); } else { nextStep(); } }, variant: 'filled' as const }
       ]}
     >
       <div dir="rtl" className="text-right">
@@ -695,6 +710,19 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
         </div>
       </div>
       <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
+      {showDiscardDialog && (
+        <MD3Dialog
+          isOpen={true}
+          onClose={handleDiscardCancel}
+          title="لديك تغييرات غير محفوظة"
+          description="هل تريد الخروج وتجاهل التعديلات؟"
+          maxWidth="sm"
+          actions={[
+            { label: 'لا، كمّل التعديل', onClick: handleDiscardCancel, variant: 'text' },
+            { label: 'نعم، تجاهل', onClick: handleDiscardConfirm, variant: 'danger' },
+          ]}
+        />
+      )}
     </MD3Dialog>
   );
 };

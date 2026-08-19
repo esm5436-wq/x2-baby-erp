@@ -813,16 +813,31 @@ const Orders: React.FC<OrdersProps> = ({
     return () => { if (autoFillTimer.current) clearTimeout(autoFillTimer.current); };
   }, [formData.customerPhone]);
 
-  const { messages: snackMessages, dismiss: dismissSnack, error: snackError } = useSnackbar();
+  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
+
+  const [showDiscardDialog, setShowDiscardDialog] = useState(false);
+  const [pendingResolve, setPendingResolve] = useState<((v: boolean) => void) | null>(null);
+
+  const handleDiscardConfirm = useCallback(() => {
+    setShowDiscardDialog(false);
+    pendingResolve?.(true);
+    setPendingResolve(null);
+  }, [pendingResolve]);
+
+  const handleDiscardCancel = useCallback(() => {
+    setShowDiscardDialog(false);
+    pendingResolve?.(false);
+    setPendingResolve(null);
+  }, [pendingResolve]);
 
   const onDirtyConfirm = useMemo(() => {
-    return (message: string): Promise<boolean> => {
+    return (_message: string): Promise<boolean> => {
       return new Promise(resolve => {
-        snackError(message);
-        resolve(false);
+        setPendingResolve(() => resolve);
+        setShowDiscardDialog(true);
       });
     };
-  }, [snackError]);
+  }, []);
 
   const { withUnsavedCheck, markClean } = useUnsavedCheck(formData, onDirtyConfirm);
 
@@ -1476,6 +1491,7 @@ const Orders: React.FC<OrdersProps> = ({
     setCouponMode(order.coupon === 'خصم مخصص' ? 'custom' : 'saved');
     setEditingOrderId(order.id);
     setIsAdding(true);
+    setTimeout(() => markClean(), 0);
   };
 
   const handleCityChange = (city: string) => {
@@ -1724,6 +1740,7 @@ const Orders: React.FC<OrdersProps> = ({
         onAddOrder(newOrder);
     }
     markClean();
+    snackSuccess('تم حفظ التغييرات بنجاح');
     resetForm();
   };
 
@@ -2881,13 +2898,13 @@ const Orders: React.FC<OrdersProps> = ({
                       
                       <div className="flex-1 min-w-0">
                          <h4 className="font-black text-gray-900 dark:text-white text-sm truncate">{order.customerName}</h4>
-                          <div className="flex items-center gap-2 text-[10px] text-gray-400 dark:text-gray-500 font-bold mt-0.5">
-                             <Calendar size={10} />
-                             {formatDate(order.createdAt, 'date')}
-                             {order.updatedAt && <><span className="opacity-30">•</span><span className="text-gray-300 dark:text-gray-600">آخر تعديل: {formatDate(order.updatedAt, 'date')}</span></>}
-                             <span className="opacity-30">•</span>
-                             <span>{order.items.length} أصناف</span>
-                          </div>
+                           <div className="flex items-center gap-2 text-[10px] text-gray-400 dark:text-gray-500 font-bold mt-0.5">
+                              <Calendar size={10} />
+                              <span>تاريخ الإضافة: {formatDate(order.createdAt, 'date')}</span>
+                              {order.updatedAt && <><span className="opacity-30">•</span><span className="text-gray-300 dark:text-gray-600">آخر تعديل: {formatDate(order.updatedAt, 'date')}</span></>}
+                              <span className="opacity-30">•</span>
+                              <span>{order.items.length} أصناف</span>
+                           </div>
                       </div>
 
                       <div className="flex items-center gap-1 shrink-0" onClick={e => e.stopPropagation()}>
@@ -3201,9 +3218,9 @@ const Orders: React.FC<OrdersProps> = ({
                       <div className="flex items-center gap-1 text-[8px] text-gray-400 dark:text-gray-500 font-bold">
                          <span className="font-mono" dir="ltr">{order.customerPhone}</span>
                       </div>
-                      <div className="text-[7px] text-gray-300 dark:text-gray-600 font-bold mt-0.5">
-                         {formatDate(order.createdAt, 'date')}
-                         {order.updatedAt && <> | {formatDate(order.updatedAt, 'date')}</>}
+                      <div className="flex items-center gap-1.5 text-[8px] text-gray-300 dark:text-gray-600 font-bold mt-0.5">
+                         <span>تاريخ الإضافة: {formatDate(order.createdAt, 'date')}</span>
+                         {order.updatedAt && <><span className="opacity-40">|</span><span>آخر تعديل: {formatDate(order.updatedAt, 'date')}</span></>}
                       </div>
                     </div>
                 </div>
@@ -3300,7 +3317,7 @@ const Orders: React.FC<OrdersProps> = ({
                         </a>
                         {order.city && <><span className="opacity-30">-</span><span>{order.city}</span></>}
                         <span className="opacity-30">-</span>
-                        <span>{formatDate(order.createdAt, 'date')}</span>
+                         <span>تاريخ الإضافة: {formatDate(order.createdAt, 'date')}</span>
                         {order.updatedAt && <><span className="opacity-30">-</span><span className="text-gray-300 dark:text-gray-600">آخر تعديل: {formatDate(order.updatedAt, 'date')}</span></>}
                       </div>
                     </div>
@@ -3834,6 +3851,19 @@ const Orders: React.FC<OrdersProps> = ({
       )}
 
       <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
+      {showDiscardDialog && (
+        <MD3Dialog
+          isOpen={true}
+          onClose={handleDiscardCancel}
+          title="لديك تغييرات غير محفوظة"
+          description="هل تريد الخروج وتجاهل التعديلات؟"
+          maxWidth="sm"
+          actions={[
+            { label: 'لا، كمّل التعديل', onClick: handleDiscardCancel, variant: 'text' },
+            { label: 'نعم، تجاهل', onClick: handleDiscardConfirm, variant: 'danger' },
+          ]}
+        />
+      )}
     </motion.div>
   );
 };
