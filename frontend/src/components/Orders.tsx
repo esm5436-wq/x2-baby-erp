@@ -1705,6 +1705,7 @@ const Orders: React.FC<OrdersProps> = ({
       totalCost,
       status: formData.status || OrderStatus.UNDER_REVIEW,
       createdAt: originalOrder ? originalOrder.createdAt : new Date().toISOString(),
+      updatedAt: originalOrder ? new Date().toISOString() : undefined,
       city: formData.city,
       shippingCost: formData.shippingCost,
       coupon: useCoupon ? formData.coupon : '',
