@@ -309,16 +309,16 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
     other: <FaLink size={16} className="text-[var(--md-sys-color-on-surface-variant)]" />,
   };
 
-  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
+  const { messages: snackMessages, dismiss: dismissSnack, error: snackError } = useSnackbar();
 
   const onDirtyConfirm = useMemo(() => {
     return (message: string): Promise<boolean> => {
       return new Promise(resolve => {
-        snackSuccess(message);
-        resolve(true);
+        snackError(message);
+        resolve(false);
       });
     };
-  }, [snackSuccess]);
+  }, [snackError]);
 
   const { withUnsavedCheck, markClean } = useUnsavedCheck(form, onDirtyConfirm);
 
@@ -332,7 +332,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
       icon={<span className="material-symbols-rounded" style={{ fontSize: 24 }}>business</span>}
       maxWidth="xl"
       actions={[
-        { label: 'إلغاء', onClick: () => withUnsavedCheck(onClose), variant: 'text' },
+        { label: 'إلغاء', onClick: () => withUnsavedCheck(onClose), closeOnAction: false, variant: 'text' },
         { label: 'حفظ', onClick: doSave, variant: 'filled' }
       ]}
     >

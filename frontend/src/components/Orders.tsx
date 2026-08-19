@@ -813,16 +813,16 @@ const Orders: React.FC<OrdersProps> = ({
     return () => { if (autoFillTimer.current) clearTimeout(autoFillTimer.current); };
   }, [formData.customerPhone]);
 
-  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
+  const { messages: snackMessages, dismiss: dismissSnack, error: snackError } = useSnackbar();
 
   const onDirtyConfirm = useMemo(() => {
     return (message: string): Promise<boolean> => {
       return new Promise(resolve => {
-        snackSuccess(message);
-        resolve(true);
+        snackError(message);
+        resolve(false);
       });
     };
-  }, [snackSuccess]);
+  }, [snackError]);
 
   const { withUnsavedCheck, markClean } = useUnsavedCheck(formData, onDirtyConfirm);
 

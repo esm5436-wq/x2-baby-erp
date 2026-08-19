@@ -89,16 +89,16 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
   const galleryFileInputRef = useRef<HTMLInputElement>(null);
   const pRef = useRef(p);
   pRef.current = p;
-  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
+  const { messages: snackMessages, dismiss: dismissSnack, error: snackError } = useSnackbar();
 
   const onDirtyConfirm = useMemo(() => {
     return (message: string): Promise<boolean> => {
       return new Promise(resolve => {
-        snackSuccess(message);
-        resolve(true);
+        snackError(message);
+        resolve(false);
       });
     };
-  }, [snackSuccess]);
+  }, [snackError]);
 
   const { withUnsavedCheck, markClean } = useUnsavedCheck(p, onDirtyConfirm);
 
@@ -645,7 +645,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
       maxWidth="xl"
       actions={[
         ...(isEdit ? [{ label: 'حذف', onClick: () => { if(window.confirm('هل أنت متأكد من حذف المنتج نهائياً من النظام؟')) { markClean(); onDeleteAction(product!.id); onClose(); } }, variant: 'danger' as const }] : []),
-        { label: 'إلغاء', onClick: () => withUnsavedCheck(onClose), variant: 'text' as const },
+        { label: 'إلغاء', onClick: () => withUnsavedCheck(onClose), closeOnAction: false, variant: 'text' as const },
         ...(currentStep > 0 ? [{ label: 'السابق', closeOnAction: false, onClick: prevStep, variant: 'text' as const }] : []),
         { label: isLastStep ? 'حفظ المنتج' : 'التالي', closeOnAction: isLastStep, onClick: () => { if (isLastStep) { markClean(); onSave({...p, options}); } else { nextStep(); } }, variant: 'filled' as const }
       ]}

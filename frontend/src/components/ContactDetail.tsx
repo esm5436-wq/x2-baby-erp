@@ -178,16 +178,16 @@ interface ContactStats {
 
 const ContactDetail: React.FC<ContactDetailProps> = ({ contact, onClose, onEdit, onDelete }) => {  const [stats, setStats] = useState<ContactStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(false);
-  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
+  const { messages: snackMessages, dismiss: dismissSnack, error: snackError } = useSnackbar();
 
   const onDirtyConfirm = useMemo(() => {
     return (message: string): Promise<boolean> => {
       return new Promise(resolve => {
-        snackSuccess(message);
-        resolve(true);
+        snackError(message);
+        resolve(false);
       });
     };
-  }, [snackSuccess]);
+  }, [snackError]);
 
   const { withUnsavedCheck } = useUnsavedCheck(contact, onDirtyConfirm);
 
