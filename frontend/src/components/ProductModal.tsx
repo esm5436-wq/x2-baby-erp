@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useUnsavedCheck } from '../hooks/useUnsavedCheck';
 import { 
   Upload, Plus, Trash2, Sparkles, HelpCircle, TrendingUp, AlertCircle,
@@ -92,27 +92,25 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
   const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
 
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
-  const [pendingResolve, setPendingResolve] = useState<((v: boolean) => void) | null>(null);
+  const pendingResolveRef = useRef<((v: boolean) => void) | null>(null);
 
   const handleDiscardConfirm = useCallback(() => {
     setShowDiscardDialog(false);
-    pendingResolve?.(true);
-    setPendingResolve(null);
-  }, [pendingResolve]);
+    pendingResolveRef.current?.(true);
+    pendingResolveRef.current = null;
+  }, []);
 
   const handleDiscardCancel = useCallback(() => {
     setShowDiscardDialog(false);
-    pendingResolve?.(false);
-    setPendingResolve(null);
-  }, [pendingResolve]);
+    pendingResolveRef.current?.(false);
+    pendingResolveRef.current = null;
+  }, []);
 
-  const onDirtyConfirm = useMemo(() => {
-    return (_message: string): Promise<boolean> => {
-      return new Promise(resolve => {
-        setPendingResolve(() => resolve);
-        setShowDiscardDialog(true);
-      });
-    };
+  const onDirtyConfirm = useCallback((_message: string): Promise<boolean> => {
+    return new Promise(resolve => {
+      pendingResolveRef.current = resolve;
+      setShowDiscardDialog(true);
+    });
   }, []);
 
   const { withUnsavedCheck, markClean } = useUnsavedCheck(p, onDirtyConfirm);

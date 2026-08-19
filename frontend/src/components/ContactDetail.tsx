@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { MD3Dialog } from './md3';
 import { useSnackbar, MD3Snackbar } from './md3/MD3Snackbar';
 import { API_BASE } from '../lib/api';
@@ -181,27 +181,25 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ contact, onClose, onEdit,
   const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
 
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
-  const [pendingResolve, setPendingResolve] = useState<((v: boolean) => void) | null>(null);
+  const pendingResolveRef = useRef<((v: boolean) => void) | null>(null);
 
   const handleDiscardConfirm = useCallback(() => {
     setShowDiscardDialog(false);
-    pendingResolve?.(true);
-    setPendingResolve(null);
-  }, [pendingResolve]);
+    pendingResolveRef.current?.(true);
+    pendingResolveRef.current = null;
+  }, []);
 
   const handleDiscardCancel = useCallback(() => {
     setShowDiscardDialog(false);
-    pendingResolve?.(false);
-    setPendingResolve(null);
-  }, [pendingResolve]);
+    pendingResolveRef.current?.(false);
+    pendingResolveRef.current = null;
+  }, []);
 
-  const onDirtyConfirm = useMemo(() => {
-    return (_message: string): Promise<boolean> => {
-      return new Promise(resolve => {
-        setPendingResolve(() => resolve);
-        setShowDiscardDialog(true);
-      });
-    };
+  const onDirtyConfirm = useCallback((_message: string): Promise<boolean> => {
+    return new Promise(resolve => {
+      pendingResolveRef.current = resolve;
+      setShowDiscardDialog(true);
+    });
   }, []);
 
   const { withUnsavedCheck } = useUnsavedCheck(contact, onDirtyConfirm);

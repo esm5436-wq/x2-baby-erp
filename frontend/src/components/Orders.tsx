@@ -816,32 +816,29 @@ const Orders: React.FC<OrdersProps> = ({
   const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
 
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
-  const [pendingResolve, setPendingResolve] = useState<((v: boolean) => void) | null>(null);
+  const pendingResolveRef = useRef<((v: boolean) => void) | null>(null);
+  const [contactCompanies, setContactCompanies] = useState<string[]>([]);
 
-  const handleDiscardConfirm = useCallback(() => {
-    setShowDiscardDialog(false);
-    pendingResolve?.(true);
-    setPendingResolve(null);
-  }, [pendingResolve]);
-
-  const handleDiscardCancel = useCallback(() => {
-    setShowDiscardDialog(false);
-    pendingResolve?.(false);
-    setPendingResolve(null);
-  }, [pendingResolve]);
-
-  const onDirtyConfirm = useMemo(() => {
-    return (_message: string): Promise<boolean> => {
-      return new Promise(resolve => {
-        setPendingResolve(() => resolve);
-        setShowDiscardDialog(true);
-      });
-    };
+  const onDirtyConfirm = useCallback((_message: string): Promise<boolean> => {
+    return new Promise(resolve => {
+      pendingResolveRef.current = resolve;
+      setShowDiscardDialog(true);
+    });
   }, []);
 
   const { withUnsavedCheck, markClean } = useUnsavedCheck(formData, onDirtyConfirm);
 
-  const [contactCompanies, setContactCompanies] = useState<string[]>([]);
+  const handleDiscardConfirm = useCallback(() => {
+    setShowDiscardDialog(false);
+    pendingResolveRef.current?.(true);
+    pendingResolveRef.current = null;
+  }, []);
+
+  const handleDiscardCancel = useCallback(() => {
+    setShowDiscardDialog(false);
+    pendingResolveRef.current?.(false);
+    pendingResolveRef.current = null;
+  }, []);
 
   useEffect(() => {
     fetch(`${API_BASE}/contacts/companies`)

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useUnsavedCheck } from '../hooks/useUnsavedCheck';
 import { X, Building2, Phone, Mail, MapPin, Tag, FileText, Briefcase, Hash, ChevronDown, Plus, Trash2, Navigation, User, DollarSign, Package, Truck, MessageCircle, Send, Globe, ExternalLink, Link2 } from 'lucide-react';
 import { FaWhatsapp, FaTelegram, FaFacebook, FaInstagram, FaTiktok, FaYoutube, FaTwitter, FaLinkedin, FaSnapchat, FaGlobe, FaLink } from 'react-icons/fa';
@@ -104,7 +104,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
   const [extraPhonesList, setExtraPhonesList] = useState<{ phone: string; name: string }[]>([]);
   const [linksList, setLinksList] = useState<{ type: string; url: string; label?: string }[]>([]);
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
-  const [pendingResolve, setPendingResolve] = useState<((v: boolean) => void) | null>(null);
+  const pendingResolveRef = useRef<((v: boolean) => void) | null>(null);
   const [newLinkType, setNewLinkType] = useState('whatsapp');
   const [newLinkUrl, setNewLinkUrl] = useState('');
   const [ratingsDataObj, setRatingsDataObj] = useState<Record<string, string>>({});
@@ -112,6 +112,15 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
   const [showSpecs, setShowSpecs] = useState(false);
   const [specFilter, setSpecFilter] = useState('');
   const specRef = useRef<HTMLDivElement>(null);
+
+  const onDirtyConfirm = useCallback((_message: string): Promise<boolean> => {
+    return new Promise(resolve => {
+      pendingResolveRef.current = resolve;
+      setShowDiscardDialog(true);
+    });
+  }, []);
+
+  const { withUnsavedCheck, markClean } = useUnsavedCheck(form, onDirtyConfirm);
 
   useEffect(() => {
     if (contact) {
@@ -317,26 +326,15 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
 
   const handleDiscardConfirm = useCallback(() => {
     setShowDiscardDialog(false);
-    pendingResolve?.(true);
-    setPendingResolve(null);
-  }, [pendingResolve]);
+    pendingResolveRef.current?.(true);
+    pendingResolveRef.current = null;
+  }, []);
 
   const handleDiscardCancel = useCallback(() => {
     setShowDiscardDialog(false);
-    pendingResolve?.(false);
-    setPendingResolve(null);
-  }, [pendingResolve]);
-
-  const onDirtyConfirm = useMemo(() => {
-    return (_message: string): Promise<boolean> => {
-      return new Promise(resolve => {
-        setPendingResolve(() => resolve);
-        setShowDiscardDialog(true);
-      });
-    };
+    pendingResolveRef.current?.(false);
+    pendingResolveRef.current = null;
   }, []);
-
-  const { withUnsavedCheck, markClean } = useUnsavedCheck(form, onDirtyConfirm);
 
   const hasCoords = form.latitude && form.longitude;
 
