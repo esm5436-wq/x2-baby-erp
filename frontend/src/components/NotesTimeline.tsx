@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Trash2, Image as ImageIcon, X, Eye, EyeOff, Clock } from 'lucide-react';
 import { API_BASE, getAuthToken } from '../lib/api';
+import { useAuth } from '../contexts/AuthContext';
 import { formatDate } from '../lib/formatDate';
 import type { Note } from '../types';
 import AddNoteModal from './AddNoteModal';
@@ -56,6 +57,8 @@ function formatNoteDateTime(dateStr: string): string {
 }
 
 export default function NotesTimeline({ entityType, entityId, showNoteType }: NotesTimelineProps) {
+  const { role } = useAuth();
+  const isAdmin = role === 'admin';
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -161,12 +164,14 @@ export default function NotesTimeline({ entityType, entityId, showNoteType }: No
                         )}
                       </div>
                     </div>
-                    <button
-                      onClick={() => setDeletingId(deletingId === note.id ? null : note.id)}
-                      className="p-1.5 rounded-full hover:bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-outline)] hover:text-[var(--md-sys-color-error)] transition-all"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    {isAdmin && (
+                      <button
+                        onClick={() => setDeletingId(deletingId === note.id ? null : note.id)}
+                        className="p-1.5 rounded-full hover:bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-outline)] hover:text-[var(--md-sys-color-error)] transition-all"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
                   </div>
 
                   {/* Delete confirmation */}

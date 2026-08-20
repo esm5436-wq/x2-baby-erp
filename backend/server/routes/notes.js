@@ -56,6 +56,9 @@ router.post('/api/notes', async (req, res) => {
 
 router.delete('/api/notes/:id', async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'فقط المسؤول يمكنه حذف الملاحظات' });
+    }
     const note = await getDb("SELECT * FROM notes WHERE id = ?", [req.params.id]);
     if (!note) return res.status(404).json({ error: 'الملاحظة غير موجودة' });
     await runDb("DELETE FROM notes WHERE id = ?", [req.params.id]);
