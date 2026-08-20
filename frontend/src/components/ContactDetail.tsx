@@ -6,6 +6,7 @@ import { useUnsavedCheck } from '../hooks/useUnsavedCheck';
 import { Phone, Mail, MapPin, Hash, FileText, Navigation, Star, DollarSign, Package, Clock, Copy, Truck, Activity, ReceiptText } from 'lucide-react';
 import { FaWhatsapp, FaTelegram, FaFacebook, FaInstagram, FaTiktok, FaYoutube, FaTwitter, FaLinkedin, FaSnapchat, FaGlobe, FaLink } from 'react-icons/fa';
 import { Contact } from '../types';
+import NotesTimeline from './NotesTimeline';
 
 const RATING_CATEGORIES: Record<string, string[]> = {
   'السعر': ['رخيص', 'طبيعي/معقول', 'غالي', 'غالي جدا'],
@@ -368,6 +369,8 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ contact, onClose, onEdit,
           )}
         </div>
 
+        <NotesTimeline entityType="contact" entityId={contact.id} />
+
         {/* Stats Section */}
         {statsLoading ? (
           <div className="bg-[var(--md-sys-color-surface-container)] rounded-2xl p-5 text-center">
@@ -563,7 +566,9 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ contact, onClose, onEdit,
             { label: 'لا، كمّل التعديل', onClick: handleDiscardCancel, variant: 'text' },
             { label: 'نعم، تجاهل', onClick: handleDiscardConfirm, variant: 'danger' },
           ]}
-        />
+        >
+          <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] font-medium">ستفقد جميع التعديلات غير المحفوظة.</p>
+        </MD3Dialog>
       )}
     </MD3Dialog>
   );

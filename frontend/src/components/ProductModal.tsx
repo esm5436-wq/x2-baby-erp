@@ -719,7 +719,9 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
             { label: 'لا، كمّل التعديل', onClick: handleDiscardCancel, variant: 'text' },
             { label: 'نعم، تجاهل', onClick: handleDiscardConfirm, variant: 'danger' },
           ]}
-        />
+        >
+          <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] font-medium">ستفقد جميع التعديلات غير المحفوظة.</p>
+        </MD3Dialog>
       )}
     </MD3Dialog>
   );

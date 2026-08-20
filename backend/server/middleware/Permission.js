@@ -2,7 +2,7 @@ import { getDb } from '../db.js';
 
 export const PERMISSION_SECTIONS = [
   'products', 'orders', 'customers', 'contacts', 'suppliers',
-  'purchases', 'accounts', 'settings', 'ai', 'activity-logs',
+  'purchases', 'accounts', 'settings', 'ai', 'activity-logs', 'notes',
 ];
 
 export const DEFAULT_PERMISSIONS = Object.fromEntries(
@@ -36,6 +36,7 @@ const SECTION_BY_PATH = [
   { prefix: '/api/categories', section: 'products' },
   { prefix: '/api/ai/chat', section: 'ai' },
   { prefix: '/api/activity-logs', section: 'activity-logs' },
+  { prefix: '/api/notes', section: 'notes' },
 ];
 
 const BYPASS_PATHS = [

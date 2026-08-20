@@ -21,6 +21,7 @@ import checkpointRouter from './routes/checkpoints.js';
 import customersRouter from './routes/customers.js';
 import usersRouter from './routes/users.js';
 import authRouter from './routes/Auth.js';
+import notesRouter from './routes/notes.js';
 
 const app = express();
 
@@ -40,6 +41,8 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 if (!process.env.VERCEL) {
   app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+  const distPath = path.join(process.cwd(), '..', 'frontend', 'dist');
+  app.use(express.static(distPath));
 }
 
 // Public routes (no auth required)
@@ -65,7 +68,16 @@ app.use(importRouter);
 app.use(checkpointRouter);
 app.use(customersRouter);
 app.use(usersRouter);
+app.use(notesRouter);
 
 app.use(errorHandler);
+
+// SPA fallback for local development
+if (!process.env.VERCEL) {
+  const distPath = path.join(process.cwd(), '..', 'frontend', 'dist');
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
 
 export default app;

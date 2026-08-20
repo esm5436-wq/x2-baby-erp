@@ -56,6 +56,7 @@ import { Product, Variant, Category, Branding, ViewMode, Order, Supplier, Option
 import { API_BASE } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import ProductModal from './ProductModal';
+import NotesTimeline from './NotesTimeline';
 
 import BatchEditModal from './BatchEditModal';
 import type { BatchField } from './BatchEditModal';
@@ -2310,6 +2311,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     <a href={product.url} target="_blank" rel="noopener noreferrer" className="text-[var(--md-sys-color-primary)] text-xs font-bold hover:underline flex items-center gap-1"><ExternalLink size={14} /> {product.url}</a>
                   </div>
                 )}
+
+                <NotesTimeline entityType="product" entityId={product.id} />
               </div>
           </>
         );

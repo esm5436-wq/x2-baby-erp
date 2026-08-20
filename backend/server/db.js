@@ -115,6 +115,9 @@ export async function initializeSchema() {
     `INSERT OR IGNORE INTO settings (key, value) VALUES ('taxEnabled', 'false')`,
     `INSERT OR IGNORE INTO settings (key, value) VALUES ('taxRate', '0')`,
     `INSERT OR IGNORE INTO settings (key, value) VALUES ('ai_api_keys', '[]')`,
+    `CREATE TABLE IF NOT EXISTS notes (id TEXT PRIMARY KEY, entity_type TEXT NOT NULL, entity_id TEXT NOT NULL, note_type TEXT DEFAULT 'general', content TEXT NOT NULL, attachment TEXT, show_to_customer INTEGER DEFAULT 0, created_by TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
+    `CREATE INDEX IF NOT EXISTS idx_notes_entity ON notes(entity_type, entity_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_notes_created ON notes(created_at)`,
   ];
 
   for (const sql of statements) {
@@ -197,7 +200,62 @@ export async function initializeSchema() {
     await db.execute("UPDATE orders SET data = json_set(data, '$.status', 'مخاطر متوسطة') WHERE json_extract(data, '$.status') = 'Moderate Risk'");
   } catch (e) {}
 
+  await migrateExistingNotes();
   await bootstrapAdminUser();
+}
+
+export async function migrateExistingNotes() {
+  try {
+    const existing = await allDb("SELECT COUNT(*) as cnt FROM notes");
+    if (existing[0] && existing[0].cnt > 0) return;
+
+    const customers = await allDb("SELECT id, notes, admin_notes, created_at FROM customers");
+    for (const c of customers) {
+      if (c.notes && c.notes.trim()) {
+        const id = `note-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+        await runDb(
+          "INSERT OR IGNORE INTO notes (id, entity_type, entity_id, content, show_to_customer, created_by, created_at) VALUES (?, 'customer', ?, ?, 1, 'system', ?)",
+          [id, c.id, c.notes, c.created_at || new Date().toISOString()]
+        );
+      }
+      if (c.admin_notes && c.admin_notes.trim()) {
+        const id = `note-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+        await runDb(
+          "INSERT OR IGNORE INTO notes (id, entity_type, entity_id, content, show_to_customer, created_by, created_at) VALUES (?, 'customer', ?, ?, 0, 'system', ?)",
+          [id, c.id, c.admin_notes, c.created_at || new Date().toISOString()]
+        );
+      }
+    }
+
+    const orders = await allDb("SELECT id, data FROM orders");
+    for (const o of orders) {
+      try {
+        const parsed = JSON.parse(o.data);
+        if (parsed.notes && parsed.notes.trim()) {
+          const id = `note-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+          await runDb(
+            "INSERT OR IGNORE INTO notes (id, entity_type, entity_id, content, show_to_customer, created_by, created_at) VALUES (?, 'order', ?, ?, 0, 'system', ?)",
+            [id, o.id, parsed.notes, parsed.createdAt || new Date().toISOString()]
+          );
+        }
+      } catch {}
+    }
+
+    const contacts = await allDb("SELECT id, notes, created_at FROM contacts");
+    for (const c of contacts) {
+      if (c.notes && c.notes.trim()) {
+        const id = `note-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+        await runDb(
+          "INSERT OR IGNORE INTO notes (id, entity_type, entity_id, content, show_to_customer, created_by, created_at) VALUES (?, 'contact', ?, ?, 1, 'system', ?)",
+          [id, c.id, c.notes, c.created_at || new Date().toISOString()]
+        );
+      }
+    }
+
+    console.log('Notes migration completed');
+  } catch (e) {
+    console.error('Notes migration error:', e.message);
+  }
 }
 
 export async function bootstrapAdminUser() {

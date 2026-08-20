@@ -67,6 +67,7 @@ import type { BatchField } from './BatchEditModal';
 import InvoicePrintModal from './InvoicePrintModal';
 import WaybillPrintModal from './WaybillPrintModal';
 import PopupSheet from './PopupSheet';
+import NotesTimeline from './NotesTimeline';
 import { API_BASE } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import CustomerDetail from './CustomerDetail';
@@ -3549,6 +3550,8 @@ const Orders: React.FC<OrdersProps> = ({
                                    </div>
                                 )}
 
+                                <NotesTimeline entityType="order" entityId={o.id} showNoteType />
+
                                 {/* Shipping Details - bottom of right column */}
                                  <div className="bg-[var(--md-sys-color-surface-container)] p-5 rounded-3xl border border-[var(--md-sys-color-outline-variant)]/20">
                                    <h4 className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] tracking-wider mb-4 flex items-center gap-1.5">
@@ -3865,7 +3868,9 @@ const Orders: React.FC<OrdersProps> = ({
             { label: 'لا، كمّل التعديل', onClick: handleDiscardCancel, variant: 'text' },
             { label: 'نعم، تجاهل', onClick: handleDiscardConfirm, variant: 'danger' },
           ]}
-        />
+        >
+          <p className="text-sm text-[var(--md-sys-color-on-surface-variant)] font-medium">ستفقد جميع التعديلات غير المحفوظة.</p>
+        </MD3Dialog>
       )}
     </motion.div>
   );

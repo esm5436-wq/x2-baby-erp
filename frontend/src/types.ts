@@ -281,3 +281,15 @@ export interface Checkpoint {
   name: string;
   created_at: string;
 }
+
+export interface Note {
+  id: string;
+  entity_type: 'product' | 'order' | 'purchase' | 'contact' | 'customer';
+  entity_id: string;
+  note_type: string;
+  content: string;
+  attachment?: string;
+  show_to_customer: number;
+  created_by: string;
+  created_at: string;
+}

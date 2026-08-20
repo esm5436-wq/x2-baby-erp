@@ -4,6 +4,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 import { MD3Dialog, MD3StatCard } from './md3';
 import { formatDate } from '../lib/formatDate';
 import type { Customer, Order } from '../types';
+import NotesTimeline from './NotesTimeline';
 
 const CLASSIFICATION_STYLES: Record<string, string> = {
   'ممتاز': 'bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-on-success-container)]',
@@ -173,12 +174,7 @@ export default function CustomerDetail({ customer, orders, onClose, onEdit, onDe
           </div>
         )}
 
-        {customer.admin_notes && (
-          <div className="p-3 bg-[var(--md-sys-color-warning-container)] rounded-2xl border border-[var(--md-sys-color-outline-variant)]/20">
-            <div className="text-[10px] font-black text-[var(--md-sys-color-on-warning-container)] flex items-center gap-1 mb-1"><FileText size={12} /> ملاحظات الإدارة</div>
-            <div className="text-sm font-bold text-[var(--md-sys-color-on-surface)] whitespace-pre-wrap">{customer.admin_notes}</div>
-          </div>
-        )}
+        <NotesTimeline entityType="customer" entityId={customer.id} />
 
         {/* Order History */}
         <div>
