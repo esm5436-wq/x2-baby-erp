@@ -20,14 +20,15 @@ const RATING_CATEGORIES: Record<string, string[]> = {
   'تغطية المحافظات': ['واسعه', 'متوسطه', 'ضيقه'],
   'الحفاظ على المنتج': ['ممتاز', 'جيد', 'متوسط', 'سيء'],
   'سهولة التتبع و التواصل': ['ممتاز', 'جيد', 'متوسط', 'سيء'],
-  'تسليم جزئي': ['نعم', 'لا'],
   'امكانية استلام مصاريف الشحن فقط': ['نعم', 'لا'],
   'الاستبدال': ['نعم', 'لا'],
   'رأي العملاء السابقين': ['إيجابي', 'محايد', 'سلبي'],
   'هل هناك انتجريشن او تكامل API': ['نعم', 'لا'],
+  'العقد': ['نعم', 'لا'],
+  'المعاينة وقت الاستلام': ['نعم', 'لا'],
 };
 
-const RATING_SPECIAL = ['التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'رسوم التحصيل', 'حد أدنى للشحنات', 'عدد الشحنات', 'سعر الشحن قاهره وجيزه', 'التغامل مع الكوارث'];
+const RATING_SPECIAL = ['التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'رسوم التحصيل', 'حد أدنى للشحنات', 'عدد الشحنات', 'سعر الشحن قاهره وجيزه', 'التغامل مع الكوارث', 'رسوم التسليم الجزئي'];
 
 const RATING_COLORS: Record<string, string> = {
   'رخيص': 'text-[var(--md-sys-color-on-success-container)] bg-[var(--md-sys-color-success-container)]',
@@ -54,6 +55,9 @@ const RATING_COLORS: Record<string, string> = {
   'ضعيف': 'text-[var(--md-sys-color-on-error-container)] bg-[var(--md-sys-color-error-container)]',
   'نعم': 'text-[var(--md-sys-color-on-success-container)] bg-[var(--md-sys-color-success-container)]',
   'لا': 'text-[var(--md-sys-color-on-error-container)] bg-[var(--md-sys-color-error-container)]',
+  'بدون رسوم': 'text-[var(--md-sys-color-on-success-container)] bg-[var(--md-sys-color-success-container)]',
+  'برسوم': 'text-[var(--md-sys-color-on-warning-container)] bg-[var(--md-sys-color-warning-container)]',
+  'غير موجود': 'text-[var(--md-sys-color-on-error-container)] bg-[var(--md-sys-color-error-container)]',
 };
 
 function getScore(category: string, level: string, allData?: Record<string, string>): number {
@@ -83,6 +87,15 @@ function getScore(category: string, level: string, allData?: Record<string, stri
   if (category === 'التحصيل') {
     if (level === 'بدون رسوم') return 100;
     const fee = parseFloat(allData?.['رسوم التحصيل'] || '999');
+    if (isNaN(fee) || fee <= 0) return 80;
+    if (fee <= 5) return 80;
+    if (fee <= 10) return 50;
+    return 20;
+  }
+  if (category === 'رسوم التسليم الجزئي') {
+    if (level === 'بدون رسوم') return 100;
+    if (level === 'غير موجود') return 0;
+    const fee = parseFloat(allData?.['مبلغ رسوم التسليم الجزئي'] || '999');
     if (isNaN(fee) || fee <= 0) return 80;
     if (fee <= 5) return 80;
     if (fee <= 10) return 50;
@@ -480,19 +493,20 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ contact, onClose, onEdit,
                   );
                 })}
                 {RATING_SPECIAL.filter(c => ratingsData[c] && ratingsData[c] !== '').map(cat => {
-                  if (cat === 'رسوم التحصيل' || cat === 'رسوم البيك اب' || cat === 'عدد الشحنات') return null;
+                  if (cat === 'رسوم التحصيل' || cat === 'رسوم البيك اب' || cat === 'عدد الشحنات' || cat === 'مبلغ رسوم التسليم الجزئي') return null;
                   const val = ratingsData[cat];
                   let displayVal = val;
                   if (cat === 'اقل عدد بيك اب') displayVal = val + ' شحنة';
                   if (cat === 'التحصيل' && val === 'برسوم' && ratingsData['رسوم التحصيل']) displayVal = `برسوم (${ratingsData['رسوم التحصيل']} ج.م)`;
                   if (cat === 'حد أدنى للشحنات' && val === 'نعم' && ratingsData['عدد الشحنات']) displayVal = `نعم (${ratingsData['عدد الشحنات']} شحنة)`;
                   if (cat === 'سعر الشحن قاهره وجيزه') displayVal = val + ' ج.م';
+                  if (cat === 'رسوم التسليم الجزئي' && val === 'برسوم' && ratingsData['مبلغ رسوم التسليم الجزئي']) displayVal = `برسوم (${ratingsData['مبلغ رسوم التسليم الجزئي']} ج.م)`;
                   const score = getScore(cat, val, ratingsData);
                   return (
                     <div key={cat} className="flex items-center justify-between text-sm">
-                      <span className="font-black text-[var(--md-sys-color-on-surface-variant)] text-[11px]">{cat}</span>
+                      <span className="font-black text-[var(--md-sys-color-on-surface-variant)] text-[11px]">{cat === 'رسوم التسليم الجزئي' ? 'تسليم جزئي' : cat}</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-black px-2 py-0.5 rounded-md bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface)]">
+                        <span className={`text-[11px] font-black px-2 py-0.5 rounded-md ${RATING_COLORS[val] || 'bg-[var(--md-sys-color-surface-container-highest)] text-[var(--md-sys-color-on-surface)]'}`}>
                           {displayVal}
                         </span>
                         <span className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] w-6 text-left">{score}%</span>

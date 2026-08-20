@@ -22,21 +22,22 @@ const RATING_CATEGORIES: Record<string, string[]> = {
   'تغطية المحافظات': ['واسعه', 'متوسطه', 'ضيقه'],
   'الحفاظ على المنتج': ['ممتاز', 'جيد', 'متوسط', 'سيء'],
   'سهولة التتبع و التواصل': ['ممتاز', 'جيد', 'متوسط', 'سيء'],
-  'تسليم جزئي': ['نعم', 'لا'],
   'امكانية استلام مصاريف الشحن فقط': ['نعم', 'لا'],
   'الاستبدال': ['نعم', 'لا'],
   'رأي العملاء السابقين': ['إيجابي', 'محايد', 'سلبي'],
   'هل هناك انتجريشن او تكامل API': ['نعم', 'لا'],
+  'العقد': ['نعم', 'لا'],
+  'المعاينة وقت الاستلام': ['نعم', 'لا'],
 };
 
-const RATING_SPECIAL = ['التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'رسوم التحصيل', 'حد أدنى للشحنات', 'عدد الشحنات', 'سعر الشحن قاهره وجيزه', 'التغامل مع الكوارث'];
+const RATING_SPECIAL = ['التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'رسوم التحصيل', 'حد أدنى للشحنات', 'عدد الشحنات', 'سعر الشحن قاهره وجيزه', 'التغامل مع الكوارث', 'رسوم التسليم الجزئي'];
 
 const ENTITY_RATING_MAP: Record<string, string[]> = {
   'مصنع': ['السعر', 'الجوده', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'تنوع المنتجات'],
   'تاجر جملة': ['السعر', 'الجوده', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'تنوع المنتجات'],
   'مقدم خدمة': ['المرونه', 'الالتزام بالمواعيد', 'سرعة الرد'],
   'مستورد': ['السعر', 'الجوده', 'الالتزام بالمواعيد'],
-  'شركة شحن': ['السعر', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'سرعة التوصيل', 'تغطية المحافظات', 'الحفاظ على المنتج', 'سهولة التتبع و التواصل', 'التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'حد أدنى للشحنات', 'سعر الشحن قاهره وجيزه', 'تسليم جزئي', 'امكانية استلام مصاريف الشحن فقط', 'الاستبدال', 'رأي العملاء السابقين', 'التغامل مع الكوارث', 'هل هناك انتجريشن او تكامل API'],
+  'شركة شحن': ['السعر', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'سرعة التوصيل', 'تغطية المحافظات', 'الحفاظ على المنتج', 'سهولة التتبع و التواصل', 'التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'حد أدنى للشحنات', 'سعر الشحن قاهره وجيزه', 'رسوم التسليم الجزئي', 'امكانية استلام مصاريف الشحن فقط', 'الاستبدال', 'رأي العملاء السابقين', 'التغامل مع الكوارث', 'هل هناك انتجريشن او تكامل API', 'العقد', 'المعاينة وقت الاستلام'],
   'شركة تسويق': ['السعر', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'الاداء'],
   'شركات الطباعه و التغليف': ['السعر', 'الجوده', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'تنوع المنتجات'],
   'أخرى': ['السعر', 'الجوده', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'تنوع المنتجات'],
@@ -67,6 +68,9 @@ const ALL_RATING_COLORS: Record<string, string> = {
   'ضعيف': 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700',
   'نعم': 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border-emerald-300 dark:border-emerald-700',
   'لا': 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700',
+  'بدون رسوم': 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border-emerald-300 dark:border-emerald-700',
+  'برسوم': 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-700',
+  'غير موجود': 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700',
 };
 
 interface ContactModalProps {
@@ -225,12 +229,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
   const validate = () => {
     const errs: Record<string, string> = {};
     if (!form.companyName.trim()) errs.companyName = 'اسم الشركة مطلوب';
-    if (form.phone && !/^01[0-9]{9}$/.test(form.phone)) errs.phone = 'رقم هاتف غير صالح (11 رقم، يبدأ 01)';
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'بريد إلكتروني غير صالح';
-
-    extraPhonesList.forEach((ep, i) => {
-      if (ep.phone && !/^01[0-9]{9}$/.test(ep.phone)) errs[`extraPhone-${i}`] = `الرقم ${i + 1} غير صالح`;
-    });
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -859,6 +858,79 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
                             dir="ltr"
                             value={ratingsDataObj['رسوم التحصيل'] || ''}
                             onChange={e => setRatingsDataObj(prev => ({ ...prev, 'رسوم التحصيل': e.target.value }))}
+                            className="w-24 px-3 py-1.5 bg-[var(--md-sys-color-surface)] border-2 border-[var(--md-sys-color-outline-variant)]/30 rounded-xl outline-none font-bold text-sm text-[var(--md-sys-color-on-surface)] focus:border-teal-500 transition-colors duration-200"
+                            placeholder="0"
+                          />
+                          <span className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)]">ج.م</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* تسليم جزئي special field */}
+              {visibleCategories.includes('رسوم التسليم الجزئي') && (
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div
+                      onClick={() => {
+                        setRatingsDataObj(prev => {
+                          if (prev['رسوم التسليم الجزئي'] !== undefined) {
+                            const n = { ...prev };
+                            delete n['رسوم التسليم الجزئي'];
+                            delete n['مبلغ رسوم التسليم الجزئي'];
+                            return n;
+                          }
+                          return { ...prev, 'رسوم التسليم الجزئي': '', 'مبلغ رسوم التسليم الجزئي': '' };
+                        });
+                      }}
+                      className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors duration-200 cursor-pointer shrink-0 ${
+                        ratingsDataObj['رسوم التسليم الجزئي'] !== undefined
+                          ? 'bg-teal-600 border-teal-600 text-white'
+                          : 'border-[var(--md-sys-color-outline-variant)]/50 bg-[var(--md-sys-color-surface)]'
+                      }`}
+                    >
+                      {ratingsDataObj['رسوم التسليم الجزئي'] !== undefined && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
+                    </div>
+                    <Package size={14} className="text-[var(--md-sys-color-on-surface-variant)]" />
+                    <span className="text-xs font-black text-[var(--md-sys-color-on-surface-variant)]">تسليم جزئي</span>
+                  </div>
+                  {ratingsDataObj['رسوم التسليم الجزئي'] !== undefined && (
+                    <div className="pr-7 space-y-2">
+                      <div className="flex gap-2">
+                        {['بدون رسوم', 'برسوم', 'غير موجود'].map(opt => (
+                          <button
+                            key={opt}
+                            type="button"
+                            onClick={() => setRatingsDataObj(prev => ({ ...prev, 'رسوم التسليم الجزئي': opt, 'مبلغ رسوم التسليم الجزئي': opt === 'برسوم' ? (prev['مبلغ رسوم التسليم الجزئي'] || '') : '' }))}
+                            className={`px-3 py-1.5 rounded-xl text-[11px] font-black border-2 transition-colors duration-200 ${
+                              ratingsDataObj['رسوم التسليم الجزئي'] === opt
+                                ? opt === 'بدون رسوم'
+                                  ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700'
+                                  : opt === 'برسوم'
+                                    ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700'
+                                    : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border-red-300 dark:border-red-700'
+                                : 'bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface-variant)] border-[var(--md-sys-color-outline-variant)]/30 hover:border-[var(--md-sys-color-outline-variant)]/50'
+                            }`}
+                          >
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                      {ratingsDataObj['رسوم التسليم الجزئي'] === 'برسوم' && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)]">مبلغ الرسوم:</span>
+                          <input
+                            type="number"
+                            min="0"
+                            dir="ltr"
+                            value={ratingsDataObj['مبلغ رسوم التسليم الجزئي'] || ''}
+                            onChange={e => setRatingsDataObj(prev => ({ ...prev, 'مبلغ رسوم التسليم الجزئي': e.target.value }))}
                             className="w-24 px-3 py-1.5 bg-[var(--md-sys-color-surface)] border-2 border-[var(--md-sys-color-outline-variant)]/30 rounded-xl outline-none font-bold text-sm text-[var(--md-sys-color-on-surface)] focus:border-teal-500 transition-colors duration-200"
                             placeholder="0"
                           />

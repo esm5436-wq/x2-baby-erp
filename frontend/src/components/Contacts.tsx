@@ -155,14 +155,15 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
     'تغطية المحافظات': ['واسعه', 'متوسطه', 'ضيقه'],
     'الحفاظ على المنتج': ['ممتاز', 'جيد', 'متوسط', 'سيء'],
     'سهولة التتبع و التواصل': ['ممتاز', 'جيد', 'متوسط', 'سيء'],
-    'تسليم جزئي': ['نعم', 'لا'],
     'امكانية استلام مصاريف الشحن فقط': ['نعم', 'لا'],
     'الاستبدال': ['نعم', 'لا'],
     'رأي العملاء السابقين': ['إيجابي', 'محايد', 'سلبي'],
     'هل هناك انتجريشن او تكامل API': ['نعم', 'لا'],
+    'العقد': ['نعم', 'لا'],
+    'المعاينة وقت الاستلام': ['نعم', 'لا'],
   };
 
-  const RATING_SPECIAL = ['التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'رسوم التحصيل', 'حد أدنى للشحنات', 'عدد الشحنات', 'سعر الشحن قاهره وجيزه', 'التغامل مع الكوارث'];
+  const RATING_SPECIAL = ['التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'رسوم التحصيل', 'حد أدنى للشحنات', 'عدد الشحنات', 'سعر الشحن قاهره وجيزه', 'التغامل مع الكوارث', 'رسوم التسليم الجزئي'];
 
   function getScore(category: string, level: string, allData?: Record<string, string>): number {
     if (category === 'اقل عدد بيك اب' || category === 'رسوم البيك اب' || category === 'رسوم التحصيل' || category === 'عدد الشحنات' || category === 'سعر الشحن قاهره وجيزه') {
@@ -191,6 +192,15 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
     if (category === 'التحصيل') {
       if (level === 'بدون رسوم') return 100;
       const fee = parseFloat(allData?.['رسوم التحصيل'] || '999');
+      if (isNaN(fee) || fee <= 0) return 80;
+      if (fee <= 5) return 80;
+      if (fee <= 10) return 50;
+      return 20;
+    }
+    if (category === 'رسوم التسليم الجزئي') {
+      if (level === 'بدون رسوم') return 100;
+      if (level === 'غير موجود') return 0;
+      const fee = parseFloat(allData?.['مبلغ رسوم التسليم الجزئي'] || '999');
       if (isNaN(fee) || fee <= 0) return 80;
       if (fee <= 5) return 80;
       if (fee <= 10) return 50;
