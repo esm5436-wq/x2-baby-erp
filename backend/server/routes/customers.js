@@ -62,10 +62,10 @@ export async function updateCustomerStats(customerId) {
       }
     } catch {}
   }
-  await runDb(
-    `UPDATE customers SET total_orders = ?, total_spent = ?, last_order_date = ?, updated_at = datetime('now') WHERE id = ?`,
-    [totalOrders, totalSpent, lastOrderDate, customerId]
-  );
+    await runDb(
+      `UPDATE customers SET total_orders = ?, total_spent = ?, last_order_date = ?, updated_at = datetime('now') WHERE id = ?`,
+      [totalOrders, totalSpent, lastOrderDate || null, customerId]
+    );
   await calculateCustomerRating(customerId);
 }
 
