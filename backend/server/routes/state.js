@@ -1,5 +1,5 @@
 ﻿import { Router } from 'express';
-import { allDb, getDb, runDb, logActivity, generateOrderId, adjustStock, isActiveStatus, getAllProducts } from '../db.js';
+import { allDb, getDb, runDb, logActivity, generateOrderId, adjustStock, isActiveStatus, getAllProducts, findStockShortages, buildShortageMessage, buildEditOps, applyEditOps } from '../db.js';
 import { ADMIN_PERMISSIONS, parsePermissions } from '../middleware/Permission.js';
 
 const router = Router();
@@ -246,7 +246,17 @@ router.post('/api/activity-logs/:id/undo', async (req, res) => {
         if (action === 'create') {
             // Undo create = delete
             if (entity_type === 'product') await runDb("DELETE FROM products WHERE id = ?", [entityId]);
-            else if (entity_type === 'order') await runDb("DELETE FROM orders WHERE id = ?", [entityId]);
+            else if (entity_type === 'order') {
+                // إرجاع مخزون الطلب المحتجز قبل حذفه (إن كان نشطاً)
+                const createdRow = await getDb("SELECT data FROM orders WHERE id = ?", [entityId]);
+                if (createdRow) {
+                    const createdOrder = JSON.parse(createdRow.data);
+                    if (isActiveStatus(createdOrder.status)) {
+                        await adjustStock(createdOrder.items || [], 'return');
+                    }
+                }
+                await runDb("DELETE FROM orders WHERE id = ?", [entityId]);
+            }
             else if (entity_type === 'expense') await runDb("DELETE FROM expenses WHERE id = ?", [entityId]);
             else if (entity_type === 'contact') await runDb("DELETE FROM contacts WHERE id = ?", [entityId]);
             else if (entity_type === 'category') await runDb("DELETE FROM categories WHERE id = ?", [entityId]);
@@ -260,7 +270,19 @@ router.post('/api/activity-logs/:id/undo', async (req, res) => {
             if (!entityData) return res.status(400).json({ error: 'لا توجد بيانات كافية للتراجع عن الحذف' });
             if (entity_type === 'product') await runDb("INSERT OR REPLACE INTO products (id, data) VALUES (?, ?)", [entityId, JSON.stringify(entityData)]);
             else if (entity_type === 'order') {
-                const dataStr = typeof entityData === 'string' ? entityData : JSON.stringify(entityData);
+                // إعادة خصم مخزون الطلب المستعاد إن كان نشطاً، مع رفض الاستعادة عند نقص المخزون
+                const restoredOrder = typeof entityData === 'string' ? JSON.parse(entityData) : entityData;
+                if (isActiveStatus(restoredOrder.status)) {
+                    // تطبيع actualDeducted: الخصم القادم هو الأساس الحقيقي للاحتجاز
+                    const cleanItems = (restoredOrder.items || []).map(i => ({ ...i, actualDeducted: undefined }));
+                    const shortages = await findStockShortages(cleanItems);
+                    if (shortages.length > 0) {
+                        return res.status(400).json({ error: buildShortageMessage(shortages), shortages });
+                    }
+                    await adjustStock(cleanItems, 'deduct');
+                    restoredOrder.items = cleanItems;
+                }
+                const dataStr = JSON.stringify(restoredOrder);
                 await runDb("INSERT OR REPLACE INTO orders (id, data) VALUES (?, ?)", [entityId, dataStr]);
             } else if (entity_type === 'expense') {
                 await runDb("INSERT INTO expenses (id, amount, category, description, created_at, updated_at, beneficiary_id) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)",
@@ -288,20 +310,21 @@ router.post('/api/activity-logs/:id/undo', async (req, res) => {
             if (entity_type === 'product') {
                 await runDb("UPDATE products SET data = ? WHERE id = ?", [JSON.stringify(prevState), entityId]);
             } else if (entity_type === 'order') {
-                // Read current order to determine stock reversal
+                // عكس الفرق الكامل بين الحالة الحالية والحالة السابقة (العناصر + الحالة)
                 const currentRow = await getDb("SELECT data FROM orders WHERE id = ?", [entityId]);
                 if (currentRow) {
                     const currentOrder = JSON.parse(currentRow.data);
-                    const currentStatus = currentOrder.status;
-                    const restoredStatus = prevState.status;
-                    // Reverse stock adjustment if status transition changed stock
-                    // Original: Active→Inactive(return) called adjustStock('return'), Inactive→Active called adjustStock('deduct')
-                    // Undo reverses the original operation
-                    if (isActiveStatus(currentStatus) && !isActiveStatus(restoredStatus)) {
-                        await adjustStock(currentOrder.items || [], 'return');
-                    } else if (!isActiveStatus(currentStatus) && isActiveStatus(restoredStatus)) {
-                        await adjustStock(currentOrder.items || [], 'deduct');
+                    // تطبيع actualDeducted لعناصر الحالة السابقة: القيم التاريخية لا تتراكم
+                    prevState.items = (prevState.items || []).map(i => ({ ...i, actualDeducted: undefined }));
+                    const ops = buildEditOps(currentOrder.items || [], prevState.items || [],
+                        currentOrder.status, prevState.status);
+                    if (ops.deducts.length > 0) {
+                        const shortages = await findStockShortages(ops.deducts);
+                        if (shortages.length > 0) {
+                            return res.status(400).json({ error: buildShortageMessage(shortages), shortages });
+                        }
                     }
+                    await applyEditOps(ops);
                 }
                 await runDb("UPDATE orders SET data = ? WHERE id = ?", [JSON.stringify(prevState), entityId]);
             }

@@ -492,6 +492,11 @@ const App: React.FC = () => {
         body: JSON.stringify({ status: newStatus })
       });
       const data = await res.json();
+      if (data.error) {
+        setState(prev => ({ ...prev, orders: prevOrders }));
+        showNotification(data.error, 'error');
+        return;
+      }
       if (data.activityLogId) pushUndo(data.activityLogId);
       if (data.products) {
         setState(prev => ({ ...prev, products: data.products }));
@@ -510,6 +515,10 @@ const App: React.FC = () => {
         body: JSON.stringify({ orderIds, status: newStatus })
       });
       const data = await res.json();
+      if (data.error) {
+        showNotification(data.error, 'error');
+        return;
+      }
       if (data.activityLogId) pushUndo(data.activityLogId);
       if (data.products) {
         setState(prev => ({
@@ -524,21 +533,31 @@ const App: React.FC = () => {
     }
   };
 
-  const handleAddOrder = async (order: Order) => {
+  const handleAddOrder = async (order: Order): Promise<boolean> => {
     const res = await fetch(`${API_BASE}/orders`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) });
     const data = await res.json();
+    if (data.error) {
+      showNotification(data.error, 'error');
+      return false;
+    }
     if (data.activityLogId) pushUndo(data.activityLogId);
     const finalOrder = data.id ? { ...order, id: data.id } : order;
     setState(prev => ({ ...prev, orders: [finalOrder, ...prev.orders], products: data.products || prev.products }));
     showNotification('تم إضافة الطلب', 'success');
+    return true;
   };
 
-  const handleUpdateOrder = async (order: Order) => {
+  const handleUpdateOrder = async (order: Order): Promise<boolean> => {
     const res = await fetch(`${API_BASE}/orders`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) });
     const data = await res.json();
+    if (data.error) {
+      showNotification(data.error, 'error');
+      return false;
+    }
     if (data.activityLogId) pushUndo(data.activityLogId);
     setState(prev => ({ ...prev, orders: prev.orders.map(o => o.id === order.id ? order : o), products: data.products || prev.products }));
     showNotification('تم تحديث الطلب', 'success');
+    return true;
   };
 
   const handleDeleteOrder = async (id: string) => {

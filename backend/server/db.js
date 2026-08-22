@@ -57,16 +57,26 @@ export async function generateOrderId() {
   const mm = String(now.getMonth() + 1).padStart(2, '0');
   const dd = String(now.getDate()).padStart(2, '0');
   const prefix = `ORD-${yy}${mm}${dd}-`;
+  const today = `${yy}${mm}${dd}`;
   const rows = await allDb(
-    "SELECT id FROM orders WHERE id LIKE ? ORDER BY id DESC LIMIT 1",
+    "SELECT id FROM orders WHERE id LIKE ?",
     [prefix + '%']
   );
-  let counter = 1;
-  if (rows.length > 0) {
-    const parts = rows[0].id.split('-');
-    counter = parseInt(parts[parts.length - 1], 10) + 1;
+  let maxExisting = 0;
+  for (const r of rows) {
+    const seq = parseInt(r.id.slice(prefix.length), 10);
+    if (Number.isFinite(seq) && seq > maxExisting) maxExisting = seq;
   }
-  return prefix + String(counter).padStart(3, '0');
+  // عدّاد دائم في الإعدادات: يمنع إعادة استخدام معرّف طلب محذوف في نفس اليوم
+  let stored = { date: '', last: 0 };
+  try {
+    const seqRow = await getDb("SELECT value FROM settings WHERE key = 'order_id_seq'");
+    if (seqRow) stored = JSON.parse(seqRow.value);
+  } catch {}
+  const next = (stored.date === today ? Math.max(Number(stored.last) || 0, maxExisting) : maxExisting) + 1;
+  await runDb("INSERT OR REPLACE INTO settings (key, value) VALUES ('order_id_seq', ?)",
+    [JSON.stringify({ date: today, last: next })]);
+  return prefix + String(next).padStart(3, '0');
 }
 
 export async function localizeImageAsFile(url, entityId) {
@@ -373,33 +383,82 @@ export async function generateVariantSkus(productSku, variantCount) {
   );
 }
 
-export async function adjustStock(items, operation) {
-  for (const item of items) {
-    let productId = item.productId;
-    let variantId = item.variantId;
-    const sku = item.variantSku || item.sku || '';
-    if (sku.startsWith('SKU-')) {
-      if (sku.includes('-') && sku.split('-').length >= 3) {
-        const found = await resolveVariantBySku(sku);
-        if (found) {
-          productId = found.product.id;
-          variantId = found.variant.id;
-        }
+async function resolveItemTarget(item) {
+  let productId = item.productId;
+  let variantId = item.variantId;
+  const sku = item.variantSku || item.sku || '';
+  if (sku.startsWith('SKU-')) {
+    if (sku.includes('-') && sku.split('-').length >= 3) {
+      const found = await resolveVariantBySku(sku);
+      if (found) {
+        productId = found.product.id;
+        variantId = found.variant.id;
       }
-      if (!productId || !variantId) {
-        const prodSku = sku.replace(/-\d{2}$/, '');
-        const product = await resolveProductBySku(prodSku);
-        if (product) {
-          productId = product.id;
-          if (sku !== prodSku) {
-            const v = (product.variants || []).find(x => x.sku === sku);
-            if (v) variantId = v.id;
-          } else if (product.variants?.length === 1) {
-            variantId = product.variants[0].id;
-          }
+    }
+    if (!productId || !variantId) {
+      const prodSku = sku.replace(/-\d{2}$/, '');
+      const product = await resolveProductBySku(prodSku);
+      if (product) {
+        productId = product.id;
+        if (sku !== prodSku) {
+          const v = (product.variants || []).find(x => x.sku === sku);
+          if (v) variantId = v.id;
+        } else if (product.variants?.length === 1) {
+          variantId = product.variants[0].id;
         }
       }
     }
+  }
+  return { productId, variantId };
+}
+
+function heldOf(item) {
+  return Number.isFinite(item?.actualDeducted) && item.actualDeducted >= 0
+    ? item.actualDeducted
+    : Math.max(0, Number(item?.quantity) || 0);
+}
+
+export async function findStockShortages(items) {
+  const shortages = [];
+  const demand = new Map();
+  for (const rawItem of items || []) {
+    if (!rawItem || !(Number(rawItem.quantity) > 0)) continue;
+    const { productId, variantId } = await resolveItemTarget(rawItem);
+    if (!productId || !variantId) continue;
+    const key = `${productId}_${variantId}`;
+    const cur = demand.get(key);
+    if (cur) cur.qty += Number(rawItem.quantity);
+    else demand.set(key, { productId, variantId, qty: Number(rawItem.quantity) });
+  }
+  const productCache = new Map();
+  for (const { productId, variantId, qty } of demand.values()) {
+    let product = productCache.has(productId) ? productCache.get(productId) : undefined;
+    if (product === undefined) {
+      const rows = await allDb("SELECT data FROM products WHERE id = ?", [productId]);
+      product = rows.length ? JSON.parse(rows[0].data) : null;
+      productCache.set(productId, product);
+    }
+    if (!product) continue;
+    const v = (product.variants || []).find(x => x.id === variantId);
+    if (!v) continue;
+    if (qty > (v.quantity || 0)) {
+      shortages.push({
+        productId,
+        variantId,
+        productName: product.name,
+        variantLabel: [v.size, v.color].filter(Boolean).join(' - '),
+        sku: v.sku || '',
+        requested: qty,
+        available: v.quantity || 0
+      });
+    }
+  }
+  return shortages;
+}
+
+export async function adjustStock(items, operation) {
+  for (const item of items || []) {
+    let { productId, variantId } = await resolveItemTarget(item);
     if (!productId || !variantId) continue;
     const rows = await allDb("SELECT data FROM products WHERE id = ?", [productId]);
     if (rows.length === 0) continue;
@@ -423,9 +482,14 @@ export async function adjustStock(items, operation) {
       if (v.id === variantId) {
         changed = true;
         if (operation === 'deduct') {
-          v.quantity = Math.max(0, (v.quantity || 0) - item.quantity);
+          const current = v.quantity || 0;
+          const actual = Math.min(current, Math.max(0, Number(item.quantity) || 0));
+          v.quantity = current - actual;
+          item.actualDeducted = (Number.isFinite(item.actualDeducted) ? item.actualDeducted : 0) + actual;
         } else if (operation === 'return') {
-          v.quantity = (v.quantity || 0) + item.quantity;
+          const held = heldOf(item);
+          v.quantity = (v.quantity || 0) + held;
+          item.actualDeducted = 0;
         }
       }
       return v;
@@ -434,6 +498,84 @@ export async function adjustStock(items, operation) {
       await runDb("UPDATE products SET data = ? WHERE id = ?",
         [JSON.stringify(product), productId]);
     }
+  }
+}
+
+export function buildShortageMessage(shortages) {
+  return 'الكمية المطلوبة غير متوفرة في المخزون: ' +
+    shortages.map(s => `${s.productName}${s.variantLabel ? ` (${s.variantLabel})` : ''} — المطلوب ${s.requested} والمتاح ${s.available}`).join('، ');
+}
+
+export function buildEditOps(oldItems, newItems, oldStatus, newStatus) {
+  const wasActive = isActiveStatus(oldStatus);
+  const nowActive = isActiveStatus(newStatus ?? oldStatus);
+  const ops = { returns: [], deducts: [] };
+  if (!wasActive && !nowActive) return ops;
+
+  if (wasActive && !nowActive) {
+    for (const oldIt of oldItems) {
+      const H = heldOf(oldIt);
+      if (H > 0) {
+        ops.returns.push({ productId: oldIt.productId, variantId: oldIt.variantId, quantity: H, actualDeducted: H });
+      }
+    }
+    return ops;
+  }
+
+  if (!wasActive && nowActive) {
+    for (const newIt of newItems) {
+      if ((Number(newIt.quantity) || 0) > 0) ops.deducts.push(newIt);
+    }
+    return ops;
+  }
+
+  const oldMap = {}, newMap = {};
+  oldItems.forEach(item => { oldMap[`${item.productId}_${item.variantId}`] = item; });
+  newItems.forEach(item => { newMap[`${item.productId}_${item.variantId}`] = item; });
+
+  for (const key of Object.keys(oldMap)) {
+    if (!(key in newMap)) {
+      const oldIt = oldMap[key];
+      const H = heldOf(oldIt);
+      if (H > 0) {
+        ops.returns.push({ productId: oldIt.productId, variantId: oldIt.variantId, quantity: H, actualDeducted: H });
+      }
+    }
+  }
+
+  for (const key of Object.keys(newMap)) {
+    if (!(key in oldMap)) {
+      const newIt = newMap[key];
+      if ((Number(newIt.quantity) || 0) > 0) ops.deducts.push(newIt);
+    }
+  }
+
+  for (const key of Object.keys(oldMap)) {
+    if (!(key in newMap)) continue;
+    const oldIt = oldMap[key];
+    const newIt = newMap[key];
+    const H = heldOf(oldIt);
+    const N = Number(newIt.quantity) || 0;
+    if (N === H) {
+      newIt.actualDeducted = N;
+      continue;
+    }
+    if (N > H) {
+      ops.deducts.push({ productId: newIt.productId, variantId: newIt.variantId, quantity: N - H, actualDeducted: H, __syncTo: newIt });
+    } else {
+      ops.returns.push({ productId: newIt.productId, variantId: newIt.variantId, quantity: H - N, actualDeducted: H - N });
+      newIt.actualDeducted = N;
+    }
+  }
+  return ops;
+}
+
+export async function applyEditOps(ops) {
+  for (const r of ops.returns) await adjustStock([r], 'return');
+  for (const d of ops.deducts) {
+    const syncTarget = d.__syncTo;
+    await adjustStock([d], 'deduct');
+    if (syncTarget) syncTarget.actualDeducted = d.actualDeducted;
   }
 }
 

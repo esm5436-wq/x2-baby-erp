@@ -300,8 +300,8 @@ interface OrdersProps {
   products: Product[];
   branding?: Branding;
   invoiceSettings?: InvoiceSettings;
-  onAddOrder: (order: Order) => void;
-  onUpdateOrder: (order: Order) => void;
+  onAddOrder: (order: Order) => void | boolean | Promise<boolean>;
+  onUpdateOrder: (order: Order) => void | boolean | Promise<boolean>;
   onDeleteOrder: (orderId: string) => void;
   onDeleteMultipleOrders: (orderIds: string[]) => void;
   onBatchUpdateOrders: (ids: string[], updates: Record<string, any>) => void;
@@ -1666,7 +1666,7 @@ const Orders: React.FC<OrdersProps> = ({
 
   const finalTotal = itemsTotal + (formData.shippingCost || 0) - calculatedDiscount;
 
-  const handleSaveOrder = (e: React.FormEvent) => {
+  const handleSaveOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     const errors: Record<string, string> = {};
     if (!(formData.customerName || '').trim()) errors.customerName = 'يرجى إدخال اسم العميل';
@@ -1734,9 +1734,11 @@ const Orders: React.FC<OrdersProps> = ({
     };
 
     if (editingOrderId && editingOrderId !== 'new') {
-        onUpdateOrder(newOrder);
+        const ok = await onUpdateOrder(newOrder);
+        if (ok === false) return;
     } else {
-        onAddOrder(newOrder);
+        const ok = await onAddOrder(newOrder);
+        if (ok === false) return;
     }
     markClean();
     snackSuccess('تم حفظ التغييرات بنجاح');

@@ -1,48 +1,8 @@
 import { Router } from 'express';
-import { allDb, getDb, runDb, logActivity, generateOrderId, adjustStock, getAllProducts, isActiveStatus, resolveProductBySku, resolveVariantBySku } from '../db.js';
+import { allDb, getDb, runDb, logActivity, generateOrderId, adjustStock, getAllProducts, isActiveStatus, resolveProductBySku, resolveVariantBySku, findStockShortages, buildShortageMessage, buildEditOps, applyEditOps } from '../db.js';
 import { findOrCreateCustomer, updateCustomerStats } from './customers.js';
 
 const router = Router();
-
-async function adjustStockForEdit(oldItems, newItems, orderStatus) {
-  if (!isActiveStatus(orderStatus)) return;
-  const oldMap = {};
-  oldItems.forEach(item => {
-    const key = `${item.productId}_${item.variantId}`;
-    oldMap[key] = item.quantity;
-  });
-  const newMap = {};
-  newItems.forEach(item => {
-    const key = `${item.productId}_${item.variantId}`;
-    newMap[key] = item.quantity;
-  });
-  // Removed items
-  for (const key of Object.keys(oldMap)) {
-    if (!(key in newMap)) {
-      const [productId, variantId] = key.split('_');
-      await adjustStock([{ productId, variantId, quantity: oldMap[key] }], 'return');
-    }
-  }
-  // Added items
-  for (const key of Object.keys(newMap)) {
-    if (!(key in oldMap)) {
-      const [productId, variantId] = key.split('_');
-      await adjustStock([{ productId, variantId, quantity: newMap[key] }], 'deduct');
-    }
-  }
-  // Changed quantity
-  for (const key of Object.keys(oldMap)) {
-    if (key in newMap && oldMap[key] !== newMap[key]) {
-      const [productId, variantId] = key.split('_');
-      const diff = oldMap[key] - newMap[key];
-      if (diff > 0) {
-        await adjustStock([{ productId, variantId, quantity: diff }], 'return');
-      } else {
-        await adjustStock([{ productId, variantId, quantity: -diff }], 'deduct');
-      }
-    }
-  }
-}
 
 router.post('/api/orders', async (req, res) => {
   try {
@@ -105,10 +65,25 @@ router.post('/api/orders', async (req, res) => {
       if (customer) order.customerId = customer.id;
     }
     let activityLogId;
-    const existingRow = await getDb("SELECT data FROM orders WHERE id = ?", [order.id]);
+    const existingRow = order.id
+      ? await getDb("SELECT data FROM orders WHERE id = ?", [order.id])
+      : null;
+    if (!existingRow && isActiveStatus(order.status) && Array.isArray(order.items) && order.items.length > 0) {
+      const shortages = await findStockShortages(order.items);
+      if (shortages.length > 0) {
+        return res.status(400).json({ error: buildShortageMessage(shortages), shortages });
+      }
+    }
     if (existingRow) {
       const existingOrder = JSON.parse(existingRow.data);
-      await adjustStockForEdit(existingOrder.items || [], order.items || [], order.status || existingOrder.status);
+      const ops = buildEditOps(existingOrder.items || [], order.items || [], existingOrder.status, order.status ?? existingOrder.status);
+      if (ops.deducts.length > 0) {
+        const shortages = await findStockShortages(ops.deducts);
+        if (shortages.length > 0) {
+          return res.status(400).json({ error: buildShortageMessage(shortages), shortages });
+        }
+      }
+      await applyEditOps(ops);
       await runDb("UPDATE orders SET data = ? WHERE id = ?",
         [JSON.stringify(order), order.id]);
       activityLogId = await logActivity('update', 'order', order.id, `تم تحديث الطلب للعميل ${order.customerName}`, { previousState: existingOrder, newState: order });
@@ -179,31 +154,6 @@ router.post('/api/orders/bulk-delete', async (req, res) => {
   }
 });
 
-router.patch('/api/orders/:id/status', async (req, res) => {
-  try {
-    const { status } = req.body;
-    const row = await getDb("SELECT data FROM orders WHERE id = ?", [req.params.id]);
-    if (!row) return res.status(404).json({ error: "Order not found" });
-    const order = JSON.parse(row.data);
-    const previousState = JSON.parse(JSON.stringify(order));
-    const oldStatus = order.status;
-    if (isActiveStatus(oldStatus) && !isActiveStatus(status)) {
-      await adjustStock(order.items || [], 'return');
-    } else if (!isActiveStatus(oldStatus) && isActiveStatus(status)) {
-      await adjustStock(order.items || [], 'deduct');
-    }
-    order.status = status;
-    await runDb("UPDATE orders SET data = ? WHERE id = ?",
-      [JSON.stringify(order), req.params.id]);
-    const newState = JSON.parse(JSON.stringify(order));
-    const activityLogId = await logActivity('update', 'order', req.params.id, `تم تغيير حالة الطلب للعميل ${order.customerName} إلى ${status}`, { previousState, newState });
-    const products = await getAllProducts();
-    res.json({ success: true, activityLogId, products });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 router.patch('/api/orders/batch/status', async (req, res) => {
   try {
     const { orderIds, status } = req.body;
@@ -212,6 +162,24 @@ router.patch('/api/orders/batch/status', async (req, res) => {
     }
     const previousState = {};
     const newState = {};
+    if (isActiveStatus(status)) {
+      const demandItems = [];
+      for (const id of orderIds) {
+        const row = await getDb("SELECT data FROM orders WHERE id = ?", [id]);
+        if (row) {
+          const order = JSON.parse(row.data);
+          if (!isActiveStatus(order.status)) {
+            demandItems.push(...(order.items || []));
+          }
+        }
+      }
+      if (demandItems.length > 0) {
+        const shortages = await findStockShortages(demandItems);
+        if (shortages.length > 0) {
+          return res.status(400).json({ error: buildShortageMessage(shortages), shortages });
+        }
+      }
+    }
     await runDb("BEGIN TRANSACTION");
     for (const id of orderIds) {
       const row = await getDb("SELECT data FROM orders WHERE id = ?", [id]);
@@ -236,6 +204,35 @@ router.patch('/api/orders/batch/status', async (req, res) => {
     res.json({ success: true, activityLogId, products });
   } catch (err) {
     await runDb("ROLLBACK").catch(() => {});
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.patch('/api/orders/:id/status', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const row = await getDb("SELECT data FROM orders WHERE id = ?", [req.params.id]);
+    if (!row) return res.status(404).json({ error: "Order not found" });
+    const order = JSON.parse(row.data);
+    const previousState = JSON.parse(JSON.stringify(order));
+    const oldStatus = order.status;
+    if (isActiveStatus(oldStatus) && !isActiveStatus(status)) {
+      await adjustStock(order.items || [], 'return');
+    } else if (!isActiveStatus(oldStatus) && isActiveStatus(status)) {
+      const shortages = await findStockShortages(order.items || []);
+      if (shortages.length > 0) {
+        return res.status(400).json({ error: buildShortageMessage(shortages), shortages });
+      }
+      await adjustStock(order.items || [], 'deduct');
+    }
+    order.status = status;
+    await runDb("UPDATE orders SET data = ? WHERE id = ?",
+      [JSON.stringify(order), req.params.id]);
+    const newState = JSON.parse(JSON.stringify(order));
+    const activityLogId = await logActivity('update', 'order', req.params.id, `تم تغيير حالة الطلب للعميل ${order.customerName} إلى ${status}`, { previousState, newState });
+    const products = await getAllProducts();
+    res.json({ success: true, activityLogId, products });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });

@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { getDb, allDb, runDb, logActivity, generateOrderId, getAllProducts, adjustStock, isActiveStatus } from '../db.js';
+import { getDb, allDb, runDb, logActivity, generateOrderId, getAllProducts, adjustStock, isActiveStatus, findStockShortages, buildShortageMessage } from '../db.js';
 import { searchProducts } from './search.js';
 
 export async function getApiKeys() {
@@ -716,6 +716,13 @@ const toolHandlers = {
       createdAt: new Date().toISOString()
     };
     if (isActiveStatus(order.status)) {
+      const shortages = await findStockShortages(order.items || []);
+      if (shortages.length > 0) {
+        return {
+          error: 'الكمية المطلوبة غير متوفرة في المخزون: ' +
+            shortages.map(s => `${s.productName}${s.variantLabel ? ` (${s.variantLabel})` : ''} — المطلوب ${s.requested} والمتاح ${s.available}`).join('، ')
+        };
+      }
       await adjustStock(order.items || [], 'deduct');
     }
     await runDb("INSERT INTO orders (id, data) VALUES (?, ?)", [newId, JSON.stringify(order)]);
@@ -746,6 +753,8 @@ const toolHandlers = {
     if (isActiveStatus(oldStatus) && !isActiveStatus(args.status)) {
       await adjustStock(order.items || [], 'return');
     } else if (!isActiveStatus(oldStatus) && isActiveStatus(args.status)) {
+      const shortages = await findStockShortages(order.items || []);
+      if (shortages.length > 0) return { error: buildShortageMessage(shortages), shortages };
       await adjustStock(order.items || [], 'deduct');
     }
     order.status = args.status;
@@ -756,6 +765,13 @@ const toolHandlers = {
   },
 
   async delete_order(args, refreshState) {
+    const row = await getDb("SELECT data FROM orders WHERE id = ?", [args.orderId]);
+    if (!row) return { error: "الطلب غير موجود" };
+    const order = JSON.parse(row.data);
+    // إرجاع مخزون الطلب المحتجز قبل حذفه (إن كان نشطاً)
+    if (isActiveStatus(order.status)) {
+      await adjustStock(order.items || [], 'return');
+    }
     await runDb("DELETE FROM orders WHERE id = ?", [args.orderId]);
     refreshState.current = true;
     await logActivity('delete', 'order', args.orderId, '[AI] تم حذف الطلب');
