@@ -2324,7 +2324,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             title="تفاصيل المنتج"
             description={`${product.sku || '—'} • ${product.category}${product.createdAt ? ` • ${formatDate(product.createdAt, 'date')}` : ''}`}
             icon={<Package size={20} />}
-            maxWidth="xl"
+            maxWidth="3xl"
             actions={[
               ...(product.url ? [{ label: 'الرابط على الموقع', onClick: () => window.open(product.url, '_blank', 'noopener,noreferrer'), variant: 'tonal' as const, icon: <ExternalLink size={15} /> }] : []),
               ...(canManageProducts ? [{ label: 'حذف', onClick: () => { if (window.confirm('هل أنت متأكد من حذف المنتج نهائياً من النظام؟')) { onDeleteProduct(product.id); setViewingProductId(null); } }, variant: 'danger' as const, icon: <Trash2 size={15} /> }] : []),

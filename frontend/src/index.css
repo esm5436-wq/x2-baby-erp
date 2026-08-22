@@ -56,6 +56,10 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: var(--color-primary-light); }
 ::-webkit-scrollbar-corner { background: var(--bg-elevated); }
 
+.no-spin { appearance: textfield; -moz-appearance: textfield; }
+.no-spin::-webkit-inner-spin-button,
+.no-spin::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
 .dark :where(input, textarea, select) {
   color: var(--text-700);
   background: var(--bg-input);

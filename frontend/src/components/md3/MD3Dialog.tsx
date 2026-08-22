@@ -21,7 +21,7 @@ interface MD3DialogProps {
   icon?: React.ReactNode;
   children: React.ReactNode;
   actions?: MD3DialogAction[];
-  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '3xl' | 'full';
   closeButton?: boolean;
   /** When true, clicking scrim does not close */
   persistent?: boolean;
@@ -32,6 +32,7 @@ const maxWidthMap: Record<string, string> = {
   md: 'max-w-md',
   lg: 'max-w-lg',
   xl: 'max-w-xl',
+  '3xl': 'max-w-3xl',
   full: 'max-w-[calc(100vw-32px)]',
 };
 

@@ -431,7 +431,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className={labelCls}>سعر البيع الافتراضي</label>
-          <input type="number" className={inputCls} value={p.price} onChange={e => setP({...p, price: Number(e.target.value)})} />
+          <input type="number" className={`${inputCls} no-spin`} value={p.price} onChange={e => setP({...p, price: Number(e.target.value)})} />
           {(p.wholesalePrice || 0) > 0 && (
             <div className="mt-2 p-3 bg-accent/5 dark:bg-accent/10 border border-accent/20 rounded-2xl space-y-3 relative overflow-hidden">
               <div className="flex items-center justify-between relative z-10">
@@ -465,11 +465,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
         </div>
         <div className="space-y-2">
           <label className={labelCls}>سعر الجملة</label>
-          <input type="number" className={inputCls} value={p.wholesalePrice || 0} onChange={e => { const ws = Number(e.target.value); setP({...p, wholesalePrice: ws, costPrice: ws + (p.packagingCost || 0)}); }} />
+          <input type="number" className={`${inputCls} no-spin`} value={p.wholesalePrice || 0} onChange={e => { const ws = Number(e.target.value); setP({...p, wholesalePrice: ws, costPrice: ws + (p.packagingCost || 0)}); }} />
         </div>
         <div className="space-y-2">
           <label className={labelCls}>تكلفة التغليف</label>
-          <input type="number" className={inputCls} value={p.packagingCost || 0} onChange={e => { const pk = Number(e.target.value); setP({...p, packagingCost: pk, costPrice: (p.wholesalePrice || 0) + pk}); }} />
+          <input type="number" className={`${inputCls} no-spin`} value={p.packagingCost || 0} onChange={e => { const pk = Number(e.target.value); setP({...p, packagingCost: pk, costPrice: (p.wholesalePrice || 0) + pk}); }} />
         </div>
         <div className="space-y-2">
           <label className="text-xs font-black text-emerald-600 dark:text-emerald-400 pr-1 uppercase tracking-widest">إجمالي تكلفة القطعة</label>
@@ -565,17 +565,17 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
         <div className="flex flex-wrap gap-3 items-end">
           <div className="flex items-center gap-1.5">
             <div className="flex flex-col gap-0.5"><span className="text-[7px] font-black text-gray-400">الكمية</span>
-              <input type="number" className="w-16 p-1.5 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-lg text-center font-black text-xs focus:border-accent outline-none" value={bulkQty} onChange={e => setBulkQty(e.target.value)} /></div>
+              <input type="number" className="w-16 p-1.5 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-lg text-center font-black text-xs focus:border-accent outline-none no-spin" value={bulkQty} onChange={e => setBulkQty(e.target.value)} /></div>
             <button onClick={applyQtyToAll} className="px-2.5 py-1.5 bg-accent text-white font-black rounded-lg text-[9px] hover:opacity-90 active:scale-95 transition-all">تطبيق</button>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="flex flex-col gap-0.5"><span className="text-[7px] font-black text-gray-400">السعر</span>
-              <input type="number" className="w-20 p-1.5 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-lg text-center font-black text-xs focus:border-accent outline-none" value={bulkPrice} onChange={e => setBulkPrice(e.target.value)} /></div>
+              <input type="number" className="w-20 p-1.5 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-lg text-center font-black text-xs focus:border-accent outline-none no-spin" value={bulkPrice} onChange={e => setBulkPrice(e.target.value)} /></div>
             <button onClick={applyPriceToAll} className="px-2.5 py-1.5 bg-accent text-white font-black rounded-lg text-[9px] hover:opacity-90 active:scale-95 transition-all">تطبيق</button>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="flex flex-col gap-0.5"><span className="text-[7px] font-black text-gray-400">حد التنبيه</span>
-              <input type="number" className="w-16 p-1.5 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-lg text-center font-black text-xs focus:border-accent outline-none" value={bulkThreshold} onChange={e => setBulkThreshold(e.target.value)} /></div>
+              <input type="number" className="w-16 p-1.5 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-lg text-center font-black text-xs focus:border-accent outline-none no-spin" value={bulkThreshold} onChange={e => setBulkThreshold(e.target.value)} /></div>
             <button onClick={applyThresholdToAll} className="px-2.5 py-1.5 bg-accent text-white font-black rounded-lg text-[9px] hover:opacity-90 active:scale-95 transition-all">تطبيق</button>
           </div>
         </div>
@@ -622,11 +622,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
                     <div className="flex flex-wrap justify-center gap-2">
                       <div className="inline-flex items-center gap-1">
                         <span className="text-[7px] text-gray-400 font-black">الكمية</span>
-                        <input type="number" className="w-12 p-1 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-lg text-center font-black text-gray-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-accent outline-none" value={v.quantity} onChange={e => { const nv = [...p.variants]; nv[i].quantity = Number(e.target.value); setP({...p, variants: nv})}} />
+                        <input type="number" className="w-16 p-1 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-lg text-center font-black text-gray-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-accent outline-none no-spin" value={v.quantity} onChange={e => { const nv = [...p.variants]; nv[i].quantity = Number(e.target.value); setP({...p, variants: nv})}} />
                       </div>
                       <div className="inline-flex items-center gap-1">
                         <span className="text-[7px] text-gray-400 font-black">السعر</span>
-                        <input type="number" className="w-14 p-1 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-lg text-center font-black text-gray-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-accent outline-none" value={v.price} onChange={e => { const nv = [...p.variants]; nv[i].price = Number(e.target.value); setP({...p, variants: nv})}} />
+                        <input type="number" className="w-16 p-1 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-lg text-center font-black text-gray-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-accent outline-none no-spin" value={v.price} onChange={e => { const nv = [...p.variants]; nv[i].price = Number(e.target.value); setP({...p, variants: nv})}} />
                       </div>
                     </div>
                   </td>
@@ -655,7 +655,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
         ? `أُضيف: ${formatDate(product!.createdAt, 'full')}${product!.updatedAt ? `  •  آخر تعديل: ${formatDate(product!.updatedAt, 'full')}` : ''}`
         : `الخطوة ${currentStep + 1} من ${STEPS.length} — ${STEPS[currentStep].desc}`}
       icon={<span className="material-symbols-rounded" style={{ fontSize: 24 }}>inventory_2</span>}
-      maxWidth="xl"
+      maxWidth="3xl"
       actions={[
         ...(isEdit ? [{ label: 'حذف', onClick: () => { if(window.confirm('هل أنت متأكد من حذف المنتج نهائياً من النظام؟')) { markClean(); onDeleteAction(product!.id); onClose(); } }, variant: 'danger' as const }] : []),
         { label: 'إلغاء', onClick: () => withUnsavedCheck(onClose), closeOnAction: false, variant: 'text' as const },
