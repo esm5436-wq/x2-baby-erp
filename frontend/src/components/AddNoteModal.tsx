@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Paperclip, X, Send, Image as ImageIcon } from 'lucide-react';
 import { API_BASE, getAuthToken } from '../lib/api';
 import { compressImage } from '../lib/imageUtils';
+import { useImageDropZone } from '../lib/useImageDropZone';
 import { getAuthUsername } from '../lib/api';
 import { MD3Dialog } from './md3';
 import { MD3TextArea } from './md3';
@@ -26,8 +27,8 @@ export default function AddNoteModal({ entityType, entityId, onClose, onAdded }:
 
   const isOrder = entityType === 'order';
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleNoteFile = async (files: File[] | FileList | null) => {
+    const file = files?.[0];
     if (!file) return;
     try {
       const compressed = await compressImage(file, 800, 0.7);
@@ -36,6 +37,12 @@ export default function AddNoteModal({ entityType, entityId, onClose, onAdded }:
       console.error('Error compressing image:', err);
     }
   };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    await handleNoteFile(e.target.files);
+  };
+
+  const { isDragging: noteDragging, dropProps: noteDropProps } = useImageDropZone(handleNoteFile);
 
   const handleSubmit = async () => {
     if (!content.trim()) {
@@ -90,7 +97,12 @@ export default function AddNoteModal({ entityType, entityId, onClose, onAdded }:
         },
       ]}
     >
-      <div className="space-y-4">
+      <div {...noteDropProps} className={`relative space-y-4 rounded-2xl transition-all duration-200 ${noteDragging ? 'outline outline-2 outline-offset-4 outline-[var(--md-sys-color-primary)] bg-[var(--md-sys-color-surface-container)]' : ''}`}>
+        {noteDragging && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+            <span className="text-xs font-black text-[var(--md-sys-color-primary)] bg-surface px-4 py-2 rounded-full shadow-lg">أفلت الصورة لإرفاقها بالملاحظة</span>
+          </div>
+        )}
         {/* Show to Customer Checkbox - Orders only */}
         {isOrder && (
           <div className="p-3 bg-[var(--md-sys-color-surface-container-low)] rounded-2xl">
@@ -148,6 +160,7 @@ export default function AddNoteModal({ entityType, entityId, onClose, onAdded }:
           <Paperclip size={14} />
           إرفاق صورة
         </button>
+        <p className="text-[10px] text-gray-400 dark:text-gray-500 italic">يمكنك أيضاً سحب صورة من جهازك وإفلتها في أي مكان بالنافذة.</p>
       </div>
     </MD3Dialog>
   );

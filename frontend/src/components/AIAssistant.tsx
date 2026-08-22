@@ -8,6 +8,7 @@ import { Send, X, Bot, Loader2, Sparkles, User, Minimize2, Maximize2, Trash2, Pa
 import { AppState, Order, Product, OrderStatus } from '../types';
 import { useBreakpoint } from '../hooks/useBreakpoint';
 import MD3BottomSheet from './MD3BottomSheet';
+import { useImageDropZone } from '../lib/useImageDropZone';
 
 interface AIAssistantProps {
   state: AppState;
@@ -107,12 +108,15 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
     });
   };
 
+  const attachFile = async (file: File) => {
+    if (!file.type.startsWith('image/')) return;
+    const compressed = await compressImage(file);
+    setAttachment(compressed);
+  };
+
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const compressed = await compressImage(file);
-      setAttachment(compressed);
-    }
+    if (file) await attachFile(file);
     // Reset input
     if (e.target) e.target.value = '';
   };
@@ -124,12 +128,14 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
         const file = items[i].getAsFile();
         if (file) {
           e.preventDefault();
-          compressImage(file).then(compressed => setAttachment(compressed));
+          attachFile(file);
           return;
         }
       }
     }
   };
+
+  const { isDragging: chatDragging, dropProps: chatDropProps } = useImageDropZone(files => attachFile(files[0]));
 
   const removeAttachment = () => setAttachment(null);
 
@@ -431,7 +437,12 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ state, onUpdateOrderStatus, o
   );
 
   const inputArea = (
-    <div className="p-3 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-700 space-y-3 shrink-0">
+    <div {...chatDropProps} className={`relative p-3 bg-white dark:bg-slate-900 border-t space-y-3 shrink-0 transition-colors duration-200 ${chatDragging ? 'border-accent bg-accent/5' : 'border-gray-100 dark:border-slate-700'}`}>
+      {chatDragging && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm pointer-events-none">
+          <span className="text-xs font-black text-accent bg-accent/10 border-2 border-dashed border-accent rounded-xl px-4 py-2">أفلت الصورة لإرفاقها بالرسالة</span>
+        </div>
+      )}
       <AnimatePresence>
         {!attachment && !isLoading && (
           <motion.div 

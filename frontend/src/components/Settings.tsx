@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Download, Upload, Database, AlertCircle, AlertTriangle, Check, Clock, Palette, Image as ImageIcon, Trash2, Save, Tag, Plus, ChevronDown, ChevronRight, Edit2, Sparkles, Key, ArrowUp, ArrowDown, Eye, EyeOff, X, Printer, Percent, RotateCcw, History, Layers, RefreshCw, Shield } from 'lucide-react';
 import { AppState, Category } from '../types';
 import { compressImage } from '../lib/imageUtils';
+import { useImageDropZone } from '../lib/useImageDropZone';
 import { updateFavicon } from '../lib/faviconUtils';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -288,10 +289,7 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
     } catch { showNotification('خطأ في إضافة الكوبون', 'error'); }
   };
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const uploadLogoFile = async (file: File) => {
     try {
       const base64 = await compressImage(file, 400, 0.7);
       await fetch(`${API_BASE}/settings`, {
@@ -305,13 +303,16 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
     } catch (err) {
       showNotification('خطأ في حفظ الشعار', 'error');
     }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await uploadLogoFile(file);
     e.target.value = '';
   };
 
-  const handleSloganDesignUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const uploadSloganDesignFile = async (file: File) => {
     try {
       const base64 = await compressImage(file, 400, 0.7);
       await fetch(`${API_BASE}/settings`, {
@@ -324,13 +325,16 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
     } catch (err) {
       showNotification('خطأ في حفظ تصميم الشعار', 'error');
     }
+  };
+
+  const handleSloganDesignUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await uploadSloganDesignFile(file);
     e.target.value = '';
   };
 
-  const handleThankYouUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const uploadThankYouFile = async (file: File) => {
     try {
       const base64 = await compressImage(file, 300, 0.7);
       const res = await fetch(`${API_BASE}/settings`, {
@@ -344,8 +348,18 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
     } catch (err) {
       showNotification('خطأ في حفظ الصورة', 'error');
     }
+  };
+
+  const handleThankYouUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await uploadThankYouFile(file);
     e.target.value = '';
   };
+
+  const logoDrop = useImageDropZone(files => uploadLogoFile(files[0]));
+  const sloganDrop = useImageDropZone(files => uploadSloganDesignFile(files[0]));
+  const thankYouDrop = useImageDropZone(files => uploadThankYouFile(files[0]));
 
   const saveInvoiceSettings = async (overrides: any) => {
     const keys = Object.keys(overrides);
@@ -533,7 +547,12 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
         defaultOpen={false}
         headerClassName="mb-2"
       >
-      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border border-[var(--md-sys-color-outline-variant)]/20 flex flex-col md:flex-row items-center gap-8">
+      <motion.div {...logoDrop.dropProps} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className={`relative bg-[var(--md-sys-color-surface)] p-8 rounded-[32px] shadow-sm border transition-all duration-200 flex flex-col md:flex-row items-center gap-8 ${logoDrop.isDragging ? 'border-accent ring-2 ring-accent bg-accent/5' : 'border-[var(--md-sys-color-outline-variant)]/20'}`}>
+        {logoDrop.isDragging && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+            <span className="text-xs font-black text-accent bg-surface px-4 py-2 rounded-full shadow-lg">أفلت الصورة لتحديث الشعار</span>
+          </div>
+        )}
         <div className="w-40 h-40 bg-white rounded-[40px] border flex items-center justify-center overflow-hidden shadow-md ring-8 ring-[var(--md-sys-color-surface-container)]">
           {state.brandLogo ? <img src={state.brandLogo} className="w-full h-full object-contain p-4" /> : <ImageIcon size={40} className="text-[var(--md-sys-color-on-surface-variant)]" />}
         </div>
@@ -578,9 +597,14 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
               />
             </div>
 
-            <div className="space-y-2 text-right p-4 bg-accent/5 rounded-2xl border border-accent/10">
+            <div {...sloganDrop.dropProps} className={`relative space-y-2 text-right p-4 rounded-2xl border transition-all duration-200 ${sloganDrop.isDragging ? 'border-accent ring-2 ring-accent bg-accent/10' : 'bg-accent/5 border-accent/10'}`}>
+              {sloganDrop.isDragging && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                  <span className="text-xs font-black text-accent bg-surface px-4 py-2 rounded-full shadow-lg">أفلت الصورة هنا</span>
+                </div>
+              )}
               <label className="text-[10px] font-black text-accent uppercase tracking-widest px-2">تصميم الشعار اللفظي (Image Slogan)</label>
-              <p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] mb-2 px-2">إذا كان لديك تصميم جاهز للشعار اللفظي، يمكنك رفعه هنا ليظهر فوق زر الوضع الليلي.</p>
+              <p className="text-[10px] text-[var(--md-sys-color-on-surface-variant)] mb-2 px-2">إذا كان لديك تصميم جاهز للشعار اللفظي، يمكنك رفعه هنا أو سحبه وإفلاته على هذه البطاقة.</p>
               
               {state.brandSloganDesign && (
                 <div className="mb-3 relative group w-fit mx-auto md:mx-0">
@@ -611,7 +635,12 @@ const Settings: React.FC<SettingsProps> = ({ state, onImport, onUpdateState }) =
               </button>
             </div>
 
-            <div className="space-y-3 p-4 bg-accent/5 rounded-2xl border border-accent/10">
+            <div {...thankYouDrop.dropProps} className={`relative space-y-3 p-4 rounded-2xl border transition-all duration-200 ${thankYouDrop.isDragging ? 'border-accent ring-2 ring-accent bg-accent/10' : 'bg-accent/5 border-accent/10'}`}>
+              {thankYouDrop.isDragging && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                  <span className="text-xs font-black text-accent bg-surface px-4 py-2 rounded-full shadow-lg">أفلت الصورة هنا</span>
+                </div>
+              )}
               <h4 className="font-black text-sm">صورة شكراً لك (تظهر في الفاتورة)</h4>
               {state.invoiceSettings?.thankYouImage && (
                 <div className="relative group w-fit mx-auto">

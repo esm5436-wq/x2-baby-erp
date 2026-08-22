@@ -35,6 +35,7 @@ import ProductModal from './ProductModal';
 import ContactModal from './ContactModal';
 import { exportToExcel, exportToPDF, exportToHTML, exportToCSV, exportToJSON } from '../lib/exportService';
 import { compressImage } from '../lib/imageUtils';
+import { useImageDropZone } from '../lib/useImageDropZone';
 import { Globe } from 'lucide-react';
 import { MD3Button, MD3IconButton } from './md3';
 import { MD3EmptyState, MD3Badge } from './md3';
@@ -366,8 +367,8 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
     }).format(value);
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleInvoiceFile = async (files: File[] | FileList | null) => {
+    const file = files?.[0];
     if (file) {
       try {
         const base64 = await compressImage(file, 800, 0.7);
@@ -377,6 +378,12 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
       }
     }
   };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    await handleInvoiceFile(e.target.files);
+  };
+
+  const { isDragging: invoiceDragging, dropProps: invoiceDropProps } = useImageDropZone(handleInvoiceFile);
 
   return (
     <AnimatePresence mode="wait">
@@ -588,10 +595,12 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                 <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 block mb-6 uppercase tracking-wider">
                   {transactionType === 'inventory' ? 'صورة الفاتورة الورقية' : 'صورة الإيصال'}
                 </label>
-                <div onClick={() => document.getElementById('invoice-img')?.click()} className="aspect-square bg-gray-50 dark:bg-slate-800 rounded-[24px] border-2 border-dashed border-gray-200 dark:border-slate-700 flex flex-col items-center justify-center cursor-pointer hover:border-accent group transition-colors duration-200 overflow-hidden relative">
-                  {newInvoice.image ? <img src={newInvoice.image} className="w-full h-full object-cover" /> : <Upload className="text-gray-500 dark:text-gray-400 group-hover:text-accent" size={32} />}
+                <div onClick={() => document.getElementById('invoice-img')?.click()} {...invoiceDropProps} title="انقر للاختيار أو اسحب الصورة وأفلتها هنا" className={`aspect-square rounded-[24px] border-2 border-dashed flex flex-col items-center justify-center cursor-pointer group transition-all duration-200 overflow-hidden relative ${invoiceDragging ? 'border-accent bg-accent/10' : 'bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-accent'}`}>
+                  {newInvoice.image ? <img src={newInvoice.image} className="w-full h-full object-cover" /> : <Upload className={`group-hover:text-accent transition-colors ${invoiceDragging ? 'text-accent scale-110' : 'text-gray-500 dark:text-gray-400'}`} size={32} />}
+                  {invoiceDragging && !newInvoice.image && <span className="absolute bottom-3 text-[10px] font-black text-accent">أفلت الصورة هنا</span>}
                   <input type="file" id="invoice-img" className="hidden" accept="image/*" onChange={handleImageUpload} />
                 </div>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center italic">انقر لاختيار صورة، أو اسحبها من جهازك وأفلتها في المربع مباشرة.</p>
               </motion.div>
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }} className="p-8 rounded-[32px] shadow-md space-y-6" style={{ backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' }}>
                 <div className="space-y-1">

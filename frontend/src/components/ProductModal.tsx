@@ -8,6 +8,7 @@ import {
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Product, Variant, Category, OptionCategory, OptionType } from '../types';
 import { formatDate } from '../lib/formatDate';
+import { useImageDropZone } from '../lib/useImageDropZone';
 import { MD3Dialog } from './md3';
 import { useSnackbar, MD3Snackbar } from './md3/MD3Snackbar';
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -207,13 +208,19 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
     setP({ ...p, image: compressed, images: newImages });
   };
 
-  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files; if (!files || files.length === 0) return;
+  const handleGalleryFiles = async (files: File[] | FileList | null) => {
+    if (!files || files.length === 0) return;
     const compressed = await Promise.all(Array.from(files).map(f => compressImage(f)));
     const currentImages = p.images || [p.image].filter(Boolean);
     const newImages = [...currentImages, ...compressed];
     setP({ ...p, images: newImages, image: newImages[0] || p.image });
   };
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    await handleGalleryFiles(e.target.files);
+  };
+
+  const { isDragging: galleryDragging, dropProps: galleryDropProps } = useImageDropZone(handleGalleryFiles);
 
   const handleAddImageUrl = () => {
     const url = pendingImageUrl.trim(); if (!url) return;
@@ -416,7 +423,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
               </div>
             </div>
           ))}
-          <button type="button" onClick={() => galleryFileInputRef.current?.click()} className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-dashed border-gray-200 dark:border-slate-700 flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-accent hover:text-accent transition-colors bg-gray-50/50 dark:bg-slate-800/50">
+          <button type="button" onClick={() => galleryFileInputRef.current?.click()} {...galleryDropProps} title="انقر للاختيار أو اسحب الصور وأفلتها هنا"
+            className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-1 transition-all duration-200 ${galleryDragging ? 'border-accent bg-accent/10 text-accent scale-105' : 'border-gray-200 dark:border-slate-700 text-gray-400 hover:border-accent hover:text-accent bg-gray-50/50 dark:bg-slate-800/50'}`}>
             <Upload size={20} /><span className="text-[8px] font-black">رفع صور</span>
           </button>
           <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-dashed border-gray-200 dark:border-slate-700 flex flex-col items-center justify-center gap-1 text-gray-400 bg-gray-50/50 dark:bg-slate-800/50 p-1">
@@ -425,7 +433,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
           </div>
         </div>
         <input type="file" accept="image/*" multiple className="hidden" ref={galleryFileInputRef} onChange={handleGalleryUpload} />
-        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold px-2 italic">أول صورة هي الأساسية. يمكن رفع صور متعددة أو إضافة روابط URLs.</p>
+        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold px-2 italic">أول صورة هي الأساسية. يمكنك سحب الصور وإفلاتها في مربع الرفع مباشرة، أو إضافة روابط URLs.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
