@@ -19,14 +19,24 @@ function getAppUrl(req) {
   return url.replace(/\/+$/, '');
 }
 
+function getApiOrigin(req) {
+  const envUrl = process.env.PUBLIC_API_URL;
+  if (envUrl) return envUrl.replace(/\/+$/, '');
+  const proto = String(req.headers['x-forwarded-proto'] || req.protocol || '').split(',')[0].trim();
+  const host = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim();
+  if (host && /^https?$/i.test(proto)) return `${proto}://${host}`;
+  return '';
+}
+
 router.get('/api/public/manifest', async (req, res) => {
   try {
     const appUrl = getAppUrl(req);
+    const apiOrigin = getApiOrigin(req);
     let iconSrc = appUrl ? `${appUrl}/icon.svg` : '/icon.svg';
     let iconType = 'image/svg+xml';
     const rows = await allDb("SELECT value FROM settings WHERE key = 'brandLogo' LIMIT 1");
     if (rows.length > 0 && rows[0].value) {
-      iconSrc = `${appUrl}/api/public/brand-icon`;
+      iconSrc = `${apiOrigin}/api/public/brand-icon`;
       iconType = 'image/png';
     }
     const startUrl = `${appUrl}/`;
