@@ -7,15 +7,29 @@ import { ADMIN_PERMISSIONS, parsePermissions } from '../middleware/Permission.js
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-dev-secret';
 
+function getAppUrl(req) {
+  let url = process.env.PUBLIC_APP_URL || '';
+  if (!url) {
+    const origin = req.headers.origin || '';
+    if (/^https?:\/\//.test(origin)) url = origin;
+  }
+  if (!url) {
+    try { url = new URL(req.headers.referer || '').origin; } catch {}
+  }
+  return url.replace(/\/+$/, '');
+}
+
 router.get('/api/public/manifest', async (req, res) => {
   try {
-    let iconSrc = '/icon.svg';
+    const appUrl = getAppUrl(req);
+    let iconSrc = appUrl ? `${appUrl}/icon.svg` : '/icon.svg';
     let iconType = 'image/svg+xml';
     const rows = await allDb("SELECT value FROM settings WHERE key = 'brandLogo' LIMIT 1");
     if (rows.length > 0 && rows[0].value) {
-      iconSrc = '/api/public/brand-icon';
+      iconSrc = `${appUrl}/api/public/brand-icon`;
       iconType = 'image/png';
     }
+    const startUrl = `${appUrl}/`;
     const brandRows = await allDb("SELECT key, value FROM settings WHERE key IN ('brandName')");
     let name = 'X2 ERP';
     let shortName = 'X2 ERP';
@@ -25,10 +39,12 @@ router.get('/api/public/manifest', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-cache');
     res.json({
+      id: startUrl,
       name,
       short_name: shortName,
       description: 'نظام إدارة المخزون والمبيعات',
-      start_url: '/',
+      start_url: startUrl,
+      scope: startUrl,
       display: 'standalone',
       orientation: 'any',
       background_color: '#f8fafc',
@@ -41,13 +57,15 @@ router.get('/api/public/manifest', async (req, res) => {
       ]
     });
   } catch {
+    const appUrl = getAppUrl(req);
     res.json({
+      id: `${appUrl}/`,
       name: 'X2 ERP', short_name: 'X2 ERP',
       description: 'نظام إدارة المخزون والمبيعات',
-      start_url: '/', display: 'standalone', orientation: 'any',
+      start_url: `${appUrl}/`, scope: `${appUrl}/`, display: 'standalone', orientation: 'any',
       background_color: '#f8fafc', theme_color: '#006B5E',
       dir: 'rtl', lang: 'ar', categories: ['business', 'productivity'],
-      icons: [{ src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }]
+      icons: [{ src: `${appUrl}/icon.svg`, sizes: 'any', type: 'image/svg+xml', purpose: 'any' }]
     });
   }
 });

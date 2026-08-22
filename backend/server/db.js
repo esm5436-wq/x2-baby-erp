@@ -84,6 +84,41 @@ export async function localizeImageAsFile(url, entityId) {
   }
 }
 
+async function cleanupLegacyProductImages() {
+  try {
+    const flag = await getDb("SELECT value FROM settings WHERE key = 'legacy_product_images_cleaned' LIMIT 1");
+    if (flag && flag.value === '1') return;
+    const rows = await allDb("SELECT id, data FROM products");
+    let cleaned = 0;
+    for (const row of rows) {
+      try {
+        const product = JSON.parse(row.data);
+        let modified = false;
+        if (typeof product.image === 'string' && product.image.startsWith('/uploads/')) {
+          product.image = '';
+          modified = true;
+        }
+        if (Array.isArray(product.images)) {
+          const filtered = product.images.filter(u => !(typeof u === 'string' && u.startsWith('/uploads/')));
+          if (filtered.length !== product.images.length) {
+            product.images = filtered;
+            modified = true;
+          }
+        }
+        if (modified) {
+          await runDb("UPDATE products SET data = ? WHERE id = ?", [JSON.stringify(product), row.id]);
+          cleaned++;
+        }
+      } catch {}
+    }
+    await runDb("INSERT OR IGNORE INTO settings (key, value) VALUES ('legacy_product_images_cleaned', '0')");
+    await runDb("UPDATE settings SET value = '1' WHERE key = 'legacy_product_images_cleaned'");
+    console.log(`Legacy product image cleanup done (${cleaned} products updated)`);
+  } catch (e) {
+    console.error('cleanupLegacyProductImages error:', e.message);
+  }
+}
+
 export async function initializeSchema() {
   const statements = [
     `CREATE TABLE IF NOT EXISTS products (id TEXT PRIMARY KEY, data TEXT)`,
@@ -200,6 +235,7 @@ export async function initializeSchema() {
     await db.execute("UPDATE orders SET data = json_set(data, '$.status', 'مخاطر متوسطة') WHERE json_extract(data, '$.status') = 'Moderate Risk'");
   } catch (e) {}
 
+  await cleanupLegacyProductImages();
   await migrateExistingNotes();
   await bootstrapAdminUser();
 }

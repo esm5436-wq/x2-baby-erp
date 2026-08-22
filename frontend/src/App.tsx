@@ -453,10 +453,11 @@ const App: React.FC = () => {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    if (state.brandLogo) {
-      updateFavicon(state.brandLogo);
-      updateManifest(state.brandLogo);
-    }
+    updateManifest();
+  }, []);
+
+  useEffect(() => {
+    updateFavicon(state.brandLogo);
   }, [state.brandLogo]);
 
   if (isLoading) {
