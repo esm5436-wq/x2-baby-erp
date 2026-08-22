@@ -372,12 +372,16 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
           icon={<CheckCircle size={20} />}
           label="نشط"
           value={contacts.filter(c => c.status === 'نشط').length}
+          onClick={() => setStatusFilter(prev => (prev === 'نشط' ? 'all' : 'نشط'))}
+          active={statusFilter === 'نشط'}
           iconBg="bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400"
         />
         <MD3StatCard
           icon={<XCircle size={20} />}
           label="غير نشط"
           value={contacts.filter(c => c.status === 'غير نشط').length}
+          onClick={() => setStatusFilter(prev => (prev === 'غير نشط' ? 'all' : 'غير نشط'))}
+          active={statusFilter === 'غير نشط'}
           iconBg="bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400"
         />
       </motion.div>

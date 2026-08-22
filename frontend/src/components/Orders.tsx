@@ -632,6 +632,14 @@ const SHIPPING_STATUSES = [
   OrderStatus.RETURNED_FROM_SHIPPING
 ];
 
+const PENDING_EXCLUDED_STATUSES: OrderStatus[] = [
+  OrderStatus.DELIVERED,
+  OrderStatus.CANCELED,
+  OrderStatus.INCOMPLETE
+];
+
+type StatusFilterValue = OrderStatus | 'الكل' | 'all_shipping' | 'pending_group';
+
 const STATUS_TRANSITIONS: Record<string, { label: string; nextStatus: OrderStatus; icon: any; btnClass: string }[]> = {
   [OrderStatus.CONFIRMED]: [
     { label: 'بدء التجهيز', nextStatus: OrderStatus.PROCESSING_SHIPPING, icon: PackageCheck, btnClass: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 border-blue-100 dark:border-blue-900/30' },
@@ -1071,7 +1079,7 @@ const Orders: React.FC<OrdersProps> = ({
   };
 
   const [orderSearch, setOrderSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<OrderStatus | 'الكل' | 'all_shipping'>('الكل');
+  const [statusFilter, setStatusFilter] = useState<StatusFilterValue>('الكل');
   const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
   const [sortField, setSortField] = useState<string>('created_at');
   const [sortAsc, setSortAsc] = useState(false);
@@ -1087,7 +1095,11 @@ const Orders: React.FC<OrdersProps> = ({
                           (o.sourceId || '').toLowerCase().includes(search) ||
                           o.items.some(item => item.productName.toLowerCase().includes(search)) ||
                           o.items.some(item => (item.sku || '').toLowerCase().includes(search));
-      const matchStatus = statusFilter === 'الكل' || (statusFilter === 'all_shipping' ? SHIPPING_STATUSES.includes(o.status) : o.status === statusFilter);
+      const matchStatus = statusFilter === 'الكل' || (statusFilter === 'all_shipping'
+        ? SHIPPING_STATUSES.includes(o.status)
+        : statusFilter === 'pending_group'
+          ? !PENDING_EXCLUDED_STATUSES.includes(o.status)
+          : o.status === statusFilter);
 
       // Date filtering
       const orderDate = new Date(o.createdAt);
@@ -1174,7 +1186,7 @@ const Orders: React.FC<OrdersProps> = ({
       externalOrderCount: targetOrders.filter(o => o.shippingMethod === ShippingMethod.EXTERNAL || !o.shippingMethod).length,
       completed: completedOrders,
       profit: estimatedProfit,
-      pending: targetOrders.filter(o => o.status !== OrderStatus.DELIVERED && o.status !== OrderStatus.CANCELED && o.status !== OrderStatus.INCOMPLETE).length
+      pending: targetOrders.filter(o => !PENDING_EXCLUDED_STATUSES.includes(o.status)).length
     };
   }, [filteredOrders, products]);
 
@@ -2029,22 +2041,26 @@ const Orders: React.FC<OrdersProps> = ({
               tooltip="يمثل صافي الربح المتوقع من هذه الطلبات. يتم احتسابه بدقة من خلال المعادلة: (إجمالي مدفوعات العملاء - (تكلفة المنتجات الأصلية + مصاريف الشحن)). هذا المؤشر يساعدك في معرفة الجدوى الاقتصادية الحقيقية لعملياتك بعد استبعاد التكاليف المباشرة."
             />
 
-            <MD3StatCard 
-              icon={<CheckCircle size={20} />} 
-              label="طلبات مكتملة" 
-              value={orderStats.completed.toString()} 
-              unit="طلب" 
-              iconBg="bg-purple-100 dark:bg-purple-900/30 text-purple-600" 
-              tooltip="هي الطلبات التي تمت دورتها بنجاح ووصلت لحالة 'تم التوصيل'. هذا الرقم يعكس نجاح المبيعات المحققة فعلياً والتي تم تحصيل ثمنها، وهو المعيار الحقيقي لنجاح العمل."
+            <MD3StatCard
+              icon={<CheckCircle size={20} />}
+              label="طلبات مكتملة"
+              value={orderStats.completed.toString()}
+              unit="طلب"
+              onClick={() => setStatusFilter(prev => (prev === OrderStatus.DELIVERED ? 'الكل' : OrderStatus.DELIVERED))}
+              active={statusFilter === OrderStatus.DELIVERED}
+              iconBg="bg-purple-100 dark:bg-purple-900/30 text-purple-600"
+              tooltip="هي الطلبات التي تمت دورتها بنجاح ووصلت لحالة 'تم التوصيل'. هذا الرقم يعكس نجاح المبيعات المحققة فعلياً والتي تم تحصيل ثمنها، وهو المعيار الحقيقي لنجاح العمل. اضغط على البطاقة لفلترة القائمة."
             />
 
-            <MD3StatCard 
-              icon={<Clock size={20} />} 
-              label="طلبات انتظار" 
-              value={orderStats.pending.toString()} 
-              unit="طلب" 
-              iconBg="bg-orange-100 dark:bg-orange-900/30 text-orange-600" 
-              tooltip="تشمل جميع الطلبات التي تم إنشاؤها ولكنها لم تصل بعد لحالة 'تم التوصيل' أو 'ملغى'. هي مؤشر على حجم العمل المتراكم حالياً والذي يتطلب جهداً في المتابعة أو التجهيز أو الشحن."
+            <MD3StatCard
+              icon={<Clock size={20} />}
+              label="طلبات انتظار"
+              value={orderStats.pending.toString()}
+              unit="طلب"
+              onClick={() => setStatusFilter(prev => (prev === 'pending_group' ? 'الكل' : 'pending_group'))}
+              active={statusFilter === 'pending_group'}
+              iconBg="bg-orange-100 dark:bg-orange-900/30 text-orange-600"
+              tooltip="تشمل جميع الطلبات التي تم إنشاؤها ولكنها لم تصل بعد لحالة 'تم التوصيل' أو 'ملغى'. هي مؤشر على حجم العمل المتراكم حالياً والذي يتطلب جهداً في المتابعة أو التجهيز أو الشحن. اضغط على البطاقة لفلترة القائمة."
             />
           </div>
         </CollapsibleSection>
@@ -2218,7 +2234,8 @@ const Orders: React.FC<OrdersProps> = ({
             >
               {statusFilter === 'الكل' && <span>جميع الحالات</span>}
               {statusFilter === 'all_shipping' && <span>الشحن</span>}
-              {statusFilter !== 'الكل' && statusFilter !== 'all_shipping' && (
+              {statusFilter === 'pending_group' && <span>قيد الانتظار</span>}
+              {statusFilter !== 'الكل' && statusFilter !== 'all_shipping' && statusFilter !== 'pending_group' && (
                 <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full ${getStatusStyle(statusFilter as OrderStatus)}`}>
                   {getStatusIcon(statusFilter as OrderStatus)}
                   {statusFilter}

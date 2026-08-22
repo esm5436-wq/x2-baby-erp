@@ -54,14 +54,34 @@ interface MD3StatCardProps {
   tooltip?: string;
   iconBg?: string;
   className?: string;
+  onClick?: () => void;
+  active?: boolean;
 }
 
-export const MD3StatCard: React.FC<MD3StatCardProps> = ({ icon, label, value, unit, subtitle, tooltip, iconBg, className = '' }) => {
+export const MD3StatCard: React.FC<MD3StatCardProps> = ({ icon, label, value, unit, subtitle, tooltip, iconBg, className = '', onClick, active = false }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipId = `stat-tooltip-${label?.replace(/\s/g, '-')}`;
+  const interactive = typeof onClick === 'function';
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick?.();
+    }
+  };
 
   return (
-    <div className={`bg-[var(--md-sys-color-surface-container-low)] rounded-xl p-4 flex flex-col justify-between group hover:shadow-[var(--md-sys-elevation-1)] transition-all relative min-w-0 ${className}`}>
+    <div
+      onClick={onClick}
+      onKeyDown={interactive ? handleKeyDown : undefined}
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      aria-pressed={interactive ? active : undefined}
+      title={interactive ? (active ? 'اضغط لإلغاء هذا الفلتر' : 'اضغط لفلترة القائمة حسب هذه الإحصائية') : undefined}
+      className={`bg-[var(--md-sys-color-surface-container-low)] rounded-xl p-4 flex flex-col justify-between group transition-all relative min-w-0 ${className} ${
+        interactive ? 'cursor-pointer select-none hover:-translate-y-0.5 hover:shadow-[var(--md-sys-elevation-2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent' : 'hover:shadow-[var(--md-sys-elevation-1)]'
+      } ${active ? 'ring-2 ring-accent bg-accent/10' : ''}`}
+    >
       <div className="flex items-center justify-between mb-2">
         <div className={`w-10 h-10 rounded-xl ${iconBg || 'bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]'} flex items-center justify-center`}>
           {icon}
