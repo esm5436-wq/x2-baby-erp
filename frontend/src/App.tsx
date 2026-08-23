@@ -16,6 +16,7 @@ const Settings = React.lazy(() => import('./components/Settings'));
 const Contacts = React.lazy(() => import('./components/Contacts'));
 const Customers = React.lazy(() => import('./components/Customers'));
 const ActivityLogs = React.lazy(() => import('./components/ActivityLogs'));
+const AssistantPage = React.lazy(() => import('./components/AssistantPage'));
 import { UndoRedoProvider, useUndoRedo } from './contexts/UndoRedoContext';
 import { useAuth } from './contexts/AuthContext';
 import { useTheme } from './contexts/ThemeContext';
@@ -101,6 +102,7 @@ const MainLayout: React.FC<{
     if (path === '/customers') return 'العملاء';
     if (path === '/activity-logs') return 'سجل النشاطات';
     if (path === '/settings') return 'إدارة البيانات';
+    if (path === '/assistant') return 'المساعد الذكي';
     return 'X2 ERP';
   })();
 
@@ -290,6 +292,12 @@ const MainLayout: React.FC<{
             </ProtectedRoute>
           } 
         />
+        <Route
+          path="/assistant"
+          element={
+            <AssistantPage state={state} onRefreshState={refreshAppState} />
+          }
+        />
         <Route 
           path="/settings" 
           element={
@@ -311,6 +319,7 @@ const MainLayout: React.FC<{
         onAddOrder={handleAddOrder}
         onUpdateProduct={handleUpdateProduct}
         onRefreshState={refreshAppState}
+        hidden={location.pathname === '/assistant'}
       />
 
       <MD3Dialog

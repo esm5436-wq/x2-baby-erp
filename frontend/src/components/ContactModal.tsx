@@ -229,7 +229,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
   const validate = () => {
     const errs: Record<string, string> = {};
     if (!form.companyName.trim()) errs.companyName = 'اسم الشركة مطلوب';
-    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'بريد إلكتروني غير صالح';
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errs.email = 'بريد إلكتروني غير صالح';
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -244,6 +244,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
     );
     onSave({
       ...form,
+      email: form.email.trim(),
       extraPhones: JSON.stringify(extraPhonesList.filter(ep => ep.phone)),
       ratingsData: JSON.stringify(cleanRatings),
       links: JSON.stringify(linksList),
@@ -524,7 +525,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
             </label>
             <input
               value={form.email}
-              onChange={e => setForm({ ...form, email: e.target.value })}
+              onChange={e => setForm({ ...form, email: e.target.value.replace(/\s+/g, '') })}
               className={`w-full px-4 py-3 bg-[var(--md-sys-color-surface-container)] border-2 rounded-2xl outline-none font-bold text-[var(--md-sys-color-on-surface)] focus:border-accent transition-colors duration-200 ${errors.email ? 'border-red-300 dark:border-red-700' : 'border-[var(--md-sys-color-outline-variant)]/30'}`}
               placeholder="email@example.com"
               dir="ltr"

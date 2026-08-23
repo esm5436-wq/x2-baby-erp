@@ -12,6 +12,29 @@ export async function getApiKeys() {
   }
 }
 
+function parseGoogleMapsCoords(url) {
+  if (!url || typeof url !== 'string') return null;
+  try {
+    const atM = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (atM) return { lat: parseFloat(atM[1]), lng: parseFloat(atM[2]) };
+    const qM = url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (qM) return { lat: parseFloat(qM[1]), lng: parseFloat(qM[2]) };
+    const bangM = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+    if (bangM) return { lat: parseFloat(bangM[1]), lng: parseFloat(bangM[2]) };
+  } catch {}
+  return null;
+}
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 function buildSystemInstruction() {
   const statusList = [
     'تحت المراجعة', 'تم التأكيد', 'في انتظار الدفع', 'تم الدفع', 'فشل الدفع',
@@ -48,26 +71,41 @@ function buildSystemInstruction() {
 - عند إضافة فاتورة: يزيد المخزون للـ variant + يُحدث سعر التكلفة + يُسجل مصروف
 
 **5. جهات الاتصال (Contacts) — جدول contacts**
-- الحقول: id, companyName, phone, phone2, contactPerson, extraPhones, email, address, specialization, entityType (عميل/مورد/مصنع/شريك/أخرى), taxId, commercialRegistry, notes, status (نشط/غير نشط), latitude, longitude, mapUrl, ratingsEnabled, ratingsData, links
+- الحقول: id, companyName, phone, phone2, contactPerson, extraPhones (JSON), email, address, specialization, entityType, taxId, commercialRegistry, notes, status (نشط/غير نشط), latitude, longitude, mapUrl, ratingsEnabled, ratingsData, links
+- قيم entityType الحقيقية: مصنع، تاجر جملة، مقدم خدمة، مستورد، شركة شحن، شركة تسويق، شركات الطباعه و التغليف، أخرى
+- الجهات قد تحتوي إحداثيات GPS (latitude/longitude) تُستخرج من رابط الخريطة — استخدم find_nearby_contacts لأسئلة القرب الجغرافي
 
-**6. المصروفات (Expenses) — جدول expenses**
-- الحقول: id, amount, category, description, beneficiaryId, created_at
+**6. العملاء (Customers) — جدول customers**
+- الحقول: id, name, phone, alt_phone, email, address, city, source, tags (JSON), notes, admin_notes, map_url, latitude, longitude, rating, classification (جديد/عادي/مميز...), total_orders, total_spent, last_order_date
+
+**7. المصروفات (Expenses) — جدول expenses**
+- الحقول: id, amount, category, description, beneficiary_id, created_at
 - فيه بند خاص: 'مشتريات مخزون (Inventory)' يأتي من فواتير المشتريات
 
-**7. الأهداف المالية (Financial Targets) — جدول financial_targets**
+**8. الأهداف المالية (Financial Targets) — جدول financial_targets**
 - الحقول: id, title, amount, startDate, deadline, category (net_profit/total_sales)
 
-**8. الكوبونات (Coupons) — جدول saved_coupons**
+**9. الكوبونات (Coupons) — جدول saved_coupons**
 - الحقول: code (PK), discount, is_percent, updated_at
 
-**9. نقاط الاستعادة (Checkpoints) — جدول checkpoints**
+**10. نقاط الاستعادة (Checkpoints) — جدول checkpoints**
 - الحقول: id, name, snapshot (JSON كامل), created_at
 
-**10. سجل النشاطات (Activity Logs) — جدول activity_logs**
+**11. سجل النشاطات (Activity Logs) — جدول activity_logs**
 - الحقول: id, action, entity_type, entity_id, description, metadata JSON, created_at
 
-**11. الإعدادات (Settings) — جدول settings key-value**
-- ai_api_keys, brandLogo, brandName, brandSlogan, categories, isManualMode, taxEnabled, taxRate, invoiceSettings وغيرها
+**12. الإعدادات (Settings) — جدول settings key-value**
+- ai_api_keys, brandLogo, brandName, brandSlogan, categories, isManualMode, taxEnabled, taxRate, invoiceSettings, warehouseLocation وغيرها
+- warehouseLocation = موقع التخزين {address, latitude, longitude} — نقطة الانطلاق الافتراضية لأسئلة "الأقرب لي"
+
+### بروتوكول القوة المطلقة (run_sql):
+عندما يطلب المستخدم أمراً لا توجد له أداة جاهزة، أو أمراً معقداً على مستوى قاعدة البيانات:
+1. ابحث أولاً عن أداة جاهزة تنجز المهمة — الأدوات الجاهزة أسرع وأكثر أماناً.
+2. إن لم توجد أداة مناسبة، استخدم run_sql.
+3. **إلزامي**: قبل أي استعلام كتابة (INSERT/UPDATE/DELETE)، اعرض على المستخدم ما ستفعله بالضبط واطلب تأكيده الصريح. لا تمرر confirm=true إلا بعد موافقته.
+4. كل عملية كتابة تُسجل تلقائياً مع نسخة احتياطية من البيانات المتأثرة — يمكن التراجع عبر undo_sql فوراً.
+5. اجعل WHERE ضيقاً ودقيقاً دائماً، ولا تنفذ DELETE بدون WHERE أبداً.
+6. عمليات DROP/ALTER لا يمكن التراجع عنها آلياً — أكد مع المستخدم مرتين.
 
 ### استراتيجية التسعير الذكي (X2 Smart Pricing):
 - تقريب الأسعار لتنتهي بـ 9 أو 49 (مثلاً 149 بدلاً من 150)
@@ -77,7 +115,9 @@ function buildSystemInstruction() {
 لما تستلم صورة منتج: حللها ← ابحث في المخزون (search_products) ← لو مش موجود اقترح إضافته (add_product)
 
 ### المبدأ الأساسي:
-أنت الـ Admin المطلق. تقدر تعمل أي حاجة في النظام: تقارير، تعديلات، إضافة، حذف، استعلامات. تعامل مع النظام على إنه بتاعك وانت عارف كل حاجة فيه.`;
+أنت الـ Admin المطلق. تقدر تعمل أي حاجة في النظام: تقارير، تعديلات، إضافة، حذف، استعلامات، وحتى أوامر معقدة على مستوى قاعدة البيانات عبر run_sql. تعامل مع النظام على إنه بتاعك وانت عارف كل حاجة فيه.
+- **الأوامر المعقدة**: يمكنك ربط عدة أدوات متتالية في خطوات (مثلاً: ابحث ← قارن ← عدّل ← أكّد) — النظام يدعم تنفيذ سلسلة خطوات حتى 6 جولات.
+- **الاقتصاد**: لا تجلب بيانات أكثر من حاجتك، واعرض نتائج مركزة.`;
 }
 
 function buildTools() {
@@ -361,15 +401,85 @@ function buildTools() {
           required: ["supplierId"]
         }
       },
-      // ========== جهات الاتصال (Contacts) ==========
+      // ========== العملاء (Customers) ==========
       {
-        name: "get_contacts",
-        description: "عرض جهات الاتصال (اختياري: فلترة حسب النوع)",
+        name: "get_customers",
+        description: "عرض العملاء مع بحث ذكي في الاسم/الهاتف/العنوان/المدينة (اختياري: بحث أو حد أقصى)",
         parameters: {
           type: "object",
           properties: {
-            entityType: { type: "string", description: "عميل/مورد/مصنع/شريك/أخرى (اختياري)" },
-            search: { type: "string", description: "بحث بالاسم أو الهاتف (اختياري)" }
+            search: { type: "string", description: "كلمة بحث في الاسم/الهاتف/البريد/المدينة/العنوان (اختياري)" },
+            limit: { type: "number", description: "أقصى عدد نتائج (افتراضي 50، أقصى 200)" }
+          }
+        }
+      },
+      {
+        name: "get_customer_by_id",
+        description: "عرض عميل محدد بكل تفاصيله وإحصائياته",
+        parameters: {
+          type: "object",
+          properties: { customerId: { type: "string" } },
+          required: ["customerId"]
+        }
+      },
+      {
+        name: "add_customer",
+        description: "إضافة عميل جديد",
+        parameters: {
+          type: "object",
+          properties: {
+            name: { type: "string", description: "اسم العميل" },
+            phone: { type: "string", description: "الهاتف (اختياري)" },
+            altPhone: { type: "string", description: "هاتف بديل (اختياري)" },
+            email: { type: "string", description: "البريد الإلكتروني (اختياري)" },
+            address: { type: "string", description: "العنوان (اختياري)" },
+            city: { type: "string", description: "المدينة (اختياري)" },
+            source: { type: "string", description: "مصدر العميل (اختياري)" },
+            notes: { type: "string", description: "ملاحظات (اختياري)" }
+          },
+          required: ["name"]
+        }
+      },
+      {
+        name: "update_customer",
+        description: "تعديل بيانات عميل موجود",
+        parameters: {
+          type: "object",
+          properties: {
+            customerId: { type: "string" },
+            name: { type: "string", description: "الاسم (اختياري)" },
+            phone: { type: "string", description: "الهاتف (اختياري)" },
+            altPhone: { type: "string", description: "هاتف بديل (اختياري)" },
+            email: { type: "string", description: "البريد (اختياري)" },
+            address: { type: "string", description: "العنوان (اختياري)" },
+            city: { type: "string", description: "المدينة (اختياري)" },
+            classification: { type: "string", description: "تصنيف العميل (اختياري)" },
+            adminNotes: { type: "string", description: "ملاحظات إدارية (اختياري)" },
+            notes: { type: "string", description: "ملاحظات (اختياري)" }
+          },
+          required: ["customerId"]
+        }
+      },
+      {
+        name: "delete_customer",
+        description: "حذف عميل نهائياً (اسأل المستخدم للتأكيد أولاً)",
+        parameters: {
+          type: "object",
+          properties: { customerId: { type: "string" } },
+          required: ["customerId"]
+        }
+      },
+      // ========== جهات الاتصال (Contacts) ==========
+      {
+        name: "get_contacts",
+        description: "عرض جهات الاتصال مع بحث ذكي في الاسم/الهاتف/العنوان/التخصص/الملاحظات",
+        parameters: {
+          type: "object",
+          properties: {
+            entityType: { type: "string", description: "فلترة بالنوع: مصنع/تاجر جملة/مقدم خدمة/مستورد/شركة شحن/شركة تسويق/شركات الطباعه و التغليف/أخرى (اختياري)" },
+            search: { type: "string", description: "بحث في الاسم/الهاتف/العنوان/التخصص (اختياري)" },
+            status: { type: "string", description: "نشط/غير نشط (اختياري)" },
+            limit: { type: "number", description: "أقصى عدد نتائج (افتراضي 50، أقصى 200)" }
           }
         }
       },
@@ -401,6 +511,10 @@ function buildTools() {
             companyName: { type: "string", description: "اسم الشركة (اختياري)" },
             phone: { type: "string", description: "رقم الهاتف (اختياري)" },
             entityType: { type: "string", description: "النوع (اختياري)" },
+            address: { type: "string", description: "العنوان النصي (اختياري)" },
+            specialization: { type: "string", description: "التخصص (اختياري)" },
+            email: { type: "string", description: "البريد الإلكتروني (اختياري)" },
+            mapUrl: { type: "string", description: "رابط خرائط جوجل للموقع (اختياري — يستخرج الإحداثيات تلقائياً)" },
             notes: { type: "string", description: "ملاحظات (اختياري)" },
             status: { type: "string", description: "نشط/غير نشط (اختياري)" }
           },
@@ -414,6 +528,57 @@ function buildTools() {
           type: "object",
           properties: { contactId: { type: "string" } },
           required: ["contactId"]
+        }
+      },
+      // ========== الموقع الجغرافي ==========
+      {
+        name: "find_nearby_contacts",
+        description: "ترتيب جهات الاتصال حسب القرب الجغرافي من موقع معين (يحسب المسافة بالكيلومترات للجهات ذات الإحداثيات، ويبحث نصياً في العناوين للباقي). مثال: أقرب شركة شحن لموقع التخزين",
+        parameters: {
+          type: "object",
+          properties: {
+            locationName: { type: "string", description: "اسم الموقع الهدف نصياً مثل 'مدينة نصر' أو 'القطامية، القاهرة الجديدة' (اختياري إذا مررت الإحداثيات)" },
+            latitude: { type: "number", description: "خط عرض الموقع الهدف (اختياري — لو مش موجود هيستخدم موقع التخزين)" },
+            longitude: { type: "number", description: "خط طول الموقع الهدف (اختياري — لو مش موجود هيستخدم موقع التخزين)" },
+            entityType: { type: "string", description: "فلترة بالنوع مثل شركة شحن (اختياري)" },
+            keyword: { type: "string", description: "كلمة إضافية للبحث النصي في العنوان/التخصص/الاسم (اختياري)" },
+            radiusKm: { type: "number", description: "نطاق بالكيلومترات (اختياري — بدون حد افتراضياً)" }
+          }
+        }
+      },
+      {
+        name: "set_warehouse_location",
+        description: "حفظ موقع التخزين (المستودع) لاستخدامه كنقطة انطلاق في حسابات القرب الجغرافي",
+        parameters: {
+          type: "object",
+          properties: {
+            address: { type: "string", description: "وصف العنوان نصياً" },
+            latitude: { type: "number", description: "خط العرض (اختياري)" },
+            longitude: { type: "number", description: "خط الطول (اختياري)" }
+          },
+          required: ["address"]
+        }
+      },
+      // ========== القوة المطلقة (SQL) ==========
+      {
+        name: "run_sql",
+        description: "تنفيذ أي استعلام SQL مباشرة على قاعدة البيانات للأوامر التي لا توجد لها أداة جاهزة. عمليات الكتابة تحتاج تأكيد المستخدم أولاً (confirm=true)، وتُسجل نسخة احتياطية تلقائية قابلة للتراجع عبر undo_sql",
+        parameters: {
+          type: "object",
+          properties: {
+            sql: { type: "string", description: "استعلام SQL واحد فقط" },
+            confirm: { type: "boolean", description: "true فقط بعد تأكيد المستخدم الصريح لعمليات الكتابة (اختياري للقراءة SELECT)" }
+          },
+          required: ["sql"]
+        }
+      },
+      {
+        name: "undo_sql",
+        description: "التراجع عن عملية كتابة سابقة نفذتها عبر run_sql — يستعيد البيانات من النسخة الاحتياطية التلقائية",
+        parameters: {
+          type: "object",
+          properties: { historyId: { type: "number", description: "معرف العملية من نتيجة run_sql" } },
+          required: ["historyId"]
         }
       },
       // ========== التصنيفات (Categories) ==========
@@ -904,19 +1069,87 @@ const toolHandlers = {
     return { success: true };
   },
 
+  // ====== Customers ======
+
+  async get_customers(args) {
+    let query = "SELECT id, name, phone, alt_phone as altPhone, email, address, city, source, tags, notes, classification, rating, total_orders as totalOrders, total_spent as totalSpent, last_order_date as lastOrderDate FROM customers WHERE 1=1";
+    const params = [];
+    if (args?.search) {
+      query += " AND (name LIKE ? OR phone LIKE ? OR alt_phone LIKE ? OR email LIKE ? OR city LIKE ? OR address LIKE ?)";
+      const s = `%${args.search}%`;
+      params.push(s, s, s, s, s, s);
+    }
+    const limit = Math.min(Math.max(args?.limit || 50, 1), 200);
+    query += " ORDER BY name ASC LIMIT ?";
+    params.push(limit);
+    return await allDb(query, params);
+  },
+
+  async get_customer_by_id(args) {
+    const row = await getDb("SELECT * FROM customers WHERE id = ?", [args.customerId]);
+    if (!row) return { error: "العميل غير موجود" };
+    return row;
+  },
+
+  async add_customer(args, refreshState) {
+    const id = `cust-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    await runDb(
+      "INSERT INTO customers (id, name, phone, alt_phone, email, address, city, source, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))",
+      [id, args.name.trim(), args.phone || '', args.altPhone || null, args.email || null,
+       args.address || null, args.city || null, args.source || null, args.notes || null]);
+    refreshState.current = true;
+    await logActivity('create', 'customer', id, `[AI] تم إضافة العميل ${args.name}`);
+    return { success: true, message: "تم إضافة العميل بنجاح", customerId: id };
+  },
+
+  async update_customer(args, refreshState) {
+    const existing = await getDb("SELECT * FROM customers WHERE id = ?", [args.customerId]);
+    if (!existing) return { error: "العميل غير موجود" };
+    const fields = [];
+    const vals = [];
+    if (args.name !== undefined) { fields.push('name=?'); vals.push(args.name); }
+    if (args.phone !== undefined) { fields.push('phone=?'); vals.push(args.phone); }
+    if (args.altPhone !== undefined) { fields.push('alt_phone=?'); vals.push(args.altPhone); }
+    if (args.email !== undefined) { fields.push('email=?'); vals.push(args.email); }
+    if (args.address !== undefined) { fields.push('address=?'); vals.push(args.address); }
+    if (args.city !== undefined) { fields.push('city=?'); vals.push(args.city); }
+    if (args.classification !== undefined) { fields.push('classification=?'); vals.push(args.classification); }
+    if (args.adminNotes !== undefined) { fields.push('admin_notes=?'); vals.push(args.adminNotes); }
+    if (args.notes !== undefined) { fields.push('notes=?'); vals.push(args.notes); }
+    if (fields.length === 0) return { error: "لا توجد بيانات للتعديل" };
+    fields.push("updated_at=datetime('now')");
+    vals.push(args.customerId);
+    await runDb(`UPDATE customers SET ${fields.join(',')} WHERE id=?`, vals);
+    refreshState.current = true;
+    await logActivity('update', 'customer', args.customerId, `[AI] تم تحديث بيانات العميل ${existing.name}`);
+    return { success: true, message: "تم تعديل بيانات العميل" };
+  },
+
+  async delete_customer(args, refreshState) {
+    const existing = await getDb("SELECT * FROM customers WHERE id = ?", [args.customerId]);
+    if (!existing) return { error: "العميل غير موجود" };
+    await runDb("DELETE FROM customers WHERE id = ?", [args.customerId]);
+    refreshState.current = true;
+    await logActivity('delete', 'customer', args.customerId, `[AI] تم حذف العميل ${existing.name}`);
+    return { success: true, message: "تم حذف العميل" };
+  },
+
   // ====== Contacts ======
 
   async get_contacts(args) {
-    const CONTACT_COLS = "id, company_name as companyName, phone, phone2, contact_person as contactPerson, email, address, specialization, entity_type as entityType, notes, status";
+    const CONTACT_COLS = "id, company_name as companyName, phone, phone2, contact_person as contactPerson, email, address, specialization, entity_type as entityType, notes, status, latitude, longitude, map_url as mapUrl";
     let query = `SELECT ${CONTACT_COLS} FROM contacts WHERE 1=1`;
     const params = [];
     if (args?.entityType) { query += " AND entity_type = ?"; params.push(args.entityType); }
+    if (args?.status) { query += " AND status = ?"; params.push(args.status); }
     if (args?.search) {
-      query += " AND (company_name LIKE ? OR phone LIKE ?)";
+      query += " AND (company_name LIKE ? OR phone LIKE ? OR phone2 LIKE ? OR address LIKE ? OR specialization LIKE ? OR notes LIKE ? OR contact_person LIKE ?)";
       const s = `%${args.search}%`;
-      params.push(s, s);
+      params.push(s, s, s, s, s, s, s);
     }
-    query += " ORDER BY company_name ASC LIMIT 100";
+    const limit = Math.min(Math.max(args?.limit || 50, 1), 200);
+    query += " ORDER BY company_name ASC LIMIT ?";
+    params.push(limit);
     return await allDb(query, params);
   },
 
@@ -939,8 +1172,20 @@ const toolHandlers = {
     if (args.companyName) { fields.push('company_name=?'); vals.push(args.companyName); }
     if (args.phone) { fields.push('phone=?'); vals.push(args.phone); }
     if (args.entityType) { fields.push('entity_type=?'); vals.push(args.entityType); }
+    if (args.address !== undefined) { fields.push('address=?'); vals.push(args.address); }
+    if (args.specialization !== undefined) { fields.push('specialization=?'); vals.push(args.specialization); }
+    if (args.email !== undefined) { fields.push('email=?'); vals.push(args.email); }
     if (args.notes) { fields.push('notes=?'); vals.push(args.notes); }
     if (args.status) { fields.push('status=?'); vals.push(args.status); }
+    if (args.mapUrl) {
+      fields.push('map_url=?');
+      vals.push(args.mapUrl);
+      const coords = parseGoogleMapsCoords(args.mapUrl);
+      if (coords) {
+        fields.push('latitude=?', 'longitude=?');
+        vals.push(String(coords.lat), String(coords.lng));
+      }
+    }
     if (fields.length === 0) return { error: "لا توجد بيانات للتعديل" };
     fields.push("updated_at=CURRENT_TIMESTAMP");
     vals.push(args.contactId);
@@ -955,6 +1200,255 @@ const toolHandlers = {
     refreshState.current = true;
     await logActivity('delete', 'contact', args.contactId, '[AI] تم حذف جهة اتصال');
     return { success: true };
+  },
+
+  // ====== الموقع الجغرافي ======
+
+  async find_nearby_contacts(args) {
+    let origin = null;
+    let originLabel = args?.locationName || '';
+    if (args?.latitude != null && args?.longitude != null) {
+      origin = { lat: Number(args.latitude), lng: Number(args.longitude) };
+    } else {
+      const sRow = await getDb("SELECT value FROM settings WHERE key = 'warehouseLocation'");
+      if (sRow) {
+        try {
+          const wh = JSON.parse(sRow.value);
+          if (wh?.latitude != null && wh?.longitude != null) {
+            origin = { lat: Number(wh.latitude), lng: Number(wh.longitude) };
+            originLabel = originLabel || wh.address || 'موقع التخزين';
+          } else if (!originLabel && wh?.address) {
+            originLabel = wh.address;
+          }
+        } catch {}
+      }
+    }
+
+    if (!origin && !originLabel) {
+      return { error: "لا يوجد موقع هدف. مرر latitude/longitude أو locationName، أو احفظ موقع التخزين أولاً عبر set_warehouse_location" };
+    }
+
+    let query = "SELECT id, company_name as companyName, phone, phone2, address, specialization, entity_type as entityType, status, latitude, longitude FROM contacts";
+    const params = [];
+    const conds = [];
+    if (args?.entityType) { conds.push("entity_type = ?"); params.push(args.entityType); }
+    if (conds.length) query += " WHERE " + conds.join(' AND ');
+    query += " ORDER BY company_name ASC";
+
+    const rows = await allDb(query, params);
+
+    const geoMatches = [];
+    const textMatches = [];
+    const radiusKm = args?.radiusKm ? Number(args.radiusKm) : null;
+
+    for (const c of rows) {
+      const lat = c.latitude != null ? parseFloat(c.latitude) : NaN;
+      const lng = c.longitude != null ? parseFloat(c.longitude) : NaN;
+      if (origin && !isNaN(lat) && !isNaN(lng)) {
+        const distKm = haversineKm(origin.lat, origin.lng, lat, lng);
+        if (radiusKm == null || distKm <= radiusKm) {
+          geoMatches.push({
+            id: c.id, companyName: c.companyName, entityType: c.entityType,
+            phone: c.phone, address: c.address || '', specialization: c.specialization || '',
+            distance_km: Math.round(distKm * 10) / 10,
+            location_source: 'GPS'
+          });
+        }
+        continue;
+      }
+      if (originLabel) {
+        const hay = `${c.companyName} ${c.address || ''} ${c.specialization || ''} ${c.notes || ''}`;
+        const words = originLabel.split(/[\s،,]+/).filter(w => w.length >= 3);
+        if (words.some(w => hay.includes(w))) {
+          textMatches.push({
+            id: c.id, companyName: c.companyName, entityType: c.entityType,
+            phone: c.phone, address: c.address || '', specialization: c.specialization || '',
+            location_source: 'نص العنوان (بدون GPS)'
+          });
+        }
+      }
+    }
+
+    geoMatches.sort((a, b) => a.distance_km - b.distance_km);
+
+    return {
+      origin: { name: originLabel || `${origin.lat}, ${origin.lng}`, has_coordinates: !!origin },
+      note: !origin
+        ? "موقع التخزين غير محفوظ بإحداثيات — النتائج أدناه مطابقة نصية فقط. للحصول على مسافات دقيقة احفظ الموقع بالإحداثيات."
+        : "مرتبة من الأقرب للأبعد بمسافة كيلومترات تقريبية (خط مستقيم).",
+      by_distance: geoMatches.slice(0, 50),
+      text_matches: textMatches.slice(0, 30),
+      total_geo_matches: geoMatches.length,
+      total_text_matches: textMatches.length
+    };
+  },
+
+  async set_warehouse_location(args, refreshState) {
+    const loc = { address: String(args.address), latitude: args.latitude ?? null, longitude: args.longitude ?? null };
+    await runDb(
+      "INSERT INTO settings (key, value) VALUES ('warehouseLocation', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+      [JSON.stringify(loc)]
+    );
+    refreshState.current = true;
+    await logActivity('update', 'settings', 'warehouseLocation', `[AI] تم حفظ موقع التخزين: ${loc.address}`);
+    return { success: true, message: "تم حفظ موقع التخزين", warehouseLocation: loc };
+  },
+
+  // ====== القوة المطلقة (SQL) ======
+
+  async run_sql(args, refreshState) {
+    const raw = String(args?.sql || '').trim();
+    if (!raw) return { error: "لا يوجد استعلام" };
+    const sql = raw.replace(/;\s*$/, '');
+    if (/;/.test(sql.replace(/'[^']*'/g, "''"))) return { error: "استعلام واحد فقط في كل مرة (بدون فاصلة منقوطة داخلية)" };
+
+    const forbidden = /^\s*(PRAGMA|ATTACH|DETACH|VACUUM|REINDEX|BEGIN|COMMIT|ROLLBACK)\b/i;
+    if (forbidden.test(sql)) return { error: "هذا النوع من الأوامر محظور لأسباب أمنية" };
+
+    const kindM = sql.match(/^\s*(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)\b/i);
+    if (!kindM) return { error: "نوع استعلام غير مدعوم" };
+    const kind = kindM[1].toUpperCase();
+
+    if (kind === 'SELECT') {
+      const limited = /\bLIMIT\s+\d+/i.test(sql) ? sql : `${sql} LIMIT 100`;
+      try {
+        const res = await allDb(limited);
+        const slim = res.map(r => {
+          const o = {};
+          for (const [k, v] of Object.entries(r)) {
+            o[k] = typeof v === 'string' && v.length > 300 ? v.slice(0, 300) + '…' : v;
+          }
+          return o;
+        });
+        return { executed: true, kind, rows: slim, count: slim.length, truncated_note: res.length >= 100 ? "النتائج محدودة بـ 100 صف لتوفير التوكن — ضع شروطاً أدق لاستعلامات أوسع" : undefined };
+      } catch (e) {
+        return { error: e.message };
+      }
+    }
+
+    if (kind === 'CREATE' || kind === 'ALTER' || kind === 'DROP') {
+      if (args?.confirm !== true) {
+        return { needsConfirmation: true, warning: "عملية على هيكل قاعدة البيانات ولا يمكن التراجع عنها آلياً. اشرح للمستخدم ما ستفعله واطلب تأكيده الصريح ثم أعد التنفيذ بـ confirm=true", kind };
+      }
+      try {
+        await runDb(sql);
+        refreshState.current = true;
+        await logActivity('update', 'settings', 'run_sql', `[AI-SQL] ${sql.slice(0, 150)}`);
+        return { executed: true, kind, irreversible: true, message: "تم التنفيذ. لا يمكن التراجع عن عمليات الهياكل آلياً." };
+      } catch (e) {
+        return { error: e.message };
+      }
+    }
+
+    // INSERT / UPDATE / DELETE — نسخ احتياطي قابل للتراجع
+    if (args?.confirm !== true) {
+      return {
+        needsConfirmation: true,
+        kind,
+        protocol: "اعرض على المستخدم ملخص ما سيحدث بالضبط (الجدول، الشروط، عدد الصفوف المتوقع إن أمكن) واحصل على موافقته الصريحة، ثم أعد نفس الاستعلام مع confirm=true"
+      };
+    }
+
+    const tableM = sql.match(/^\s*(?:INSERT\s+(?:OR\s+\w+\s+)?INTO|UPDATE|DELETE\s+FROM)\s+["'`\[]?([\w]+)/i);
+    const table = tableM ? tableM[1] : null;
+
+    try {
+      let historyId = null;
+
+      if (kind === 'INSERT') {
+        let maxBefore = 0;
+        if (table) {
+          const r = await getDb(`SELECT COALESCE(MAX(rowid), 0) as m FROM "${table}"`);
+          maxBefore = r?.m || 0;
+        }
+        await runDb(sql);
+        let newIds = [];
+        if (table) {
+          const rowsAfter = await allDb(`SELECT rowid as rid FROM "${table}" WHERE rowid > ?`, [maxBefore]);
+          newIds = rowsAfter.map(r => r.rid);
+        }
+        const hres = await runDb(
+          "INSERT INTO ai_sql_history (sql_text, kind, target_table, new_rowids) VALUES (?, 'insert', ?, ?)",
+          [sql, table, JSON.stringify(newIds)]
+        );
+        historyId = hres?.lastInsertRowid ?? hres?.id ?? null;
+        refreshState.current = true;
+        await logActivity('create', 'settings', 'run_sql', `[AI-SQL] ${sql.slice(0, 150)}`);
+        return {
+          executed: true, kind, affected_rows: newIds.length || 'غير معروف',
+          historyId, reversible: newIds.length > 0,
+          message: `تم التنفيذ${newIds.length ? ` وأُدرج ${newIds.length} صف — يمكن التراجع عبر undo_sql` : ''}`
+        };
+      }
+
+      // UPDATE / DELETE — نسخ الصفوف المتأثرة قبل التنفيذ
+      if (!table) return { error: "لم أتعرف على اسم الجدول — استخدم صيغة SQL قياسية" };
+      const whereM = sql.match(/\bWHERE\b([\s\S]*)$/i);
+      const whereClause = whereM ? whereM[1].trim() : null;
+      if (kind === 'DELETE' && !whereClause) {
+        return { error: "DELETE بدون WHERE محظور تماماً. إذا كنت تريد إفراغ جدول كامل اطلب من المستخدم استخدام نقاط الاستعادة بدلاً منه." };
+      }
+
+      const backupSql = `SELECT rowid as __rid, * FROM "${table}"${whereClause ? ` WHERE ${whereClause}` : ''}`;
+      const backupRows = await allDb(backupSql);
+      if (backupRows.length > 5000) {
+        return { error: `الشروط ستؤثر على ${backupRows.length} صف — هذا كثير جداً. ضيّق الشروط أو استخدم نقطة استعادة.` };
+      }
+      const backup = backupRows.map(r => ({ rid: r.__rid, data: Object.fromEntries(Object.entries(r).filter(([k]) => k !== '__rid')) }));
+
+      await runDb(sql);
+
+      const hres = await runDb(
+        "INSERT INTO ai_sql_history (sql_text, kind, target_table, backup_data) VALUES (?, ?, ?, ?)",
+        [sql, kind.toLowerCase(), table, JSON.stringify(backup)]
+      );
+      historyId = hres?.lastInsertRowid ?? hres?.id ?? null;
+      refreshState.current = true;
+      await logActivity(kind === 'UPDATE' ? 'update' : 'delete', 'settings', 'run_sql', `[AI-SQL] ${sql.slice(0, 150)} (${backup.length} صف بنسخة احتياطية)`);
+
+      return {
+        executed: true, kind, affected_rows: backup.length,
+        historyId, reversible: true,
+        message: `تم التنفيذ على ${backup.length} صف — النسخة الاحتياطية محفوظة ويمكن التراجع فوراً عبر undo_sql (historyId: ${historyId})`
+      };
+    } catch (e) {
+      return { error: e.message };
+    }
+  },
+
+  async undo_sql(args) {
+    const id = Number(args?.historyId);
+    if (!id) return { error: "historyId مطلوب" };
+    const row = await getDb("SELECT * FROM ai_sql_history WHERE id = ?", [id]);
+    if (!row) return { error: "لا توجد عملية بهذا المعرف" };
+    if (row.undone) return { error: "هذه العملية تم التراجع عنها بالفعل" };
+    if (row.kind === 'insert') {
+      const ids = JSON.parse(row.new_rowids || '[]');
+      if (!ids.length) return { error: "لا توجد نسخة احتياطية لهذه العملية" };
+      await runDb(`DELETE FROM "${row.target_table}" WHERE rowid IN (${ids.map(() => '?').join(',')})`, ids);
+    } else if (row.kind === 'update' || row.kind === 'delete') {
+      const backup = JSON.parse(row.backup_data || '[]');
+      if (!backup.length) return { error: "لا توجد نسخة احتياطية لهذه العملية" };
+      const cols = Object.keys(backup[0].data);
+      for (const item of backup) {
+        if (row.kind === 'delete') {
+          await runDb(
+            `INSERT INTO "${row.target_table}" (${cols.map(c => `"${c}"`).join(',')}) VALUES (${cols.map(() => '?').join(',')})`,
+            cols.map(c => item.data[c])
+          );
+        } else {
+          await runDb(
+            `UPDATE "${row.target_table}" SET ${cols.map(c => `"${c}" = ?`).join(',')} WHERE rowid = ?`,
+            [...cols.map(c => item.data[c]), item.rid]
+          );
+        }
+      }
+    } else {
+      return { error: "نوع عملية غير قابل للتراجع" };
+    }
+    await runDb("UPDATE ai_sql_history SET undone = 1 WHERE id = ?", [id]);
+    await logActivity('update', 'settings', 'undo_sql', `[AI-SQL] تراجع عن العملية #${id} (${row.kind} على ${row.target_table})`);
+    return { success: true, message: `تم التراجع عن العملية #${id} واستعادة البيانات بنجاح` };
   },
 
   // ====== Categories ======
@@ -1119,6 +1613,8 @@ const toolHandlers = {
   }
 };
 
+export { toolHandlers };
+
 export async function callGemini(messages, refreshState = { current: false }) {
   const API_KEYS = await getApiKeys();
   if (API_KEYS.length === 0) {
@@ -1177,12 +1673,16 @@ export async function callGemini(messages, refreshState = { current: false }) {
       let finalContent = "";
       try { finalContent = response.text(); } catch (e) { finalContent = ""; }
 
-      const calls = response.functionCalls();
-      if (calls) {
+      let calls = response.functionCalls();
+      const MAX_TOOL_ROUNDS = 6;
+      let round = 0;
+
+      while (calls && calls.length > 0 && round < MAX_TOOL_ROUNDS) {
+        round++;
         const toolResponses = [];
         for (const call of calls) {
           let toolResult;
-          console.log(`AI invoking tool: ${call.name}`, call.args);
+          console.log(`AI invoking tool (round ${round}): ${call.name}`, call.args);
 
           const handler = toolHandlers[call.name];
           if (handler) {
@@ -1199,11 +1699,17 @@ export async function callGemini(messages, refreshState = { current: false }) {
         }
 
         try {
-          const secondResult = await chat.sendMessage(toolResponses);
-          finalContent = secondResult.response.text();
+          const stepResult = await chat.sendMessage(toolResponses);
+          try { finalContent = stepResult.response.text(); } catch { finalContent = ""; }
+          calls = stepResult.response.functionCalls();
         } catch (e) {
-          finalContent = "تم تحديث البيانات بنجاح، هل هناك شيء آخر؟";
+          finalContent = finalContent || "تم تحديث البيانات بنجاح، هل هناك شيء آخر؟";
+          calls = null;
         }
+      }
+
+      if (!finalContent) {
+        finalContent = refreshState.current ? "تم تنفيذ المطلوب بنجاح ✅" : "تم بحمد الله، هل هناك شيء آخر؟";
       }
 
       return { content: finalContent, refreshRequired: refreshState.current };

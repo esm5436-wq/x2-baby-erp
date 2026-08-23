@@ -163,6 +163,9 @@ export async function initializeSchema() {
     `CREATE TABLE IF NOT EXISTS notes (id TEXT PRIMARY KEY, entity_type TEXT NOT NULL, entity_id TEXT NOT NULL, note_type TEXT DEFAULT 'general', content TEXT NOT NULL, attachment TEXT, show_to_customer INTEGER DEFAULT 0, created_by TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
     `CREATE INDEX IF NOT EXISTS idx_notes_entity ON notes(entity_type, entity_id)`,
     `CREATE INDEX IF NOT EXISTS idx_notes_created ON notes(created_at)`,
+    `CREATE TABLE IF NOT EXISTS ai_conversations (id TEXT PRIMARY KEY, title TEXT NOT NULL, messages TEXT NOT NULL DEFAULT '[]', model TEXT DEFAULT 'gemini', created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
+    `CREATE INDEX IF NOT EXISTS idx_ai_conversations_updated ON ai_conversations(updated_at DESC)`,
+    `CREATE TABLE IF NOT EXISTS ai_sql_history (id INTEGER PRIMARY KEY AUTOINCREMENT, sql_text TEXT NOT NULL, kind TEXT NOT NULL, target_table TEXT, backup_data TEXT, new_rowids TEXT, undone INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
   ];
 
   for (const sql of statements) {

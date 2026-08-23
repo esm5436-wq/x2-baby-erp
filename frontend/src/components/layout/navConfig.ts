@@ -1,4 +1,4 @@
-import { Package, ShoppingBag, BarChart3, Settings, Users, UserCheck, Activity } from 'lucide-react';
+import { Package, ShoppingBag, BarChart3, Settings, Users, UserCheck, Activity, Sparkles } from 'lucide-react';
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -13,6 +13,7 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   { to: '/', icon: React.createElement(BarChart3, { size: 20 }), md3Icon: 'home', label: 'الرئيسية', shortLabel: 'الرئيسية' },
+  { to: '/assistant', icon: React.createElement(Sparkles, { size: 20 }), md3Icon: 'smart_toy', label: 'المساعد الذكي', shortLabel: 'المساعد' },
   { to: '/inventory', icon: React.createElement(Package, { size: 20 }), md3Icon: 'inventory_2', label: 'المخزون', shortLabel: 'المخزون', section: 'products' },
   { to: '/orders', icon: React.createElement(ShoppingBag, { size: 20 }), md3Icon: 'shopping_bag', label: 'الطلبات', shortLabel: 'الطلبات', section: 'orders' },
   { to: '/purchases', icon: React.createElement(ShoppingBag, { size: 20 }), md3Icon: 'shopping_cart', label: 'المشتريات', shortLabel: 'مشتريات', section: 'purchases' },
@@ -24,7 +25,7 @@ export const NAV_ITEMS: NavItem[] = [
 ];
 
 export const BOTTOM_NAV_PRIMARY_ROUTES = ['/', '/inventory', '/orders', '/customers'];
-export const BOTTOM_NAV_MORE_ROUTES = ['/purchases', '/accounts', '/contacts', '/activity-logs', '/settings'];
+export const BOTTOM_NAV_MORE_ROUTES = ['/assistant', '/purchases', '/accounts', '/contacts', '/activity-logs', '/settings'];
 
 export function useVisibleNavItems(): NavItem[] {
   const { canView } = useAuth();
@@ -33,6 +34,7 @@ export function useVisibleNavItems(): NavItem[] {
 
 export const NAV_COLORS = [
   'bg-primary text-blue-900',
+  'bg-violet-50 text-violet-900',
   'bg-secondary text-red-900',
   'bg-indigo-50 text-indigo-900',
   'bg-accent text-white',
