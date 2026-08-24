@@ -10,6 +10,7 @@ import { formatDate } from '../lib/formatDate';
 
 import { API_BASE } from '../lib/api';
 import { MD3Button, MD3IconButton, MD3StatCard, MD3EmptyState } from './md3';
+import { MD3Snackbar, useSnackbar } from './md3/MD3Snackbar';
 
 interface ContactsProps {
   contacts: Contact[];
@@ -53,6 +54,7 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [sortField, setSortField] = useState<string>('created_at');
   const [sortAsc, setSortAsc] = useState(false);
+  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess, error: snackError } = useSnackbar();
 
   useEffect(() => { setContacts(initialContacts); }, [initialContacts]);
 
@@ -104,13 +106,29 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
       const method = editContact ? 'PUT' : 'POST';
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
       if (res.ok) {
+        const saved = await res.json().catch(() => null);
         setModalOpen(false);
         setEditContact(undefined);
+        snackSuccess('تم حفظ التغييرات بنجاح');
+        if (saved && saved.id && !saved.error) {
+          setContacts(prev => {
+            const exists = prev.some(c => c.id === saved.id);
+            return exists ? prev.map(c => (c.id === saved.id ? saved : c)) : [saved, ...prev];
+          });
+        }
         refreshContacts();
         fetch(`${API_BASE}/contacts/specializations`).then(r => r.json()).then(setSpecializations).catch(() => {});
+      } else {
+        let msg = 'فشل حفظ جهة الاتصال';
+        try {
+          const j = await res.json();
+          if (j && j.error) msg = j.error;
+        } catch {}
+        snackError(msg);
       }
     } catch (err) {
       console.error('Failed to save contact:', err);
+      snackError('فشل حفظ جهة الاتصال — تحقق من الاتصال بالخادم');
     }
   };
 
@@ -640,6 +658,7 @@ const Contacts: React.FC<ContactsProps> = ({ contacts: initialContacts, branding
           onEdit={() => { setDetailOpen(false); setEditContact(detailContact); setModalOpen(true); }}
         />
       )}
+      <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
     </div>
   );
 };

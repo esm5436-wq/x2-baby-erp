@@ -5,7 +5,6 @@ import { FaWhatsapp, FaTelegram, FaFacebook, FaInstagram, FaTiktok, FaYoutube, F
 import { Contact } from '../types';
 import { formatDate } from '../lib/formatDate';
 import { MD3Dialog } from './md3';
-import { useSnackbar, MD3Snackbar } from './md3/MD3Snackbar';
 import PopupSheet from './PopupSheet';
 
 const ENTITY_TYPES = ['مصنع', 'تاجر جملة', 'مقدم خدمة', 'مستورد', 'شركة شحن', 'شركة تسويق', 'شركات الطباعه و التغليف', 'أخرى'];
@@ -31,6 +30,36 @@ const RATING_CATEGORIES: Record<string, string[]> = {
 };
 
 const RATING_SPECIAL = ['التحصيل', 'اقل عدد بيك اب', 'رسوم البيك اب', 'رسوم التحصيل', 'حد أدنى للشحنات', 'عدد الشحنات', 'سعر الشحن قاهره وجيزه', 'التغامل مع الكوارث', 'رسوم التسليم الجزئي'];
+
+const RATING_CHILD_KEYS: Record<string, string> = {
+  'رسوم التحصيل': 'التحصيل',
+  'عدد الشحنات': 'حد أدنى للشحنات',
+  'مبلغ رسوم التسليم الجزئي': 'رسوم التسليم الجزئي',
+};
+
+function buildSeededRatings(prev: Record<string, string>, cats: string[]): Record<string, string> {
+  const next = { ...prev };
+  cats.filter(c => !RATING_SPECIAL.includes(c)).forEach(cat => {
+    if (next[cat] === undefined) next[cat] = '';
+  });
+  if (cats.includes('التحصيل') && next['التحصيل'] === undefined) { next['التحصيل'] = ''; next['رسوم التحصيل'] = ''; }
+  if (cats.includes('اقل عدد بيك اب') && next['اقل عدد بيك اب'] === undefined) { next['اقل عدد بيك اب'] = ''; next['رسوم البيك اب'] = ''; }
+  if (cats.includes('حد أدنى للشحنات') && next['حد أدنى للشحنات'] === undefined) { next['حد أدنى للشحنات'] = ''; next['عدد الشحنات'] = ''; }
+  if (cats.includes('رسوم التسليم الجزئي') && next['رسوم التسليم الجزئي'] === undefined) { next['رسوم التسليم الجزئي'] = ''; next['مبلغ رسوم التسليم الجزئي'] = ''; }
+  if (cats.includes('سعر الشحن قاهره وجيزه') && next['سعر الشحن قاهره وجيزه'] === undefined) next['سعر الشحن قاهره وجيزه'] = '';
+  if (cats.includes('التغامل مع الكوارث') && next['التغامل مع الكوارث'] === undefined) next['التغامل مع الكوارث'] = '';
+  return next;
+}
+
+function pruneRatings(prev: Record<string, string>, cats: string[]): Record<string, string> {
+  const next: Record<string, string> = {};
+  Object.entries(prev).forEach(([k, v]) => {
+    if (cats.includes(k)) { next[k] = v; return; }
+    const parent = RATING_CHILD_KEYS[k];
+    if (parent && cats.includes(parent)) { next[k] = v; }
+  });
+  return next;
+}
 
 const ENTITY_RATING_MAP: Record<string, string[]> = {
   'مصنع': ['السعر', 'الجوده', 'المرونه', 'الالتزام بالمواعيد', 'سرعة الرد', 'تنوع المنتجات'],
@@ -173,59 +202,6 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  useEffect(() => {
-    if (form.ratingsEnabled) {
-      setRatingsDataObj(prev => {
-        const next = { ...prev };
-        let changed = false;
-        Object.keys(RATING_CATEGORIES).forEach(cat => {
-          if (!visibleCategories.includes(cat) && next[cat]) {
-            delete next[cat];
-            changed = true;
-          }
-        });
-        RATING_SPECIAL.forEach(cat => {
-          if (!visibleCategories.includes(cat) && next[cat]) {
-            delete next[cat];
-            changed = true;
-          }
-        });
-        return changed ? next : prev;
-      });
-    }
-  }, [form.entityType]);
-
-  useEffect(() => {
-    if (form.ratingsEnabled) {
-      setRatingsDataObj(prev => {
-        const next = { ...prev };
-        let changed = false;
-        visibleCategories.filter(c => !RATING_SPECIAL.includes(c)).forEach(cat => {
-          if (next[cat] === undefined) {
-            next[cat] = '';
-            changed = true;
-          }
-        });
-        if (visibleCategories.includes('التحصيل') && next['التحصيل'] === undefined) {
-          next['التحصيل'] = ''; next['رسوم التحصيل'] = ''; changed = true;
-        }
-        if (visibleCategories.includes('اقل عدد بيك اب') && next['اقل عدد بيك اب'] === undefined) {
-          next['اقل عدد بيك اب'] = ''; next['رسوم البيك اب'] = ''; changed = true;
-        }
-        if (visibleCategories.includes('حد أدنى للشحنات') && next['حد أدنى للشحنات'] === undefined) {
-          next['حد أدنى للشحنات'] = ''; next['عدد الشحنات'] = ''; changed = true;
-        }
-        if (visibleCategories.includes('سعر الشحن قاهره وجيزه') && next['سعر الشحن قاهره وجيزه'] === undefined) {
-          next['سعر الشحن قاهره وجيزه'] = ''; changed = true;
-        }
-        if (visibleCategories.includes('التغامل مع الكوارث') && next['التغامل مع الكوارث'] === undefined) {
-          next['التغامل مع الكوارث'] = ''; changed = true;
-        }
-        return changed ? next : prev;
-      });
-    }
-  }, [form.ratingsEnabled, visibleCategories]);
-
   const validate = () => {
     const errs: Record<string, string> = {};
     if (!form.companyName.trim()) errs.companyName = 'اسم الشركة مطلوب';
@@ -238,7 +214,6 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
   const doSave = () => {
     if (!validate()) return;
     markClean();
-    snackSuccess('تم حفظ التغييرات بنجاح');
     const cleanRatings = Object.fromEntries(
       Object.entries(ratingsDataObj).filter(([_, v]) => v !== '')
     );
@@ -321,8 +296,6 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
     snapchat: <FaSnapchat size={16} className="text-yellow-500 dark:text-yellow-400" />,
     other: <FaLink size={16} className="text-[var(--md-sys-color-on-surface-variant)]" />,
   };
-
-  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
 
   const handleDiscardConfirm = useCallback(() => {
     setShowDiscardDialog(false);
@@ -604,7 +577,14 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
             <div className="relative">
               <select
                 value={form.entityType}
-                onChange={e => setForm({ ...form, entityType: e.target.value })}
+                onChange={e => {
+                  const t = e.target.value;
+                  const cats = ENTITY_RATING_MAP[t] || ENTITY_RATING_MAP['أخرى'];
+                  setForm({ ...form, entityType: t });
+                  if (form.ratingsEnabled) {
+                    setRatingsDataObj(prev => buildSeededRatings(pruneRatings(prev, cats), cats));
+                  }
+                }}
                 className="w-full px-4 py-3 bg-[var(--md-sys-color-surface-container)] border-2 border-[var(--md-sys-color-outline-variant)]/30 rounded-2xl outline-none font-bold text-[var(--md-sys-color-on-surface)] focus:border-accent transition-colors duration-200 appearance-none cursor-pointer"
               >
                 {ENTITY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
@@ -720,7 +700,13 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
         {/* Ratings Section */}
         <div className="bg-[var(--md-sys-color-surface-container)] rounded-2xl p-5 space-y-4 border border-[var(--md-sys-color-outline-variant)]/30">
           <div
-            onClick={() => setForm({ ...form, ratingsEnabled: !form.ratingsEnabled })}
+            onClick={() => {
+              const next = !form.ratingsEnabled;
+              setForm({ ...form, ratingsEnabled: next });
+              if (next) {
+                setRatingsDataObj(prev => buildSeededRatings(prev, visibleCategories));
+              }
+            }}
             className="flex items-center gap-3 cursor-pointer"
           >
             <div
@@ -1183,7 +1169,6 @@ const ContactModal: React.FC<ContactModalProps> = ({ contact, specializations, o
           )}
         </div>
       </form>
-      <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
       {showDiscardDialog && (
         <MD3Dialog
           isOpen={true}
