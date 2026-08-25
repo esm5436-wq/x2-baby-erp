@@ -6,16 +6,12 @@ import {
   Target, Trophy, Link as LinkIcon, Check, Zap, X
 } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { Product, Variant, Category, OptionCategory, OptionType } from '../types';
+import { Product, Variant, Category, OptionCategory } from '../types';
 import { formatDate } from '../lib/formatDate';
 import { useImageDropZone } from '../lib/useImageDropZone';
 import { MD3Dialog } from './md3';
 
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import LinkExt from '@tiptap/extension-link';
-import TextAlign from '@tiptap/extension-text-align';
-import Placeholder from '@tiptap/extension-placeholder';
+
 
 const cartesian = (arrays: string[][]): string[][] => {
   return arrays.reduce<string[][]>((a, b) => a.flatMap(d => b.map(e => [...d, e])), [[]]);
@@ -23,7 +19,7 @@ const cartesian = (arrays: string[][]): string[][] => {
 
 const STEPS = [
   { icon: 'inventory_2', label: 'الأساسية', desc: 'الاسم والتصنيف والمورد' },
-  { icon: 'description', label: 'الوصف والتسعير', desc: 'الوصف والصور والأسعار' },
+  { icon: 'description', label: 'التسعير', desc: 'الصور والأسعار' },
   { icon: 'tune', label: 'المتغيرات', desc: 'المقاسات والألوان والكميات' },
 ];
 
@@ -116,16 +112,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
 
   const { withUnsavedCheck, markClean } = useUnsavedCheck(p, onDirtyConfirm);
 
-  const tipTapEditor = useEditor({
-    extensions: [
-      StarterKit.configure({ heading: { levels: [1, 2, 3] }, link: false }),
-      LinkExt.configure({ openOnClick: false, autolink: true }),
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      Placeholder.configure({ placeholder: 'اكتب وصف المنتج التفصيلي هنا...' }),
-    ],
-    content: p.description || '',
-    onUpdate: ({ editor }) => setP(prev => ({ ...prev, description: editor.getHTML() })),
-  });
+
 
   useEffect(() => {
     if (!p.images && p.image) {
@@ -355,40 +342,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
   const renderStep1 = () => (
     <div className="space-y-6">
       <div className="space-y-3">
-        <label className={labelCls}>وصف المنتج التفصيلي</label>
-        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl overflow-hidden">
-          {tipTapEditor && (
-            <div className="flex items-center gap-1 px-3 py-2 border-b border-gray-100 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-900/50">
-              {[1,2,3].map(level => (
-                <button key={level} type="button" onClick={() => tipTapEditor.chain().focus().toggleHeading({ level: level as any }).run()}
-                  className={`w-7 h-7 rounded-lg text-[10px] font-black transition-all ${tipTapEditor.isActive('heading', { level }) ? 'bg-accent text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-slate-700'}`}>
-                  H{level}
-                </button>
-              ))}
-              <div className="w-px h-5 bg-gray-200 dark:bg-slate-700 mx-1" />
-              <button type="button" onClick={() => tipTapEditor.chain().focus().toggleBold().run()}
-                className={`w-7 h-7 rounded-lg text-[10px] font-black transition-all ${tipTapEditor.isActive('bold') ? 'bg-accent text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-slate-700'}`}>B</button>
-              <button type="button" onClick={() => tipTapEditor.chain().focus().toggleItalic().run()}
-                className={`w-7 h-7 rounded-lg text-[10px] italic transition-all ${tipTapEditor.isActive('italic') ? 'bg-accent text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-slate-700'}`}>I</button>
-              <button type="button" onClick={() => tipTapEditor.chain().focus().toggleBulletList().run()}
-                className={`w-7 h-7 rounded-lg transition-all ${tipTapEditor.isActive('bulletList') ? 'bg-accent text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-slate-700'}`}>
-                <span className="material-symbols-rounded" style={{ fontSize: 14 }}>format_list_bulleted</span>
-              </button>
-              <button type="button" onClick={() => {
-                const url = window.prompt('رابط:');
-                if (url) tipTapEditor.chain().focus().setLink({ href: url }).run();
-              }}
-                className={`w-7 h-7 rounded-lg transition-all ${tipTapEditor.isActive('link') ? 'bg-accent text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-slate-700'}`}>
-                <LinkIcon size={14} />
-              </button>
-            </div>
-          )}
-          <EditorContent editor={tipTapEditor} className="prose prose-sm max-w-none p-3 min-h-[120px] dark:prose-invert [&_.tiptap]:outline-none [&_.tiptap]:min-h-[100px]" />
-        </div>
-        <p className="text-[9px] text-gray-400 dark:text-gray-500 italic px-1">الوصف التفصيلي يظهر في صفحة المنتج بالمتجر.</p>
-      </div>
-
-      <div className="space-y-3">
         <label className={labelCls}>الوسوم / الكلمات المفتاحية (Tags)</label>
         <div className="flex flex-wrap gap-2 mb-2 min-h-[40px] p-2 bg-gray-50/50 dark:bg-slate-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-slate-700">
           {p.tags && p.tags.length > 0 ? p.tags.map(tag => (
@@ -439,7 +392,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className={labelCls}>سعر البيع الافتراضي</label>
-          <input type="number" className={`${inputCls} no-spin`} value={p.price} onChange={e => setP({...p, price: Number(e.target.value)})} />
+          <input type="number" className={`${inputCls} no-spin`} value={p.price} onChange={e => setP({...p, price: Number(e.target.value)})} onFocus={e => e.target.select()} />
           {(p.wholesalePrice || 0) > 0 && (
             <div className="mt-2 p-3 bg-accent/5 dark:bg-accent/10 border border-accent/20 rounded-2xl space-y-3 relative overflow-hidden">
               <div className="flex items-center justify-between relative z-10">
@@ -473,11 +426,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
         </div>
         <div className="space-y-2">
           <label className={labelCls}>سعر الجملة</label>
-          <input type="number" className={`${inputCls} no-spin`} value={p.wholesalePrice || 0} onChange={e => { const ws = Number(e.target.value); setP({...p, wholesalePrice: ws, costPrice: ws + (p.packagingCost || 0)}); }} />
+          <input type="number" className={`${inputCls} no-spin`} value={p.wholesalePrice || 0} onChange={e => { const ws = Number(e.target.value); setP({...p, wholesalePrice: ws, costPrice: ws + (p.packagingCost || 0)}); }} onFocus={e => e.target.select()} />
         </div>
         <div className="space-y-2">
           <label className={labelCls}>تكلفة التغليف</label>
-          <input type="number" className={`${inputCls} no-spin`} value={p.packagingCost || 0} onChange={e => { const pk = Number(e.target.value); setP({...p, packagingCost: pk, costPrice: (p.wholesalePrice || 0) + pk}); }} />
+          <input type="number" className={`${inputCls} no-spin`} value={p.packagingCost || 0} onChange={e => { const pk = Number(e.target.value); setP({...p, packagingCost: pk, costPrice: (p.wholesalePrice || 0) + pk}); }} onFocus={e => e.target.select()} />
         </div>
         <div className="space-y-2">
           <label className="text-xs font-black text-emerald-600 dark:text-emerald-400 pr-1 uppercase tracking-widest">إجمالي تكلفة القطعة</label>
@@ -507,25 +460,9 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
               <button onClick={() => setOptions(options.filter(o => o.id !== opt.id))} className="text-gray-400 hover:text-red-500"><X size={14}/></button>
             </div>
 
-            <div className="flex gap-1 bg-gray-100 dark:bg-slate-900 p-1 rounded-xl">
-              {([
-                { t: 'dropdown' as OptionType, icon: 'arrow_drop_down', label: 'قائمة' },
-                { t: 'buttons' as OptionType, label: 'أزرار' },
-                { t: 'color' as OptionType, label: 'ألوان' },
-              ]).map(m => (
-                <button key={m.t} onClick={() => setOptions(options.map(o => o.id === opt.id ? {...o, type: m.t} : o))}
-                  className={`flex-1 py-1.5 rounded-lg text-[9px] font-black transition-all ${opt.type === m.t ? 'bg-accent text-white shadow-md' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}>
-                  {m.label}
-                </button>
-              ))}
-            </div>
-
             <div className="flex flex-wrap gap-1.5 justify-end">
               {opt.values.map(v => (
                 <span key={v} className="bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-lg text-[10px] font-black text-gray-700 dark:text-gray-300 flex items-center gap-1">
-                  {opt.type === 'color' && (
-                    <span className="w-3 h-3 rounded-full border border-gray-300 inline-block" style={{ backgroundColor: opt.colorValues?.[v] || v }} />
-                  )}
                   {v}
                   <X size={10} className="cursor-pointer text-gray-400 hover:text-red-500" onClick={() => setOptions(options.map(o => o.id === opt.id ? {...o, values: o.values.filter(x => x !== v)} : o))} />
                 </span>
@@ -536,31 +473,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
               <div className="flex-1">
                 <input className="w-full bg-gray-50 dark:bg-slate-900 p-2.5 rounded-xl text-[10px] font-bold text-gray-900 dark:text-white outline-none border border-gray-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:border-accent transition-colors shadow-inner text-right" placeholder="اكتب واضغط Enter..." onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); const val = (e.target as any).value.trim(); if (val) handleAddValue(opt.id, val); (e.target as any).value = ''; } }} />
               </div>
-              {opt.type === 'color' && (
-                <input type="color" className="w-9 h-9 rounded-lg border border-gray-200 dark:border-slate-700 cursor-pointer" value="#000000" onChange={e => {
-                  const hex = e.target.value;
-                  const newOpts = options.map(o => {
-                    if (o.id !== opt.id) return o;
-                    return { ...o, colorValues: { ...o.colorValues, [hex]: hex } };
-                  });
-                  setOptions(newOpts);
-                }} />
-              )}
             </div>
-
-            {opt.type === 'color' && opt.values.length > 0 && (
-              <div className="flex gap-1.5 justify-end flex-wrap">
-                {opt.values.map(v => (
-                  <div key={v} className="flex flex-col items-center gap-0.5">
-                    <input type="color" className="w-7 h-7 rounded-lg border border-gray-200 dark:border-slate-700 cursor-pointer p-0" value={opt.colorValues?.[v] || '#000000'} onChange={e => {
-                      const hex = e.target.value;
-                      setOptions(options.map(o => o.id === opt.id ? {...o, colorValues: { ...o.colorValues, [v]: hex }} : o));
-                    }} />
-                    <span className="text-[7px] text-gray-400">{v}</span>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         ))}
       </div>
@@ -573,17 +486,17 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
         <div className="flex flex-wrap gap-3 items-end">
           <div className="flex items-center gap-1.5">
             <div className="flex flex-col gap-0.5"><span className="text-[7px] font-black text-gray-400">الكمية</span>
-              <input type="number" className="w-16 p-1.5 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-lg text-center font-black text-xs focus:border-accent outline-none no-spin" value={bulkQty} onChange={e => setBulkQty(e.target.value)} /></div>
+              <input type="number" className="w-16 p-1.5 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-lg text-center font-black text-xs focus:border-accent outline-none no-spin" value={bulkQty} onChange={e => setBulkQty(e.target.value)} onFocus={e => e.target.select()} /></div>
             <button onClick={applyQtyToAll} className="px-2.5 py-1.5 bg-accent text-white font-black rounded-lg text-[9px] hover:opacity-90 active:scale-95 transition-all">تطبيق</button>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="flex flex-col gap-0.5"><span className="text-[7px] font-black text-gray-400">السعر</span>
-              <input type="number" className="w-20 p-1.5 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-lg text-center font-black text-xs focus:border-accent outline-none no-spin" value={bulkPrice} onChange={e => setBulkPrice(e.target.value)} /></div>
+              <input type="number" className="w-20 p-1.5 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-lg text-center font-black text-xs focus:border-accent outline-none no-spin" value={bulkPrice} onChange={e => setBulkPrice(e.target.value)} onFocus={e => e.target.select()} /></div>
             <button onClick={applyPriceToAll} className="px-2.5 py-1.5 bg-accent text-white font-black rounded-lg text-[9px] hover:opacity-90 active:scale-95 transition-all">تطبيق</button>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="flex flex-col gap-0.5"><span className="text-[7px] font-black text-gray-400">حد التنبيه</span>
-              <input type="number" className="w-16 p-1.5 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-lg text-center font-black text-xs focus:border-accent outline-none no-spin" value={bulkThreshold} onChange={e => setBulkThreshold(e.target.value)} /></div>
+              <input type="number" className="w-16 p-1.5 bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-lg text-center font-black text-xs focus:border-accent outline-none no-spin" value={bulkThreshold} onChange={e => setBulkThreshold(e.target.value)} onFocus={e => e.target.select()} /></div>
             <button onClick={applyThresholdToAll} className="px-2.5 py-1.5 bg-accent text-white font-black rounded-lg text-[9px] hover:opacity-90 active:scale-95 transition-all">تطبيق</button>
           </div>
         </div>
@@ -612,15 +525,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
                   <td className="p-2.5 font-black text-gray-900 dark:text-white whitespace-nowrap">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {v.optionValues && Object.entries(v.optionValues).map(([k, val]) => {
-                        const opt = options.find(o => o.name === k);
-                        if (!opt) return null;
-                        if (opt.type === 'color') {
-                          const hex = opt.colorValues?.[val] || val;
-                          return <span key={k} className="inline-flex items-center gap-1 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded-md text-[9px]"><span className="w-2.5 h-2.5 rounded-full border" style={{backgroundColor: hex}} />{val}</span>;
-                        }
-                        if (opt.type === 'buttons') {
-                          return <span key={k} className="inline-flex items-center gap-1 bg-accent/10 text-accent px-1.5 py-0.5 rounded-md text-[9px] font-bold">{val}</span>;
-                        }
                         return <span key={k} className="inline-flex items-center gap-1 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded-md text-[9px]">{val}</span>;
                       })}
                       {(!v.optionValues || Object.keys(v.optionValues).length === 0) && <span>{v.size} - {v.color}</span>}
@@ -630,11 +534,15 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
                     <div className="flex flex-wrap justify-center gap-2">
                       <div className="inline-flex items-center gap-1">
                         <span className="text-[7px] text-gray-400 font-black">الكمية</span>
-                        <input type="number" className="w-16 p-1 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-lg text-center font-black text-gray-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-accent outline-none no-spin" value={v.quantity} onChange={e => { const nv = [...p.variants]; nv[i].quantity = Number(e.target.value); setP({...p, variants: nv})}} />
+                        <input type="number" className="w-16 p-1 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-lg text-center font-black text-gray-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-accent outline-none no-spin" value={v.quantity} onChange={e => { const nv = [...p.variants]; nv[i].quantity = Number(e.target.value); setP({...p, variants: nv})}} onFocus={e => e.target.select()} />
                       </div>
                       <div className="inline-flex items-center gap-1">
                         <span className="text-[7px] text-gray-400 font-black">السعر</span>
-                        <input type="number" className="w-16 p-1 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-lg text-center font-black text-gray-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-accent outline-none no-spin" value={v.price} onChange={e => { const nv = [...p.variants]; nv[i].price = Number(e.target.value); setP({...p, variants: nv})}} />
+                        <input type="number" className="w-16 p-1 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-lg text-center font-black text-gray-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-accent outline-none no-spin" value={v.price} onChange={e => { const nv = [...p.variants]; nv[i].price = Number(e.target.value); setP({...p, variants: nv})}} onFocus={e => e.target.select()} />
+                      </div>
+                      <div className="inline-flex items-center gap-1">
+                        <span className="text-[7px] text-gray-400 font-black">حد التنبيه</span>
+                        <input type="number" className="w-16 p-1 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-700 rounded-lg text-center font-black text-gray-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:border-accent outline-none no-spin" value={v.lowStockThreshold || 0} onChange={e => { const nv = [...p.variants]; nv[i].lowStockThreshold = Number(e.target.value); setP({...p, variants: nv})}} onFocus={e => e.target.select()} />
                       </div>
                     </div>
                   </td>
