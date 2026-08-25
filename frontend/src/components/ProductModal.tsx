@@ -10,7 +10,7 @@ import { Product, Variant, Category, OptionCategory, OptionType } from '../types
 import { formatDate } from '../lib/formatDate';
 import { useImageDropZone } from '../lib/useImageDropZone';
 import { MD3Dialog } from './md3';
-import { useSnackbar, MD3Snackbar } from './md3/MD3Snackbar';
+
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import LinkExt from '@tiptap/extension-link';
@@ -90,7 +90,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
   const galleryFileInputRef = useRef<HTMLInputElement>(null);
   const pRef = useRef(p);
   pRef.current = p;
-  const { messages: snackMessages, dismiss: dismissSnack, success: snackSuccess } = useSnackbar();
+
 
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
   const pendingResolveRef = useRef<((v: boolean) => void) | null>(null);
@@ -668,7 +668,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
         ...(isEdit ? [{ label: 'حذف', onClick: () => { if(window.confirm('هل أنت متأكد من حذف المنتج نهائياً من النظام؟')) { markClean(); onDeleteAction(product!.id); onClose(); } }, variant: 'danger' as const }] : []),
         { label: 'إلغاء', onClick: () => withUnsavedCheck(onClose), closeOnAction: false, variant: 'text' as const },
         ...(currentStep > 0 ? [{ label: 'السابق', closeOnAction: false, onClick: prevStep, variant: 'text' as const }] : []),
-        { label: isLastStep ? 'حفظ المنتج' : 'التالي', closeOnAction: isLastStep, onClick: () => { if (isLastStep) { markClean(); snackSuccess('تم حفظ التغييرات بنجاح'); onSave({...p, options, updatedAt: new Date().toISOString()}); } else { nextStep(); } }, variant: 'filled' as const }
+        { label: isLastStep ? 'حفظ المنتج' : 'التالي', closeOnAction: isLastStep, onClick: () => { if (isLastStep) { markClean(); onSave({...p, options, updatedAt: new Date().toISOString()}); } else { nextStep(); } }, variant: 'filled' as const }
       ]}
     >
       <div dir="rtl" className="text-right">
@@ -715,7 +715,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
           </AnimatePresence>
         </div>
       </div>
-      <MD3Snackbar messages={snackMessages} onDismiss={dismissSnack} />
+
       {showDiscardDialog && (
         <MD3Dialog
           isOpen={true}

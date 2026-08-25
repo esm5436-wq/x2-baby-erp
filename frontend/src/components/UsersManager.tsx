@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Trash2, Eye, EyeOff, Shield, UserCog, Save } from 'lucide-react';
 import { API_BASE } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
-import { MD3Button, MD3IconButton, MD3Dialog, useSnackbar } from './md3';
+import { MD3Button, MD3IconButton, MD3Dialog, useSnackbar, MD3Snackbar } from './md3';
 
 const SECTIONS = [
   { key: 'products', label: 'المخزون' },
@@ -241,6 +241,8 @@ export default function UsersManager() {
           </MD3Dialog>
         )}
       </AnimatePresence>
+
+      <MD3Snackbar messages={snackbar.messages} onDismiss={snackbar.dismiss} />
     </motion.div>
   );
 }
