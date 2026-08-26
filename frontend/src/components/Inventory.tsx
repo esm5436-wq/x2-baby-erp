@@ -2349,20 +2349,21 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             initial={{ y: 100, opacity: 0, x: '-50%' }}
             animate={{ y: 0, opacity: 1, x: '-50%' }}
             exit={{ y: 100, opacity: 0, x: '-50%' }}
-            className="fixed bottom-20 md:bottom-8 left-1/2 z-[260] w-[95vw] max-w-[600px]"
+            className="fixed bottom-20 md:bottom-8 left-1/2 z-[260] w-[95vw] max-w-[95vw] md:max-w-[720px]"
           >
-            <div className="bg-[var(--md-sys-color-surface)] px-4 sm:px-8 py-3 sm:py-5 rounded-[40px] shadow-lg border border-[var(--md-sys-color-primary)]/20 dark:border-slate-700 flex items-center gap-3 sm:gap-8 backdrop-blur-md bg-white/90 dark:bg-slate-900/90 overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
+            <div className="bg-[var(--md-sys-color-surface)] px-2 sm:px-6 py-2 sm:py-4 rounded-[28px] sm:rounded-[40px] shadow-lg border border-[var(--md-sys-color-primary)]/20 dark:border-slate-700 flex items-center gap-2 sm:gap-6 backdrop-blur-md bg-white/90 dark:bg-slate-900/90 overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
               <div className="flex flex-col shrink-0">
                  <span className="text-[10px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase">تم تحديد</span>
-                 <span className="text-[var(--md-sys-color-primary)] font-black text-xl">{selectedIds.size} <span className="text-xs">منتج</span></span>
+                 <span className="text-[var(--md-sys-color-primary)] font-black text-lg sm:text-xl">{selectedIds.size} <span className="text-[10px] sm:text-xs">منتج</span></span>
               </div>
               
-              <div className="w-px h-10 bg-gray-100 dark:bg-slate-800 shrink-0"></div>
+              <div className="w-px h-8 sm:h-10 bg-gray-100 dark:bg-slate-800 shrink-0"></div>
               
-              <div className="flex gap-3 sm:gap-4 items-center shrink-0">
+              <div className="flex gap-1.5 sm:gap-3 items-center shrink-0">
                 <MD3Button 
                   variant="filled"
-                  icon={<Download size={20} />}
+                  icon={<Download size={18} />}
+                  className="!px-3 sm:!px-6 !text-xs sm:!text-sm !h-9 sm:!h-10"
                   onClick={() => setIsExportSettingsOpen(true)}
                 >
                   تصدير الجرد
@@ -2371,7 +2372,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 {canManageProducts && (
                   <MD3Button 
                     variant="tonal"
-                    icon={<Pencil size={20} />}
+                    icon={<Pencil size={18} />}
+                    className="!px-3 sm:!px-6 !text-xs sm:!text-sm !h-9 sm:!h-10"
                     onClick={() => setIsBatchEditOpen(true)}
                   >
                     تعديل جماعي
@@ -2381,16 +2383,17 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 {canManageProducts && (
                   <MD3Button 
                     variant="outlined"
-                    icon={<Trash2 size={20} />}
+                    icon={<Trash2 size={18} />}
+                    className="!text-[var(--md-sys-color-error)] !border-[var(--md-sys-color-error)] !px-3 sm:!px-6 !text-xs sm:!text-sm !h-9 sm:!h-10"
                     onClick={handleBulkDelete}
-                    className="!text-[var(--md-sys-color-error)] !border-[var(--md-sys-color-error)]"
                   >
                     حذف المحدد
                   </MD3Button>
                 )}
 
                 <MD3IconButton 
-                  icon={<X size={24} />}
+                  icon={<X size={20} />}
+                  className="!w-8 !h-8 sm:!w-10 sm:!h-10"
                   onClick={() => setSelectedIds(new Set())}
                   title="إلغاء التحديد"
                 />
