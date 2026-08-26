@@ -670,7 +670,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
     let totalSales = 0;
     let totalQuantity = 0;
 
-    products.forEach(p => {
+    filtered.forEach(p => {
       p.variants.forEach(v => {
         totalQuantity += v.quantity;
         totalCost += (v.quantity * (p.costPrice || 0));
@@ -679,7 +679,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
     });
 
     return { totalCost, totalSales, totalQuantity };
-  }, [products]);
+  }, [filtered]);
 
   const importJsonInputRef = useRef<HTMLInputElement>(null);
 
@@ -1466,8 +1466,14 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          className="grid grid-cols-2 md:grid-cols-5 gap-4"
         >
+          <MD3StatCard
+            icon={<Package size={20} />}
+            label="عدد المنتجات"
+            value={filtered.length.toLocaleString()}
+            iconBg="bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400"
+          />
           <MD3StatCard
             icon={<Package size={20} />}
             label="إجمالي القطع"
