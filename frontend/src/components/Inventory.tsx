@@ -790,6 +790,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
           p.variants.forEach(v => {
             const row: any = {};
             if (exportConfig.selectedColumns.includes('id')) row.id = p.id;
+            if (exportConfig.selectedColumns.includes('sku')) row.sku = v.sku || p.sku;
             if (exportConfig.selectedColumns.includes('name')) row.name = p.name;
             if (exportConfig.selectedColumns.includes('category')) row.category = p.category;
             if (exportConfig.selectedColumns.includes('supplier')) row.supplier = supplierName;
@@ -811,6 +812,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
           const totalQty = p.variants.reduce((sum, v) => sum + v.quantity, 0);
           const row: any = {};
           if (exportConfig.selectedColumns.includes('id')) row.id = p.id;
+          if (exportConfig.selectedColumns.includes('sku')) row.sku = p.sku;
           if (exportConfig.selectedColumns.includes('name')) row.name = p.name;
           if (exportConfig.selectedColumns.includes('category')) row.category = p.category;
           if (exportConfig.selectedColumns.includes('supplier')) row.supplier = supplierName;
@@ -896,19 +898,20 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
     if (format === 'json') {
       exportToJSON(targetProducts, fileName);
     } else if (format === 'csv') {
-      const columns = ['المعرف', 'اسم المنتج', 'الفئة', 'السعر', 'التكلفة'];
-      const keys = ['id', 'name', 'category', 'price', p => p.variants[0]?.quantity || 0];
+      const columns = ['المعرف', 'SKU', 'اسم المنتج', 'الفئة', 'السعر', 'التكلفة'];
+      const keys = ['id', 'sku', 'name', 'category', 'price', p => p.variants[0]?.quantity || 0];
       // Note: for CSV simplified I'll use IDs
-      exportToCSV(targetProducts, fileName, columns, ['id', 'name', 'category', 'price', 'costPrice']);
+      exportToCSV(targetProducts, fileName, columns, ['id', 'sku', 'name', 'category', 'price', 'costPrice']);
     }
     
     setIsExportSettingsOpen(false);
   };
 
   const generateCSV = (data: Product[]) => {
-    const headers = ['المعرف', 'اسم المنتج', 'الفئة', 'السعر', 'التكلفة', 'إجمالي الكمية'];
+    const headers = ['المعرف', 'SKU', 'اسم المنتج', 'الفئة', 'السعر', 'التكلفة', 'إجمالي الكمية'];
     const rows = data.map(p => [
       p.id,
+      p.sku || '',
       p.name,
       p.category,
       p.price,
@@ -920,7 +923,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
 
   const generateExcelAuditTable = (data: Product[]) => {
     const unionColumns = Array.from(new Set(data.flatMap(p => getProductVariantColumns(p))));
-    const fixedCount = 7;
+    const fixedCount = 8;
     let table = `
       <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
       <head><meta charset="UTF-8"><style>
@@ -936,6 +939,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
           <tr><th colspan="${fixedCount + unionColumns.length}" class="header-row">تقرير جرد المخزون التفصيلي (صغارنا ERP)</th></tr>
           <tr>
             <th>كود المنتج</th>
+            <th>SKU</th>
             <th>اسم المنتج</th>
             <th>الفئة</th>
             ${unionColumns.map(c => `<th>${c}</th>`).join('')}
@@ -952,6 +956,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
         table += `
           <tr class="variant-row">
             <td>${p.id}</td>
+            <td>${v.sku || p.sku || ''}</td>
             <td>${p.name}</td>
             <td>${p.category}</td>
             ${unionColumns.map(c => `<td>${variantColumnValue(v, c)}</td>`).join('')}
@@ -1049,6 +1054,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                     <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                       <span style="background: #e0f2fe; color: #0369a1; padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 900;">${p.category}</span>
                       <span style="background: #f1f5f9; color: #475569; padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 900;">ID: ${p.id}</span>
+                      ${p.sku ? `<span style="background: #ede9fe; color: #6d28d9; padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 900;">SKU: ${p.sku}</span>` : ''}
                     </div>
                     <div style="font-size: 13px; font-weight: bold;">الرابط: <a href="${p.url || '#'}" style="color: #5D87B8; text-decoration: none;">${p.url ? 'فتح صفحة المنتج' : 'غير متوفر'}</a></div>
                   </div>
@@ -1058,6 +1064,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   <thead>
                     <tr>
                       ${variantColumns.map(c => `<th>${c}</th>`).join('')}
+                      <th>SKU</th>
                       <th>الكمية المتاحة</th>
                       <th>سعر الوحدة</th>
                       <th>إجمالي القيمة</th>
@@ -1070,6 +1077,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                       return `
                         <tr>
                           ${variantColumns.map(c => variantColumnValue(v, c) === '—' ? `<td>${variantColumnValue(v, c)}</td>` : `<td style="font-weight: bold;">${variantColumnValue(v, c)}</td>`).join('')}
+                          <td style="font-family: monospace; font-size: 11px; color: #64748b;">${v.sku || p.sku || '—'}</td>
                           <td style="font-weight: 900; font-size: 14px;">${v.quantity}</td>
                           <td>${(v.price || p.price || 0).toLocaleString()} ج.م</td>
                           <td style="font-weight: bold;">${(v.quantity * (v.price || p.price || 0)).toLocaleString()} ج.م</td>
