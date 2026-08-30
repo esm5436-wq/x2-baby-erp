@@ -411,7 +411,8 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    fetch(`${API_BASE}/state`)
+    const controller = new AbortController();
+    fetch(`${API_BASE}/state`, { signal: controller.signal })
       .then(res => res.json())
       .then(data => {
         const validCats = new Set<string>();
@@ -457,8 +458,12 @@ const App: React.FC = () => {
           setShowWelcome(true);
         }
       })
-      .catch(err => console.error("Failed to fetch state:", err))
+      .catch(err => {
+        if (err?.name === 'AbortError' || err?.message === 'Failed to fetch') return;
+        console.error("Failed to fetch state:", err);
+      })
       .finally(() => setLoading(false));
+    return () => controller.abort();
   }, [isAuthenticated]);
 
   useEffect(() => {
