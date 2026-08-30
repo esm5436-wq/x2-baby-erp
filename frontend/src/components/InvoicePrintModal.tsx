@@ -5,6 +5,7 @@ import { Order, Branding, InvoiceSettings } from '../types';
 import { QRCodeSVG } from 'qrcode.react';
 import QRCode from 'qrcode';
 import { downscaleDataUrl } from '../lib/imageUtils';
+import { getOrderVariantColumns } from '../lib/variantLabel';
 import { MD3Dialog, MD3Button } from './md3';
 
 interface InvoicePrintModalProps {
@@ -26,7 +27,9 @@ const formatCurrency = (v: number) => new Intl.NumberFormat('ar-EG-u-nu-latn', {
 const formatDate = (d: string) => new Date(d).toLocaleDateString('ar-EG-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' });
 const formatPrintDate = () => new Date().toLocaleString('ar-EG-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-const InvoiceCard: React.FC<{ order: Order; branding?: Branding; invoiceSettings?: InvoiceSettings }> = React.memo(({ order, branding, invoiceSettings }) => (
+const InvoiceCard: React.FC<{ order: Order; branding?: Branding; invoiceSettings?: InvoiceSettings }> = React.memo(({ order, branding, invoiceSettings }) => {
+  const { hasSize, hasColor } = getOrderVariantColumns(order.items);
+  return (
   <div className="invoice-card bg-white rounded-2xl p-5 border-2 border-gray-100 relative">
     <div className="flex items-start justify-between mb-4">
       <div className="flex items-center gap-3">
@@ -70,8 +73,8 @@ const InvoiceCard: React.FC<{ order: Order; branding?: Branding; invoiceSettings
       <thead>
         <tr className="border-b border-gray-200">
           <th className="text-right text-[9px] font-black text-gray-400 pb-2">المنتج</th>
-          <th className="text-right text-[9px] font-black text-gray-400 pb-2">المقاس</th>
-          <th className="text-center text-[9px] font-black text-gray-400 pb-2">اللون</th>
+          {hasSize && <th className="text-right text-[9px] font-black text-gray-400 pb-2">المقاس</th>}
+          {hasColor && <th className="text-center text-[9px] font-black text-gray-400 pb-2">اللون</th>}
           <th className="text-center text-[9px] font-black text-gray-400 pb-2">ك</th>
           <th className="text-left text-[9px] font-black text-gray-400 pb-2">السعر</th>
           <th className="text-left text-[9px] font-black text-gray-400 pb-2">الإجمالي</th>
@@ -83,8 +86,8 @@ const InvoiceCard: React.FC<{ order: Order; branding?: Branding; invoiceSettings
           return (
             <tr key={idx} className="border-b border-gray-50">
               <td className="text-[10px] font-bold text-gray-800 py-1.5">{item.productName}</td>
-              <td className="text-[10px] text-gray-600 py-1.5">{size || item.variantLabel}</td>
-              <td className="text-center text-[10px] text-gray-600 py-1.5">{color || '-'}</td>
+              {hasSize && <td className="text-[10px] text-gray-600 py-1.5">{size || item.variantLabel}</td>}
+              {hasColor && <td className="text-center text-[10px] text-gray-600 py-1.5">{color || '-'}</td>}
               <td className="text-center text-[10px] font-bold py-1.5">{item.quantity}</td>
               <td className="text-left text-[10px] font-bold py-1.5">{formatCurrency(item.price)}</td>
               <td className="text-left text-[10px] font-bold text-gray-900 py-1.5">{formatCurrency(item.price * item.quantity)}</td>
@@ -152,7 +155,8 @@ const InvoiceCard: React.FC<{ order: Order; branding?: Branding; invoiceSettings
       </div>
     )}
   </div>
-));
+  );
+});
 
 const generatePrintHtml = (orders: Order[], branding?: Branding, invoiceSettings?: InvoiceSettings, layout = 1, qrSvgs?: { exchangeReturn?: string; shipping?: string }, socialQrSvgs?: { svg: string; platform: string }[], title?: string, perPageOverride?: number) => {
   const cols = layout === 6 ? 3 : layout === 4 ? 2 : layout === 2 ? 1 : 1;
@@ -229,10 +233,15 @@ const InvoiceCardHtml = ({ order, branding, invoiceSettings, qrSvgs, socialQrSvg
   const formatD = (d: string) => new Date(d).toLocaleDateString('ar-EG-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' });
   const formatPrintD = () => new Date().toLocaleString('ar-EG-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
+  const { hasSize: htmlHasSize, hasColor: htmlHasColor } = getOrderVariantColumns(order.items);
   const itemsRows = order.items.map(item => {
     const [s = '', c = ''] = (item.variantLabel || '').split(' - ');
-    return `<tr><td>${item.productName}</td><td>${s || item.variantLabel}</td><td style="text-align:center">${c || '-'}</td><td style="text-align:center">${item.quantity}</td><td style="text-align:left">${formatC(item.price)}</td><td style="text-align:left">${formatC(item.price * item.quantity)}</td></tr>`;
+    const sizeCell = htmlHasSize ? `<td>${s || item.variantLabel}</td>` : '';
+    const colorCell = htmlHasColor ? `<td style="text-align:center">${c || '-'}</td>` : '';
+    return `<tr><td>${item.productName}</td>${sizeCell}${colorCell}<td style="text-align:center">${item.quantity}</td><td style="text-align:left">${formatC(item.price)}</td><td style="text-align:left">${formatC(item.price * item.quantity)}</td></tr>`;
   }).join('');
+  const sizeHead = htmlHasSize ? '<th>المقاس</th>' : '';
+  const colorHead = htmlHasColor ? '<th style="text-align:center">اللون</th>' : '';
 
   const qrSection = invoiceSettings && (invoiceSettings.showExchangeReturnQr || invoiceSettings.showShippingQr || (invoiceSettings.showSocialQr && socialQrSvgs?.length))
     ? `<div class="qr-section">
@@ -284,7 +293,7 @@ const InvoiceCardHtml = ({ order, branding, invoiceSettings, qrSvgs, socialQrSvg
     ${order.address ? `<div><span class="label">العنوان:</span><span class="value" style="font-size:9px;">${order.address}</span></div>` : ''}
   </div>
   <table>
-    <thead><tr><th>المنتج</th><th>المقاس</th><th style="text-align:center">اللون</th><th style="text-align:center">ك</th><th style="text-align:left">السعر</th><th style="text-align:left">الإجمالي</th></tr></thead>
+    <thead><tr><th>المنتج</th>${sizeHead}${colorHead}<th style="text-align:center">ك</th><th style="text-align:left">السعر</th><th style="text-align:left">الإجمالي</th></tr></thead>
     <tbody>${itemsRows}</tbody>
   </table>
   <div class="totals">

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { formatDate } from '../lib/formatDate';
-import { variantLabel, variantSizeOrDash, variantColorOrDash, normalizeVariantDim } from '../lib/variantLabel';
+import { variantLabel, normalizeVariantDim, getProductVariantColumns, variantColumnValue } from '../lib/variantLabel';
 import { useSearchParams } from 'react-router-dom';
 import CollapsibleSection from './CollapsibleSection';
 import { 
@@ -919,6 +919,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
   };
 
   const generateExcelAuditTable = (data: Product[]) => {
+    const unionColumns = Array.from(new Set(data.flatMap(p => getProductVariantColumns(p))));
+    const fixedCount = 7;
     let table = `
       <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
       <head><meta charset="UTF-8"><style>
@@ -931,13 +933,12 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
       </style></head>
       <body>
         <table>
-          <tr><th colspan="9" class="header-row">تقرير جرد المخزون التفصيلي (صغارنا ERP)</th></tr>
+          <tr><th colspan="${fixedCount + unionColumns.length}" class="header-row">تقرير جرد المخزون التفصيلي (صغارنا ERP)</th></tr>
           <tr>
             <th>كود المنتج</th>
             <th>اسم المنتج</th>
             <th>الفئة</th>
-            <th>المقاس</th>
-            <th>اللون</th>
+            ${unionColumns.map(c => `<th>${c}</th>`).join('')}
             <th>الكمية المتوفرة</th>
             <th>سعر البيع</th>
             <th>سعر التكلفة</th>
@@ -953,8 +954,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             <td>${p.id}</td>
             <td>${p.name}</td>
             <td>${p.category}</td>
-            <td>${variantSizeOrDash(v)}</td>
-            <td>${variantColorOrDash(v)}</td>
+            ${unionColumns.map(c => `<td>${variantColumnValue(v, c)}</td>`).join('')}
             <td class="${isLow ? 'low-stock' : ''}">${v.quantity}</td>
             <td>${v.price || p.price}</td>
             <td>${p.costPrice}</td>
@@ -1038,6 +1038,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             const totalQty = p.variants.reduce((s, v) => s + v.quantity, 0);
             const totalRevenue = p.variants.reduce((s, v) => s + (v.quantity * (v.price || p.price)), 0);
             const totalCostVal = totalQty * p.costPrice;
+            const variantColumns = getProductVariantColumns(p);
 
             return `
               <div class="product-audit-block">
@@ -1056,8 +1057,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                 <table class="audit-table">
                   <thead>
                     <tr>
-                      <th>المقاس</th>
-                      <th>اللون</th>
+                      ${variantColumns.map(c => `<th>${c}</th>`).join('')}
                       <th>الكمية المتاحة</th>
                       <th>سعر الوحدة</th>
                       <th>إجمالي القيمة</th>
@@ -1069,8 +1069,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                       const isLow = v.quantity <= (v.lowStockThreshold || 0);
                       return `
                         <tr>
-                          <td style="font-weight: bold;">${variantSizeOrDash(v)}</td>
-                          <td>${variantColorOrDash(v)}</td>
+                          ${variantColumns.map(c => variantColumnValue(v, c) === '—' ? `<td>${variantColumnValue(v, c)}</td>` : `<td style="font-weight: bold;">${variantColumnValue(v, c)}</td>`).join('')}
                           <td style="font-weight: 900; font-size: 14px;">${v.quantity}</td>
                           <td>${(v.price || p.price || 0).toLocaleString()} ج.م</td>
                           <td style="font-weight: bold;">${(v.quantity * (v.price || p.price || 0)).toLocaleString()} ج.م</td>
@@ -2126,6 +2125,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
         const salesRevenue = salesFromOrders.revenue;
         const salesProfit = salesFromOrders.profit;
         const turnoverRate = totalQty > 0 ? (piecesSold / totalQty) : 0;
+        const variantColumns = getProductVariantColumns(product);
         const detailBody = (
           <>
               {/* Image Gallery Header — Natural aspect */}
@@ -2290,8 +2290,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                       <thead className="bg-[var(--md-sys-color-surface-container)]">
                         <tr>
                           <th className="p-3 font-black text-gray-500">SKU</th>
-                          <th className="p-3 font-black text-gray-500">المقاس</th>
-                          <th className="p-3 font-black text-gray-500">اللون</th>
+                          {variantColumns.map(c => <th key={c} className="p-3 font-black text-gray-500">{c}</th>)}
                           <th className="p-3 font-black text-gray-500">الكمية</th>
                           <th className="p-3 font-black text-gray-500">السعر</th>
                           <th className="p-3 font-black text-gray-500">حد التنبيه</th>
@@ -2301,8 +2300,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                         {product.variants.map(v => (
                           <tr key={v.id} className={`hover:bg-[var(--md-sys-color-surface-container)]/50 ${v.quantity <= (v.lowStockThreshold || 0) ? 'bg-red-50/50 dark:bg-red-900/10' : ''}`}>
                             <td className="p-3 font-mono text-[10px] font-bold text-gray-400">{v.sku || '—'}</td>
-                            <td className="p-3 font-bold text-gray-900 dark:text-gray-100">{variantSizeOrDash(v)}</td>
-                            <td className="p-3 font-bold text-gray-900 dark:text-gray-100">{variantColorOrDash(v)}</td>
+                            {variantColumns.map(c => <td key={c} className="p-3 font-bold text-gray-900 dark:text-gray-100">{variantColumnValue(v, c)}</td>)}
                             <td className={`p-3 font-black ${v.quantity <= (v.lowStockThreshold || 0) ? 'text-[var(--md-sys-color-error)]' : 'text-gray-700 dark:text-gray-300'}`}>{v.quantity}</td>
                             <td className="p-3 font-black text-[var(--md-sys-color-primary)]">{(v.price || product.price).toLocaleString()}</td>
                             <td className="p-3 font-bold text-gray-500">{v.lowStockThreshold || 0}</td>
