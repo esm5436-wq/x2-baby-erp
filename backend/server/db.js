@@ -94,6 +94,53 @@ export async function localizeImageAsFile(url, entityId) {
   }
 }
 
+async function cleanupLegacyVariantValues() {
+  try {
+    const flag = await getDb("SELECT value FROM settings WHERE key = 'legacy_variant_values_cleaned' LIMIT 1");
+    if (flag && flag.value === '1') return;
+    const rows = await allDb("SELECT id, data FROM products");
+    let cleaned = 0;
+    for (const row of rows) {
+      try {
+        const product = JSON.parse(row.data);
+        let modified = false;
+        if (Array.isArray(product.variants)) {
+          for (const v of product.variants) {
+            const ov = v.optionValues && typeof v.optionValues === 'object' ? v.optionValues : null;
+            if (ov && (typeof ov['المقاس'] === 'string' || typeof ov['اللون'] === 'string')) {
+              const newSize = typeof ov['المقاس'] === 'string' ? ov['المقاس'] : '';
+              const newColor = typeof ov['اللون'] === 'string' ? ov['اللون'] : '';
+              if (v.size !== newSize || v.color !== newColor) {
+                v.size = newSize;
+                v.color = newColor;
+                modified = true;
+              }
+            } else {
+              if (v.color === 'متعدد' || v.color === 'واحد') {
+                v.color = '';
+                modified = true;
+              }
+              if (v.size === 'واحد' || v.size === 'متعدد') {
+                v.size = '';
+                modified = true;
+              }
+            }
+          }
+        }
+        if (modified) {
+          await runDb("UPDATE products SET data = ? WHERE id = ?", [JSON.stringify(product), row.id]);
+          cleaned++;
+        }
+      } catch {}
+    }
+    await runDb("INSERT OR IGNORE INTO settings (key, value) VALUES ('legacy_variant_values_cleaned', '0')");
+    await runDb("UPDATE settings SET value = '1' WHERE key = 'legacy_variant_values_cleaned'");
+    console.log(`Legacy variant values cleanup done (${cleaned} products updated)`);
+  } catch (e) {
+    console.error('cleanupLegacyVariantValues error:', e.message);
+  }
+}
+
 async function cleanupLegacyProductImages() {
   try {
     const flag = await getDb("SELECT value FROM settings WHERE key = 'legacy_product_images_cleaned' LIMIT 1");
@@ -249,6 +296,7 @@ export async function initializeSchema() {
   } catch (e) {}
 
   await cleanupLegacyProductImages();
+  await cleanupLegacyVariantValues();
   await migrateExistingNotes();
   await bootstrapAdminUser();
 }

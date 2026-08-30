@@ -4,6 +4,7 @@ import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom';
 import { useUnsavedCheck } from '../hooks/useUnsavedCheck';
 import { formatDate } from '../lib/formatDate';
+import { variantLabel as vLabel } from '../lib/variantLabel';
 import CollapsibleSection from './CollapsibleSection';
 import { 
   ShoppingBag, 
@@ -1538,8 +1539,8 @@ const Orders: React.FC<OrdersProps> = ({
     if (!selectedProduct) { setSelectedVariant(''); return; }
     const product = products.find(p => p.id === selectedProduct);
     if (!product) return;
-    const sizes = [...new Set(product.variants.map(v => v.size))].filter(s => s !== 'واحد');
-    const colors = [...new Set(product.variants.map(v => v.color))].filter(c => c !== 'متعدد');
+    const sizes = [...new Set(product.variants.map(v => v.size))].filter(s => s && s !== 'واحد');
+    const colors = [...new Set(product.variants.map(v => v.color))].filter(c => c && c !== 'متعدد');
     if (sizes.length === 0 && colors.length === 0) {
       setSelectedVariant(product.variants[0]?.id || '');
       return;
@@ -1581,7 +1582,7 @@ const Orders: React.FC<OrdersProps> = ({
       productId: product.id,
       variantId: variant.id,
       productName: product.name,
-      variantLabel: `${variant.size} - ${variant.color}`,
+      variantLabel: vLabel(variant, ' - '),
       quantity,
       price: product.price,
       costPrice: product.costPrice,
@@ -1632,8 +1633,8 @@ const Orders: React.FC<OrdersProps> = ({
     } else {
       setOrderItems(orderItems.map((it, i) => i === editingItemIndex ? {
         ...it,
-        variantId: variant.id,
-        variantLabel: `${variant.size} - ${variant.color}`,
+variantId: variant.id,
+        variantLabel: vLabel(variant, ' - '),
         quantity: editQuantity,
         price: product.price,
       } : it));
@@ -2663,8 +2664,8 @@ const Orders: React.FC<OrdersProps> = ({
                     {(() => {
                       const prod = products.find(p => p.id === selectedProduct);
                       if (!prod) return null;
-                      const sizes = [...new Set(prod.variants.map(v => v.size))].filter(s => s !== 'واحد');
-                      const colors = [...new Set(prod.variants.map(v => v.color))].filter(c => c !== 'متعدد');
+                      const sizes = [...new Set(prod.variants.map(v => v.size))].filter(s => s && s !== 'واحد');
+                      const colors = [...new Set(prod.variants.map(v => v.color))].filter(c => c && c !== 'متعدد');
                       if (sizes.length === 0 && colors.length === 0) return null;
                       const sizeOptions = sizes.map(s => { const qty = prod.variants.filter(v => v.size === s).reduce((sum, v) => sum + v.quantity, 0); return { value: s, label: s, subLabel: `${prod.price} ج.م | ${qty} قطعة`, disabled: qty === 0 }; });
                       const colorOptions = colors.map(c => { const qty = prod.variants.filter(v => v.color === c).reduce((sum, v) => sum + v.quantity, 0); return { value: c, label: c, subLabel: `${prod.price} ج.م | ${qty} قطعة`, disabled: qty === 0 }; });
@@ -2738,8 +2739,8 @@ const Orders: React.FC<OrdersProps> = ({
                                   (() => {
                                     const prod = products.find(p => p.id === item.productId);
                                     if (!prod) return <span className="text-[10px] text-gray-400">{item.variantLabel}</span>;
-                                    const sizes = [...new Set(prod.variants.map(v => v.size))].filter(s => s !== 'واحد');
-                                    const colors = [...new Set(prod.variants.map(v => v.color))].filter(c => c !== 'متعدد');
+                                    const sizes = [...new Set(prod.variants.map(v => v.size))].filter(s => s && s !== 'واحد');
+                                    const colors = [...new Set(prod.variants.map(v => v.color))].filter(c => c && c !== 'متعدد');
                                     if (sizes.length === 0 && colors.length === 0) return <span className="text-[10px] text-gray-400">خيار وحيد</span>;
                                     const sizeOptions = sizes.map(s => { const qty = prod.variants.filter(v => v.size === s).reduce((sum, v) => sum + v.quantity, 0); return { value: s, label: s, subLabel: `${prod.price} ج.م | ${qty} قطعة`, disabled: qty === 0 }; });
                                     const colorOptions = colors.map(c => { const qty = prod.variants.filter(v => v.color === c).reduce((sum, v) => sum + v.quantity, 0); return { value: c, label: c, subLabel: `${prod.price} ج.م | ${qty} قطعة`, disabled: qty === 0 }; });

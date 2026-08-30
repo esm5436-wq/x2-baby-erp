@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { formatDate } from '../lib/formatDate';
+import { variantLabel, variantSizeOrDash, variantColorOrDash, normalizeVariantDim } from '../lib/variantLabel';
 import { useSearchParams } from 'react-router-dom';
 import CollapsibleSection from './CollapsibleSection';
 import { 
@@ -116,8 +117,8 @@ const SyncProductEditor: React.FC<{
     if (product.options && product.options.length > 0) {
       return JSON.parse(JSON.stringify(product.options));
     }
-    const sizes = Array.from(new Set(product.variants.map(v => v.size))).filter(v => v !== 'واحد') as string[];
-    const colors = Array.from(new Set(product.variants.map(v => v.color))).filter(v => v !== 'متعدد') as string[];
+    const sizes = Array.from(new Set(product.variants.map(v => v.size))).filter(v => v && v !== 'واحد') as string[];
+    const colors = Array.from(new Set(product.variants.map(v => v.color))).filter(v => v && v !== 'متعدد') as string[];
     const opts: OptionCategory[] = [];
     if (sizes.length > 0) opts.push({ id: 'opt-size', name: 'المقاس', type: 'dropdown', values: sizes });
     if (colors.length > 0) opts.push({ id: 'opt-color', name: 'اللون', type: 'dropdown', values: colors });
@@ -141,10 +142,16 @@ const SyncProductEditor: React.FC<{
 
     const newVariants: Variant[] = productCombos
       .map((combo: string[]) => {
-        const sizeStr = combo[0] || 'واحد';
-        const colorStr = combo.slice(1).join(' / ') || 'متعدد';
         const optVals: Record<string, string> = {};
         options.forEach((opt, i) => { optVals[opt.name] = combo[i] || ''; });
+        const hasSize = options.some(o => o.name === 'المقاس');
+        const hasColor = options.some(o => o.name === 'اللون');
+        let sizeStr = hasSize ? (optVals['المقاس'] || '') : '';
+        let colorStr = hasColor ? (optVals['اللون'] || '') : '';
+        if (!hasSize && !hasColor) {
+          sizeStr = combo[0] || '';
+          colorStr = combo.slice(1).join(' / ');
+        }
         const key = `${sizeStr}-${colorStr}`;
         if (deletedKeys.has(key)) return null;
 
@@ -598,13 +605,13 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
   
   const allSizes = useMemo(() => {
     const sizes = new Set<string>();
-    products.forEach(p => p.variants.forEach(v => { if (v.size) sizes.add(v.size); }));
+    products.forEach(p => p.variants.forEach(v => { const s = normalizeVariantDim(v.size); if (s) sizes.add(s); }));
     return Array.from(sizes).sort();
   }, [products]);
 
   const allColors = useMemo(() => {
     const colors = new Set<string>();
-    products.forEach(p => p.variants.forEach(v => { if (v.color) colors.add(v.color); }));
+    products.forEach(p => p.variants.forEach(v => { const c = normalizeVariantDim(v.color); if (c) colors.add(c); }));
     return Array.from(colors).sort();
   }, [products]);
 
@@ -788,8 +795,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             if (exportConfig.selectedColumns.includes('supplier')) row.supplier = supplierName;
             if (exportConfig.selectedColumns.includes('tags')) row.tags = tagsString;
             if (exportConfig.selectedColumns.includes('url')) row.url = p.url || '-';
-            if (exportConfig.selectedColumns.includes('size')) row.size = v.size;
-            if (exportConfig.selectedColumns.includes('color')) row.color = v.color;
+            if (exportConfig.selectedColumns.includes('size')) row.size = normalizeVariantDim(v.size);
+            if (exportConfig.selectedColumns.includes('color')) row.color = normalizeVariantDim(v.color);
             if (exportConfig.selectedColumns.includes('quantity')) row.quantity = v.quantity;
             if (exportConfig.selectedColumns.includes('price')) row.price = v.price || p.price;
             if (exportConfig.selectedColumns.includes('wholesalePrice')) row.wholesalePrice = wholesale;
@@ -809,8 +816,14 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
           if (exportConfig.selectedColumns.includes('supplier')) row.supplier = supplierName;
           if (exportConfig.selectedColumns.includes('tags')) row.tags = tagsString;
           if (exportConfig.selectedColumns.includes('url')) row.url = p.url || '-';
-          if (exportConfig.selectedColumns.includes('size')) row.size = 'متعدد';
-          if (exportConfig.selectedColumns.includes('color')) row.color = 'متعدد';
+          if (exportConfig.selectedColumns.includes('size')) {
+            const sizes = Array.from(new Set(p.variants.map(v => normalizeVariantDim(v.size)).filter(Boolean)));
+            row.size = sizes.length === 1 ? sizes[0] : (sizes.length > 1 ? 'متعدد' : '');
+          }
+          if (exportConfig.selectedColumns.includes('color')) {
+            const colors = Array.from(new Set(p.variants.map(v => normalizeVariantDim(v.color)).filter(Boolean)));
+            row.color = colors.length === 1 ? colors[0] : (colors.length > 1 ? 'متعدد' : '');
+          }
           if (exportConfig.selectedColumns.includes('quantity')) row.quantity = totalQty;
           if (exportConfig.selectedColumns.includes('price')) row.price = p.price;
           if (exportConfig.selectedColumns.includes('wholesalePrice')) row.wholesalePrice = wholesale;
@@ -940,8 +953,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
             <td>${p.id}</td>
             <td>${p.name}</td>
             <td>${p.category}</td>
-            <td>${v.size}</td>
-            <td>${v.color}</td>
+            <td>${variantSizeOrDash(v)}</td>
+            <td>${variantColorOrDash(v)}</td>
             <td class="${isLow ? 'low-stock' : ''}">${v.quantity}</td>
             <td>${v.price || p.price}</td>
             <td>${p.costPrice}</td>
@@ -1056,8 +1069,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                       const isLow = v.quantity <= (v.lowStockThreshold || 0);
                       return `
                         <tr>
-                          <td style="font-weight: bold;">${v.size}</td>
-                          <td>${v.color}</td>
+                          <td style="font-weight: bold;">${variantSizeOrDash(v)}</td>
+                          <td>${variantColorOrDash(v)}</td>
                           <td style="font-weight: 900; font-size: 14px;">${v.quantity}</td>
                           <td>${(v.price || p.price || 0).toLocaleString()} ج.م</td>
                           <td style="font-weight: bold;">${(v.quantity * (v.price || p.price || 0)).toLocaleString()} ج.م</td>
@@ -2050,7 +2063,7 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                       <div className="mt-3 flex flex-wrap gap-1.5">
                         {p.variants.map(v => (
                           <span key={v.id} className="text-[10px] bg-[var(--md-sys-color-surface-container)] px-2.5 py-1 rounded-lg font-bold text-[var(--md-sys-color-on-surface-variant)] border border-gray-100 dark:border-slate-700">
-                            {v.size}/{v.color}: <span className="text-[var(--md-sys-color-primary)]">{v.quantity}</span>
+                            {variantLabel(v)}: <span className="text-[var(--md-sys-color-primary)]">{v.quantity}</span>
                           </span>
                         ))}
                       </div>
@@ -2211,13 +2224,13 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                   {highestStock && (
                     <div className="p-3 bg-emerald-50/50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-900/20">
                       <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">الأعلى مخزوناً</span>
-                      <div className="font-black text-[10px] text-[var(--md-sys-color-primary)] mt-0.5 leading-tight line-clamp-1">{highestStock.size} / {highestStock.color} <span className="text-gray-500">({highestStock.quantity})</span></div>
+                      <div className="font-black text-[10px] text-[var(--md-sys-color-primary)] mt-0.5 leading-tight line-clamp-1">{variantLabel(highestStock)} <span className="text-gray-500">({highestStock.quantity})</span></div>
                     </div>
                   )}
                   {lowestStock && (
                     <div className={`p-3 rounded-2xl border ${lowestStock.quantity <= (lowestStock.lowStockThreshold || 0) ? 'bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/20' : 'bg-[var(--md-sys-color-surface-container)] border-gray-100 dark:border-slate-700'}`}>
                       <span className="text-[8px] font-black text-[var(--md-sys-color-on-surface-variant)] uppercase tracking-widest">الأقل مخزوناً</span>
-                      <div className={`font-black text-[10px] mt-0.5 leading-tight line-clamp-1 ${lowestStock.quantity <= (lowestStock.lowStockThreshold || 0) ? 'text-[var(--md-sys-color-error)]' : 'text-[var(--md-sys-color-on-surface)]'}`}>{lowestStock.size} / {lowestStock.color} <span className="text-gray-400">({lowestStock.quantity})</span></div>
+                      <div className={`font-black text-[10px] mt-0.5 leading-tight line-clamp-1 ${lowestStock.quantity <= (lowestStock.lowStockThreshold || 0) ? 'text-[var(--md-sys-color-error)]' : 'text-[var(--md-sys-color-on-surface)]'}`}>{variantLabel(lowestStock)} <span className="text-gray-400">({lowestStock.quantity})</span></div>
                     </div>
                   )}
                 </div>
@@ -2288,8 +2301,8 @@ const Inventory: React.FC<InventoryProps> = React.memo(({
                         {product.variants.map(v => (
                           <tr key={v.id} className={`hover:bg-[var(--md-sys-color-surface-container)]/50 ${v.quantity <= (v.lowStockThreshold || 0) ? 'bg-red-50/50 dark:bg-red-900/10' : ''}`}>
                             <td className="p-3 font-mono text-[10px] font-bold text-gray-400">{v.sku || '—'}</td>
-                            <td className="p-3 font-bold text-gray-900 dark:text-gray-100">{v.size}</td>
-                            <td className="p-3 font-bold text-gray-900 dark:text-gray-100">{v.color}</td>
+                            <td className="p-3 font-bold text-gray-900 dark:text-gray-100">{variantSizeOrDash(v)}</td>
+                            <td className="p-3 font-bold text-gray-900 dark:text-gray-100">{variantColorOrDash(v)}</td>
                             <td className={`p-3 font-black ${v.quantity <= (v.lowStockThreshold || 0) ? 'text-[var(--md-sys-color-error)]' : 'text-gray-700 dark:text-gray-300'}`}>{v.quantity}</td>
                             <td className="p-3 font-black text-[var(--md-sys-color-primary)]">{(v.price || product.price).toLocaleString()}</td>
                             <td className="p-3 font-bold text-gray-500">{v.lowStockThreshold || 0}</td>

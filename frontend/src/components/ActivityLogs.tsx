@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUndoRedo } from '../contexts/UndoRedoContext';
 
 import { API_BASE } from '../lib/api';
+import { variantLabel } from '../lib/variantLabel';
 import { MD3Button, MD3IconButton, MD3EmptyState, MD3Dialog, MD3Snackbar, useSnackbar } from './md3';
 
 const ENTITY_ICONS: Record<string, React.ReactNode> = {
@@ -279,7 +280,7 @@ const ActivityLogs: React.FC<ActivityLogsProps> = ({ onRefresh }) => {
           <div className="mt-1 space-y-1">
             {data.variants.slice(0, 5).map((v: any, i: number) => (
               <div key={i} className="text-xs font-bold text-[var(--md-sys-color-on-surface)] bg-[var(--md-sys-color-surface-container)] px-2 py-1 rounded-lg">
-                {v.size} / {v.color} — {v.quantity} قطعة
+                {variantLabel(v) || '—'} — {v.quantity} قطعة
               </div>
             ))}
             {data.variants.length > 5 && (

@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { Product, Supplier, PurchaseInvoice, PurchaseInvoiceItem, Category, Branding } from '../types';
 import { formatDate } from '../lib/formatDate';
+import { variantLabel as vLabel, variantSizeOrDash } from '../lib/variantLabel';
 import ProductModal from './ProductModal';
 import ContactModal from './ContactModal';
 import { exportToExcel, exportToPDF, exportToHTML, exportToCSV, exportToJSON } from '../lib/exportService';
@@ -501,7 +502,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 mb-1 block">المتغير</label>
                            <select value={selectedVariantId} onChange={(e) => setSelectedVariantId(e.target.value)} disabled={!selectedProduct} className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl font-bold text-sm disabled:opacity-50">
                             <option value="">اختر...</option>
-                            {selectedProduct?.variants.map(v => <option key={v.id} value={v.id}>{v.size} / {v.color}</option>)}
+                            {selectedProduct?.variants.map(v => <option key={v.id} value={v.id}>{vLabel(v)}</option>)}
                           </select>
                         </div>
                         <div className="md:col-span-2"><label className="text-[10px] font-black text-gray-400 dark:text-gray-500 mb-1 block">الكمية</label><input type="number" value={itemForm.quantity} onChange={(e) => setItemForm(prev => ({ ...prev, quantity: Number(e.target.value) }))} className="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl font-bold text-sm" /></div>
@@ -521,7 +522,7 @@ const Purchases: React.FC<PurchasesProps> = ({ products, categories, branding, s
                       </div>
                     </div>
                     <div className="overflow-x-auto">
-                      <table className="w-full text-right"><thead className="text-[10px] font-black text-gray-400 dark:text-gray-500 border-b border-gray-50 dark:border-slate-800"><tr><th className="p-5">المنتج</th><th className="p-5">المتغير</th><th className="p-5 text-center">الكمية</th><th className="p-5 text-center">الإجمالي</th><th className="p-5"></th></tr></thead><tbody className="divide-y divide-gray-50 dark:divide-slate-800/50">{(newInvoice.items || []).map(item => { const prod = products.find(p => p.id === item.productId); return (<tr key={item.id} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/30"><td className="p-5 font-black text-sm">{prod?.name}</td><td className="p-5 text-xs text-gray-500 font-bold">{prod?.variants.find(v => v.id === item.variantId)?.size}</td><td className="p-5 text-center font-black">{item.quantity}</td><td className="p-5 text-center font-black text-accent">{formatCurrency(item.quantity * item.buyPrice)}</td><td className="p-5 text-center"><button onClick={() => removeItem(item.id)} className="text-gray-500 dark:text-gray-400 hover:text-red-500"><Trash2 size={16} /></button></td></tr>)})}</tbody></table>
+                      <table className="w-full text-right"><thead className="text-[10px] font-black text-gray-400 dark:text-gray-500 border-b border-gray-50 dark:border-slate-800"><tr><th className="p-5">المنتج</th><th className="p-5">المتغير</th><th className="p-5 text-center">الكمية</th><th className="p-5 text-center">الإجمالي</th><th className="p-5"></th></tr></thead><tbody className="divide-y divide-gray-50 dark:divide-slate-800/50">{(newInvoice.items || []).map(item => { const prod = products.find(p => p.id === item.productId); return (<tr key={item.id} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/30"><td className="p-5 font-black text-sm">{prod?.name}</td><td className="p-5 text-xs text-gray-500 font-bold">{variantSizeOrDash(prod?.variants.find(v => v.id === item.variantId))}</td><td className="p-5 text-center font-black">{item.quantity}</td><td className="p-5 text-center font-black text-accent">{formatCurrency(item.quantity * item.buyPrice)}</td><td className="p-5 text-center"><button onClick={() => removeItem(item.id)} className="text-gray-500 dark:text-gray-400 hover:text-red-500"><Trash2 size={16} /></button></td></tr>)})}</tbody></table>
                     </div>
                   </motion.div>
                 </>

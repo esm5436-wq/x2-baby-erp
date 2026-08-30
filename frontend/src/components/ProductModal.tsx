@@ -9,6 +9,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Product, Variant, Category, OptionCategory } from '../types';
 import { formatDate } from '../lib/formatDate';
 import { useImageDropZone } from '../lib/useImageDropZone';
+import { variantLabel } from '../lib/variantLabel';
 import { MD3Dialog } from './md3';
 
 
@@ -68,8 +69,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
     if (product.options && product.options.length > 0) {
       return JSON.parse(JSON.stringify(product.options));
     }
-    const sizes = Array.from(new Set(product.variants.map(v => v.size))).filter(v => v !== 'واحد') as string[];
-    const colors = Array.from(new Set(product.variants.map(v => v.color))).filter(v => v !== 'متعدد') as string[];
+    const sizes = Array.from(new Set(product.variants.map(v => v.size))).filter(v => v && v !== 'واحد') as string[];
+    const colors = Array.from(new Set(product.variants.map(v => v.color))).filter(v => v && v !== 'متعدد') as string[];
     const opts: OptionCategory[] = [];
     if (sizes.length > 0) opts.push({ id: 'opt-size', name: 'المقاس', type: 'dropdown', values: sizes });
     if (colors.length > 0) opts.push({ id: 'opt-color', name: 'اللون', type: 'dropdown', values: colors });
@@ -129,10 +130,16 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
 
     const newVariants: Variant[] = productCombos
       .map((combo: string[]) => {
-        const sizeStr = combo[0] || 'واحد';
-        const colorStr = combo.slice(1).join(' / ') || 'متعدد';
         const optVals: Record<string, string> = {};
         options.forEach((opt, i) => { optVals[opt.name] = combo[i] || ''; });
+        const hasSize = options.some(o => o.name === 'المقاس');
+        const hasColor = options.some(o => o.name === 'اللون');
+        let sizeStr = hasSize ? (optVals['المقاس'] || '') : '';
+        let colorStr = hasColor ? (optVals['اللون'] || '') : '';
+        if (!hasSize && !hasColor) {
+          sizeStr = combo[0] || '';
+          colorStr = combo.slice(1).join(' / ');
+        }
         const key = `${sizeStr}-${colorStr}`;
         if (deletedKeys.has(key)) return null;
         const existing = currentP.variants.find(v => v.size === sizeStr && v.color === colorStr);
@@ -527,7 +534,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, suppli
                       {v.optionValues && Object.entries(v.optionValues).map(([k, val]) => {
                         return <span key={k} className="inline-flex items-center gap-1 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded-md text-[9px]">{val}</span>;
                       })}
-                      {(!v.optionValues || Object.keys(v.optionValues).length === 0) && <span>{v.size} - {v.color}</span>}
+                      {(!v.optionValues || Object.keys(v.optionValues).length === 0) && <span>{variantLabel(v, ' - ')}</span>}
                     </div>
                   </td>
                   <td className="p-2.5 text-center">
